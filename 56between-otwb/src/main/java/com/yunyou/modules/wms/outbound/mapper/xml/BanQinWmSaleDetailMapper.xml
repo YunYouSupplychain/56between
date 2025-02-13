@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmSaleDetailMapper">
+    
+	<sql id="banQinWmSaleDetailColumns">
+		a.id AS "id",
+		a.sale_no AS "saleNo",
+		a.line_no AS "lineNo",
+		a.logistic_no AS "logisticNo",
+		a.logistic_line_no AS "logisticLineNo",
+		a.status AS "status",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_sale_ea AS "qtySaleEa",
+		a.qty_so_ea AS "qtySoEa",
+		a.qty_prealloc_ea AS "qtyPreallocEa",
+		a.qty_alloc_ea AS "qtyAllocEa",
+		a.qty_pk_ea AS "qtyPkEa",
+		a.qty_ship_ea AS "qtyShipEa",
+		a.price AS "price",
+		a.lot_att01 AS "lotAtt01",
+		a.lot_att02 AS "lotAtt02",
+		a.lot_att03 AS "lotAtt03",
+		a.lot_att04 AS "lotAtt04",
+		a.lot_att05 AS "lotAtt05",
+		a.lot_att06 AS "lotAtt06",
+		a.lot_att07 AS "lotAtt07",
+		a.lot_att08 AS "lotAtt08",
+		a.lot_att09 AS "lotAtt09",
+		a.lot_att10 AS "lotAtt10",
+		a.lot_att11 AS "lotAtt11",
+		a.lot_att12 AS "lotAtt12",
+		a.edi_send_time AS "ediSendTime",
+		a.is_edi_send AS "isEdiSend",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmSaleDetailJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmSaleDetail" >
+		SELECT 
+			<include refid="banQinWmSaleDetailColumns"/>
+		FROM wm_sale_detail a
+		<include refid="banQinWmSaleDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmSaleDetail" >
+		SELECT 
+			<include refid="banQinWmSaleDetailColumns"/>
+		FROM wm_sale_detail a
+		<include refid="banQinWmSaleDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			<if test="saleNo != null and saleNo != ''">
+				AND a.sale_no = #{saleNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="logisticNo != null and logisticNo != ''">
+				AND a.logistic_no = #{logisticNo}
+			</if>
+			<if test="logisticLineNo != null and logisticLineNo != ''">
+				AND a.logistic_line_no = #{logisticLineNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+		</where>
+	</select>
+
+    <select id="getDetailBySaleNo" resultType="BanQinWmSaleDetail" >
+        SELECT
+        	<include refid="banQinWmSaleDetailColumns"/>
+        FROM wm_sale_detail a
+        <include refid="banQinWmSaleDetailJoins"/>
+        <where>
+            1=1
+            AND a.org_id = #{orgId}
+            AND a.status = #{status}
+            AND a.qty_sale_ea > a.qty_so_ea
+            AND a.sale_no IN
+            <foreach collection="saleNos" item="saleNo" index="saleNo" open="(" separator="," close=")">
+                #{saleNo}
+            </foreach>
+        </where>
+    </select>
+    
+    <select id="getDetailBySaleNoAndLineNos" resultType="BanQinWmSaleDetail">
+        SELECT
+        	<include refid="banQinWmSaleDetailColumns"/>
+        FROM wm_sale_detail a
+        <include refid="banQinWmSaleDetailJoins"/>
+        <where>
+            1 = 1
+            AND a.org_id = #{orgId}
+            AND a.sale_no = #{saleNo}
+            AND a.line_no IN
+            <foreach collection="lineNos" item="lineNo" index="lineNo" open="(" separator="," close=")">
+                #{lineNo}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="checkSaleDetailStatus" resultType="BanQinWmSaleDetail">
+        SELECT DISTINCT wsd.sale_no AS saleNo, wsd.line_no AS lineNo
+        FROM wm_sale_detail wsd
+        LEFT JOIN wm_sale_header wsh ON wsh.sale_no = wsd.sale_no AND wsh.org_id = wsd.org_id
+        WHERE 1 = 1
+	  	AND wsd.sale_no = #{saleNo}
+	  	AND wsh.org_id = #{orgId}
+	  	AND wsd.line_no IN
+		<foreach collection="lineNos" item="lineNo" index="lieNo" open="(" separator="," close=")">
+			#{lienNo}
+		</foreach>
+	  	AND wsd.status IN
+		<foreach collection="saleStatus" item="saleStatus" index="saleStatus" open="(" separator="," close=")">
+			#{saleStatus}
+		</foreach>
+	 	 and wsh.status IN
+		<foreach collection="auditStatus" item="auditStatus" index="auditStatus" open="(" separator="," close=")">
+			#{auditStatus}
+		</foreach>
+    </select>
+
+    <select id="checkSaleDetailExistsSo" resultType="BanQinWmSaleDetail">
+        SELECT DISTINCT wsd.sale_no AS saleNo, wsd.line_no AS lineNo
+        FROM wm_sale_detail wsd
+        WHERE 1 = 1
+        AND wsd.org_id= #{orgId}
+        AND EXISTS (SELECT 1 FROM wm_so_detail wad WHERE wad.sale_no = wsd.sale_no AND wad.sale_line_no = wsd.line_no AND wad.org_id = wsd.org_id)
+        AND wsd.sale_no = #{saleNo}
+        AND wsd.line_no IN
+        <foreach collection="lineNos" item="lieNo" index="lineNo" open="(" separator="," close=")">
+            #{lineNo}
+        </foreach>
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmSaleDetail" >
+		SELECT 
+			<include refid="banQinWmSaleDetailColumns"/>
+		FROM wm_sale_detail a
+		<include refid="banQinWmSaleDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_sale_detail(
+			id,
+			sale_no,
+			line_no,
+			logistic_no,
+			logistic_line_no,
+			status,
+			owner_code,
+			sku_code,
+			pack_code,
+			uom,
+			qty_sale_ea,
+			qty_so_ea,
+			qty_prealloc_ea,
+			qty_alloc_ea,
+			qty_pk_ea,
+			qty_ship_ea,
+			price,
+			lot_att01,
+			lot_att02,
+			lot_att03,
+			lot_att04,
+			lot_att05,
+			lot_att06,
+			lot_att07,
+			lot_att08,
+			lot_att09,
+			lot_att10,
+			lot_att11,
+			lot_att12,
+			edi_send_time,
+			is_edi_send,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{saleNo},
+			#{lineNo},
+			#{logisticNo},
+			#{logisticLineNo},
+			#{status},
+			#{ownerCode},
+			#{skuCode},
+			#{packCode},
+			#{uom},
+			#{qtySaleEa},
+			#{qtySoEa},
+			#{qtyPreallocEa},
+			#{qtyAllocEa},
+			#{qtyPkEa},
+			#{qtyShipEa},
+			#{price},
+			#{lotAtt01},
+			#{lotAtt02},
+			#{lotAtt03},
+			#{lotAtt04},
+			#{lotAtt05},
+			#{lotAtt06},
+			#{lotAtt07},
+			#{lotAtt08},
+			#{lotAtt09},
+			#{lotAtt10},
+			#{lotAtt11},
+			#{lotAtt12},
+			#{ediSendTime},
+			#{isEdiSend},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_sale_detail SET 	
+			sale_no = #{saleNo},
+			line_no = #{lineNo},
+			logistic_no = #{logisticNo},
+			logistic_line_no = #{logisticLineNo},
+			status = #{status},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_sale_ea = #{qtySaleEa},
+			qty_so_ea = #{qtySoEa},
+			qty_prealloc_ea = #{qtyPreallocEa},
+			qty_alloc_ea = #{qtyAllocEa},
+			qty_pk_ea = #{qtyPkEa},
+			qty_ship_ea = #{qtyShipEa},
+			price = #{price},
+			lot_att01 = #{lotAtt01},
+			lot_att02 = #{lotAtt02},
+			lot_att03 = #{lotAtt03},
+			lot_att04 = #{lotAtt04},
+			lot_att05 = #{lotAtt05},
+			lot_att06 = #{lotAtt06},
+			lot_att07 = #{lotAtt07},
+			lot_att08 = #{lotAtt08},
+			lot_att09 = #{lotAtt09},
+			lot_att10 = #{lotAtt10},
+			lot_att11 = #{lotAtt11},
+			lot_att12 = #{lotAtt12},
+			edi_send_time = #{ediSendTime},
+			is_edi_send = #{isEdiSend},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			def6 = #{def6},
+			def7 = #{def7},
+			def8 = #{def8},
+			def9 = #{def9},
+			def10 = #{def10},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_sale_detail
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_sale_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+    <delete id="deleteWmSaleDetailBySaleNo">
+        DELETE FROM wm_sale_detail wsd
+        WHERE wsd.status = '00'
+          AND wsd.org_id = #{orgId}
+          AND wsd.sale_no IN
+          <foreach collection="saleNos" item="saleNo" index="saleNo" open="(" separator="," close=")">
+              #{saleNo}
+          </foreach>
+    </delete>
+    
+    <delete id="deleteWmSaleDetailBySaleNoAndLineNo">
+        DELETE FROM wm_sale_detail wsd
+        WHERE wsd.status = '00'
+          AND wsd.org_id = #{orgId}
+          AND wsd.sale_no = #{saleNo}
+          AND wsd.line_no IN
+          <foreach collection="lineNos" item="lineNo" index="lineNo" open="(" separator="," close=")">
+              #{lineNo}
+          </foreach>
+    </delete>
+	
+</mapper>

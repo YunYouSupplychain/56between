@@ -1,0 +1,159 @@
+package com.yunyou.modules.bms.basic.entity;
+
+import com.google.common.collect.Lists;
+import com.yunyou.core.persistence.DataEntity;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+/**
+ * 仓储价格Entity
+ *
+ * @author Jianhua Liu
+ * @version 2019-05-27
+ */
+public class BmsContractStoragePrice extends DataEntity<BmsContractStoragePrice> {
+
+    private static final long serialVersionUID = 1L;
+    // 主表外键(合同明细ID)
+    private String fkId;
+    // 商品编码
+    private String skuCode;
+    // 商品名称
+    private String skuName;
+    // 品类
+    private String skuClass;
+    // 单价
+    private BigDecimal price;
+    // 物流点数
+    private BigDecimal logisticsPoints;
+    // 单位
+    private String unit;
+    // 是否启用阶梯价格
+    private String isUseStep;
+    // 是否阶梯分段累加方式计算
+    private String isAccumulationMethod;
+    // 机构ID
+    private String orgId;
+    // 阶梯价格
+    private List<BmsContractStorageSteppedPrice> steppedPrices = Lists.newArrayList();
+
+    /**
+     * 扩展字段
+     */
+    // 品类名称
+    private String skuClassName;
+    private String searchSku;
+
+    public BmsContractStoragePrice() {
+        super();
+    }
+
+    public BmsContractStoragePrice(String id) {
+        super(id);
+    }
+
+    public String getFkId() {
+        return fkId;
+    }
+
+    public void setFkId(String fkId) {
+        this.fkId = fkId;
+    }
+
+    public String getSkuCode() {
+        return skuCode;
+    }
+
+    public void setSkuCode(String skuCode) {
+        this.skuCode = skuCode;
+    }
+
+    public String getSkuName() {
+        return skuName;
+    }
+
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
+    }
+
+    public String getSkuClass() {
+        return skuClass;
+    }
+
+    public void setSkuClass(String skuClass) {
+        this.skuClass = skuClass;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public BigDecimal getLogisticsPoints() {
+        return logisticsPoints;
+    }
+
+    public void setLogisticsPoints(BigDecimal logisticsPoints) {
+        this.logisticsPoints = logisticsPoints;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public String getIsUseStep() {
+        return isUseStep;
+    }
+
+    public void setIsUseStep(String isUseStep) {
+        this.isUseStep = isUseStep;
+    }
+
+    public String getIsAccumulationMethod() {
+        return isAccumulationMethod;
+    }
+
+    public void setIsAccumulationMethod(String isAccumulationMethod) {
+        this.isAccumulationMethod = isAccumulationMethod;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
+    public List<BmsContractStorageSteppedPrice> getSteppedPrices() {
+        return steppedPrices;
+    }
+
+    public void setSteppedPrices(List<BmsContractStorageSteppedPrice> steppedPrices) {
+        this.steppedPrices = steppedPrices;
+    }
+
+    public String getSkuClassName() {
+        return skuClassName;
+    }
+
+    public void setSkuClassName(String skuClassName) {
+        this.skuClassName = skuClassName;
+    }
+
+    public String getSearchSku() {
+        return searchSku;
+    }
+
+    public void setSearchSku(String searchSku) {
+        this.searchSku = searchSku;
+    }
+}

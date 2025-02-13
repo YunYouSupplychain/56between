@@ -1,0 +1,826 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysCommonSkuMapper">
+    
+	<sql id="sysCommonSkuColumns">
+	   a.id                  AS "id",
+       a.create_by           AS "createBy.id",
+       a.create_date         AS "createDate",
+       a.update_by           AS "updateBy.id",
+       a.update_date         AS "updateDate",
+       a.remarks             AS "remarks",
+       a.del_flag            AS "delFlag",
+       a.rec_ver             AS "recVer",
+       a.owner_code          AS "ownerCode",
+       a.sku_code            AS "skuCode",
+       a.sku_name            AS "skuName",
+       a.sku_short_name      AS "skuShortName",
+       a.sku_foreign_name    AS "skuForeignName",
+       a.sku_spec            AS "skuSpec",
+       a.pack_code           AS "packCode",
+       a.filing_time         AS "filingTime",
+       a.price               AS "price",
+       a.gross_weight        AS "grossWeight",
+       a.net_weight          AS "netWeight",
+       a.volume              AS "volume",
+       a.length              AS "length",
+       a.width               AS "width",
+       a.height              AS "height",
+       a.data_set            AS "dataSet",
+       a.sku_customer_code   AS "skuCustomerCode",
+       a.unit                AS "unit",
+       a.sku_model           AS "skuModel",
+       a.sku_type            AS "skuType",
+       a.sales_unit          AS "salesUnit",
+       a.storage_type        AS "storageType",
+       a.store_order_times   AS "storeOrderTimes",
+       a.detachable_flag     AS "detachableFlag",
+       a.deduct_weight_ratio AS "deductWeightRatio",
+       a.sku_weight_type     AS "skuWeighType",
+       a.sku_class           AS "skuClass",
+       a.lot_attr            AS "lotAttr",
+       a.weigh_way           AS "weighWay",
+       a.tare_weight         AS "tareWeight",
+       a.is_iqc              AS "isIqc",
+       a.is_ices             AS "isIces",
+       a.box_volume          AS "boxVolume",
+       a.sku_check_type      AS "skuCheckType",
+       a.purchase_type       AS "purchaseType",
+       a.om                  AS "om",
+       a.po_om               AS "poOm",
+       a.po_class            AS "poClass",
+       a.barcode             AS "barCode",
+       a.sup_barcode         AS "supBarCode",
+       a.lot_code            AS "lotCode",
+       a.abc                 AS "abc",
+       a.group_code          AS "groupCode",
+       a.material_code       AS "materialCode",
+       a.rcv_uom             AS "rcvUom",
+       a.ship_uom            AS "shipUom",
+       a.print_uom           AS "printUom",
+       a.max_limit           AS "maxLimit",
+       a.min_limit           AS "minLimit",
+       a.is_validity         AS "isValidity",
+       a.shelf_life          AS "shelfLife",
+       a.life_type           AS "lifeType",
+       a.in_life_days        AS "inLifeDays",
+       a.out_life_days       AS "outLifeDays",
+       a.is_over_rcv         AS "isOverRcv",
+       a.over_rcv_pct        AS "overRcvPct",
+       a.pa_zone             AS "paZone",
+       a.pa_loc              AS "paLoc",
+       a.reserve_code        AS "reserveCode",
+       a.pa_rule             AS "paRule",
+       a.rotation_rule       AS "rotationRule",
+       a.alloc_rule          AS "allocRule",
+       a.cycle_code          AS "cycleCode",
+       a.cd_class            AS "cdClass",
+       a.style               AS "style",
+       a.color               AS "color",
+       a.sku_size            AS "skuSize",
+       a.is_dg               AS "isDg",
+       a.dg_class            AS "dgClass",
+       a.unno                AS "unno",
+       a.is_cold             AS "isCold",
+       a.min_temp            AS "minTemp",
+       a.max_temp            AS "maxTemp",
+       a.hs_code             AS "hsCode",
+       a.is_serial           AS "isSerial",
+       a.is_parent           AS "isParent",
+       a.is_qc               AS "isQc",
+       a.qc_phase            AS "qcPhase",
+       a.qc_rule             AS "qcRule",
+       a.item_group_code     AS "itemGroupCode",
+       a.rate_group          AS "rateGroup",
+       a.period_of_validity  AS "periodOfValidity",
+       a.validity_unit       AS "validityUnit",
+       a.type_code           AS "typeCode",
+       a.stock_cur_id        AS "stockCurId",
+       a.quick_code          AS "quickCode",
+       a.form_code           AS "formCode",
+       a.emergency_tel       AS "emergencyTel",
+       a.effective_date      AS "effectiveDate",
+       a.expiration_date     AS "expirationDate",
+       a.flash_point         AS "flashPoint",
+       a.burning_point       AS "burningPoint",
+       a.provide_cust_code   AS "provideCustCode",
+       a.temp_level          AS "tempLevel",
+       a.material_level      AS "materialLevel",
+       scds.name             AS "dataSetName"
+	</sql>
+
+	<sql id="extraColumns">
+		scc.name              AS "ownerName",
+		scp.cdpa_format       AS "packFormat",
+		sclh.lot_name         AS "lotName",
+		scprr.cdpr_desc       AS "rcvUomName",
+		scprs.cdpr_desc       AS "shipUomName",
+		scprp.cdpr_desc       AS "printUomName",
+		scrph.rule_name       AS "paRuleName",
+		scrrh.rule_name       AS "rotationRuleName",
+		scrah.rule_name       AS "allocRuleName",
+		scrqh.rule_name       AS "qcRuleName",
+		scz.area_name         AS "paZoneName",
+		sccy.cycle_name       AS "cycleName",
+		scqih.item_group_name AS "itemGroupName",
+		scsc.name             AS "skuClassName"
+	</sql>
+
+	<sql id="sysCommonSkuJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+		LEFT JOIN sys_common_customer scc ON a.owner_code = scc.code and a.data_set = scc.data_set
+		LEFT JOIN sys_common_package scp ON a.pack_code = scp.cdpa_code and a.data_set = scp.data_set
+		LEFT JOIN sys_common_package_relation scprr on scp.pm_code = scprr.cdpr_cdpa_pm_code and a.rcv_uom = scprr.cdpr_unit_level
+		LEFT JOIN sys_common_package_relation scprs on scp.pm_code = scprs.cdpr_cdpa_pm_code and a.ship_uom = scprs.cdpr_unit_level
+		LEFT JOIN sys_common_package_relation scprp on scp.pm_code = scprp.cdpr_cdpa_pm_code and a.print_uom = scprp.cdpr_unit_level
+		LEFT JOIN sys_wms_lot_header sclh on a.lot_code = sclh.lot_code and a.data_set = sclh.data_set
+		LEFT JOIN sys_wms_rule_pa_header scrph on a.pa_rule = scrph.rule_code and a.data_set = scrph.data_set
+		LEFT JOIN sys_wms_rule_rotation_header scrrh on a.rotation_rule = scrrh.rule_code and a.data_set = scrrh.data_set
+		LEFT JOIN sys_wms_rule_alloc_header scrah on a.alloc_rule = scrah.rule_code and a.data_set = scrah.data_set
+		LEFT JOIN sys_wms_rule_qc_header scrqh on a.qc_rule = scrqh.rule_code and a.data_set = scrqh.data_set
+		LEFT JOIN sys_wms_zone scz on a.pa_zone = scz.zone_code and a.data_set = scz.data_set
+		LEFT JOIN sys_wms_cycle sccy on a.cycle_code = sccy.cycle_code and a.data_set = sccy.data_set
+		LEFT JOIN sys_wms_qc_item_header scqih on a.item_group_code = scqih.item_group_code and a.data_set = scqih.data_set
+		LEFT JOIN sys_common_sku_classification scsc on a.sku_class = scsc.code and a.data_set = scsc.data_set
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysCommonSku" >
+		SELECT <include refid="sysCommonSkuColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_common_sku a
+		<include refid="sysCommonSkuJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysCommonSku" >
+		SELECT <include refid="sysCommonSkuColumns"/>
+		FROM sys_common_sku a
+		<include refid="sysCommonSkuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="skuName != null and skuName != ''">
+				AND a.sku_name = #{skuName}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysCommonSku" >
+		SELECT <include refid="sysCommonSkuColumns"/>
+		FROM sys_common_sku a
+		<include refid="sysCommonSkuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_common_sku(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			owner_code,
+			sku_code,
+			sku_name,
+			sku_short_name,
+			sku_foreign_name,
+			sku_spec,
+			pack_code,
+			filing_time,
+			price,
+			gross_weight,
+			net_weight,
+			volume,
+			length,
+			width,
+			height,
+			data_set,
+			sku_customer_code,
+			unit,
+			sku_model,
+			sku_type,
+			sales_unit,
+			storage_type,
+			store_order_times,
+			detachable_flag,
+			deduct_weight_ratio,
+			sku_weight_type,
+			sku_class,
+			lot_attr,
+			weigh_way,
+			tare_weight,
+			is_iqc,
+			is_ices,
+			box_volume,
+			sku_check_type,
+			purchase_type,
+			om,
+			po_om,
+			po_class,
+			barcode,
+			sup_barcode,
+			lot_code,
+			abc,
+			group_code,
+			material_code,
+			rcv_uom,
+			ship_uom,
+			print_uom,
+			max_limit,
+			min_limit,
+			is_validity,
+			shelf_life,
+			life_type,
+			in_life_days,
+			out_life_days,
+			is_over_rcv,
+			over_rcv_pct,
+			pa_zone,
+			pa_loc,
+			reserve_code,
+			pa_rule,
+			rotation_rule,
+			alloc_rule,
+			cycle_code,
+			cd_class,
+			style,
+			color,
+			sku_size,
+			is_dg,
+			dg_class,
+			unno,
+			is_cold,
+			min_temp,
+			max_temp,
+			hs_code,
+			is_serial,
+			is_parent,
+			is_qc,
+			qc_phase,
+			qc_rule,
+			item_group_code,
+			rate_group,
+			period_of_validity,
+			validity_unit,
+			type_code,
+			stock_cur_id,
+			quick_code,
+			form_code,
+			emergency_tel,
+			effective_date,
+			expiration_date,
+			flash_point,
+			burning_point,
+			provide_cust_code,
+			temp_level,
+			material_level
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{ownerCode},
+			#{skuCode},
+			#{skuName},
+			#{skuShortName},
+			#{skuForeignName},
+			#{skuSpec},
+			#{packCode},
+			#{filingTime},
+			#{price},
+			#{grossWeight},
+			#{netWeight},
+			#{volume},
+			#{length},
+			#{width},
+			#{height},
+			#{dataSet},
+			#{skuCustomerCode},
+			#{unit},
+			#{skuModel},
+			#{skuType},
+			#{salesUnit},
+			#{storageType},
+			#{storeOrderTimes},
+			#{detachableFlag},
+			#{deductWeightRatio},
+			#{skuWeighType},
+			#{skuClass},
+			#{lotAttr},
+			#{weighWay},
+			#{tareWeight},
+			#{isIqc},
+			#{isIces},
+			#{boxVolume},
+			#{skuCheckType},
+			#{purchaseType},
+			#{om},
+			#{poOm},
+			#{poClass},
+			#{barCode},
+			#{supBarCode},
+			#{lotCode},
+			#{abc},
+			#{groupCode},
+			#{materialCode},
+			#{rcvUom},
+			#{shipUom},
+			#{printUom},
+			#{maxLimit},
+			#{minLimit},
+			#{isValidity},
+			#{shelfLife},
+			#{lifeType},
+			#{inLifeDays},
+			#{outLifeDays},
+			#{isOverRcv},
+			#{overRcvPct},
+			#{paZone},
+			#{paLoc},
+			#{reserveCode},
+			#{paRule},
+			#{rotationRule},
+			#{allocRule},
+			#{cycleCode},
+			#{cdClass},
+			#{style},
+			#{color},
+			#{skuSize},
+			#{isDg},
+			#{dgClass},
+			#{unno},
+			#{isCold},
+			#{minTemp},
+			#{maxTemp},
+			#{hsCode},
+			#{isSerial},
+			#{isParent},
+			#{isQc},
+			#{qcPhase},
+			#{qcRule},
+			#{itemGroupCode},
+			#{rateGroup},
+			#{periodOfValidity},
+			#{validityUnit},
+			#{typeCode},
+			#{stockCurId},
+			#{quickCode},
+			#{formCode},
+			#{emergencyTel},
+			#{effectiveDate},
+			#{expirationDate},
+			#{flashPoint},
+			#{burningPoint},
+			#{provideCustCode},
+			#{tempLevel},
+			#{materialLevel}
+		)
+	</insert>
+
+	<insert id="batchInsert">
+		INSERT INTO sys_common_sku
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			owner_code,
+			sku_code,
+			sku_name,
+			sku_short_name,
+			sku_foreign_name,
+			sku_spec,
+			pack_code,
+			filing_time,
+			price,
+			gross_weight,
+			net_weight,
+			volume,
+			length,
+			width,
+			height,
+			data_set,
+			sku_customer_code,
+			unit,
+			sku_model,
+			sku_type,
+			sales_unit,
+			storage_type,
+			store_order_times,
+			detachable_flag,
+			deduct_weight_ratio,
+			sku_weight_type,
+			sku_class,
+			lot_attr,
+			weigh_way,
+			tare_weight,
+			is_iqc,
+			is_ices,
+			box_volume,
+			sku_check_type,
+			purchase_type,
+			om,
+			po_om,
+			po_class,
+			barcode,
+			sup_barcode,
+			lot_code,
+			abc,
+			group_code,
+			material_code,
+			rcv_uom,
+			ship_uom,
+			print_uom,
+			max_limit,
+			min_limit,
+			is_validity,
+			shelf_life,
+			life_type,
+			in_life_days,
+			out_life_days,
+			is_over_rcv,
+			over_rcv_pct,
+			pa_zone,
+			pa_loc,
+			reserve_code,
+			pa_rule,
+			rotation_rule,
+			alloc_rule,
+			cycle_code,
+			cd_class,
+			style,
+			color,
+			sku_size,
+			is_dg,
+			dg_class,
+			unno,
+			is_cold,
+			min_temp,
+			max_temp,
+			hs_code,
+			is_serial,
+			is_parent,
+			is_qc,
+			qc_phase,
+			qc_rule,
+			item_group_code,
+			rate_group,
+			period_of_validity,
+			validity_unit,
+			type_code,
+			stock_cur_id,
+			quick_code,
+			form_code,
+			emergency_tel,
+			effective_date,
+			expiration_date,
+			flash_point,
+			burning_point,
+			provide_cust_code,
+			temp_level,
+			material_level
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.recVer},
+			#{item.ownerCode},
+			#{item.skuCode},
+			#{item.skuName},
+			#{item.skuShortName},
+			#{item.skuForeignName},
+			#{item.skuSpec},
+			#{item.packCode},
+			#{item.filingTime},
+			#{item.price},
+			#{item.grossWeight},
+			#{item.netWeight},
+			#{item.volume},
+			#{item.length},
+			#{item.width},
+			#{item.height},
+			#{item.dataSet},
+			#{item.skuCustomerCode},
+			#{item.unit},
+			#{item.skuModel},
+			#{item.skuType},
+			#{item.salesUnit},
+			#{item.storageType},
+			#{item.storeOrderTimes},
+			#{item.detachableFlag},
+			#{item.deductWeightRatio},
+			#{item.skuWeighType},
+			#{item.skuClass},
+			#{item.lotAttr},
+			#{item.weighWay},
+			#{item.tareWeight},
+			#{item.isIqc},
+			#{item.isIces},
+			#{item.boxVolume},
+			#{item.skuCheckType},
+			#{item.purchaseType},
+			#{item.om},
+			#{item.poOm},
+			#{item.poClass},
+			#{item.barCode},
+			#{item.supBarCode},
+			#{item.lotCode},
+			#{item.abc},
+			#{item.groupCode},
+			#{item.materialCode},
+			#{item.rcvUom},
+			#{item.shipUom},
+			#{item.printUom},
+			#{item.maxLimit},
+			#{item.minLimit},
+			#{item.isValidity},
+			#{item.shelfLife},
+			#{item.lifeType},
+			#{item.inLifeDays},
+			#{item.outLifeDays},
+			#{item.isOverRcv},
+			#{item.overRcvPct},
+			#{item.paZone},
+			#{item.paLoc},
+			#{item.reserveCode},
+			#{item.paRule},
+			#{item.rotationRule},
+			#{item.allocRule},
+			#{item.cycleCode},
+			#{item.cdClass},
+			#{item.style},
+			#{item.color},
+			#{item.skuSize},
+			#{item.isDg},
+			#{item.dgClass},
+			#{item.unno},
+			#{item.isCold},
+			#{item.minTemp},
+			#{item.maxTemp},
+			#{item.hsCode},
+			#{item.isSerial},
+			#{item.isParent},
+			#{item.isQc},
+			#{item.qcPhase},
+			#{item.qcRule},
+			#{item.itemGroupCode},
+			#{item.rateGroup},
+			#{item.periodOfValidity},
+			#{item.validityUnit},
+			#{item.typeCode},
+			#{item.stockCurId},
+			#{item.quickCode},
+			#{item.formCode},
+			#{item.emergencyTel},
+			#{item.effectiveDate},
+			#{item.expirationDate},
+			#{item.flashPoint},
+			#{item.burningPoint},
+			#{item.provideCustCode},
+			#{item.tempLevel},
+			#{item.materialLevel}
+		)
+		</foreach>
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_common_sku
+		SET update_by           = #{updateBy.id},
+			update_date         = #{updateDate},
+			remarks             = #{remarks},
+			rec_ver             = rec_ver + 1,
+			owner_code          = #{ownerCode},
+			sku_code            = #{skuCode},
+			sku_name            = #{skuName},
+			sku_short_name      = #{skuShortName},
+			sku_foreign_name    = #{skuForeignName},
+			sku_spec            = #{skuSpec},
+			pack_code           = #{packCode},
+			filing_time         = #{filingTime},
+			price               = #{price},
+			gross_weight        = #{grossWeight},
+			net_weight          = #{netWeight},
+			volume              = #{volume},
+			length              = #{length},
+			width               = #{width},
+			height              = #{height},
+			data_set            = #{dataSet},
+			sku_customer_code   = #{skuCustomerCode},
+			unit                = #{unit},
+			sku_model           = #{skuModel},
+			sku_type            = #{skuType},
+			sales_unit          = #{salesUnit},
+			storage_type        = #{storageType},
+			store_order_times   = #{storeOrderTimes},
+			detachable_flag     = #{detachableFlag},
+			deduct_weight_ratio = #{deductWeightRatio},
+			sku_weight_type     = #{skuWeighType},
+			sku_class           = #{skuClass},
+			lot_attr            = #{lotAttr},
+			weigh_way           = #{weighWay},
+			tare_weight         = #{tareWeight},
+			is_iqc              = #{isIqc},
+			is_ices             = #{isIces},
+			box_volume          = #{boxVolume},
+			sku_check_type      = #{skuCheckType},
+			purchase_type       = #{purchaseType},
+			om                  = #{om},
+			po_om               = #{poOm},
+			po_class            = #{poClass},
+			barcode             = #{barCode},
+			sup_barcode         = #{supBarCode},
+			lot_code            = #{lotCode},
+			abc                 = #{abc},
+			group_code          = #{groupCode},
+			material_code       = #{materialCode},
+			rcv_uom             = #{rcvUom},
+			ship_uom            = #{shipUom},
+			print_uom           = #{printUom},
+			max_limit           = #{maxLimit},
+			min_limit           = #{minLimit},
+			is_validity         = #{isValidity},
+			shelf_life          = #{shelfLife},
+			life_type           = #{lifeType},
+			in_life_days        = #{inLifeDays},
+			out_life_days       = #{outLifeDays},
+			is_over_rcv         = #{isOverRcv},
+			over_rcv_pct        = #{overRcvPct},
+			pa_zone             = #{paZone},
+			pa_loc              = #{paLoc},
+			reserve_code        = #{reserveCode},
+			pa_rule             = #{paRule},
+			rotation_rule       = #{rotationRule},
+			alloc_rule          = #{allocRule},
+			cycle_code          = #{cycleCode},
+			cd_class            = #{cdClass},
+			style               = #{style},
+			color               = #{color},
+			sku_size            = #{skuSize},
+			is_dg               = #{isDg},
+			dg_class            = #{dgClass},
+			unno                = #{unno},
+			is_cold             = #{isCold},
+			min_temp            = #{minTemp},
+			max_temp            = #{maxTemp},
+			hs_code             = #{hsCode},
+			is_serial           = #{isSerial},
+			is_parent           = #{isParent},
+			is_qc               = #{isQc},
+			qc_phase            = #{qcPhase},
+			qc_rule             = #{qcRule},
+			item_group_code     = #{itemGroupCode},
+			rate_group          = #{rateGroup},
+			period_of_validity  = #{periodOfValidity},
+			validity_unit       = #{validityUnit},
+			type_code           = #{typeCode},
+			stock_cur_id        = #{stockCurId},
+			quick_code          = #{quickCode},
+			form_code           = #{formCode},
+			emergency_tel       = #{emergencyTel},
+			effective_date      = #{effectiveDate},
+			expiration_date     = #{expirationDate},
+			flash_point         = #{flashPoint},
+			burning_point       = #{burningPoint},
+			provide_cust_code   = #{provideCustCode},
+			temp_level          = #{tempLevel},
+			material_level      = #{materialLevel}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_common_sku SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_common_sku
+		WHERE id = #{id}
+	</delete>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.SysCommonSku">
+		SELECT <include refid="sysCommonSkuColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_common_sku a
+		<include refid="sysCommonSkuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code like concat('%', #{skuCode}, '%')
+			</if>
+			<if test="skuName != null and skuName != ''">
+				AND a.sku_name like concat('%', #{skuName}, '%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.SysCommonSku">
+		SELECT <include refid="sysCommonSkuColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_common_sku a
+		<include refid="sysCommonSkuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code like concat('%', #{skuCode}, '%')
+			</if>
+			<if test="skuName != null and skuName != ''">
+				AND a.sku_name like concat('%', #{skuName}, '%')
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.sku_code like concat('%', #{codeAndName}, '%') or a.sku_name like concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findSync" resultType="com.yunyou.modules.sys.common.entity.SysCommonSku">
+		SELECT <include refid="sysCommonSkuColumns"/>
+		FROM sys_common_sku a
+		<include refid="sysCommonSkuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="skuName != null and skuName != ''">
+				AND a.sku_name = #{skuName}
+			</if>
+			<if test="fromDate != null">
+				and a.update_date &gt; #{fromDate}
+			</if>
+			<if test="toDate != null">
+				and a.update_date &lt;= #{toDate}
+			</if>
+			<if test="ids != null and ids.size > 0">
+				AND a.id IN
+				<foreach collection="ids" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+	</select>
+</mapper>

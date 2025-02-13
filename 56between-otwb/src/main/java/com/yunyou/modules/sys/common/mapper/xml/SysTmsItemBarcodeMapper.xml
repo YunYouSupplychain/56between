@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysTmsItemBarcodeMapper">
+    
+	<sql id="sysTmsItemBarcodeColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.barcode AS "barcode",
+		a.is_default AS "isDefault",
+		a.data_set AS "dataSet",
+		a.rec_ver AS "recVer"
+	</sql>
+	
+	<sql id="sysTmsItemBarcodeJoins">
+		
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysTmsItemBarcode" >
+		SELECT 
+			<include refid="sysTmsItemBarcodeColumns"/>
+		FROM sys_tms_item_barcode a
+		<include refid="sysTmsItemBarcodeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysTmsItemBarcode" >
+		SELECT 
+			<include refid="sysTmsItemBarcodeColumns"/>
+		FROM sys_tms_item_barcode a
+		<include refid="sysTmsItemBarcodeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.owner_code = #{ownerCode}
+			AND a.sku_code = #{skuCode}
+			AND a.data_set = #{dataSet}
+			<if test="barcode != null and barcode != ''">
+				AND a.barcode = #{barcode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysTmsItemBarcode" >
+		SELECT 
+			<include refid="sysTmsItemBarcodeColumns"/>
+		FROM sys_tms_item_barcode a
+		<include refid="sysTmsItemBarcodeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_tms_item_barcode(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			owner_code,
+			sku_code,
+			barcode,
+			is_default,
+			data_set
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{ownerCode},
+			#{skuCode},
+			#{barcode},
+			#{isDefault},
+			#{dataSet}
+		)
+	</insert>
+    <insert id="batchInsert">
+		INSERT INTO sys_tms_item_barcode
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			owner_code,
+			sku_code,
+			barcode,
+			is_default,
+			data_set
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.recVer},
+			#{item.ownerCode},
+			#{item.skuCode},
+			#{item.barcode},
+			#{item.isDefault},
+			#{item.dataSet}
+		)
+		</foreach>
+	</insert>
+
+    <update id="update">
+		UPDATE sys_tms_item_barcode SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			barcode = #{barcode},
+			is_default = #{isDefault},
+			data_set = #{dataSet},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_tms_item_barcode SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_tms_item_barcode WHERE id = #{id}
+	</delete>
+
+	<delete id="remove">
+		DELETE FROM sys_tms_item_barcode WHERE owner_code = #{ownerCode} AND sku_code = #{skuCode} AND data_set = #{dataSet}
+	</delete>
+
+</mapper>

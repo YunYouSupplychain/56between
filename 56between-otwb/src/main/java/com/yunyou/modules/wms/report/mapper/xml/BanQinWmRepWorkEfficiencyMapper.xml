@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.report.mapper.BanQinWmRepWorkEfficiencyMapper">
+    
+	<select id="findRcvList" resultType="com.yunyou.modules.wms.report.entity.WmRepWorkEfficiencyEntity" >
+		SELECT IFNULL(su.name, wat.tran_op) AS "operator",
+			wat.order_no AS "orderNo",
+			wat.tran_time AS "operateDate",
+			wat.to_qty_ea_op AS "orderNum",
+			wat.org_id AS "orgId"
+		FROM wm_act_tran wat
+		LEFT JOIN sys_user su ON wat.tran_op = su.login_name
+		WHERE wat.tran_op IS NOT NULL
+			AND wat.tran_type = 'RCV'
+			AND wat.tran_time &gt;= #{fmDate}
+			AND wat.tran_time &lt;= #{toDate}
+			AND wat.org_id = #{orgId}
+	</select>
+
+	<select id="findPkList" resultType="com.yunyou.modules.wms.report.entity.WmRepWorkEfficiencyEntity" >
+		SELECT IFNULL(su.name, wsa.pick_op) AS "operator",
+			wsa.so_no AS "orderNo",
+			wsa.pick_time AS "operateDate",
+			wsa.qty_ea AS "orderNum",
+			wsa.org_id AS "orgId"
+		FROM wm_so_alloc wsa
+		LEFT JOIN sys_user su ON wsa.pick_op = su.login_name
+		WHERE wsa.pick_op IS NOT NULL
+			AND wsa.`status` &gt; '40'
+			AND wsa.pick_time &gt;= #{fmDate}
+			AND wsa.pick_time &lt;= #{toDate}
+			AND wsa.org_id = #{orgId}
+	</select>
+
+	<select id="findReviewList" resultType="com.yunyou.modules.wms.report.entity.WmRepWorkEfficiencyEntity" >
+		SELECT IFNULL(su.name, wsa.check_op) AS "operator",
+			wsa.so_no AS "orderNo",
+			wsa.check_time AS "operateDate",
+			wsa.qty_ea AS "orderNum",
+			wsa.org_id AS "orgId"
+		FROM wm_so_alloc wsa
+		LEFT JOIN sys_user su ON wsa.check_op = su.login_name
+		WHERE wsa.check_op IS NOT NULL
+			AND wsa.`status` &gt; '40'
+			AND wsa.check_time &gt;= #{fmDate}
+			AND wsa.check_time &lt;= #{toDate}
+			AND wsa.org_id = #{orgId}
+	</select>
+
+</mapper>

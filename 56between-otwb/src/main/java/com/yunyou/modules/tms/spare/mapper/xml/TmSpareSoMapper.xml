@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.spare.mapper.TmSpareSoMapper">
+
+    <sql id="tmSpareSoHeaderColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.spare_so_no AS "spareSoNo",
+        a.order_time AS "orderTime",
+        a.order_status AS "orderStatus",
+        a.order_type AS "orderType",
+        a.customer_no AS "customerNo",
+        a.operator AS "operator",
+        a.org_id AS "orgId",
+        a.rec_ver AS "recVer",
+        a.base_org_id AS "baseOrgId"
+    </sql>
+
+    <sql id="tmSpareSoDetailColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.spare_so_no AS "spareSoNo",
+        a.line_no AS "lineNo",
+        a.fitting_code AS "fittingCode",
+        a.so_qty AS "soQty",
+        a.supplier_code AS "supplierCode",
+        a.price AS "price",
+        a.org_id AS "orgId",
+        a.rec_ver AS "recVer",
+        a.base_org_id AS "baseOrgId"
+    </sql>
+
+    <sql id="tmSpareSoScanInfoColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.spare_so_no AS "spareSoNo",
+        a.order_type AS "orderType",
+        a.line_no AS "lineNo",
+        a.fitting_code AS "fittingCode",
+        a.supplier_code AS "supplierCode",
+        a.price AS "price",
+        a.barcode AS "barcode",
+        a.operate_time AS "operateTime",
+        a.operator AS "operator",
+        a.org_id AS "orgId",
+        a.rec_ver AS "recVer",
+        a.base_org_id AS "baseOrgId"
+    </sql>
+
+    <delete id="removeDetailByNo">
+        DELETE FROM tm_spare_so_detail WHERE spare_so_no = #{spareSoNo} AND org_id = #{orgId}
+    </delete>
+
+    <select id="getEntity" resultType="com.yunyou.modules.tms.spare.entity.extend.TmSpareSoEntity">
+        SELECT
+            <include refid="tmSpareSoHeaderColumns"/>,
+            suc.name AS "createBy.name",
+            suu.name AS "updateBy.name",
+            so.name AS "orgName"
+        FROM tm_spare_so_header a
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+        LEFT JOIN sys_user suu ON a.update_by = suu.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="getDetailEntity" resultType="com.yunyou.modules.tms.spare.entity.extend.TmSpareSoDetailEntity">
+        SELECT
+            <include refid="tmSpareSoDetailColumns"/>,
+            tf.fitting_name AS "fittingName",
+            tf.fitting_model AS "fittingModel",
+            tto.transport_obj_name AS "supplierName",
+            suc.name AS "createBy.name",
+            suu.name AS "updateBy.name",
+            so.name AS "orgName"
+        FROM tm_spare_so_detail a
+        LEFT JOIN tm_fitting tf ON a.fitting_code = tf.fitting_code AND a.base_org_id = tf.org_id
+        LEFT JOIN tm_transport_obj tto ON a.supplier_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+        LEFT JOIN sys_user suu ON a.update_by = suu.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="getScanInfoEntity" resultType="com.yunyou.modules.tms.spare.entity.extend.TmSpareSoScanInfoEntity">
+        SELECT
+            <include refid="tmSpareSoScanInfoColumns"/>,
+            tf.fitting_name AS "fittingName",
+            tf.fitting_model AS "fittingModel",
+            tto.transport_obj_name AS "supplierName",
+            suc.name AS "createBy.name",
+            suu.name AS "updateBy.name",
+            so.name AS "orgName"
+        FROM tm_spare_so_scan_info a
+        LEFT JOIN tm_fitting tf ON a.fitting_code = tf.fitting_code AND a.base_org_id = tf.org_id
+        LEFT JOIN tm_transport_obj tto ON a.supplier_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+        LEFT JOIN sys_user suu ON a.update_by = suu.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findDetailList" resultType="com.yunyou.modules.tms.spare.entity.extend.TmSpareSoDetailEntity">
+        SELECT
+            <include refid="tmSpareSoDetailColumns"/>,
+            tf.fitting_name AS "fittingName",
+            tf.fitting_model AS "fittingModel",
+            tto.transport_obj_name AS "supplierName",
+            suc.name AS "createBy.name",
+            suu.name AS "updateBy.name",
+            so.name AS "orgName"
+        FROM tm_spare_so_detail a
+        LEFT JOIN tm_fitting tf ON a.fitting_code = tf.fitting_code AND a.base_org_id = tf.org_id
+        LEFT JOIN tm_transport_obj tto ON a.supplier_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+        LEFT JOIN sys_user suu ON a.update_by = suu.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="spareSoNo != null and spareSoNo != ''">
+                AND a.spare_so_no = #{spareSoNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="fittingCode != null and fittingCode != ''">
+                AND a.fitting_code = #{fittingCode}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code = #{supplierCode}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="baseOrgId != null and baseOrgId != ''">
+                AND a.base_org_id = #{baseOrgId}
+            </if>
+        </where>
+        ORDER BY a.spare_so_no, a.line_no
+    </select>
+
+    <select id="findScanInfoList" resultType="com.yunyou.modules.tms.spare.entity.extend.TmSpareSoScanInfoEntity" >
+        SELECT
+            <include refid="tmSpareSoScanInfoColumns"/>,
+            tf.fitting_name AS "fittingName",
+            tf.fitting_model AS "fittingModel",
+            tto.transport_obj_name AS "supplierName",
+            suc.name AS "createBy.name",
+            suu.name AS "updateBy.name",
+            so.name AS "orgName"
+        FROM tm_spare_so_scan_info a
+        LEFT JOIN tm_fitting tf ON a.fitting_code = tf.fitting_code AND a.base_org_id = tf.org_id
+        LEFT JOIN tm_transport_obj tto ON a.supplier_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+        LEFT JOIN sys_user suu ON a.update_by = suu.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="spareSoNo != null and spareSoNo != ''">
+                AND a.spare_so_no = #{spareSoNo}
+            </if>
+            <if test="orderType != null and orderType != ''">
+                AND a.order_type = #{orderType}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="fittingCode != null and fittingCode != ''">
+                AND a.fitting_code = #{fittingCode}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code = #{supplierCode}
+            </if>
+            <if test="barcode != null and barcode != ''">
+                AND a.barcode = #{barcode}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="baseOrgId != null and baseOrgId != ''">
+                AND a.base_org_id = #{baseOrgId}
+            </if>
+        </where>
+        ORDER BY a.spare_so_no, a.line_no, a.barcode
+    </select>
+
+    <select id="findSoPage" resultType="com.yunyou.modules.tms.spare.entity.extend.TmSpareSoEntity" >
+        SELECT
+            <include refid="tmSpareSoHeaderColumns"/>,
+            suc.name AS "createBy.name",
+            suu.name AS "updateBy.name",
+            so.name AS "orgName"
+        FROM tm_spare_so_header a
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+        LEFT JOIN sys_user suu ON a.update_by = suu.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="spareSoNo != null and spareSoNo != ''">
+                AND a.spare_so_no LIKE concat('%',#{spareSoNo},'%')
+            </if>
+            <if test="orderStatus != null and orderStatus != ''">
+                AND a.order_status = #{orderStatus}
+            </if>
+            <if test="orderType != null and orderType != ''">
+                AND a.order_type = #{orderType}
+            </if>
+            <if test="operator != null and operator != ''">
+                AND a.operator = #{operator}
+            </if>
+            <if test="customerNo != null and customerNo != ''">
+                AND a.customer_no LIKE concat('%',#{customerNo},'%')
+            </if>
+            <if test="orderTimeFm != null">
+                AND a.order_time &gt;= #{orderTimeFm}
+            </if>
+            <if test="orderTimeTo != null">
+                AND a.order_time &lt;= #{orderTimeTo}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findDetailPage" resultType="com.yunyou.modules.tms.spare.entity.extend.TmSpareSoDetailEntity" >
+        SELECT
+            <include refid="tmSpareSoDetailColumns"/>,
+            tf.fitting_name AS "fittingName",
+            tf.fitting_model AS "fittingModel",
+            tto.transport_obj_name AS "supplierName",
+            suc.name AS "createBy.name",
+            suu.name AS "updateBy.name",
+            so.name AS "orgName"
+        FROM tm_spare_so_detail a
+        LEFT JOIN tm_fitting tf ON a.fitting_code = tf.fitting_code AND a.base_org_id = tf.org_id
+        LEFT JOIN tm_transport_obj tto ON a.supplier_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+        LEFT JOIN sys_user suu ON a.update_by = suu.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="spareSoNo != null and spareSoNo != ''">
+                AND a.spare_so_no = #{spareSoNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="fittingCode != null and fittingCode != ''">
+                AND a.fitting_code = #{fittingCode}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code = #{supplierCode}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findScanInfoPage" resultType="com.yunyou.modules.tms.spare.entity.extend.TmSpareSoScanInfoEntity" >
+        SELECT
+            <include refid="tmSpareSoScanInfoColumns"/>,
+            tf.fitting_name AS "fittingName",
+            tf.fitting_model AS "fittingModel",
+            tto.transport_obj_name AS "supplierName",
+            suc.name AS "createBy.name",
+            suu.name AS "updateBy.name",
+            so.name AS "orgName"
+        FROM tm_spare_so_scan_info a
+        LEFT JOIN tm_fitting tf ON a.fitting_code = tf.fitting_code AND a.base_org_id = tf.org_id
+        LEFT JOIN tm_transport_obj tto ON a.supplier_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+        LEFT JOIN sys_user suu ON a.update_by = suu.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="spareSoNo != null and spareSoNo != ''">
+                AND a.spare_so_no = #{spareSoNo}
+            </if>
+            <if test="orderType != null and orderType != ''">
+                AND a.order_type = #{orderType}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="fittingCode != null and fittingCode != ''">
+                AND a.fitting_code = #{fittingCode}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code = #{supplierCode}
+            </if>
+            <if test="barcode != null and barcode != ''">
+                AND a.barcode LIKE concat('%',#{barcode},'%')
+            </if>
+            <if test="operateTimeFm != null">
+                AND a.operate_time &gt;= #{operateTimeFm}
+            </if>
+            <if test="operateTimeTo != null">
+                AND a.operate_time &lt;= #{operateTimeTo}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getByNo" resultType="com.yunyou.modules.tms.spare.entity.extend.TmSpareSoEntity">
+        SELECT
+        <include refid="tmSpareSoHeaderColumns"/>,
+        suc.name AS "createBy.name",
+        suu.name AS "updateBy.name",
+        so.name AS "orgName"
+        FROM tm_spare_so_header a
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+        LEFT JOIN sys_user suu ON a.update_by = suu.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        WHERE a.spare_so_no = #{spareSoNo} AND a.org_id = #{orgId}
+    </select>
+
+    <select id="getDetailByNoAndFitting" resultType="com.yunyou.modules.tms.spare.entity.extend.TmSpareSoDetailEntity">
+        SELECT
+        <include refid="tmSpareSoDetailColumns"/>,
+        tf.fitting_name AS "fittingName",
+        tf.fitting_model AS "fittingModel",
+        tto.transport_obj_name AS "supplierName",
+        suc.name AS "createBy.name",
+        suu.name AS "updateBy.name",
+        so.name AS "orgName"
+        FROM tm_spare_so_detail a
+        LEFT JOIN tm_fitting tf ON a.fitting_code = tf.fitting_code AND a.base_org_id = tf.org_id
+        LEFT JOIN tm_transport_obj tto ON a.supplier_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+        LEFT JOIN sys_user suu ON a.update_by = suu.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        WHERE a.spare_so_no = #{spareSoNo} AND a.fitting_code = #{fittingCode} AND a.org_id = #{orgId}
+    </select>
+</mapper>

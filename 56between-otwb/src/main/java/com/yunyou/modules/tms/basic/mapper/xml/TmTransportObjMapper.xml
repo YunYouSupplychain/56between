@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.basic.mapper.TmTransportObjMapper">
+    
+	<sql id="tmTransportObjColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_obj_code AS "transportObjCode",
+		a.transport_obj_name AS "transportObjName",
+		a.transport_obj_short_name AS "transportObjShortName",
+		a.contact AS "contact",
+		a.phone AS "phone",
+		a.tel AS "tel",
+		a.fax AS "fax",
+		a.email AS "email",
+		a.url AS "url",
+		a.area_id AS "areaId",
+		a.address AS "address",
+		a.un_code AS "unCode",
+		a.sign_by AS "signBy",
+		a.brand AS "brand",
+		a.transport_obj_type AS "transportObjType",
+		a.carrier_matched_org_id AS "carrierMatchedOrgId",
+		a.outlet_matched_org_id AS "outletMatchedOrgId",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+        a.classification AS "classification",
+        a.route_id AS "routeId",
+        a.repair_price AS "repairPrice",
+        a.settle_code AS "settleCode"
+	</sql>
+	
+	<sql id="tmTransportObjJoins">
+		
+	</sql>
+
+    <select id="get" resultType="TmTransportObj" >
+		SELECT 
+			<include refid="tmTransportObjColumns"/>
+		FROM tm_transport_obj a
+		<include refid="tmTransportObjJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmTransportObj" >
+		SELECT 
+			<include refid="tmTransportObjColumns"/>
+		FROM tm_transport_obj a
+		<include refid="tmTransportObjJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code = #{transportObjCode}
+			</if>
+			<if test="transportObjName != null and transportObjName != ''">
+				AND a.transport_obj_name = #{transportObjName}
+			</if>
+			<if test="transportObjType != null and transportObjType != ''">
+				AND a.transport_obj_type LIKE concat('%', #{transportObjType}, '%')
+			</if>
+			<if test="areaId != null and areaId != ''">
+				AND a.area_id = #{areaId}
+			</if>
+			<if test="carrierMatchedOrgId != null and carrierMatchedOrgId != ''">
+				AND a.carrier_matched_org_id = #{carrierMatchedOrgId}
+			</if>
+			<if test="outletMatchedOrgId != null and outletMatchedOrgId != ''">
+				AND a.outlet_matched_org_id = #{outletMatchedOrgId}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="routeId != null and routeId != ''">
+				AND a.route_id = #{routeId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmTransportObj" >
+		SELECT 
+			<include refid="tmTransportObjColumns"/>
+		FROM tm_transport_obj a
+		<include refid="tmTransportObjJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_transport_obj(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			transport_obj_code,
+			transport_obj_name,
+			transport_obj_short_name,
+			contact,
+			phone,
+			tel,
+			fax,
+			email,
+			url,
+			area_id,
+			address,
+			un_code,
+			sign_by,
+			brand,
+			transport_obj_type,
+			carrier_matched_org_id,
+			outlet_matched_org_id,
+			org_id,
+		    rec_ver,
+            classification,
+            route_id,
+            repair_price,
+			settle_code
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{transportObjCode},
+			#{transportObjName},
+			#{transportObjShortName},
+			#{contact},
+			#{phone},
+			#{tel},
+			#{fax},
+			#{email},
+			#{url},
+			#{areaId},
+			#{address},
+			#{unCode},
+			#{signBy},
+			#{brand},
+			#{transportObjType},
+			#{carrierMatchedOrgId},
+			#{outletMatchedOrgId},
+			#{orgId},
+			#{recVer},
+            #{classification},
+            #{routeId},
+            #{repairPrice},
+			#{settleCode}
+		)
+	</insert>
+    <insert id="batchInsert">
+		INSERT INTO tm_transport_obj
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			transport_obj_code,
+			transport_obj_name,
+			transport_obj_short_name,
+			contact,
+			phone,
+			tel,
+			fax,
+			email,
+			url,
+			area_id,
+			address,
+			un_code,
+			sign_by,
+			brand,
+			transport_obj_type,
+			carrier_matched_org_id,
+			outlet_matched_org_id,
+			org_id,
+			rec_ver,
+			classification,
+			route_id,
+			repair_price,
+			settle_code
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.transportObjCode},
+			#{item.transportObjName},
+			#{item.transportObjShortName},
+			#{item.contact},
+			#{item.phone},
+			#{item.tel},
+			#{item.fax},
+			#{item.email},
+			#{item.url},
+			#{item.areaId},
+			#{item.address},
+			#{item.unCode},
+			#{item.signBy},
+			#{item.brand},
+			#{item.transportObjType},
+			#{item.carrierMatchedOrgId},
+			#{item.outletMatchedOrgId},
+			#{item.orgId},
+			#{item.recVer},
+			#{item.classification},
+			#{item.routeId},
+			#{item.repairPrice},
+			#{item.settleCode}
+		)
+		</foreach>
+	</insert>
+
+    <update id="update">
+		UPDATE tm_transport_obj
+		SET update_by                = #{updateBy.id},
+			update_date              = #{updateDate},
+			del_flag                 = #{delFlag},
+			remarks                  = #{remarks},
+			transport_obj_code       = #{transportObjCode},
+			transport_obj_name       = #{transportObjName},
+			transport_obj_short_name = #{transportObjShortName},
+			contact                  = #{contact},
+			phone                    = #{phone},
+			tel                      = #{tel},
+			fax                      = #{fax},
+			email                    = #{email},
+			url                      = #{url},
+			area_id                  = #{areaId},
+			address                  = #{address},
+			un_code                  = #{unCode},
+			sign_by                  = #{signBy},
+			brand                    = #{brand},
+			transport_obj_type       = #{transportObjType},
+			carrier_matched_org_id   = #{carrierMatchedOrgId},
+			outlet_matched_org_id    = #{outletMatchedOrgId},
+			org_id                   = #{orgId},
+			classification           = #{classification},
+			route_id                 = #{routeId},
+			repair_price             = #{repairPrice},
+			settle_code              = #{settleCode},
+			rec_ver                  = rec_ver + 1
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_transport_obj SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_transport_obj WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM tm_transport_obj WHERE transport_obj_code = #{transportObjCode} AND org_id = #{orgId}
+	</delete>
+
+	<select id="getEntity" resultType="com.yunyou.modules.tms.basic.entity.extend.TmTransportObjEntity" >
+		SELECT
+		soc.name AS "carrierMatchedOrg",
+		son.name AS "outletMatchedOrg",
+		tts.transport_obj_name AS "settleName",
+		<include refid="tmTransportObjColumns"/>
+		FROM tm_transport_obj a
+		LEFT JOIN tm_transport_obj tts ON a.settle_code = tts.transport_obj_code AND a.org_id = tts.org_id
+		LEFT JOIN sys_office soc ON a.carrier_matched_org_id = soc.id
+		LEFT JOIN sys_office son ON a.outlet_matched_org_id = son.id
+		<where>
+			<choose>
+				<when test="transportObjCode != null and transportObjCode != '' and orgId != null and orgId != ''">
+					a.transport_obj_code = #{transportObjCode} AND a.org_id = #{orgId}
+				</when>
+				<otherwise>
+					a.id = #{id}
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.basic.entity.extend.TmTransportObjEntity" >
+		SELECT
+			soc.name AS "carrierMatchedOrg",
+			son.name AS "outletMatchedOrg",
+			so.name AS "orgName",
+			tts.transport_obj_name AS "settleName",
+			<include refid="tmTransportObjColumns"/>
+		FROM tm_transport_obj a
+		LEFT JOIN tm_transport_obj tts ON a.settle_code = tts.transport_obj_code AND a.org_id = tts.org_id
+		LEFT JOIN sys_office soc ON a.carrier_matched_org_id = soc.id
+		LEFT JOIN sys_office son ON a.outlet_matched_org_id = son.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+		<where>
+			1 = 1
+			${dataScope}
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code LIKE concat('%', #{transportObjCode}, '%')
+			</if>
+			<if test="transportObjName != null and transportObjName != ''">
+				AND a.transport_obj_name LIKE concat('%', #{transportObjName}, '%')
+			</if>
+			<if test="transportObjType != null and transportObjType != ''">
+				AND a.transport_obj_type LIKE concat('%', #{transportObjType}, '%')
+			</if>
+			<if test="carrierMatchedOrgId != null and carrierMatchedOrgId != ''">
+				AND a.carrier_matched_org_id = #{carrierMatchedOrgId}
+			</if>
+			<if test="outletMatchedOrgId != null and outletMatchedOrgId != ''">
+				AND a.outlet_matched_org_id = #{outletMatchedOrgId}
+			</if>
+            <if test="classification != null and classification != ''">
+                AND a.classification = #{classification}
+            </if>
+			<if test="settleCode != null and settleCode != ''">
+				AND a.settle_code = #{settleCode}
+			</if>
+            <if test="routeId != null and routeId != ''">
+                AND a.route_id = #{routeId}
+            </if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.tms.basic.entity.extend.TmTransportObjEntity" >
+		SELECT
+		<include refid="tmTransportObjColumns"/>
+		FROM tm_transport_obj a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code LIKE concat('%', #{transportObjCode}, '%')
+			</if>
+			<if test="transportObjName != null and transportObjName != ''">
+				AND a.transport_obj_name LIKE concat('%', #{transportObjName}, '%')
+			</if>
+			<if test="transportObjType != null and transportObjType != ''">
+				AND a.transport_obj_type LIKE concat('%', #{transportObjType}, '%')
+			</if>
+			<if test="carrierMatchedOrgId != null and carrierMatchedOrgId != ''">
+				AND a.carrier_matched_org_id = #{carrierMatchedOrgId}
+			</if>
+			<if test="outletMatchedOrgId != null and outletMatchedOrgId != ''">
+				AND a.outlet_matched_org_id = #{outletMatchedOrgId}
+			</if>
+            <if test="classification != null and classification != ''">
+                AND a.classification = #{classification}
+            </if>
+            <if test="routeId != null and routeId != ''">
+                AND a.route_id = #{routeId}
+            </if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.transport_obj_code LIKE concat('%', #{codeAndName}, '%')
+					OR a.transport_obj_name LIKE concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="findSettleGrid" resultType="com.yunyou.modules.tms.basic.entity.extend.TmTransportObjEntity">
+        SELECT
+        <include refid="tmTransportObjColumns"/>
+        FROM tm_transport_obj a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            AND a.transport_obj_type LIKE '%SETTLEMENT%'
+            <if test="transportObjCode != null and transportObjCode != ''">
+                AND a.transport_obj_code LIKE concat('%', #{transportObjCode}, '%')
+            </if>
+            <if test="transportObjName != null and transportObjName != ''">
+                AND a.transport_obj_name LIKE concat('%', #{transportObjName}, '%')
+            </if>
+            <if test="transportObjType != null and transportObjType != ''">
+                AND a.transport_obj_type LIKE concat('%', #{transportObjType}, '%')
+            </if>
+            <if test="carrierMatchedOrgId != null and carrierMatchedOrgId != ''">
+                AND a.carrier_matched_org_id = #{carrierMatchedOrgId}
+            </if>
+            <if test="outletMatchedOrgId != null and outletMatchedOrgId != ''">
+                AND a.outlet_matched_org_id = #{outletMatchedOrgId}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="codeAndName != null and codeAndName != ''">
+                AND (a.transport_obj_code LIKE concat('%', #{codeAndName}, '%')
+                OR a.transport_obj_name LIKE concat('%', #{codeAndName}, '%'))
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findOutletGrid" resultType="com.yunyou.modules.tms.basic.entity.extend.TmTransportObjEntity">
+		SELECT <include refid="tmTransportObjColumns"/>
+		FROM tm_transport_obj a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND a.transport_obj_type LIKE '%OUTLET%'
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code LIKE concat('%', #{transportObjCode}, '%')
+			</if>
+			<if test="transportObjName != null and transportObjName != ''">
+				AND a.transport_obj_name LIKE concat('%', #{transportObjName}, '%')
+			</if>
+			<if test="carrierMatchedOrgId != null and carrierMatchedOrgId != ''">
+				AND a.carrier_matched_org_id = #{carrierMatchedOrgId}
+			</if>
+			<if test="outletMatchedOrgId != null and outletMatchedOrgId != ''">
+				AND a.outlet_matched_org_id = #{outletMatchedOrgId}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="isCarrierServiceScope != null and isCarrierServiceScope == 'Y'.toString()">
+				AND exists(
+					select 1
+					from tm_transport_obj_scope ttos
+					  inner join tm_transport_scope tts on ttos.transport_scope_code = tts.code and ttos.org_id = tts.org_id
+					  inner join tm_transport_scope_area ttsa on tts.id = ttsa.head_id
+					where a.org_id = ttos.org_id
+					  and a.area_id = ttsa.area_id
+					  and ttos.transport_scope_type = '2'
+					<if test="carrierCode != null and carrierCode != ''">
+					  and ttos.transport_obj_code = #{carrierCode}
+					</if>
+				)
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.transport_obj_code LIKE concat('%', #{codeAndName}, '%')
+				OR a.transport_obj_name LIKE concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.qc.mapper.BanQinWmQcHeaderMapper">
+    
+	<sql id="banQinWmQcHeaderColumns">
+		a.id AS "id",
+		a.qc_no AS "qcNo",
+		a.qc_phase AS "qcPhase",
+		a.status AS "status",
+		a.audit_status AS "auditStatus",
+		a.owner_code AS "ownerCode",
+		a.priority AS "priority",
+		a.order_type AS "orderType",
+		a.order_no AS "orderNo",
+		a.order_time AS "orderTime",
+		a.fm_etq AS "fmEtq",
+		a.to_etq AS "toEtq",
+		a.audit_op AS "auditOp",
+		a.audit_time AS "auditTime",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmQcHeaderJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+
+	<select id="get" resultType="BanQinWmQcHeader" >
+		SELECT 
+			<include refid="banQinWmQcHeaderColumns"/>
+		FROM wm_qc_header a
+		<include refid="banQinWmQcHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntity" resultType="BanQinWmQcEntity" >
+		SELECT
+			<include refid="banQinWmQcHeaderColumns"/>,
+			ebcu.ebcu_name_cn AS ownerName
+		FROM wm_qc_header a
+		LEFT JOIN eb_customer ebcu ON a.owner_code = ebcu.ebcu_customer_no AND a.org_id = ebcu.org_id AND ebcu.ebcu_type LIKE '%OWNER,%'
+		<include refid="banQinWmQcHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmQcHeader" >
+		SELECT 
+			<include refid="banQinWmQcHeaderColumns"/>
+		FROM wm_qc_header a
+		<include refid="banQinWmQcHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="qcNo != null and qcNo != ''">
+				AND a.qc_no = #{qcNo}
+			</if>
+			<if test="qcPhase != null and qcPhase != ''">
+				AND a.qc_phase = #{qcPhase}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmQcEntity" >
+		SELECT
+			<include refid="banQinWmQcHeaderColumns"/>,
+			ebcu.ebcu_name_cn AS ownerName,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName
+		FROM wm_qc_header a
+		LEFT JOIN eb_customer ebcu ON a.owner_code = ebcu.ebcu_customer_no AND a.org_id = ebcu.org_id AND ebcu.ebcu_type LIKE '%OWNER,%'
+		<include refid="banQinWmQcHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND a.org_id = #{orgId}
+			<if test="qcNo != null and qcNo != ''">
+				AND a.qc_no = #{qcNo}
+			</if>
+			<if test="qcPhase != null and qcPhase != ''">
+				AND a.qc_phase = #{qcPhase}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="BanQinWmQcHeader" >
+		SELECT 
+			<include refid="banQinWmQcHeaderColumns"/>
+		FROM wm_qc_header a
+		<include refid="banQinWmQcHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_qc_header(
+			id,
+			qc_no,
+			qc_phase,
+			status,
+			audit_status,
+			owner_code,
+			priority,
+			order_type,
+			order_no,
+			order_time,
+			fm_etq,
+			to_etq,
+			audit_op,
+			audit_time,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{qcNo},
+			#{qcPhase},
+			#{status},
+			#{auditStatus},
+			#{ownerCode},
+			#{priority},
+			#{orderType},
+			#{orderNo},
+			#{orderTime},
+			#{fmEtq},
+			#{toEtq},
+			#{auditOp},
+			#{auditTime},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_qc_header SET 	
+			qc_no = #{qcNo},
+			qc_phase = #{qcPhase},
+			status = #{status},
+			audit_status = #{auditStatus},
+			owner_code = #{ownerCode},
+			priority = #{priority},
+			order_type = #{orderType},
+			order_no = #{orderNo},
+			order_time = #{orderTime},
+			fm_etq = #{fmEtq},
+			to_etq = #{toEtq},
+			audit_op = #{auditOp},
+			audit_time = #{auditTime},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_qc_header
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_qc_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateStatus">
+        UPDATE wm_qc_header wqh
+        SET wqh.status = (
+            SELECT CASE
+               WHEN MIN(wqd.status) = '20' THEN '20'
+               WHEN MIN(wqd.status) = '10' THEN '10'
+               WHEN (MAX(wqd.status) = '10' OR MAX(wqd.status) = '20') AND MIN(wqd.status) = '00' THEN '10'
+               ELSE '00' END status
+            FROM wm_qc_detail wqd
+            WHERE 1 = 1
+			AND wqd.status NOT IN ('99', '90')
+			AND wqd.qc_no = #{qcNo}
+			AND wqd.org_id = #{orgId}
+          )
+        WHERE wqh.qc_no = #{qcNo} AND wqh.org_id = #{orgId}
+	</update>
+	
+	<select id="checkQcStatusQuery" resultType="java.lang.String">
+		SELECT wqh.id
+		 FROM wm_qc_header wqh
+		WHERE 1 = 1
+		  AND wqh.id IN
+		  <foreach collection="qcIds" item="qcId" index="qcId" open="(" separator="," close=")">
+		      #{qcId}
+		  </foreach>
+		  AND wqh.status IN 
+		  <foreach collection="status" item="status" index="status" open="(" separator="," close=")">
+			  #{status}
+		  </foreach>
+		  AND wqh.audit_status IN 
+		  <foreach collection="auditStatus" item="auditStatus" index="auditStatus" open="(" separator="," close=")">
+			  #{auditStatus}
+		  </foreach>
+		  <if test="isQcSuggest != null and isQcSuggest != '' and isQcSuggest == 'N'.toString()">
+			AND (
+				NOT EXISTS (SELECT 1 FROM wm_qc_sku wqs WHERE wqs.qc_no = wqh.qc_no AND wqs.org_id = wqh.org_id)
+				OR EXISTS (SELECT 1 FROM wm_qc_sku wqs WHERE wqs.qc_no = wqh.qc_no AND wqs.org_id = wqh.org_id AND (wqs.pct_qua IS NULL OR wqs.pct_qua = ''))
+			)
+		</if>
+		<if test="isQcSuggest != null and isQcSuggest != '' and isQcSuggest == 'Y'.toString()">
+			AND (
+				NOT EXISTS (SELECT 1 from wm_qc_sku wqs where wqs.qc_no = wqh.qc_no and wqs.org_id = wqh.org_id)
+				OR EXISTS (SELECT 1 FROM wm_qc_sku wqs WHERE wqs.qc_no = wqh.qc_no AND wqs.org_id = wqh.org_id AND wqs.pct_qua IS NOT NULL AND wqs.pct_qua != '')
+			)
+		</if>
+	</select>
+	
+	<select id="getByIds" resultType="BanQinWmQcHeader">
+		SELECT
+			<include refid="banQinWmQcHeaderColumns"/>
+		FROM wm_qc_header a
+		<include refid="banQinWmQcHeaderJoins"/>
+		<where>
+			a.id IN
+			<foreach collection="qcIds" item="qcId" index="qcId" open="(" separator="," close=")">
+				#{qcId}
+			</foreach>
+		</where>
+	</select>
+</mapper>

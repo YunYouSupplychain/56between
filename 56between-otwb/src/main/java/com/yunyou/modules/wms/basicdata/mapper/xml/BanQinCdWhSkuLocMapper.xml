@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdWhSkuLocMapper">
+    
+	<sql id="banQinCdWhSkuLocColumns">
+		a.id AS "id",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.loc_code AS "locCode",
+		a.sku_loc_type AS "skuLocType",
+		a.min_rp AS "minRp",
+		a.rp_uom AS "rpUom",
+		a.max_limit AS "maxLimit",
+		a.min_limit AS "minLimit",
+		a.is_over_alloc AS "isOverAlloc",
+		a.is_auto_rp AS "isAutoRp",
+		a.is_rp_alloc AS "isRpAlloc",
+		a.is_over_rp AS "isOverRp",
+		a.is_fm_rs AS "isFmRs",
+		a.is_fm_cs AS "isFmCs",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinCdWhSkuLocJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinCdWhSkuLoc" >
+		SELECT 
+			<include refid="banQinCdWhSkuLocColumns"/>
+		FROM cd_wh_sku_loc a
+		<include refid="banQinCdWhSkuLocJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinCdWhSkuLoc" >
+		SELECT 
+			<include refid="banQinCdWhSkuLocColumns"/>
+		FROM cd_wh_sku_loc a
+		<include refid="banQinCdWhSkuLocJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="skuLocType != null and skuLocType != ''">
+                AND a.sku_loc_type = #{skuLocType}
+            </if>
+            <if test="locCode != null and locCode != ''">
+                AND a.loc_code = #{locCode}
+            </if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinCdWhSkuLocEntity" >
+		SELECT
+			<include refid="banQinCdWhSkuLocColumns"/>,
+			cwpr.cdpr_desc AS cdprDesc
+		FROM cd_wh_sku_loc a
+		LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sku_code = cws.sku_code AND a.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cwp ON cws.pack_code = cwp.cdpa_code AND cws.org_id = cwp.org_id
+		LEFT JOIN cd_wh_package_relation cwpr ON cwp.pm_code = cwpr.cdpr_cdpa_pm_code AND cwp.org_id = cwpr.org_id AND a.rp_uom = cwpr.cdpr_unit_level
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="skuLocType != null and skuLocType != ''">
+				AND a.sku_loc_type = #{skuLocType}
+			</if>
+			<if test="locCode != null and locCode != ''">
+				AND a.loc_code = #{locCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinCdWhSkuLoc" >
+		SELECT 
+			<include refid="banQinCdWhSkuLocColumns"/>
+		FROM cd_wh_sku_loc a
+		<include refid="banQinCdWhSkuLocJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_wh_sku_loc(
+			id,
+			owner_code,
+			sku_code,
+			loc_code,
+			sku_loc_type,
+			min_rp,
+			rp_uom,
+			max_limit,
+			min_limit,
+			is_over_alloc,
+			is_auto_rp,
+			is_rp_alloc,
+			is_over_rp,
+			is_fm_rs,
+			is_fm_cs,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			header_id
+		) VALUES (
+			#{id},
+			#{ownerCode},
+			#{skuCode},
+			#{locCode},
+			#{skuLocType},
+			#{minRp},
+			#{rpUom},
+			#{maxLimit},
+			#{minLimit},
+			#{isOverAlloc},
+			#{isAutoRp},
+			#{isRpAlloc},
+			#{isOverRp},
+			#{isFmRs},
+			#{isFmCs},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headerId}
+		)
+	</insert>
+    <insert id="batchInsert">
+		INSERT INTO cd_wh_sku_loc
+		(
+			id,
+			owner_code,
+			sku_code,
+			loc_code,
+			sku_loc_type,
+			min_rp,
+			rp_uom,
+			max_limit,
+			min_limit,
+			is_over_alloc,
+			is_auto_rp,
+			is_rp_alloc,
+			is_over_rp,
+			is_fm_rs,
+			is_fm_cs,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			header_id
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.ownerCode},
+			#{item.skuCode},
+			#{item.locCode},
+			#{item.skuLocType},
+			#{item.minRp},
+			#{item.rpUom},
+			#{item.maxLimit},
+			#{item.minLimit},
+			#{item.isOverAlloc},
+			#{item.isAutoRp},
+			#{item.isRpAlloc},
+			#{item.isOverRp},
+			#{item.isFmRs},
+			#{item.isFmCs},
+			#{item.recVer},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.delFlag},
+			#{item.orgId},
+			#{item.headerId}
+		)
+		</foreach>
+	</insert>
+
+    <update id="update">
+		UPDATE cd_wh_sku_loc SET 	
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			loc_code = #{locCode},
+			sku_loc_type = #{skuLocType},
+			min_rp = #{minRp},
+			rp_uom = #{rpUom},
+			max_limit = #{maxLimit},
+			min_limit = #{minLimit},
+			is_over_alloc = #{isOverAlloc},
+			is_auto_rp = #{isAutoRp},
+			is_rp_alloc = #{isRpAlloc},
+			is_over_rp = #{isOverRp},
+			is_fm_rs = #{isFmRs},
+			is_fm_cs = #{isFmCs},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_wh_sku_loc SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM cd_wh_sku_loc
+		WHERE id = #{id}
+	</delete>
+
+    <delete id="deleteByHeaderId">
+        DELETE FROM cd_wh_sku_loc WHERE header_id = #{headerId}
+    </delete>
+
+	<delete id="remove">
+		DELETE cwsl
+		FROM cd_wh_sku_loc cwsl
+			INNER JOIN cd_wh_sku cws ON cws.id = cwsl.header_id
+		WHERE cws.owner_code = #{ownerCode}
+		  AND cws.sku_code = #{skuCode}
+		  AND cws.org_id = #{orgId}
+	</delete>
+
+	<select id="getRpSkuQuery" resultType="BanQinCdWhSkuLocEntity">
+		SELECT cwsl.owner_code AS ownerCode,
+			cwsl.sku_code AS skuCode,
+			cwsl.loc_code AS locCode,
+			cwsl.sku_loc_type AS skuLocType,
+			cwsl.min_rp AS minRp,
+			IFNULL(cwsl.rp_uom, 'EA') AS rpUom,
+			cwsl.max_limit AS maxLimit,
+			cwsl.min_limit AS minLimit,
+			cwsl.is_over_rp AS isOverRp,
+			cwsl.is_fm_rs AS isFmRs,
+			cwsl.is_fm_cs AS isFmCs,
+			cwl.pa_seq AS paSeq,
+			cws.pack_code AS packCode,
+			cws.rotation_rule AS rotationRule,
+			crrh.rotation_type AS rotationType,
+			IFNULL(loc.qtyAvail, 0) as qtyAvail,
+			IFNULL(loc.qty, 0) AS qty,
+			IFNULL(loc.qty_pa_in, 0) AS qtyPaIn,
+			IFNULL(loc.qty_mv_in, 0) AS qtyMvIn,
+			IFNULL(loc.qty_rp_in, 0) AS qtyRpIn,
+			cwsl.org_id AS orgId
+		FROM cd_wh_sku_loc cwsl
+		LEFT JOIN cd_wh_sku cws ON cws.owner_code = cwsl.owner_code AND cws.sku_code = cwsl.sku_code AND cws.org_id = cwsl.org_id
+		LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = cwsl.loc_code AND cwl.org_id = cwsl.org_id
+		LEFT JOIN cd_rule_rotation_header crrh ON crrh.rule_code = cws.rotation_rule AND crrh.org_id = cws.org_id
+		LEFT JOIN (
+			SELECT sum(will.qty + will.qty_rp_in + will.qty_mv_in + will.qty_pa_in) AS qtyAvail,
+				sum(will.qty) AS qty,
+				sum(will.qty_pa_in) AS qty_pa_in,
+				sum(will.qty_mv_in) AS qty_mv_in,
+				sum(will.qty_rp_in) as qty_rp_in,
+				will.owner_code,
+				will.sku_code,
+				will.loc_code,
+				will.org_id
+			FROM wm_inv_lot_loc will
+			WHERE 1 = 1
+				<if test="ownerCode != null and ownerCode != ''">
+					AND will.owner_code = #{ownerCode}
+				</if>
+				<if test="skuCode != null and skuCode != ''">
+					AND will.sku_code = #{skuCode}
+				</if>
+			GROUP BY will.owner_code, will.sku_code, will.loc_code, will.org_id) loc
+			ON loc.owner_code = cwsl.owner_code AND loc.sku_code = cwsl.sku_code AND loc.loc_code = cwsl.loc_code AND loc.org_id = cwsl.org_id
+		WHERE 1 = 1
+	    AND cwsl.IS_RP_ALLOC = 'N'
+	    AND cwsl.org_id = #{orgId}
+	    AND IFNULL(loc.qtyavail, 0) <![CDATA[<=]]> cwsl.min_limit
+		<if test="ownerCode != null and ownerCode != ''">
+			AND cwsl.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND cwsl.sku_code = #{skuCode}
+		</if>
+		UNION ALL
+		select cwsl.owner_code AS ownerCode,
+			cwsl.sku_code AS skuCode,
+			cwsl.loc_code AS locCode,
+			cwsl.sku_loc_type AS skuLocType,
+			cwsl.min_rp AS min_rp,
+			IFNULL(cwsl.rp_uom, 'EA') AS rpUom,
+			cwsl.max_limit AS maxLimit,
+			cwsl.min_limit AS minLimit,
+			cwsl.is_over_rp AS isOverRp,
+			cwsl.is_fm_rs AS isFmRs,
+			cwsl.is_fm_cs AS isFmCs,
+			cwl.pa_seq AS paSeq,
+			cws.pack_code AS packCode,
+			cws.rotation_rule AS rotationRule,
+			crrh.rotation_type AS rotationType,
+			IFNULL(loc.qtyAvail, 0) AS qtyAvail,
+			IFNULL(loc.qty, 0) AS qty,
+			IFNULL(loc.qty_pa_in, 0) AS qtyPaIn,
+			IFNULL(loc.qty_mv_in, 0) as qtyMvIn,
+			IFNULL(loc.qty_rp_in, 0) as qtyRpIn,
+			cwsl.org_id AS orgId
+		FROM cd_wh_sku_loc cwsl
+		LEFT JOIN cd_wh_sku cws ON cws.owner_code = cwsl.owner_code AND cws.sku_code = cwsl.sku_code AND cws.org_id = cwsl.org_id
+		LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = cwsl.loc_code AND cwl.org_id = cwsl.org_id
+		LEFT JOIN cd_rule_rotation_header crrh ON crrh.rule_code = cws.rotation_rule AND crrh.org_id = cws.org_id
+		LEFT JOIN (
+			SELECT sum(will.qty - will.qty_alloc - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out - will.qty_pk + will.qty_rp_in + will.qty_mv_in + will.qty_pa_in) AS qtyAvail,
+				sum(will.qty) AS qty,
+				sum(will.qty_pa_in) as qty_pa_in,
+				sum(will.qty_mv_in) as qty_mv_in,
+				sum(will.qty_rp_in) as qty_rp_in,
+				will.owner_code,
+				will.sku_code,
+				will.loc_code,
+				will.org_id
+			FROM wm_inv_lot_loc will
+			WHERE 1 = 1
+			<if test="ownerCode != null and ownerCode != ''">
+				AND will.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND will.sku_code = #{skuCode}
+			</if>
+			GROUP BY will.owner_code, will.sku_code, will.loc_code, will.org_id) loc
+		 ON loc.owner_code = cwsl.owner_code AND loc.sku_code = cwsl.sku_code AND loc.loc_code = cwsl.loc_code AND loc.org_id = cwsl.org_id
+		WHERE 1 = 1
+		AND cwsl.IS_RP_ALLOC = 'Y'
+		AND IFNULL(loc.qtyAvail, 0) <![CDATA[<=]]> cwsl.min_limit
+		AND cwsl.org_id = #{orgId}
+		<if test="ownerCode != null and ownerCode != ''">
+			AND cwsl.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND cwsl.sku_code = #{skuCode}
+		</if>
+	</select>
+	
+</mapper>

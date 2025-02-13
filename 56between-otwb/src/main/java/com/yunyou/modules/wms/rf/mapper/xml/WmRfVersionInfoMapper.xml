@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.rf.mapper.WmRfVersionInfoMapper">
+    
+	<sql id="wmRfVersionInfoColumns">
+		a.id AS "id",
+		a.version_name AS "versionName",
+		a.version_info AS "versionInfo",
+		a.download_address AS "downloadAddress",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="banQinWmRfVersionJoins">
+		
+	</sql>
+    
+	<select id="get" resultType="WmRfVersionInfo" >
+		SELECT 
+			<include refid="wmRfVersionInfoColumns"/>
+		FROM wm_rf_version_info a
+		<include refid="banQinWmRfVersionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WmRfVersionInfo" >
+		SELECT 
+			<include refid="wmRfVersionInfoColumns"/>
+		FROM wm_rf_version_info a
+		<include refid="banQinWmRfVersionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="versionName != null and versionName != ''">
+				AND a.version_name = #{versionName}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="WmRfVersionInfo" >
+		SELECT 
+			<include refid="wmRfVersionInfoColumns"/>
+		FROM wm_rf_version_info a
+		<include refid="banQinWmRfVersionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_rf_version_info(
+			id,
+			version_name,
+			version_info,
+			download_address,
+			def1,
+			def2,
+			def3,
+			remarks,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{versionName},
+			#{versionInfo},
+			#{downloadAddress},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{remarks},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_rf_version_info SET
+			version_name = #{versionName},
+			version_info = #{versionInfo},
+			download_address = #{downloadAddress},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM wm_rf_version_info WHERE id = #{id}
+	</delete>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_rf_version_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="WmRfVersionInfo" statementType="STATEMENT">
+		SELECT * FROM wm_rf_version_info WHERE ${propertyName} = '${value}'
+	</select>
+	
+	<select id="getLastVersionInfo" resultType="WmRfVersionInfo">
+		SELECT
+			<include refid="wmRfVersionInfoColumns"/>
+		FROM wm_rf_version_info a
+		<include refid="banQinWmRfVersionJoins"/>
+		ORDER BY a.update_date DESC
+		LIMIT 1
+	</select>
+
+	<select id="getLastByAppId" resultType="WmRfVersionInfo">
+		SELECT
+			<include refid="wmRfVersionInfoColumns"/>
+		FROM wm_rf_version_info a
+		<include refid="banQinWmRfVersionJoins"/>
+		WHERE def1 = #{appId}
+		ORDER BY a.update_date DESC
+		LIMIT 1
+	</select>
+
+</mapper>

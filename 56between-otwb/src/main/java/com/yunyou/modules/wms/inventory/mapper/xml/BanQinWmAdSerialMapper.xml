@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmAdSerialMapper">
+    
+	<sql id="banQinWmAdSerialColumns">
+		a.id AS "id",
+		a.ad_no AS "adNo",
+		a.sku_code AS "skuCode",
+		a.serial_no AS "serialNo",
+		a.ad_mode AS "adMode",
+		a.owner_code AS "ownerCode",
+		a.lot_num AS "lotNum",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinWmAdSerialJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmAdSerial" >
+		SELECT 
+			<include refid="banQinWmAdSerialColumns"/>
+		FROM wm_ad_serial a
+		<include refid="banQinWmAdSerialJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmAdSerial" >
+		SELECT 
+			<include refid="banQinWmAdSerialColumns"/>
+		FROM wm_ad_serial a
+		<include refid="banQinWmAdSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="adNo != null and adNo != ''">
+				AND a.ad_no = #{adNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmAdSerialEntity" >
+		SELECT
+			<include refid="banQinWmAdSerialColumns"/>,
+		    ec.ebcu_name_cn AS ownerName,
+		    cws.sku_name AS skuName
+		FROM wm_ad_serial a
+		LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id AND ec.ebcu_type like '%OWNER,%'
+		LEFT JOIN cd_wh_sku cws ON cws.owner_code = a.owner_code AND cws.sku_code = a.sku_code AND cws.org_id = a.org_id
+		<include refid="banQinWmAdSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND a.org_id = #{orgId}
+			<if test="adNo != null and adNo != ''">
+				AND a.ad_no = #{adNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="wmAdAbsSerialQuery" resultType="java.lang.Double" >
+        SELECT IFNULL(SUM( CASE was.ad_mode  WHEN 'A' THEN 1 WHEN 'R' THEN -1 END), 0) AS absQty
+        FROM wm_ad_serial was
+        WHERE 1=1
+        AND was.ad_no = #{adNo}
+        AND was.owner_code = #{ownerCode}
+        AND was.sku_code = #{skuCode}
+        AND was.lot_num = #{lotNum}
+        AND was.org_id = #{orgId}
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmAdSerial" >
+		SELECT 
+			<include refid="banQinWmAdSerialColumns"/>
+		FROM wm_ad_serial a
+		<include refid="banQinWmAdSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_ad_serial(
+			id,
+			ad_no,
+			sku_code,
+			serial_no,
+			ad_mode,
+			owner_code,
+			lot_num,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			header_id
+		) VALUES (
+			#{id},
+			#{adNo},
+			#{skuCode},
+			#{serialNo},
+			#{adMode},
+			#{ownerCode},
+			#{lotNum},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_ad_serial SET 	
+			ad_no = #{adNo},
+			sku_code = #{skuCode},
+			serial_no = #{serialNo},
+			ad_mode = #{adMode},
+			owner_code = #{ownerCode},
+			lot_num = #{lotNum},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			header_id = #{headerId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_ad_serial
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_ad_serial SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

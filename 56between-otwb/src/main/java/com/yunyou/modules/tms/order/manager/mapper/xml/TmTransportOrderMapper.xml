@@ -1,0 +1,786 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.manager.mapper.TmTransportOrderMapper">
+
+    <sql id="tmTransportOrderHeaderColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_no AS "transportNo",
+		a.order_time AS "orderTime",
+		a.order_type AS "orderType",
+		a.order_status AS "orderStatus",
+		a.customer_no AS "customerNo",
+		a.tracking_no AS "trackingNo",
+		a.principal_code AS "principalCode",
+		a.customer_code AS "customerCode",
+		a.brand AS "brand",
+		a.receive_outlet_code AS "receiveOutletCode",
+		a.transport_method AS "transportMethod",
+		a.delivery_method AS "deliveryMethod",
+		a.outlet_code AS "outletCode",
+		a.ship_code AS "shipCode",
+		a.ship_city_id AS "shipCityId",
+		a.ship_city_name AS "shipCityName",
+		a.shipper AS "shipper",
+		a.shipper_tel AS "shipperTel",
+		a.ship_address AS "shipAddress",
+		a.consignee_code AS "consigneeCode",
+		a.consignee_city_id AS "consigneeCityId",
+		a.consignee_city_name AS "consigneeCityName",
+		a.consignee AS "consignee",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_address AS "consigneeAddress",
+		a.designated_sign_by AS "designatedSignBy",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+        a.dispatch_plan_no AS "dispatchPlanNo",
+        a.data_source AS "dataSource",
+        a.source_no AS "sourceNo"
+    </sql>
+
+    <sql id="tmTransportOrderSkuColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_no AS "transportNo",
+		a.line_no AS "lineNo",
+		a.sku_code AS "skuCode",
+		a.qty AS "qty",
+		a.weight AS "weight",
+		a.cubic AS "cubic",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.owner_code AS "ownerCode",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10",
+		a.ea_quantity AS "eaQuantity",
+		a.ip_quantity AS "ipQuantity",
+		a.cs_quantity AS "csQuantity",
+		a.pl_quantity AS "plQuantity",
+		a.ot_quantity AS "otQuantity",
+		a.lot_info AS "lotInfo"
+    </sql>
+
+    <sql id="tmTransportOrderLabelColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_no AS "transportNo",
+		a.customer_no AS "customerNo",
+		a.label_no AS "labelNo",
+		a.status AS "status",
+		a.weight AS "weight",
+		a.cubic AS "cubic",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.sign_by AS "signBy",
+		a.sign_time AS "signTime",
+		a.sign_remarks AS "signRemarks",
+		a.receipt_by AS "receiptBy",
+		a.receipt_time AS "receiptTime",
+		a.receipt_remarks AS "receiptRemarks",
+		a.owner_code AS "ownerCode",
+		a.line_no AS "lineNo",
+		a.sku_code AS "skuCode",
+		a.qty AS "qty",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10"
+    </sql>
+
+    <sql id="tmTransportOrderCostColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_no AS "transportNo",
+		a.cost_type AS "costType",
+		a.settlement_method AS "settlementMethod",
+		a.settlement_code AS "settlementCode",
+		a.settlement_type AS "settlementType",
+		a.amount AS "amount",
+		a.is_bill AS "isBill",
+		a.bill_voucher AS "billVoucher",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId"
+    </sql>
+
+    <sql id="tmTransportOrderRouteColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_no AS "transportNo",
+		a.dispatch_no AS "dispatchNo",
+		a.label_no AS "labelNo",
+		a.now_outlet_code AS "nowOutletCode",
+		a.pre_outlet_code AS "preOutletCode",
+		a.next_outlet_code AS "nextOutletCode",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.pre_alloc_dispatch_no AS "preAllocDispatchNo",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode"
+    </sql>
+
+    <select id="findOrderPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderEntity" >
+		SELECT tcr.transport_obj_name AS "receiveOutletName",
+		       tcp.transport_obj_name AS "principalName",
+		       tccu.transport_obj_name AS "customerName",
+		       tco.transport_obj_name AS "outletName",
+		       tcs.transport_obj_name AS "shipName",
+		       tcc.transport_obj_name AS "consigneeName",
+		<include refid="tmTransportOrderHeaderColumns"/>
+		FROM tm_transport_order_header a
+		LEFT JOIN tm_transport_obj tcr on a.receive_outlet_code = tcr.transport_obj_code AND a.base_org_id = tcr.org_id
+		LEFT JOIN tm_transport_obj tcp on a.principal_code = tcp.transport_obj_code AND a.base_org_id = tcp.org_id
+		LEFT JOIN tm_transport_obj tccu on a.customer_code = tccu.transport_obj_code AND a.base_org_id = tccu.org_id
+		LEFT JOIN tm_transport_obj tco on a.outlet_code = tco.transport_obj_code AND a.base_org_id = tco.org_id
+		LEFT JOIN tm_transport_obj tcs on a.ship_code = tcs.transport_obj_code AND a.base_org_id = tcs.org_id
+		LEFT JOIN tm_transport_obj tcc on a.consignee_code = tcc.transport_obj_code AND a.base_org_id = tcc.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		  ${dataScope}
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no LIKE concat('%', #{transportNo}, '%')
+		</if>
+		<if test="customerNo != null and customerNo != ''">
+			AND a.customer_no LIKE concat('%', #{customerNo}, '%')
+		</if>
+		<if test="orderTimeFm != null and orderTimeFm != ''">
+			AND a.order_time &gt;= #{orderTimeFm}
+		</if>
+		<if test="orderTimeTo != null and orderTimeTo != ''">
+			AND a.order_time &lt;= #{orderTimeTo}
+		</if>
+		<if test="orderType != null and orderType != ''">
+			AND a.order_type = #{orderType}
+		</if>
+		<if test="orderStatus != null and orderStatus != ''">
+			AND a.order_status = #{orderStatus}
+		</if>
+        <if test="principalCode != null and principalCode != ''">
+            AND a.principal_code = #{principalCode}
+        </if>
+		<if test="customerCode != null and customerCode != ''">
+			AND a.customer_code = #{customerCode}
+		</if>
+        <if test="dispatchPlanNo != null and dispatchPlanNo != ''">
+            AND a.dispatch_plan_no = #{dispatchPlanNo}
+        </if>
+        <if test="sourceNo != null and sourceNo != ''">
+            AND a.source_no = #{sourceNo}
+        </if>
+        <if test="dataSource != null and dataSource != ''">
+            AND a.data_source = #{dataSource}
+        </if>
+		<if test="shipCode != null and shipCode != ''">
+			AND a.ship_code = #{shipCode}
+		</if>
+		<if test="consigneeCode != null and consigneeCode != ''">
+			AND a.consignee_code = #{consigneeCode}
+		</if>
+		<if test="receiveOutletCode != null and receiveOutletCode != ''">
+			AND a.receive_outlet_code = #{receiveOutletCode}
+		</if>
+		<if test="outletCode != null and outletCode != ''">
+			AND a.outlet_code = #{outletCode}
+		</if>
+		<if test='isToReceive == "Y"'>
+			AND (order_status = '10' OR EXISTS(SELECT 1 FROM tm_transport_order_label t WHERE a.transport_no = t.transport_no AND a.org_id = t.org_id AND t.status = '00'))
+		</if>
+		<if test='isToDispatch == "Y"'>
+			AND EXISTS(SELECT 1 FROM tm_transport_order_label t WHERE a.transport_no = t.transport_no AND a.org_id = t.org_id AND t.status IN ('00', '10'))
+		</if>
+		<if test='isToSign == "Y"'>
+			AND EXISTS(SELECT 1 FROM tm_transport_order_label t WHERE a.transport_no = t.transport_no AND a.org_id = t.org_id AND t.status = '15')
+		</if>
+		<if test='hasDispatch == "Y"'>
+			AND EXISTS(SELECT 1 FROM tm_dispatch_order_label t WHERE a.transport_no = t.transport_no AND a.base_org_id = t.base_org_id)
+		</if>
+		<if test='hasDispatch == "N"'>
+			AND NOT EXISTS(SELECT 1 FROM tm_dispatch_order_label t WHERE a.transport_no = t.transport_no AND a.base_org_id = t.base_org_id)
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findSkuPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderSkuEntity">
+		SELECT
+		    tto.transport_obj_name AS "ownerName",
+		    ti.sku_name            AS "skuName",
+		    <include refid="tmTransportOrderSkuColumns"/>
+		FROM tm_transport_order_sku a
+		LEFT JOIN tm_transport_obj tto ON a.owner_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+		LEFT JOIN tm_item ti ON a.owner_code = ti.owner_code AND a.sku_code = ti.sku_code AND a.base_org_id = ti.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		  ${dataScope}
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no = #{transportNo}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND a.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND a.sku_code = #{skuCode}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findSkuList" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderSkuEntity">
+		SELECT
+		    tto.transport_obj_name AS "ownerName",
+		    ti.sku_name            AS "skuName",
+		    ti.gross_weight        AS "skuWeight",
+		    ti.cubic               AS "skuCubic",
+		    <include refid="tmTransportOrderSkuColumns"/>
+		FROM tm_transport_order_sku a
+		LEFT JOIN tm_transport_obj tto ON a.owner_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+		LEFT JOIN tm_item ti ON a.owner_code = ti.owner_code AND a.sku_code = ti.sku_code AND a.base_org_id = ti.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no = #{transportNo}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND a.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND a.sku_code = #{skuCode}
+		</if>
+		<if test="lineNo != null and lineNo != ''">
+			AND a.line_no = #{lineNo}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+	</select>
+
+	<select id="findLabelPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderLabelEntity">
+		SELECT <include refid="tmTransportOrderLabelColumns"/>,
+		  ti.sku_name AS "skuName"
+		FROM tm_transport_order_label a
+		LEFT JOIN tm_item ti ON a.owner_code = ti.owner_code AND a.sku_code = ti.sku_code AND a.base_org_id = ti.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		${dataScope}
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no = #{transportNo}
+		</if>
+		<if test="customerNo != null and customerNo != ''">
+			AND a.customer_no = #{customerNo}
+		</if>
+		<if test="labelNo != null and labelNo != ''">
+			AND a.label_no = #{labelNo}
+		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.transport_no, a.label_no
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findLabelList" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderLabel">
+		SELECT
+		    <include refid="tmTransportOrderLabelColumns"/>
+		FROM tm_transport_order_label a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no = #{transportNo}
+		</if>
+		<if test="customerNo != null and customerNo != ''">
+			AND a.customer_no = #{customerNo}
+		</if>
+		<if test="labelNo != null and labelNo != ''">
+			AND a.label_no = #{labelNo}
+		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+	</select>
+
+	<select id="findCostPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderCostEntity">
+		SELECT
+		    b.transport_obj_name AS "settlementName",
+		    <include refid="tmTransportOrderCostColumns"/>
+		FROM tm_transport_order_cost a
+		LEFT JOIN tm_transport_obj b ON a.settlement_code = b.transport_obj_code AND a.base_org_id = b.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		  ${dataScope}
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no = #{transportNo}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findCostList" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderCostEntity">
+		SELECT
+		    b.transport_obj_name AS "settlementName",
+		    <include refid="tmTransportOrderCostColumns"/>
+		FROM tm_transport_order_cost a
+		LEFT JOIN tm_transport_obj b ON a.settlement_code = b.transport_obj_code AND a.base_org_id = b.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no = #{transportNo}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+	</select>
+
+	<select id="findRoutePage" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderRouteEntity">
+		SELECT
+			a.transport_no               AS "transportNo",
+			ttoh.order_time              AS "orderTime",
+			a.label_no                   AS "labelNo",
+			a.pre_outlet_code            AS "preOutletCode",
+			pre.transport_obj_name       AS "preOutletName",
+			a.now_outlet_code            AS "nowOutletCode",
+			now.transport_obj_name       AS "nowOutletName",
+			a.next_outlet_code           AS "nextOutletCode",
+			nex.transport_obj_name       AS "nextOutletName",
+			a.dispatch_no                AS "dispatchNo",
+			a.base_org_id                AS "baseOrgId",
+			so.name                      AS "baseOrgName",
+			ttoh.ship_code               AS "shipCode",
+			ship.transport_obj_name      AS "shipName",
+			ttoh.ship_city_id            AS "shipCityId",
+			ttoh.shipper                 AS "shipper",
+			ttoh.shipper_tel             AS "shipperTel",
+			ttoh.ship_address            AS "shipAddress",
+			ttoh.consignee_code          AS "consigneeCode",
+			consignee.transport_obj_name AS "consigneeName",
+			ttoh.consignee_city_id       AS "consigneeCityId",
+			ttoh.consignee               AS "consignee",
+			ttoh.consignee_tel           AS "consigneeTel",
+			ttoh.consignee_address       AS "consigneeAddress"
+		FROM tm_transport_order_route a
+		LEFT JOIN tm_transport_order_header ttoh ON a.transport_no = ttoh.transport_no AND a.base_org_id = ttoh.base_org_id
+		LEFT JOIN tm_transport_obj pre ON a.pre_outlet_code = pre.transport_obj_code AND a.base_org_id = pre.org_id
+		LEFT JOIN tm_transport_obj now ON a.now_outlet_code = now.transport_obj_code AND a.base_org_id = now.org_id
+		LEFT JOIN tm_transport_obj nex ON a.next_outlet_code = nex.transport_obj_code AND a.base_org_id = nex.org_id
+		LEFT JOIN tm_transport_obj ship ON ttoh.ship_code = ship.transport_obj_code AND a.base_org_id = ship.org_id
+		LEFT JOIN tm_transport_obj consignee ON ttoh.consignee_code = consignee.transport_obj_code AND a.base_org_id = consignee.org_id
+		LEFT JOIN sys_office so ON a.base_org_id = so.id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		  ${dataScope}
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no LIKE concat('%', #{transportNo}, '%')
+		</if>
+		<if test="dispatchNo != null and dispatchNo != ''">
+			AND a.dispatch_no LIKE concat('%', #{dispatchNo}, '%')
+		</if>
+		<if test="customerNo != null and customerNo != ''">
+			AND ttoh.customer_no LIKE concat('%', #{customerNo}, '%')
+		</if>
+		<if test="labelNo != null and labelNo != ''">
+			AND a.label_no LIKE concat('%', #{labelNo}, '%')
+		</if>
+		<if test="nowOutletCode != null and nowOutletCode != ''">
+			AND a.now_outlet_code = #{nowOutletCode}
+		</if>
+		<if test="nextOutletCode != null and nextOutletCode != ''">
+			AND a.next_outlet_code = #{nextOutletCode}
+		</if>
+        <if test="orderTimeFm != null">
+            AND ttoh.order_time &gt;= #{orderTimeFm}
+        </if>
+        <if test="orderTimeTo != null">
+            AND ttoh.order_time &lt;= #{orderTimeTo}
+        </if>
+        <if test="shipCode != null and shipCode != ''">
+            AND ttoh.ship_code = #{shipCode}
+        </if>
+        <if test="consigneeCode != null and consigneeCode != ''">
+            AND ttoh.consignee_code = #{consigneeCode}
+        </if>
+        <if test="shipCityId != null and shipCityId != ''">
+            AND ttoh.ship_city_id = #{shipCityId}
+        </if>
+        <if test="consigneeCityId != null and consigneeCityId != ''">
+            AND ttoh.consignee_city_id = #{consigneeCityId}
+        </if>
+        <if test="shipper != null and shipper != ''">
+            AND ttoh.shipper LIKE concat('%', #{shipper}, '%')
+        </if>
+        <if test="consignee != null and consignee != ''">
+            AND ttoh.consignee LIKE concat('%', #{consignee}, '%')
+        </if>
+        <if test="shipAddress != null and shipAddress != ''">
+            AND ttoh.ship_address LIKE concat('%', #{shipAddress}, '%')
+        </if>
+        <if test="consigneeAddress != null and consigneeAddress != ''">
+            AND ttoh.consignee_address LIKE concat('%', #{consigneeAddress}, '%')
+        </if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderEntity">
+		SELECT
+			<include refid="tmTransportOrderHeaderColumns"/>,
+		    so.name AS "orgName"
+		FROM tm_transport_order_header a
+		 LEFT JOIN sys_office so ON a.org_id = so.id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findHeader" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderHeader" >
+		SELECT
+		<include refid="tmTransportOrderHeaderColumns"/>
+		FROM tm_transport_order_header a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="transportNo != null and transportNo != ''">
+				AND a.transport_no LIKE concat('%', #{transportNo}, '%')
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no LIKE concat('%', #{customerNo}, '%')
+			</if>
+			<if test="orderTimeFm != null and orderTimeFm != ''">
+				AND a.order_time &gt;= #{orderTimeFm}
+			</if>
+			<if test="orderTimeTo != null and orderTimeTo != ''">
+				AND a.order_time &lt;= #{orderTimeTo}
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="orderStatus != null and orderStatus != ''">
+				AND a.order_status = #{orderStatus}
+			</if>
+			<if test="principalCode != null and principalCode != ''">
+				AND a.principal_code = #{principalCode}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="baseOrgId != null and baseOrgId != ''">
+				AND a.base_org_id = #{baseOrgId}
+			</if>
+			<if test='isToReceive == "Y"'>
+				AND EXISTS(SELECT 1 FROM tm_transport_order_label t WHERE a.transport_no = t.transport_no AND a.org_id = t.org_id AND t.status = '00')
+			</if>
+			<if test='isToSign == "Y"'>
+				AND EXISTS(SELECT 1 FROM tm_transport_order_label t WHERE a.transport_no = t.transport_no AND a.org_id = t.org_id AND t.status = '15')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findCanReceiveLabel" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderLabel" >
+		SELECT
+			<include refid="tmTransportOrderLabelColumns"/>
+		FROM tm_transport_order_label a
+		WHERE a.status = '00'
+		  AND a.transport_no = #{transportNo}
+		  AND a.org_id = #{orgId}
+	</select>
+
+	<select id="findCanSignLabel" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderLabel" >
+		SELECT
+			<include refid="tmTransportOrderLabelColumns"/>
+		FROM tm_transport_order_label a
+		WHERE a.status = '15'
+		  AND a.transport_no = #{transportNo}
+		  AND a.org_id = #{orgId}
+	</select>
+
+	<select id="findCanReceiptLabel" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderLabel" >
+		SELECT
+			<include refid="tmTransportOrderLabelColumns"/>
+		FROM tm_transport_order_label a
+		WHERE a.status = '20'
+		  AND a.transport_no = #{transportNo}
+		  AND a.org_id = #{orgId}
+	</select>
+
+	<select id="findOutletByAreaId" resultType="java.lang.String">
+		SELECT a.transport_obj_code
+		FROM tm_transport_obj_scope a
+		LEFT JOIN tm_transport_scope b ON a.transport_scope_code = b.`code` AND a.org_id = b.org_id
+		LEFT JOIN tm_transport_scope_area c ON b.id = c.head_id
+		WHERE EXISTS (SELECT 1 FROM sys_area t WHERE t.id = #{areaId} AND t.id = c.area_id)
+		  AND EXISTS (SELECT 1 FROM tm_transport_obj t WHERE t.transport_obj_type LIKE '%OUTLET%' AND a.transport_obj_code = t.transport_obj_code AND a.org_id = t.org_id)
+		  AND a.org_id = #{baseOrgId}
+	</select>
+
+    <select id="findCanDispatchLabel" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderLabelEntity">
+        SELECT <include refid="tmTransportOrderLabelColumns"/>
+        FROM tm_transport_order_label a
+        WHERE a.status IN ('00', '10')
+          AND NOT EXISTS(SELECT 1 FROM tm_dispatch_order_label t WHERE a.transport_no = t.transport_no AND a.label_no = t.label_no AND a.base_org_id = t.base_org_id)
+          AND a.transport_no = #{transportNo}
+          AND a.org_id = #{orgId}
+    </select>
+
+	<select id="checkHasDispatch" resultType="java.lang.String">
+		SELECT 1
+		FROM tm_dispatch_order_label a
+		WHERE a.transport_no = #{transportNo}
+		  AND a.base_org_id = #{baseOrgId}
+	</select>
+
+    <select id="getByNoAndLineNo" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderSkuEntity">
+		SELECT tto.transport_obj_name AS "ownerName",
+			   ti.sku_name            AS "skuName",
+			   ti.gross_weight        AS "skuWeight",
+			   ti.cubic               AS "skuCubic",
+		<include refid="tmTransportOrderSkuColumns"/>
+		FROM tm_transport_order_sku a
+			LEFT JOIN tm_transport_obj tto ON a.owner_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+			LEFT JOIN tm_item ti ON a.owner_code = ti.owner_code AND a.sku_code = ti.sku_code AND a.base_org_id = ti.org_id
+		WHERE a.transport_no = #{transportNo}
+		  AND a.line_no = #{lineNo}
+		  AND a.org_id = #{orgId}
+	</select>
+
+    <delete id="deleteSkuByNo">
+		DELETE FROM tm_transport_order_sku WHERE transport_no = #{transportNo} AND org_id = #{orgId}
+	</delete>
+
+	<delete id="deleteDeliveryByNo">
+		DELETE FROM tm_transport_order_delivery WHERE transport_no = #{transportNo} AND org_id = #{orgId}
+	</delete>
+
+	<select id="findDirectLabelPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderLabelEntity">
+		SELECT
+		ti.sku_name AS "skuName",
+		b.ship_code AS "shipCode",
+		tcs.transport_obj_name AS "shipName",
+		b.ship_city_id AS "shipCityId",
+		b.shipper AS "shipper",
+		b.shipper_tel AS "shipperTel",
+		b.ship_address AS "shipAddress",
+		b.consignee_code AS "consigneeCode",
+		tcc.transport_obj_name AS "consigneeName",
+		b.consignee_city_id AS "consigneeCityId",
+		b.consignee AS "consignee",
+		b.consignee_tel AS "consigneeTel",
+		b.consignee_address AS "consigneeAddress",
+		b.receive_outlet_code AS "receiveOutletCode",
+		tcr.transport_obj_name AS "receiveOutletName",
+		b.outlet_code AS "outletCode",
+		tco.transport_obj_name AS "outletName",
+		IF(tdol.dispatch_no IS NULL, 'N', 'Y') AS "hasDispatch",
+		<include refid="tmTransportOrderLabelColumns"/>
+		FROM tm_transport_order_label a
+		INNER JOIN tm_transport_order_header b ON a.transport_no = b.transport_no AND a.org_id = b.org_id
+		LEFT JOIN tm_dispatch_order_label tdol ON a.transport_no = tdol.transport_no AND a.label_no = tdol.label_no AND a.base_org_id = tdol.base_org_id AND tdol.receive_ship = 'R'
+		LEFT JOIN tm_item ti ON a.owner_code = ti.owner_code AND a.sku_code = ti.sku_code AND a.base_org_id = ti.org_id
+		LEFT JOIN tm_transport_obj tcs on b.ship_code = tcs.transport_obj_code AND a.base_org_id = tcs.org_id
+		LEFT JOIN tm_transport_obj tcc on b.consignee_code = tcc.transport_obj_code AND a.base_org_id = tcc.org_id
+		LEFT JOIN tm_transport_obj tcr on b.receive_outlet_code = tcr.transport_obj_code AND a.base_org_id = tcr.org_id
+		LEFT JOIN tm_transport_obj tco on b.outlet_code = tco.transport_obj_code AND a.base_org_id = tco.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		${dataScope}
+		AND (tdol.dispatch_no IS NULL OR tdol.status = '00')
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no = #{transportNo}
+		</if>
+		<if test="customerNo != null and customerNo != ''">
+			AND a.customer_no = #{customerNo}
+		</if>
+		<if test="labelNo != null and labelNo != ''">
+			AND a.label_no = #{labelNo}
+		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND a.sku_code = #{skuCode}
+		</if>
+		<if test="shipCode != null and shipCode != ''">
+			AND b.ship_code = #{shipCode}
+		</if>
+		<if test="shipCityId != null and shipCityId != ''">
+			AND b.ship_city_id = #{shipCityId}
+		</if>
+		<if test="shipAddress != null and shipAddress != ''">
+			AND b.ship_address LIKE concat('%', #{shipAddress}, '%')
+		</if>
+		<if test="consigneeCode != null and consigneeCode != ''">
+			AND b.consignee_code = #{consigneeCode}
+		</if>
+		<if test="consigneeCityId != null and consigneeCityId != ''">
+			AND b.consignee_city_id = #{consigneeCityId}
+		</if>
+		<if test="consigneeAddress != null and consigneeAddress != ''">
+			AND b.consignee_address LIKE concat('%', #{consigneeAddress}, '%')
+		</if>
+		<if test="receiveOutletCode != null and receiveOutletCode != ''">
+			AND b.receive_outlet_code = #{receiveOutletCode}
+		</if>
+		<if test="outletCode != null and outletCode != ''">
+			AND b.outlet_code = #{outletCode}
+		</if>
+		<if test='hasDispatch != null and hasDispatch != "" and hasDispatch == "Y"'>
+			AND EXISTS(SELECT 1 FROM tm_dispatch_order_label t WHERE a.transport_no = t.transport_no AND a.label_no = tdol.label_no AND a.base_org_id = t.base_org_id)
+		</if>
+		<if test='hasDispatch != null and hasDispatch != "" and hasDispatch == "N"'>
+			AND NOT EXISTS(SELECT 1 FROM tm_dispatch_order_label t WHERE a.transport_no = t.transport_no AND a.label_no = tdol.label_no AND a.base_org_id = t.base_org_id)
+		</if>
+		<if test="transportIdList != null and transportIdList.size > 0">
+			AND b.id IN
+			<foreach collection="transportIdList" item="transportIdItem" index="transportIdIndex" open="(" separator="," close=")">
+				#{transportIdItem}
+			</foreach>
+		</if>
+		<if test="transportNoList != null and transportNoList.size > 0">
+			AND a.transport_no IN
+			<foreach collection="transportNoList" item="transportNoItem" index="transportNoIndex" open="(" separator="," close=")">
+				#{transportNoItem}
+			</foreach>
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.transport_no, a.label_no
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="checkHasDispatchNonDepart" resultType="java.lang.String">
+		SELECT 1
+		FROM tm_dispatch_order_label a
+		WHERE a.transport_no = #{transportNo}
+		  AND a.base_org_id = #{baseOrgId}
+		  AND a.status = '00'
+	</select>
+
+	<select id="getLabelEntity" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderLabelEntity">
+		SELECT
+		b.ship_code AS "shipCode",
+		b.ship_city_id AS "shipCityId",
+		b.shipper AS "shipper",
+		b.shipper_tel AS "shipperTel",
+		b.ship_address AS "shipAddress",
+		b.consignee_code AS "consigneeCode",
+		b.consignee_city_id AS "consigneeCityId",
+		b.consignee AS "consignee",
+		b.consignee_tel AS "consigneeTel",
+		b.consignee_address AS "consigneeAddress",
+		b.receive_outlet_code AS "receiveOutletCode",
+		b.outlet_code AS "outletCode",
+		<include refid="tmTransportOrderLabelColumns"/>
+		FROM tm_transport_order_label a
+		INNER JOIN tm_transport_order_header b ON a.transport_no = b.transport_no AND a.org_id = b.org_id
+		WHERE a.id = #{id}
+	</select>
+</mapper>

@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.business.mapper.BmsDispatchDataMapper">
+
+    <sql id="bmsDispatchDataColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.order_no AS "orderNo",
+        a.order_date AS "orderDate",
+        a.dispatch_time AS "dispatchTime",
+        a.transport_method AS "transportMethod",
+        a.carrier_code AS "carrierCode",
+        a.carrier_name AS "carrierName",
+        a.car_type AS "carType",
+        a.vehicle_no AS "vehicleNo",
+        a.principal_code AS "principalCode",
+        a.principal_name AS "principalName",
+        a.ship_code AS "shipCode",
+        a.ship_name AS "shipName",
+        a.ship_city_id AS "shipCityId",
+        a.ship_city_name AS "shipCityName",
+        a.origin AS "origin",
+        a.consignee_code AS "consigneeCode",
+        a.consignee_name AS "consigneeName",
+        a.consignee_city_id AS "consigneeCityId",
+        a.consignee_city_name AS "consigneeCityName",
+        a.destination AS "destination",
+        a.owner_code AS "ownerCode",
+        a.owner_name AS "ownerName",
+        a.supplier_code AS "supplierCode",
+        a.supplier_name AS "supplierName",
+        a.sku_code AS "skuCode",
+        a.sku_name AS "skuName",
+        a.sku_class AS "skuClass",
+        a.qty AS "qty",
+        a.qty_cs AS "qtyCs",
+        a.qty_pl AS "qtyPl",
+        a.weight AS "weight",
+        a.volume AS "volume",
+        a.org_id AS "orgId",
+        a.data_sources AS "dataSources",
+        a.is_fee AS "isFee",
+        a.order_no_a AS "orderNoA",
+        a.order_no_b AS "orderNoB",
+        a.order_no_c AS "orderNoC",
+        a.order_no_d AS "orderNoD",
+        a.order_no_e AS "orderNoE",
+        a.order_no_f AS "orderNoF",
+        a.order_no_g AS "orderNoG",
+        a.business_type AS "businessType",
+        a.business_model AS "businessModel",
+        a.is_ices AS "isIces",
+        a.is_iqc AS "isIqc",
+        a.quarantine_type AS "quarantineType",
+        a.project_code AS "projectCode",
+        a.project_name AS "projectName"
+    </sql>
+
+    <sql id="extraColumns">
+        b.name AS "orgName"
+    </sql>
+
+    <sql id="bmsDispatchDataJoins">
+        LEFT JOIN sys_office b ON a.org_id = b.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchData">
+        SELECT
+        <include refid="bmsDispatchDataColumns"/>
+        FROM bms_dispatch_data a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchData">
+        SELECT
+        <include refid="bmsDispatchDataColumns"/>
+        FROM bms_dispatch_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchData">
+        SELECT
+        <include refid="bmsDispatchDataColumns"/>
+        FROM bms_dispatch_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_dispatch_data
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            order_no,
+            order_date,
+            dispatch_time,
+            transport_method,
+            carrier_code,
+            carrier_name,
+            car_type,
+            vehicle_no,
+            principal_code,
+            principal_name,
+            ship_code,
+            ship_name,
+            ship_city_id,
+            ship_city_name,
+            origin,
+            consignee_code,
+            consignee_name,
+            consignee_city_id,
+            consignee_city_name,
+            destination,
+            owner_code,
+            owner_name,
+            supplier_code,
+            supplier_name,
+            sku_code,
+            sku_name,
+            sku_class,
+            qty,
+            qty_cs,
+            qty_pl,
+            weight,
+            volume,
+            org_id,
+            data_sources,
+            is_fee,
+            order_no_a,
+            order_no_b,
+            order_no_c,
+            order_no_d,
+            order_no_e,
+            order_no_f,
+            order_no_g,
+            business_type,
+            business_model,
+            is_ices,
+            is_iqc,
+            quarantine_type,
+            project_code,
+            project_name
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{orderNo},
+            #{orderDate},
+            #{dispatchTime},
+            #{transportMethod},
+            #{carrierCode},
+            #{carrierName},
+            #{carType},
+            #{vehicleNo},
+            #{principalCode},
+            #{principalName},
+            #{shipCode},
+            #{shipName},
+            #{shipCityId},
+            #{shipCityName},
+            #{origin},
+            #{consigneeCode},
+            #{consigneeName},
+            #{consigneeCityId},
+            #{consigneeCityName},
+            #{destination},
+            #{ownerCode},
+            #{ownerName},
+            #{supplierCode},
+            #{supplierName},
+            #{skuCode},
+            #{skuName},
+            #{skuClass},
+            #{qty},
+            #{qtyCs},
+            #{qtyPl},
+            #{weight},
+            #{volume},
+            #{orgId},
+            #{dataSources},
+            #{isFee},
+            #{orderNoA},
+            #{orderNoB},
+            #{orderNoC},
+            #{orderNoD},
+            #{orderNoE},
+            #{orderNoF},
+            #{orderNoG},
+            #{businessType},
+            #{businessModel},
+            #{isIces},
+            #{isIqc},
+            #{quarantineType},
+            #{projectCode},
+            #{projectName}
+        )
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO bms_dispatch_data(
+        id,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        remarks,
+        del_flag,
+        order_no,
+        order_date,
+        dispatch_time,
+        transport_method,
+        carrier_code,
+        carrier_name,
+        car_type,
+        vehicle_no,
+        principal_code,
+        principal_name,
+        ship_code,
+        ship_name,
+        ship_city_id,
+        ship_city_name,
+        origin,
+        consignee_code,
+        consignee_name,
+        consignee_city_id,
+        consignee_city_name,
+        destination,
+        owner_code,
+        owner_name,
+        supplier_code,
+        supplier_name,
+        sku_code,
+        sku_name,
+        sku_class,
+        qty,
+        qty_cs,
+        qty_pl,
+        weight,
+        volume,
+        org_id,
+        data_sources,
+        is_fee,
+        order_no_a,
+        order_no_b,
+        order_no_c,
+        order_no_d,
+        order_no_e,
+        order_no_f,
+        order_no_g,
+        business_type,
+        business_model,
+        is_ices,
+        is_iqc,
+        quarantine_type,
+        project_code,
+        project_name
+        ) VALUES
+        <foreach collection="items" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.createBy.id},
+            #{item.createDate},
+            #{item.updateBy.id},
+            #{item.updateDate},
+            #{item.remarks},
+            #{item.delFlag},
+            #{item.orderNo},
+            #{item.orderDate},
+            #{item.dispatchTime},
+            #{item.transportMethod},
+            #{item.carrierCode},
+            #{item.carrierName},
+            #{item.carType},
+            #{item.vehicleNo},
+            #{item.principalCode},
+            #{item.principalName},
+            #{item.shipCode},
+            #{item.shipName},
+            #{item.shipCityId},
+            #{item.shipCityName},
+            #{item.origin},
+            #{item.consigneeCode},
+            #{item.consigneeName},
+            #{item.consigneeCityId},
+            #{item.consigneeCityName},
+            #{item.destination},
+            #{item.ownerCode},
+            #{item.ownerName},
+            #{item.supplierCode},
+            #{item.supplierName},
+            #{item.skuCode},
+            #{item.skuName},
+            #{item.skuClass},
+            #{item.qty},
+            #{item.qtyCs},
+            #{item.qtyPl},
+            #{item.weight},
+            #{item.volume},
+            #{item.orgId},
+            #{item.dataSources},
+            #{item.isFee},
+            #{item.orderNoA},
+            #{item.orderNoB},
+            #{item.orderNoC},
+            #{item.orderNoD},
+            #{item.orderNoE},
+            #{item.orderNoF},
+            #{item.orderNoG},
+            #{item.businessType},
+            #{item.businessModel},
+            #{item.isIces},
+            #{item.isIqc},
+            #{item.quarantineType},
+            #{item.projectCode},
+            #{item.projectName}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE bms_dispatch_data
+        SET update_by = #{updateBy.id},
+            update_date = #{updateDate},
+            remarks = #{remarks},
+            order_no = #{orderNo},
+            order_date = #{orderDate},
+            dispatch_time = #{dispatchTime},
+            transport_method = #{transportMethod},
+            carrier_code = #{carrierCode},
+            carrier_name = #{carrierName},
+            car_type = #{carType},
+            vehicle_no = #{vehicleNo},
+            principal_code = #{principalCode},
+            principal_name = #{principalName},
+            ship_code = #{shipCode},
+            ship_name = #{shipName},
+            ship_city_id = #{shipCityId},
+            ship_city_name = #{shipCityName},
+            origin = #{origin},
+            consignee_code = #{consigneeCode},
+            consignee_name = #{consigneeName},
+            consignee_city_id = #{consigneeCityId},
+            consignee_city_name = #{consigneeCityName},
+            destination = #{destination},
+            owner_code = #{ownerCode},
+            owner_name = #{ownerName},
+            supplier_code = #{supplierCode},
+            supplier_name = #{supplierName},
+            sku_code = #{skuCode},
+            sku_name = #{skuName},
+            sku_class = #{skuClass},
+            qty = #{qty},
+            qty_cs = #{qtyCs},
+            qty_pl = #{qtyPl},
+            weight = #{weight},
+            volume = #{volume},
+            org_id = #{orgId},
+            data_sources = #{dataSources},
+            is_fee = #{isFee},
+            order_no_a = #{orderNoA},
+            order_no_b = #{orderNoB},
+            order_no_c = #{orderNoC},
+            order_no_d = #{orderNoD},
+            order_no_e = #{orderNoE},
+            order_no_f = #{orderNoF},
+            order_no_g = #{orderNoG},
+            business_type = #{businessType},
+            business_model = #{businessModel},
+            is_ices = #{isIces},
+            is_iqc = #{isIqc},
+            quarantine_type = #{quarantineType},
+            project_code = #{projectCode},
+            project_name = #{projectName}
+        WHERE id = #{id}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_dispatch_data
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_dispatch_data WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByCondition">
+        DELETE FROM bms_dispatch_data WHERE
+        <![CDATA[order_date >= #{fmDate}]]>
+        <![CDATA[AND order_date <= #{toDate}]]>
+        <if test="dataSources != null and dataSources != ''">
+            AND data_sources = #{dataSources}
+        </if>
+        <if test="orgId != null and orgId != ''">
+            AND org_id = #{orgId}
+        </if>
+    </delete>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.business.entity.extend.BmsDispatchDataEntity">
+        SELECT
+        <include refid="bmsDispatchDataColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_dispatch_data a
+        <include refid="bmsDispatchDataJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="orderDateFm != null">
+                AND a.order_date &gt;= #{orderDateFm}
+            </if>
+            <if test="orderDateTo != null">
+                AND a.order_date &lt;= #{orderDateTo}
+            </if>
+            <if test="dispatchTimeFm != null">
+                AND a.dispatch_time &gt;= #{dispatchTimeFm}
+            </if>
+            <if test="dispatchTimeTo != null">
+                AND a.dispatch_time &lt;= #{dispatchTimeTo}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no LIKE concat('%', #{orderNo}, '%')
+            </if>
+            <if test="orderNoA != null and orderNoA != ''">
+                AND a.order_no_a LIKE concat('%', #{orderNoA}, '%')
+            </if>
+            <if test="orderNoB != null and orderNoB != ''">
+                AND a.order_no_b LIKE concat('%', #{orderNoB}, '%')
+            </if>
+            <if test="orderNoC != null and orderNoC != ''">
+                AND a.order_no_c LIKE concat('%', #{orderNoC}, '%')
+            </if>
+            <if test="orderNoD != null and orderNoD != ''">
+                AND a.order_no_d LIKE concat('%', #{orderNoD}, '%')
+            </if>
+            <if test="businessType != null and businessType != ''">
+                AND a.business_type = #{businessType}
+            </if>
+            <if test="businessModel != null and businessModel != ''">
+                AND a.business_model = #{businessModel}
+            </if>
+            <if test="carrierCode != null and carrierCode != ''">
+                AND a.carrier_code LIKE concat('%', #{carrierCode}, '%')
+            </if>
+            <if test="carrierName != null and carrierName != ''">
+                AND a.carrier_name LIKE concat('%', #{carrierName}, '%')
+            </if>
+            <if test="consigneeCode != null and consigneeCode != ''">
+                AND a.consignee_code LIKE concat('%', #{consigneeCode}, '%')
+            </if>
+            <if test="consigneeName != null and consigneeName != ''">
+                AND a.consignee_name LIKE concat('%', #{consigneeName}, '%')
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code LIKE concat('%', #{supplierCode}, '%')
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                AND a.supplier_name LIKE concat('%', #{supplierName}, '%')
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code LIKE concat('%', #{ownerCode}, '%')
+            </if>
+            <if test="ownerName != null and ownerName != ''">
+                AND a.owner_name LIKE concat('%', #{ownerName}, '%')
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name LIKE concat('%', #{skuName}, '%')
+            </if>
+            <if test="isFee != null and isFee != ''">
+                AND a.is_fee = #{isFee}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+    <select id="findCalcData" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchData">
+        select * from bms_dispatch_data <where>${sql}</where>
+    </select>
+</mapper>

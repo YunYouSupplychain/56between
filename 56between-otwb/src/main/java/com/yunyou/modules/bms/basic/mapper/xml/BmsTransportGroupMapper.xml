@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.basic.mapper.BmsTransportGroupMapper">
+
+    <sql id="bmsTransportGroupColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.transport_group_code AS "transportGroupCode",
+		a.transport_group_name AS "transportGroupName",
+		a.org_id AS "orgId"
+    </sql>
+
+    <sql id="extraColumns">
+        so.name AS "orgName"
+    </sql>
+
+    <sql id="bmsTransportGroupJoins">
+        LEFT JOIN sys_office so ON a.org_id = so.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.basic.entity.BmsTransportGroup">
+        SELECT
+        <include refid="bmsTransportGroupColumns"/>
+        FROM bms_transport_group a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.basic.entity.BmsTransportGroup">
+        SELECT
+        <include refid="bmsTransportGroupColumns"/>
+        FROM bms_transport_group a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="transportGroupCode != null and transportGroupCode != ''">
+                AND a.transport_group_code = #{transportGroupCode}
+            </if>
+            <if test="transportGroupName != null and transportGroupName != ''">
+                AND a.transport_group_name = #{transportGroupName}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.basic.entity.BmsTransportGroup">
+        SELECT
+        <include refid="bmsTransportGroupColumns"/>
+        FROM bms_transport_group a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_transport_group
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            transport_group_code,
+            transport_group_name,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{transportGroupCode},
+            #{transportGroupName},
+            #{orgId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_transport_group
+        SET update_by            = #{updateBy.id},
+            update_date          = #{updateDate},
+            remarks              = #{remarks},
+            rec_ver              = rec_ver + 1,
+            transport_group_code = #{transportGroupCode},
+            transport_group_name = #{transportGroupName},
+            org_id               = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_transport_group
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <update id="delete">
+        DELETE FROM bms_transport_group WHERE id = #{id}
+    </update>
+
+    <select id="getEntity" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsTransportGroupEntity">
+        SELECT
+        <include refid="bmsTransportGroupColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_transport_group a
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="getByCode" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsTransportGroupEntity">
+        SELECT
+        <include refid="bmsTransportGroupColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_transport_group a
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        WHERE a.transport_group_code =#{transportGroupCode}
+        AND a.org_id = #{orgId}
+    </select>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsTransportGroupEntity">
+        SELECT
+        <include refid="bmsTransportGroupColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_transport_group a
+        <include refid="bmsTransportGroupJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="transportGroupCode != null and transportGroupCode != ''">
+                AND a.transport_group_code LIKE concat('%', #{transportGroupCode}, '%')
+            </if>
+            <if test="transportGroupName != null and transportGroupName != ''">
+                AND a.transport_group_name LIKE concat('%', #{transportGroupName}, '%')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+</mapper>

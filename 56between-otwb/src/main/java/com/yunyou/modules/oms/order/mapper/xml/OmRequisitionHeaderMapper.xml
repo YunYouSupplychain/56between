@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.order.mapper.OmRequisitionHeaderMapper">
+    
+	<sql id="omRequisitionHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.req_no AS "reqNo",
+		a.order_time AS "orderTime",
+		a.order_type AS "orderType",
+		a.status AS "status",
+		a.audit_by AS "auditBy.id",
+		a.owner_code AS "ownerCode",
+		a.customer_no AS "customerNo",
+		a.req_reason AS "reqReason",
+		a.fm_org_id AS "fmOrgId",
+		a.to_org_id AS "toOrgId",
+		a.logistics_no AS "logisticsNo",
+		a.carrier_code AS "carrierCode",
+		a.transport_mode AS "transportMode",
+		a.vehicle_no AS "vehicleNo",
+		a.driver AS "driver",
+		a.driver_tel AS "driverTel",
+		a.freight_amount AS "freightAmount",
+		a.shipper AS "shipper",
+		a.shipper_tel AS "shipperTel",
+		a.ship_area_id AS "shipAreaId",
+		a.ship_area AS "shipArea",
+		a.ship_address AS "shipAddress",
+		a.plan_ship_time AS "planShipTime",
+		a.consignee AS "consignee",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_area_id AS "consigneeAreaId",
+		a.consignee_area AS "consigneeArea",
+		a.consignee_address AS "consigneeAddress",
+		a.plan_arrival_time AS "planArrivalTime",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.rec_ver AS "recVer",
+		a.org_id AS "orgId"
+	</sql>
+
+	<sql id="omRequisitionHeaderJoins">
+	</sql>
+
+	<select id="get" resultType="OmRequisitionHeader" >
+		SELECT 
+			<include refid="omRequisitionHeaderColumns"/>
+		FROM om_requisition_header a
+		<include refid="omRequisitionHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OmRequisitionHeader" >
+		SELECT 
+			<include refid="omRequisitionHeaderColumns"/>
+		FROM om_requisition_header a
+		<include refid="omRequisitionHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="OmRequisitionHeader" >
+		SELECT 
+			<include refid="omRequisitionHeaderColumns"/>
+		FROM om_requisition_header a
+		<include refid="omRequisitionHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO om_requisition_header
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			req_no,
+			order_time,
+			order_type,
+			status,
+			audit_by,
+			owner_code,
+			customer_no,
+			req_reason,
+			fm_org_id,
+			to_org_id,
+			logistics_no,
+			carrier_code,
+			transport_mode,
+			vehicle_no,
+			driver,
+			driver_tel,
+			freight_amount,
+			shipper,
+			shipper_tel,
+			ship_area_id,
+			ship_area,
+			ship_address,
+			plan_ship_time,
+			consignee,
+			consignee_tel,
+			consignee_area_id,
+			consignee_area,
+			consignee_address,
+			plan_arrival_time,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			rec_ver,
+			org_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{reqNo},
+			#{orderTime},
+			#{orderType},
+			#{status},
+			#{auditBy.id},
+			#{ownerCode},
+			#{customerNo},
+			#{reqReason},
+			#{fmOrgId},
+			#{toOrgId},
+			#{logisticsNo},
+			#{carrierCode},
+			#{transportMode},
+			#{vehicleNo},
+			#{driver},
+			#{driverTel},
+			#{freightAmount},
+			#{shipper},
+			#{shipperTel},
+			#{shipAreaId},
+			#{shipArea},
+			#{shipAddress},
+			#{planShipTime},
+			#{consignee},
+			#{consigneeTel},
+			#{consigneeAreaId},
+			#{consigneeArea},
+			#{consigneeAddress},
+			#{planArrivalTime},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{recVer},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE om_requisition_header
+		SET update_by         = #{updateBy.id},
+			update_date       = #{updateDate},
+			remarks           = #{remarks},
+			req_no            = #{reqNo},
+			order_time        = #{orderTime},
+			order_type        = #{orderType},
+			status            = #{status},
+			audit_by          = #{auditBy.id},
+			owner_code        = #{ownerCode},
+			customer_no       = #{customerNo},
+			req_reason        = #{reqReason},
+			fm_org_id         = #{fmOrgId},
+			to_org_id         = #{toOrgId},
+			logistics_no      = #{logisticsNo},
+			carrier_code      = #{carrierCode},
+			transport_mode    = #{transportMode},
+			vehicle_no        = #{vehicleNo},
+			driver            = #{driver},
+			driver_tel        = #{driverTel},
+			freight_amount    = #{freightAmount},
+			shipper           = #{shipper},
+			shipper_tel       = #{shipperTel},
+			ship_area_id      = #{shipAreaId},
+			ship_area         = #{shipArea},
+			ship_address      = #{shipAddress},
+			plan_ship_time    = #{planShipTime},
+			consignee         = #{consignee},
+			consignee_tel     = #{consigneeTel},
+			consignee_area_id = #{consigneeAreaId},
+			consignee_area    = #{consigneeArea},
+			consignee_address = #{consigneeAddress},
+			plan_arrival_time = #{planArrivalTime},
+			def1              = #{def1},
+			def2              = #{def2},
+			def3              = #{def3},
+			def4              = #{def4},
+			def5              = #{def5},
+			rec_ver           = rec_ver + 1,
+			org_id            = #{orgId}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE om_requisition_header SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM om_requisition_header WHERE id = #{id}
+	</delete>
+</mapper>

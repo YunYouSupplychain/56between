@@ -1,0 +1,909 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdWhSkuMapper">
+    
+	<sql id="banQinCdWhSkuColumns">
+		a.id AS "id",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+		a.foreign_name AS "foreignName",
+		a.short_name AS "shortName",
+		a.is_enable AS "isEnable",
+		a.bar_code AS "barCode",
+		a.sup_bar_code AS "supBarCode",
+		a.pack_code AS "packCode",
+		a.lot_code AS "lotCode",
+		a.abc AS "abc",
+		a.group_code AS "groupCode",
+		a.material_code AS "materialCode",
+		a.cubic AS "cubic",
+		a.gross_weight AS "grossWeight",
+		a.net_weight AS "netWeight",
+		a.price AS "price",
+		a.length AS "length",
+		a.width AS "width",
+		a.height AS "height",
+		a.rcv_uom AS "rcvUom",
+		a.ship_uom AS "shipUom",
+		a.print_uom AS "printUom",
+		a.max_limit AS "maxLimit",
+		a.min_limit AS "minLimit",
+		a.is_validity AS "isValidity",
+		a.shelf_life AS "shelfLife",
+		a.life_type AS "lifeType",
+		a.in_life_days AS "inLifeDays",
+		a.out_life_days AS "outLifeDays",
+		a.is_over_rcv AS "isOverRcv",
+		a.over_rcv_pct AS "overRcvPct",
+		a.pa_zone AS "paZone",
+		a.pa_loc AS "paLoc",
+		a.reserve_code AS "reserveCode",
+		a.pa_rule AS "paRule",
+		a.rotation_rule AS "rotationRule",
+		a.prealloc_rule AS "preallocRule",
+		a.alloc_rule AS "allocRule",
+		a.cycle_code AS "cycleCode",
+		a.cd_class AS "cdClass",
+		a.last_count_time AS "lastCountTime",
+		a.first_in_time AS "firstInTime",
+		a.style AS "style",
+		a.color AS "color",
+		a.sku_size AS "skuSize",
+		a.is_dg AS "isDg",
+		a.dg_class AS "dgClass",
+		a.unno AS "unno",
+		a.is_cold AS "isCold",
+		a.min_temp AS "minTemp",
+		a.max_temp AS "maxTemp",
+		a.hs_code AS "hsCode",
+		a.is_serial AS "isSerial",
+		a.is_parent AS "isParent",
+		a.is_qc AS "isQc",
+		a.qc_phase AS "qcPhase",
+		a.qc_rule AS "qcRule",
+		a.item_group_code AS "itemGroupCode",
+		a.rate_group AS "rateGroup",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10",
+		a.def11 AS "def11",
+		a.def12 AS "def12",
+		a.def13 AS "def13",
+		a.def14 AS "def14",
+		a.def15 AS "def15",
+		a.period_of_validity AS "periodOfValidity",
+		a.validity_unit AS "validityUnit",
+		a.type_code AS "typeCode",
+		a.stock_cur_id AS "stockCurId",
+		a.quick_code AS "quickCode",
+		a.form_code AS "formCode",
+		a.emergency_tel AS "emergencyTel",
+		a.effective_date AS "effectiveDate",
+		a.expiration_date AS "expirationDate",
+		a.flash_point AS "flashPoint",
+		a.burning_point AS "burningPoint",
+		a.provide_cust_code AS "provideCustCode",
+		a.audit_status AS "auditStatus",
+		a.temp_level AS "tempLevel",
+		a.material_level AS "materialLevel",
+		a.material_alias1 AS "materialAlias1",
+		a.material_alias2 AS "materialAlias2",
+		a.material_alias3 AS "materialAlias3",
+		a.material_alias4 AS "materialAlias4",
+		a.material_alias5 AS "materialAlias5",
+		a.material_group1 AS "materialGroup1",
+		a.material_group2 AS "materialGroup2",
+		a.material_group3 AS "materialGroup3",
+		a.material_group4 AS "materialGroup4",
+		a.material_group5 AS "materialGroup5",
+		a.material_group6 AS "materialGroup6",
+		a.material_group7 AS "materialGroup7",
+		a.material_group8 AS "materialGroup8",
+		a.material_group9 AS "materialGroup9",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.is_un_serial AS "isUnSerial",
+		a.qty_unit AS "qtyUnit",
+		a.spec AS "spec",
+		a.sku_customer_code AS "skuCustomerCode"
+	</sql>
+	
+	<sql id="banQinCdWhSkuJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinCdWhSku" >
+		SELECT 
+			<include refid="banQinCdWhSkuColumns"/>
+		FROM cd_wh_sku a
+		<include refid="banQinCdWhSkuJoins"/>
+		WHERE a.id = #{id}
+	</select>
+    
+	<select id="getEntity" resultType="BanQinCdWhSkuEntity" >
+		SELECT 
+			<include refid="banQinCdWhSkuColumns"/>,
+            ec.ebcu_name_cn         AS ownerName,
+            cwp.cdpa_format         AS cdpaFormat,
+            cwlh.lot_name           AS lotName,
+            crpah.rule_name         AS paRuleName,
+            cwz.zone_name           AS paZoneName,
+            crrh.rule_name          AS rotationRuleName,
+            crph.rule_name          AS preallocRuleName,
+            crah.rule_name          AS allocRuleName,
+            cwc.cycle_name          AS cycleName,
+            cwpr_a.cdpr_desc        AS rcvUomName,
+            cwpr_a.cdpr_quantity    AS rcvUomQty,
+            cwpr_b.cdpr_desc        AS shipUomName,
+            cwpr_b.cdpr_quantity    AS shipUomQty,
+            cwpr_c.cdpr_desc        AS printUomName,
+            cwpr_c.cdpr_quantity    AS uomQty,
+            crqh.rule_name		    AS qcRuleName,
+            cwqih.item_group_name   AS itemGroupName,
+			cwsc.name               AS typeName
+		FROM cd_wh_sku a
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id
+        LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = a.pack_code AND cwp.org_id = a.org_id
+        LEFT JOIN cd_wh_package_relation cwpr_a ON cwpr_a.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_a.cdpr_unit_level = a.rcv_uom AND cwpr_a.org_id = cwp.org_id
+        LEFT JOIN cd_wh_package_relation cwpr_b ON cwpr_b.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_b.cdpr_unit_level = a.ship_uom AND cwpr_b.org_id = cwp.org_id
+        LEFT JOIN cd_wh_package_relation cwpr_c ON cwpr_c.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_c.cdpr_unit_level = a.print_uom AND cwpr_c.org_id = cwp.org_id
+        LEFT JOIN cd_wh_lot_header cwlh ON cwlh.lot_code = a.lot_code AND cwlh.org_id = a.org_id
+        LEFT JOIN cd_rule_pa_header crpah ON crpah.rule_code = a.pa_rule AND crpah.org_id = a.org_id
+        LEFT JOIN cd_rule_rotation_header crrh ON crrh.rule_code = a.rotation_rule AND crrh.org_id = a.org_id
+        LEFT JOIN cd_rule_prealloc_header crph ON crph.rule_code = a.prealloc_rule AND crph.org_id = a.org_id
+        LEFT JOIN cd_wh_cycle cwc ON cwc.cycle_code = a.cycle_code AND cwc.org_id = a.org_id
+        LEFT JOIN cd_rule_alloc_header crah ON crah.rule_code = a.alloc_rule AND crah.org_id = a.org_id
+        LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = a.pa_zone AND cwz.org_id = a.org_id
+        LEFT JOIN cd_rule_qc_header crqh ON crqh.rule_code = a.qc_rule AND crqh.org_id = a.org_id
+        LEFT JOIN cd_wh_qc_item_header cwqih ON cwqih.item_group_code = a.item_group_code AND cwqih.org_id = a.org_id
+		LEFT JOIN cd_wh_sku_classification cwsc ON cwsc.code = a.type_code AND cwsc.org_id = a.org_id
+        WHERE a.id = #{id}
+	</select>
+
+    <select id="findList" resultType="BanQinCdWhSku" >
+        SELECT
+        <include refid="banQinCdWhSkuColumns"/>
+        FROM cd_wh_sku a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name = #{skuName}
+            </if>
+			<if test="isSerial != null and isSerial != ''">
+				AND a.is_serial = #{isSerial}
+			</if>
+        </where>
+    </select>
+	
+	<select id="findPage" resultType="BanQinCdWhSkuEntity" >
+		SELECT 
+			<include refid="banQinCdWhSkuColumns"/>,
+            ec.ebcu_name_cn         AS ownerName,
+            cwp.cdpa_format         AS cdpaFormat,
+            cwlh.lot_name           AS lotName,
+            crpah.rule_name         AS paRuleName,
+            cwz.zone_name           AS paZoneName,
+            crrh.rule_name          AS rotationRuleName,
+            crph.rule_name          AS preallocRuleName,
+            crah.rule_name          AS allocRuleName,
+            cwc.cycle_name          AS cycleName,
+            cwpr_a.cdpr_desc        AS rcvUomName,
+            cwpr_a.cdpr_quantity    AS rcvUomQty,
+            cwpr_b.cdpr_desc        AS shipUomName,
+            cwpr_b.cdpr_quantity    AS shipUomQty,
+            cwpr_c.cdpr_desc        AS printUomName,
+            cwpr_c.cdpr_quantity    AS uomQty,
+            crqh.rule_name		    AS qcRuleName,
+            cwqih.item_group_name   AS itemGroupName,
+			cwsc.name               AS typeName
+		FROM cd_wh_sku a
+		LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id
+		LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = a.pack_code AND cwp.org_id = a.org_id
+		LEFT JOIN cd_wh_package_relation cwpr_a ON cwpr_a.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_a.cdpr_unit_level = a.rcv_uom AND cwpr_a.org_id = cwp.org_id
+		LEFT JOIN cd_wh_package_relation cwpr_b ON cwpr_b.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_b.cdpr_unit_level = a.ship_uom AND cwpr_b.org_id = cwp.org_id
+		LEFT JOIN cd_wh_package_relation cwpr_c ON cwpr_c.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_c.cdpr_unit_level = a.print_uom AND cwpr_c.org_id = cwp.org_id
+		LEFT JOIN cd_wh_lot_header cwlh ON cwlh.lot_code = a.lot_code AND cwlh.org_id = a.org_id
+		LEFT JOIN cd_rule_pa_header crpah ON crpah.rule_code = a.pa_rule AND crpah.org_id = a.org_id
+		LEFT JOIN cd_rule_rotation_header crrh ON crrh.rule_code = a.rotation_rule AND crrh.org_id = a.org_id
+		LEFT JOIN cd_rule_prealloc_header crph ON crph.rule_code = a.prealloc_rule AND crph.org_id = a.org_id
+		LEFT JOIN cd_wh_cycle cwc ON cwc.cycle_code = a.cycle_code AND cwc.org_id = a.org_id
+		LEFT JOIN cd_rule_alloc_header crah ON crah.rule_code = a.alloc_rule AND crah.org_id = a.org_id
+		LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = a.pa_zone AND cwz.org_id = a.org_id
+		LEFT JOIN cd_rule_qc_header crqh ON crqh.rule_code = a.qc_rule AND crqh.org_id = a.org_id
+		LEFT JOIN cd_wh_qc_item_header cwqih ON cwqih.item_group_code = a.item_group_code AND cwqih.org_id = a.org_id
+		LEFT JOIN cd_wh_sku_classification cwsc ON cwsc.code = a.type_code AND cwsc.org_id = a.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code like concat('%', #{skuCode}, '%')
+			</if>
+			<if test="skuName != null and skuName != ''">
+				AND a.sku_name like concat('%', #{skuName}, '%')
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.sku_code like concat('%', #{codeAndName}, '%') OR a.sku_name like concat('%', #{codeAndName}, '%'))
+			</if>
+			<if test="ownerCodes != null and ownerCodes != ''">
+				AND a.owner_code IN
+		    	<foreach collection="ownerCodes.split(',')" index="item" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="isParent != null and isParent != ''">
+				AND a.is_parent = #{isParent}
+			</if>
+			<if test="isSerial != null and isSerial != ''">
+				AND a.is_serial = #{isSerial}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="BanQinCdWhSku" >
+		SELECT 
+			<include refid="banQinCdWhSkuColumns"/>
+		FROM cd_wh_sku a
+		<include refid="banQinCdWhSkuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_wh_sku(
+			id,
+			owner_code,
+			sku_code,
+			sku_name,
+			foreign_name,
+			short_name,
+			is_enable,
+			bar_code,
+			sup_bar_code,
+			pack_code,
+			lot_code,
+			abc,
+			group_code,
+			material_code,
+			cubic,
+			gross_weight,
+			net_weight,
+			price,
+			length,
+			width,
+			height,
+			rcv_uom,
+			ship_uom,
+			print_uom,
+			max_limit,
+			min_limit,
+			is_validity,
+			shelf_life,
+			life_type,
+			in_life_days,
+			out_life_days,
+			is_over_rcv,
+			over_rcv_pct,
+			pa_zone,
+			pa_loc,
+			reserve_code,
+			pa_rule,
+			rotation_rule,
+			prealloc_rule,
+			alloc_rule,
+			cycle_code,
+			cd_class,
+			last_count_time,
+			first_in_time,
+			style,
+			color,
+			sku_size,
+			is_dg,
+			dg_class,
+			unno,
+			is_cold,
+			min_temp,
+			max_temp,
+			hs_code,
+			is_serial,
+			is_parent,
+			is_qc,
+			qc_phase,
+			qc_rule,
+			item_group_code,
+			rate_group,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			def11,
+			def12,
+			def13,
+			def14,
+			def15,
+			period_of_validity,
+			validity_unit,
+			type_code,
+			stock_cur_id,
+			quick_code,
+			form_code,
+			emergency_tel,
+			effective_date,
+			expiration_date,
+			flash_point,
+			burning_point,
+			provide_cust_code,
+			audit_status,
+			temp_level,
+			material_level,
+			material_alias1,
+			material_alias2,
+			material_alias3,
+			material_alias4,
+			material_alias5,
+			material_group1,
+			material_group2,
+			material_group3,
+			material_group4,
+			material_group5,
+			material_group6,
+			material_group7,
+			material_group8,
+			material_group9,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			is_un_serial,
+			qty_unit,
+			spec,
+			sku_customer_code
+		) VALUES (
+			#{id},
+			#{ownerCode},
+			#{skuCode},
+			#{skuName},
+			#{foreignName},
+			#{shortName},
+			#{isEnable},
+			#{barCode},
+			#{supBarCode},
+			#{packCode},
+			#{lotCode},
+			#{abc},
+			#{groupCode},
+			#{materialCode},
+			#{cubic},
+			#{grossWeight},
+			#{netWeight},
+			#{price},
+			#{length},
+			#{width},
+			#{height},
+			#{rcvUom},
+			#{shipUom},
+			#{printUom},
+			#{maxLimit},
+			#{minLimit},
+			#{isValidity},
+			#{shelfLife},
+			#{lifeType},
+			#{inLifeDays},
+			#{outLifeDays},
+			#{isOverRcv},
+			#{overRcvPct},
+			#{paZone},
+			#{paLoc},
+			#{reserveCode},
+			#{paRule},
+			#{rotationRule},
+			#{preallocRule},
+			#{allocRule},
+			#{cycleCode},
+			#{cdClass},
+			#{lastCountTime},
+			#{firstInTime},
+			#{style},
+			#{color},
+			#{skuSize},
+			#{isDg},
+			#{dgClass},
+			#{unno},
+			#{isCold},
+			#{minTemp},
+			#{maxTemp},
+			#{hsCode},
+			#{isSerial},
+			#{isParent},
+			#{isQc},
+			#{qcPhase},
+			#{qcRule},
+			#{itemGroupCode},
+			#{rateGroup},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{def11},
+			#{def12},
+			#{def13},
+			#{def14},
+			#{def15},
+			#{periodOfValidity},
+			#{validityUnit},
+			#{typeCode},
+			#{stockCurId},
+			#{quickCode},
+			#{formCode},
+			#{emergencyTel},
+			#{effectiveDate},
+			#{expirationDate},
+			#{flashPoint},
+			#{burningPoint},
+			#{provideCustCode},
+			#{auditStatus},
+			#{tempLevel},
+			#{materialLevel},
+			#{materialAlias1},
+			#{materialAlias2},
+			#{materialAlias3},
+			#{materialAlias4},
+			#{materialAlias5},
+			#{materialGroup1},
+			#{materialGroup2},
+			#{materialGroup3},
+			#{materialGroup4},
+			#{materialGroup5},
+			#{materialGroup6},
+			#{materialGroup7},
+			#{materialGroup8},
+			#{materialGroup9},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{isUnSerial},
+			#{qtyUnit},
+			#{spec},
+			#{skuCustomerCode}
+		)
+	</insert>
+    <insert id="batchInsert">
+		INSERT INTO cd_wh_sku
+		(
+			id,
+			owner_code,
+			sku_code,
+			sku_name,
+			foreign_name,
+			short_name,
+			is_enable,
+			bar_code,
+			sup_bar_code,
+			pack_code,
+			lot_code,
+			abc,
+			group_code,
+			material_code,
+			cubic,
+			gross_weight,
+			net_weight,
+			price,
+			length,
+			width,
+			height,
+			rcv_uom,
+			ship_uom,
+			print_uom,
+			max_limit,
+			min_limit,
+			is_validity,
+			shelf_life,
+			life_type,
+			in_life_days,
+			out_life_days,
+			is_over_rcv,
+			over_rcv_pct,
+			pa_zone,
+			pa_loc,
+			reserve_code,
+			pa_rule,
+			rotation_rule,
+			prealloc_rule,
+			alloc_rule,
+			cycle_code,
+			cd_class,
+			last_count_time,
+			first_in_time,
+			style,
+			color,
+			sku_size,
+			is_dg,
+			dg_class,
+			unno,
+			is_cold,
+			min_temp,
+			max_temp,
+			hs_code,
+			is_serial,
+			is_parent,
+			is_qc,
+			qc_phase,
+			qc_rule,
+			item_group_code,
+			rate_group,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			def11,
+			def12,
+			def13,
+			def14,
+			def15,
+			period_of_validity,
+			validity_unit,
+			type_code,
+			stock_cur_id,
+			quick_code,
+			form_code,
+			emergency_tel,
+			effective_date,
+			expiration_date,
+			flash_point,
+			burning_point,
+			provide_cust_code,
+			audit_status,
+			temp_level,
+			material_level,
+			material_alias1,
+			material_alias2,
+			material_alias3,
+			material_alias4,
+			material_alias5,
+			material_group1,
+			material_group2,
+			material_group3,
+			material_group4,
+			material_group5,
+			material_group6,
+			material_group7,
+			material_group8,
+			material_group9,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			is_un_serial,
+			qty_unit,
+			spec,
+			sku_customer_code
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.ownerCode},
+			#{item.skuCode},
+			#{item.skuName},
+			#{item.foreignName},
+			#{item.shortName},
+			#{item.isEnable},
+			#{item.barCode},
+			#{item.supBarCode},
+			#{item.packCode},
+			#{item.lotCode},
+			#{item.abc},
+			#{item.groupCode},
+			#{item.materialCode},
+			#{item.cubic},
+			#{item.grossWeight},
+			#{item.netWeight},
+			#{item.price},
+			#{item.length},
+			#{item.width},
+			#{item.height},
+			#{item.rcvUom},
+			#{item.shipUom},
+			#{item.printUom},
+			#{item.maxLimit},
+			#{item.minLimit},
+			#{item.isValidity},
+			#{item.shelfLife},
+			#{item.lifeType},
+			#{item.inLifeDays},
+			#{item.outLifeDays},
+			#{item.isOverRcv},
+			#{item.overRcvPct},
+			#{item.paZone},
+			#{item.paLoc},
+			#{item.reserveCode},
+			#{item.paRule},
+			#{item.rotationRule},
+			#{item.preallocRule},
+			#{item.allocRule},
+			#{item.cycleCode},
+			#{item.cdClass},
+			#{item.lastCountTime},
+			#{item.firstInTime},
+			#{item.style},
+			#{item.color},
+			#{item.skuSize},
+			#{item.isDg},
+			#{item.dgClass},
+			#{item.unno},
+			#{item.isCold},
+			#{item.minTemp},
+			#{item.maxTemp},
+			#{item.hsCode},
+			#{item.isSerial},
+			#{item.isParent},
+			#{item.isQc},
+			#{item.qcPhase},
+			#{item.qcRule},
+			#{item.itemGroupCode},
+			#{item.rateGroup},
+			#{item.def1},
+			#{item.def2},
+			#{item.def3},
+			#{item.def4},
+			#{item.def5},
+			#{item.def6},
+			#{item.def7},
+			#{item.def8},
+			#{item.def9},
+			#{item.def10},
+			#{item.def11},
+			#{item.def12},
+			#{item.def13},
+			#{item.def14},
+			#{item.def15},
+			#{item.periodOfValidity},
+			#{item.validityUnit},
+			#{item.typeCode},
+			#{item.stockCurId},
+			#{item.quickCode},
+			#{item.formCode},
+			#{item.emergencyTel},
+			#{item.effectiveDate},
+			#{item.expirationDate},
+			#{item.flashPoint},
+			#{item.burningPoint},
+			#{item.provideCustCode},
+			#{item.auditStatus},
+			#{item.tempLevel},
+			#{item.materialLevel},
+			#{item.materialAlias1},
+			#{item.materialAlias2},
+			#{item.materialAlias3},
+			#{item.materialAlias4},
+			#{item.materialAlias5},
+			#{item.materialGroup1},
+			#{item.materialGroup2},
+			#{item.materialGroup3},
+			#{item.materialGroup4},
+			#{item.materialGroup5},
+			#{item.materialGroup6},
+			#{item.materialGroup7},
+			#{item.materialGroup8},
+			#{item.materialGroup9},
+			#{item.remarks},
+			#{item.recVer},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.delFlag},
+			#{item.orgId},
+			#{item.isUnSerial},
+			#{item.qtyUnit},
+			#{item.spec},
+			#{item.skuCustomerCode}
+		)
+		</foreach>
+	</insert>
+
+    <update id="update">
+		UPDATE cd_wh_sku
+		SET owner_code         = #{ownerCode},
+			sku_code           = #{skuCode},
+			sku_name           = #{skuName},
+			foreign_name       = #{foreignName},
+			short_name         = #{shortName},
+			is_enable          = #{isEnable},
+			bar_code           = #{barCode},
+			sup_bar_code       = #{supBarCode},
+			pack_code          = #{packCode},
+			lot_code           = #{lotCode},
+			abc                = #{abc},
+			group_code         = #{groupCode},
+			material_code      = #{materialCode},
+			cubic              = #{cubic},
+			gross_weight       = #{grossWeight},
+			net_weight         = #{netWeight},
+			price              = #{price},
+			length             = #{length},
+			width              = #{width},
+			height             = #{height},
+			rcv_uom            = #{rcvUom},
+			ship_uom           = #{shipUom},
+			print_uom          = #{printUom},
+			max_limit          = #{maxLimit},
+			min_limit          = #{minLimit},
+			is_validity        = #{isValidity},
+			shelf_life         = #{shelfLife},
+			life_type          = #{lifeType},
+			in_life_days       = #{inLifeDays},
+			out_life_days      = #{outLifeDays},
+			is_over_rcv        = #{isOverRcv},
+			over_rcv_pct       = #{overRcvPct},
+			pa_zone            = #{paZone},
+			pa_loc             = #{paLoc},
+			reserve_code       = #{reserveCode},
+			pa_rule            = #{paRule},
+			rotation_rule      = #{rotationRule},
+			prealloc_rule      = #{preallocRule},
+			alloc_rule         = #{allocRule},
+			cycle_code         = #{cycleCode},
+			cd_class           = #{cdClass},
+			last_count_time    = #{lastCountTime},
+			first_in_time      = #{firstInTime},
+			style              = #{style},
+			color              = #{color},
+			sku_size           = #{skuSize},
+			is_dg              = #{isDg},
+			dg_class           = #{dgClass},
+			unno               = #{unno},
+			is_cold            = #{isCold},
+			min_temp           = #{minTemp},
+			max_temp           = #{maxTemp},
+			hs_code            = #{hsCode},
+			is_serial          = #{isSerial},
+			is_parent          = #{isParent},
+			is_qc              = #{isQc},
+			qc_phase           = #{qcPhase},
+			qc_rule            = #{qcRule},
+			item_group_code    = #{itemGroupCode},
+			rate_group         = #{rateGroup},
+			def1               = #{def1},
+			def2               = #{def2},
+			def3               = #{def3},
+			def4               = #{def4},
+			def5               = #{def5},
+			def6               = #{def6},
+			def7               = #{def7},
+			def8               = #{def8},
+			def9               = #{def9},
+			def10              = #{def10},
+			def11              = #{def11},
+			def12              = #{def12},
+			def13              = #{def13},
+			def14              = #{def14},
+			def15              = #{def15},
+			period_of_validity = #{periodOfValidity},
+			validity_unit      = #{validityUnit},
+			type_code          = #{typeCode},
+			stock_cur_id       = #{stockCurId},
+			quick_code         = #{quickCode},
+			form_code          = #{formCode},
+			emergency_tel      = #{emergencyTel},
+			effective_date     = #{effectiveDate},
+			expiration_date    = #{expirationDate},
+			flash_point        = #{flashPoint},
+			burning_point      = #{burningPoint},
+			provide_cust_code  = #{provideCustCode},
+			audit_status       = #{auditStatus},
+			temp_level         = #{tempLevel},
+			material_level     = #{materialLevel},
+			material_alias1    = #{materialAlias1},
+			material_alias2    = #{materialAlias2},
+			material_alias3    = #{materialAlias3},
+			material_alias4    = #{materialAlias4},
+			material_alias5    = #{materialAlias5},
+			material_group1    = #{materialGroup1},
+			material_group2    = #{materialGroup2},
+			material_group3    = #{materialGroup3},
+			material_group4    = #{materialGroup4},
+			material_group5    = #{materialGroup5},
+			material_group6    = #{materialGroup6},
+			material_group7    = #{materialGroup7},
+			material_group8    = #{materialGroup8},
+			material_group9    = #{materialGroup9},
+			remarks            = #{remarks},
+			rec_ver            = #{recVer} + 1,
+			update_by          = #{updateBy.id},
+			update_date        = #{updateDate},
+			is_un_serial       = #{isUnSerial},
+			qty_unit           = #{qtyUnit},
+			spec               = #{spec},
+			sku_customer_code  = #{skuCustomerCode}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_wh_sku SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM cd_wh_sku
+		WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM cd_wh_sku WHERE owner_code = #{ownerCode} and sku_code = #{skuCode} and org_id = #{orgId}
+	</delete>
+
+	<select id="getExistSku" resultType="BanQinCdWhSku">
+		SELECT <include refid="banQinCdWhSkuColumns"/>
+		FROM cd_wh_sku a
+		WHERE 1=1
+		AND a.org_id = #{orgId}
+		AND (a.owner_code, a.sku_code) IN ${ownerSkuList}
+	</select>
+
+</mapper>

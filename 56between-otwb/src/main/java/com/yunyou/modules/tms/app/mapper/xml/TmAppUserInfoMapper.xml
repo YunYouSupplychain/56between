@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.app.mapper.TmAppUserInfoMapper">
+    
+	<sql id="tmAppUserInfoColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.login_name AS "loginName",
+		a.password AS "password",
+		a.name AS "name",
+		a.status AS "status",
+		a.user_id AS "userId",
+		a.is_customer AS "isCustomer",
+		a.transport_obj_code AS "transportObjCode",
+		a.is_driver AS "isDriver",
+		a.driver AS "driver",
+		a.org_id AS "orgId",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.is_safety_checker AS "isSafetyChecker"
+	</sql>
+	
+	<sql id="tmAppUserInfoJoins">
+		
+	</sql>
+
+	<select id="get" resultType="TmAppUserInfo" >
+		SELECT 
+			<include refid="tmAppUserInfoColumns"/>
+		FROM tm_app_user_info a
+		<include refid="tmAppUserInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmAppUserInfo" >
+		SELECT 
+			<include refid="tmAppUserInfoColumns"/>
+		FROM tm_app_user_info a
+		<include refid="tmAppUserInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="loginName != null and loginName != ''">
+				AND a.login_name = #{loginName}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="isCustomer != null and isCustomer != ''">
+				AND a.is_customer = #{isCustomer}
+			</if>
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code = #{transportObjCode}
+			</if>
+			<if test="isDriver != null and isDriver != ''">
+				AND a.is_driver = #{isDriver}
+			</if>
+			<if test="driver != null and driver != ''">
+				AND a.driver = #{driver}
+			</if>
+			<if test="isSafetyChecker != null and isSafetyChecker != ''">
+				AND a.is_safety_checker = #{isSafetyChecker}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 = #{def1}
+			</if>
+			<if test="def2 != null and def2 != ''">
+				AND a.def2 = #{def2}
+			</if>
+			<if test="def3 != null and def3 != ''">
+				AND a.def3 = #{def3}
+			</if>
+			<if test="def4 != null and def4 != ''">
+				AND a.def4 = #{def4}
+			</if>
+			<if test="def5 != null and def5 != ''">
+				AND a.def5 = #{def5}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmAppUserInfo" >
+		SELECT 
+			<include refid="tmAppUserInfoColumns"/>
+		FROM tm_app_user_info a
+		<include refid="tmAppUserInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_app_user_info(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			login_name,
+			password,
+			name,
+			status,
+			user_id,
+			is_customer,
+			transport_obj_code,
+			is_driver,
+			driver,
+			org_id,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			rec_ver,
+			base_org_id,
+			is_safety_checker
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{loginName},
+			#{password},
+			#{name},
+			#{status},
+			#{userId},
+			#{isCustomer},
+			#{transportObjCode},
+			#{isDriver},
+			#{driver},
+			#{orgId},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{recVer},
+			#{baseOrgId},
+			#{isSafetyChecker}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_app_user_info SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			del_flag = #{delFlag},
+			remarks = #{remarks},
+			login_name = #{loginName},
+			password = #{password},
+			name = #{name},
+			status = #{status},
+			user_id = #{userId},
+			is_customer = #{isCustomer},
+			transport_obj_code = #{transportObjCode},
+			is_driver = #{isDriver},
+			driver = #{driver},
+			org_id = #{orgId},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			base_org_id = #{baseOrgId},
+			is_safety_checker = #{isSafetyChecker},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_app_user_info
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_app_user_info SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TmAppUserInfo" statementType="STATEMENT">
+		select * FROM tm_app_user_info  where ${propertyName} = '${value}'
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.tms.app.entity.extend.TmAppUserInfoEntity" >
+		SELECT
+		tto.transport_obj_name AS "transportObjName",
+		td.name AS "driverName",
+		so.name AS "orgName",
+		<include refid="tmAppUserInfoColumns"/>
+		FROM tm_app_user_info a
+		LEFT JOIN tm_transport_obj tto ON a.transport_obj_code = tto.transport_obj_code AND a.org_id = tto.org_id
+		LEFT JOIN tm_driver td ON a.driver = td.code
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		<where>
+			<choose>
+				<when test="transportObjCode != null and transportObjCode != '' and orgId != null and orgId != ''">
+					a.transport_obj_code = #{transportObjCode} AND a.org_id = #{orgId}
+				</when>
+				<otherwise>
+					a.id = #{id}
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.app.entity.extend.TmAppUserInfoEntity" >
+		SELECT
+		tto.transport_obj_name AS "transportObjName",
+		td.name AS "driverName",
+		so.name AS "orgName",
+		<include refid="tmAppUserInfoColumns"/>
+		FROM tm_app_user_info a
+		LEFT JOIN tm_transport_obj tto ON a.transport_obj_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+		LEFT JOIN tm_driver td ON a.driver = td.code AND a.base_org_id = td.org_id
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		<where>
+			1 = 1
+			${dataScope}
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+			<if test="loginName != null and loginName != ''">
+				AND a.login_name = #{loginName}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="isCustomer != null and isCustomer != ''">
+				AND a.is_customer = #{isCustomer}
+			</if>
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code = #{transportObjCode}
+			</if>
+			<if test="isDriver != null and isDriver != ''">
+				AND a.is_driver = #{isDriver}
+			</if>
+			<if test="isSafetyChecker != null and isSafetyChecker != ''">
+				AND a.is_safety_checker = #{isSafetyChecker}
+			</if>
+			<if test="driver != null and driver != ''">
+				AND a.driver = #{driver}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 = #{def1}
+			</if>
+			<if test="def2 != null and def2 != ''">
+				AND a.def2 = #{def2}
+			</if>
+			<if test="def3 != null and def3 != ''">
+				AND a.def3 = #{def3}
+			</if>
+			<if test="def4 != null and def4 != ''">
+				AND a.def4 = #{def4}
+			</if>
+			<if test="def5 != null and def5 != ''">
+				AND a.def5 = #{def5}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findTransportObjGrid" resultType="com.yunyou.modules.tms.basic.entity.extend.TmTransportObjEntity" >
+		SELECT
+			a.id AS "id",
+			a.create_by AS "createBy.id",
+			a.create_date AS "createDate",
+			a.update_by AS "updateBy.id",
+			a.update_date AS "updateDate",
+			a.remarks AS "remarks",
+			a.del_flag AS "delFlag",
+			a.transport_obj_code AS "transportObjCode",
+			a.transport_obj_name AS "transportObjName",
+			a.transport_obj_short_name AS "transportObjShortName",
+			a.contact AS "contact",
+			a.phone AS "phone",
+			a.tel AS "tel",
+			a.fax AS "fax",
+			a.email AS "email",
+			a.url AS "url",
+			a.area_id AS "areaId",
+			a.address AS "address",
+			a.un_code AS "unCode",
+			a.sign_by AS "signBy",
+			a.brand AS "brand",
+			a.transport_obj_type AS "transportObjType",
+			a.carrier_matched_org_id AS "carrierMatchedOrgId",
+			a.outlet_matched_org_id AS "outletMatchedOrgId",
+			a.org_id AS "orgId",
+			a.rec_ver AS "recVer"
+		FROM tm_transport_obj a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code LIKE concat('%', #{transportObjCode}, '%')
+			</if>
+			<if test="transportObjName != null and transportObjName != ''">
+				AND a.transport_obj_name LIKE concat('%', #{transportObjName}, '%')
+			</if>
+			<if test="transportObjType != null and transportObjType != ''">
+				AND a.transport_obj_type LIKE concat('%', #{transportObjType}, '%')
+			</if>
+			<if test="carrierMatchedOrgId != null and carrierMatchedOrgId != ''">
+				AND a.carrier_matched_org_id = #{carrierMatchedOrgId}
+			</if>
+			<if test="outletMatchedOrgId != null and outletMatchedOrgId != ''">
+				AND a.outlet_matched_org_id = #{outletMatchedOrgId}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.transport_obj_code LIKE concat('%', #{codeAndName}, '%')
+				OR a.transport_obj_name LIKE concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findDriverGrid" resultType="com.yunyou.modules.tms.basic.entity.extend.TmDriverEntity" >
+		SELECT
+			tto.transport_obj_name AS "carrierName",
+			us.name AS "accountName",
+			a.id AS "id",
+			a.create_by AS "createBy.id",
+			a.create_date AS "createDate",
+			a.update_by AS "updateBy.id",
+			a.update_date AS "updateDate",
+			a.remarks AS "remarks",
+			a.del_flag AS "delFlag",
+			a.code AS "code",
+			a.name AS "name",
+			a.carrier_code AS "carrierCode",
+			a.phone AS "phone",
+			a.id_card AS "idCard",
+			a.birth_date AS "birthDate",
+			a.temp_residence_certificate_no AS "tempResidenceCertificateNo",
+			a.nation AS "nation",
+			a.native_place AS "nativePlace",
+			a.education_level AS "educationLevel",
+			a.marital_status AS "maritalStatus",
+			a.political_affiliation AS "politicalAffiliation",
+			a.allow_driver_car_type AS "allowDriverCarType",
+			a.personnel_nature AS "personnelNature",
+			a.driving_age AS "drivingAge",
+			a.is_military_service AS "isMilitaryService",
+			a.is_internal_driver AS "isInternalDriver",
+			a.emergency_contact AS "emergencyContact",
+			a.emergency_contact_relation AS "emergencyContactRelation",
+			a.emergency_contact_tel AS "emergencyContactTel",
+			a.current_address AS "currentAddress",
+			a.registered_address AS "registeredAddress",
+			a.contract_no AS "contractNo",
+			a.report_date AS "reportDate",
+			a.contract_expire_date AS "contractExpireDate",
+			a.basic_wage AS "basicWage",
+			a.employment_qualification_certificate_no AS "employmentQualificationCertificateNo",
+			a.comprehensive_insurance_no AS "comprehensiveInsuranceNo",
+			a.social_insurance_no AS "socialInsuranceNo",
+			a.work_card_no AS "wordCardNo",
+			a.driver_license_no AS "driverLicenseNo",
+			a.driver_license_type AS "driverLicenseType",
+			a.first_receive_license_date AS "firstReceiveLicenseDate",
+			a.driver_license_annual_inspection_date AS "driverLicenseAnnualInspectionDate",
+			a.deduct_point AS "deductPoint",
+			a.ban_driving_date_fm AS "banDrivingDateFm",
+			a.ban_driving_date_to AS "banDriverDateTo",
+			a.ban_driving_reason AS "banDrivingReason",
+			a.height AS "height",
+			a.weight AS "weight",
+			a.blood_type AS "bloodType",
+			a.vision AS "vision",
+			a.shoe_size AS "shoeSize",
+			a.health AS "health",
+			a.health_certificate_no AS "healthCertificateNo",
+			a.health_certificate_expire_date AS "healthCertificateExpireDate",
+			a.mentality_quality AS "mentalityQuality",
+			a.interpersonal_relationship AS "interpersonalRelationship",
+			a.team_spirit AS "teamSpirit",
+			a.org_id AS "orgId",
+			a.account AS "account",
+			a.rec_ver AS "recVer"
+		FROM tm_driver a
+		LEFT JOIN tm_transport_obj tto on a.carrier_code = tto.transport_obj_code AND a.org_id = tto.org_id
+		LEFT JOIN sys_user us on a.account = us.login_name
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="code != null and code != ''">
+				AND a.code LIKE concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%', #{name}, '%')
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.code LIKE concat('%', #{codeAndName}, '%')
+				OR a.name LIKE concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

@@ -1,0 +1,1281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmSoAllocMapper">
+    
+	<sql id="banQinWmSoAllocColumns">
+		a.id AS "id",
+		a.alloc_id AS "allocId",
+		a.wave_no AS "waveNo",
+		a.so_no AS "soNo",
+		a.line_no AS "lineNo",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.lot_num AS "lotNum",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.consignee_code AS "consigneeCode",
+		a.status AS "status",
+		a.check_status AS "checkStatus",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_uom AS "qtyUom",
+		a.qty_ea AS "qtyEa",
+		a.to_loc AS "toLoc",
+		a.to_id AS "toId",
+		a.pick_op AS "pickOp",
+		a.pick_time AS "pickTime",
+		a.check_op AS "checkOp",
+		a.check_time AS "checkTime",
+		a.pack_op AS "packOp",
+		a.pack_time AS "packTime",
+		a.ship_op AS "shipOp",
+		a.ship_time AS "shipTime",
+		a.print_num AS "printNum",
+		a.pick_no AS "pickNo",
+		a.tracking_no AS "trackingNo",
+		a.pack_weight AS "packWeight",
+		a.asn_no AS "asnNo",
+		a.asn_line_no AS "asnLineNo",
+		a.rcv_line_no AS "rcvLineNo",
+		a.cd_type AS "cdType",
+		a.cd_out_step AS "cdOutStep",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+        a.case_no AS "caseNo",
+        a.pack_scan_count AS "packScanCount"
+	</sql>
+	
+	<sql id="banQinWmSoAllocJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+    
+	<select id="getEntity" resultType="BanQinWmSoAllocEntity" >
+		SELECT 
+			<include refid="banQinWmSoAllocColumns"/>,
+            ec.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+            cws.quick_code AS skuQuickCode,
+            cws.is_serial AS isSerial,
+            cws.cubic AS cubic,
+            cws.net_weight AS netWeight,
+            cws.gross_weight AS grossWeight,
+            cws.pa_rule AS paRule,
+            cws.reserve_code AS reserveCode,
+            cdpa.cdpa_format AS packDesc,
+            cdpr.cdpr_desc AS uomDesc,
+            cdpr.cdpr_quantity AS uomQty,
+            wila.lot_att01 AS lotAtt01,
+            wila.lot_att02 AS lotAtt02,
+            wila.lot_att03 AS lotAtt03,
+            wila.lot_att04 AS lotAtt04,
+            wila.lot_att05 AS lotAtt05,
+            wila.lot_att06 AS lotAtt06,
+            wila.lot_att07 AS lotAtt07,
+            wila.lot_att08 AS lotAtt08,
+            wila.lot_att09 AS lotAtt09,
+            wila.lot_att10 AS lotAtt10,
+            wila.lot_att11 AS lotAtt11,
+            wila.lot_att12 AS lotAtt12,
+            cws.spec AS skuSpec,
+            cws.qty_unit AS qtyUnit
+		FROM wm_so_alloc a
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cdpa ON a.pack_code = cdpa.cdpa_code AND a.org_id = cdpa.org_id
+        LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND a.uom = cdpr.cdpr_unit_level
+        LEFT JOIN wm_inv_lot_att wila ON a.lot_num = wila.lot_num AND a.org_id = wila.org_id
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="get" resultType="BanQinWmSoAlloc" >
+        SELECT
+            <include refid="banQinWmSoAllocColumns"/>
+        FROM wm_so_alloc a
+        <include refid="banQinWmSoAllocJoins"/>
+        WHERE a.id = #{id}
+    </select>
+	
+	<select id="findList" resultType="BanQinWmSoAlloc" >
+		SELECT 
+			<include refid="banQinWmSoAllocColumns"/>
+		FROM wm_so_alloc a
+		<include refid="banQinWmSoAllocJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			<if test="allocId != null and allocId != ''">
+				AND a.alloc_id = #{allocId}
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no = #{soNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num = #{lotNum}
+			</if>
+			<if test="locCode != null and locCode != ''">
+				AND a.loc_code = #{locCode}
+			</if>
+			<if test="traceId != null and traceId != ''">
+				AND a.trace_id = #{traceId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+	</select>
+
+    <select id="findEntity" resultType="BanQinWmSoAllocEntity" >
+        SELECT
+            ec.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+            cws.quick_code AS skuQuickCode,
+            cws.is_serial AS isSerial,
+            cws.cubic AS cubic,
+            cws.net_weight AS netWeight,
+            cws.gross_weight AS grossWeight,
+            cws.pa_rule AS paRule,
+            cws.reserve_code AS reserveCode,
+            cdpa.cdpa_format AS packDesc,
+            cdpr.cdpr_desc AS uomDesc,
+            cdpr.cdpr_quantity AS uomQty,
+            wila.lot_att01 AS lotAtt01,
+            wila.lot_att02 AS lotAtt02,
+            wila.lot_att03 AS lotAtt03,
+            wila.lot_att04 AS lotAtt04,
+            wila.lot_att05 AS lotAtt05,
+            wila.lot_att06 AS lotAtt06,
+            wila.lot_att07 AS lotAtt07,
+            wila.lot_att08 AS lotAtt08,
+            wila.lot_att09 AS lotAtt09,
+            wila.lot_att10 AS lotAtt10,
+            wila.lot_att11 AS lotAtt11,
+            wila.lot_att12 AS lotAtt12,
+            creater.name AS "createBy.name",
+            updater.name AS "updateBy.name",
+            so.name AS orgName,
+            cws.spec AS skuSpec,
+            cws.qty_unit AS qtyUnit,
+            wsd.def1 AS def1,
+            wsd.def2 AS def2,
+            wsd.def3 AS def3,
+            wsd.def4 AS def4,
+            wsd.def5 AS def5,
+            wsd.qty_so_ea AS qtySoEa,
+            <include refid="banQinWmSoAllocColumns"/>
+        FROM wm_so_alloc a
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cdpa ON a.pack_code = cdpa.cdpa_code AND a.org_id = cdpa.org_id
+        LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND a.uom = cdpr.cdpr_unit_level
+        LEFT JOIN wm_inv_lot_att wila ON a.lot_num = wila.lot_num AND a.org_id = wila.org_id
+        LEFT JOIN wm_so_detail wsd ON wsd.so_no = a.so_no AND wsd.line_no = a.line_no AND wsd.org_id = a.org_id
+        <include refid="banQinWmSoAllocJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            ${dataScope}
+            <if test="allocId != null and allocId != ''">
+                AND a.alloc_id = #{allocId}
+            </if>
+            <if test="waveNo != null and waveNo != ''">
+                AND a.wave_no = #{waveNo}
+            </if>
+            <if test="soNo != null and soNo != ''">
+                AND a.so_no = #{soNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num = #{lotNum}
+            </if>
+            <if test="locCode != null and locCode != ''">
+                AND a.loc_code = #{locCode}
+            </if>
+            <if test="traceId != null and traceId != ''">
+                AND a.trace_id = #{traceId}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="toId != null and toId != ''">
+                AND a.to_id = #{toId}
+            </if>
+            <if test="trackingNo != null and trackingNo != ''">
+                AND a.tracking_no = #{trackingNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="findPage" resultType="BanQinWmSoAllocEntity" >
+        SELECT
+            <include refid="banQinWmSoAllocColumns"/>,
+            ec.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+            cws.quick_code AS skuQuickCode,
+            cws.is_serial AS isSerial,
+            cws.cubic AS cubic,
+            cws.net_weight AS netWeight,
+            cws.gross_weight AS grossWeight,
+            cws.pa_rule AS paRule,
+            cws.reserve_code AS reserveCode,
+            cdpa.cdpa_format AS packDesc,
+            cdpr.cdpr_desc AS uomDesc,
+            cdpr.cdpr_quantity AS uomQty,
+            wila.lot_att01 AS lotAtt01,
+            wila.lot_att02 AS lotAtt02,
+            wila.lot_att03 AS lotAtt03,
+            wila.lot_att04 AS lotAtt04,
+            wila.lot_att05 AS lotAtt05,
+            wila.lot_att06 AS lotAtt06,
+            wila.lot_att07 AS lotAtt07,
+            wila.lot_att08 AS lotAtt08,
+            wila.lot_att09 AS lotAtt09,
+            wila.lot_att10 AS lotAtt10,
+            wila.lot_att11 AS lotAtt11,
+            wila.lot_att12 AS lotAtt12,
+            creater.name AS "createBy.name",
+            updater.name AS "updateBy.name",
+            so.name AS orgName,
+            wsh.consignee_name AS consigneeName,
+            wsh.order_time AS orderTime,
+            cws.spec AS skuSpec,
+            cws.qty_unit AS qtyUnit
+        FROM wm_so_alloc a
+        LEFT JOIN wm_so_header wsh ON a.so_no = wsh.so_no AND a.org_id = wsh.org_id
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cdpa ON a.pack_code = cdpa.cdpa_code AND a.org_id = cdpa.org_id
+        LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND a.uom = cdpr.cdpr_unit_level
+        LEFT JOIN wm_inv_lot_att wila ON a.lot_num = wila.lot_num AND a.org_id = wila.org_id
+        <include refid="banQinWmSoAllocJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="allocId != null and allocId != ''">
+                AND a.alloc_id = #{allocId}
+            </if>
+            <if test="waveNo != null and waveNo != ''">
+                AND a.wave_no = #{waveNo}
+            </if>
+            <if test="soNo != null and soNo != ''">
+                AND a.so_no = #{soNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num = #{lotNum}
+            </if>
+            <if test="locCode != null and locCode != ''">
+                AND a.loc_code = #{locCode}
+            </if>
+            <if test="traceId != null and traceId != ''">
+                AND a.trace_id = #{traceId}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="consigneeCode != null and consigneeCode != ''">
+                AND a.consignee_code = #{consigneeCode}
+            </if>
+            <if test="pickNo != null and pickNo != ''">
+                AND a.pick_no = #{pickNo}
+            </if>
+            <if test="beginOrderTime != null and beginOrderTime !=''">
+                <![CDATA[ AND wsh.order_time >= #{beginOrderTime} ]]>
+            </if>
+            <if test="endOrderTime != null and endOrderTime !=''">
+                <![CDATA[ AND wsh.order_time <= #{endOrderTime} ]]>
+            </if>
+            <if test="statusList != null and statusList.size() > 0">
+                AND a.status IN
+                <foreach collection="statusList" item="status" index="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.alloc_id
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findShipData" resultType="com.yunyou.modules.wms.report.entity.WmShipDataEntity" >
+        SELECT
+            wsh.so_type AS soType,
+            wsh.order_time AS orderTime,
+            owner.ebcu_name_cn AS ownerName,
+            owner.ebcu_short_name AS deliveryName,
+            owner.ebcu_tel AS deliveryTel,
+            owner.ebcu_address AS deliveryAddress,
+            owner.ebcu_zip_code AS deliveryZip,
+            owner.ebcu_substr1 AS deliveryArea,
+            wsh.contact_name AS consignee,
+            wsh.contact_tel AS consigneeTel,
+            wsh.contact_addr AS consigneeAddress,
+            wsh.contact_zip AS consigneeZip,
+            wsh.def17 AS consigneeArea,
+            wsh.def1 AS businessNo,
+            wsh.def2 AS chainNo,
+            wsh.def3 AS taskNo,
+            wsh.def5 AS customerOrderNo,
+            wsh.def16 AS externalNo,
+            cws.sku_name AS skuName,
+            wsh.carrier_code AS carrierCode,
+            carrier.ebcu_name_cn AS carrierName,
+            so.name AS orgName,
+            <include refid="banQinWmSoAllocColumns"/>
+        FROM wm_so_alloc a
+        LEFT JOIN wm_so_header wsh ON a.so_no = wsh.so_no AND a.org_id = wsh.org_id
+        LEFT JOIN eb_customer owner ON owner.ebcu_customer_no = a.owner_code AND owner.org_id = a.org_id
+        LEFT JOIN eb_customer carrier ON wsh.carrier_code = carrier.ebcu_customer_no AND carrier.org_id = wsh.org_id
+        LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            AND a.status = '80'
+            AND a.org_id = #{orgId}
+            <if test="soNo != null and soNo != ''">
+                AND a.so_no = #{soNo}
+            </if>
+            <if test="soType != null and soType != ''">
+                AND wsh.so_type = #{soType}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="businessNo != null and businessNo != ''">
+                AND wsh.def1 = #{businessNo}
+            </if>
+            <if test="chainNo != null and chainNo != ''">
+                AND wsh.def2 = #{chainNo}
+            </if>
+            <if test="taskNo != null and taskNo != ''">
+                AND wsh.def3 = #{taskNo}
+            </if>
+            <if test="customerOrderNo != null and customerOrderNo != ''">
+                AND wsh.def5 = #{customerOrderNo}
+            </if>
+            <if test="externalNo != null and externalNo != ''">
+                AND wsh.def16 = #{externalNo}
+            </if>
+            <if test="waveNo != null and waveNo != ''">
+                AND a.wave_no = #{waveNo}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="trackingNo != null and trackingNo != ''">
+                AND a.tracking_no = #{trackingNo}
+            </if>
+            <if test="shipTimeFm != null and shipTimeFm != ''">
+                <![CDATA[AND a.ship_time >= #{shipTimeFm}]]>
+            </if>
+            <if test="shipTimeTo != null and shipTimeTo != ''">
+                <![CDATA[AND a.ship_time <= #{shipTimeTo}]]>
+            </if>
+            <if test="orderTimeFm != null and orderTimeFm != ''">
+                <![CDATA[AND wsh.order_time >= #{orderTimeFm}]]>
+            </if>
+            <if test="orderTimeTo != null and orderTimeTo != ''">
+                <![CDATA[AND wsh.order_time <= #{orderTimeTo}]]>
+            </if>
+            <if test="caseNo != null and caseNo != ''">
+                AND a.case_no = #{caseNo}
+            </if>
+            <if test="carrierCode != null and carrierCode != ''">
+                AND wsh.carrier_code = #{carrierCode}
+            </if>
+            <if test="isTracking != null and isTracking == 'Y'.toString()">
+                AND a.tracking_no IS NOT NULL AND a.tracking_no != ''
+            </if>
+            <if test="isTracking != null and isTracking == 'N'.toString()">
+                AND (a.tracking_no IS NULL OR a.tracking_no = '')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.ship_time DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findByNo" resultType="BanQinWmSoAllocEntity" >
+        SELECT DISTINCT
+            <include refid="banQinWmSoAllocColumns"/>,
+            cws.is_serial AS isSerial,
+            cws.cubic AS cubic,
+            cws.net_weight AS netWeight,
+            cws.gross_weight AS grossWeight,
+            cws.pa_rule AS paRule,
+            cws.reserve_code AS reserveCode,
+            cws.spec AS skuSpec,
+            cws.qty_unit AS qtyUnit
+        FROM wm_so_alloc a
+        LEFT JOIN wm_so_header wsh ON wsh.so_no = a.so_no AND wsh.org_id = a.org_id
+        LEFT JOIN wm_so_detail wsd ON wsd.so_no = a.so_no AND wsd.line_no = a.line_no AND wsd.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+        <where>
+            1 = 1
+            AND a.org_id = #{orgId}
+            AND wsd.status != '90'
+            AND wsh.status != '90'
+            AND wsh.status != '99'
+            AND (wsh.intercept_status = '00' or wsh.intercept_status = '90')
+            AND wsh.hold_status = '00'
+            AND a.qty_ea &gt; 0
+            AND a.status = #{status}
+            <if test="waveNos != null and waveNos.size > 0">
+                AND a.wave_no IN
+                <foreach collection="waveNos" item="waveNo" index="waveNo" open="(" separator="," close=")">
+                    #{waveNo}
+                </foreach>
+            </if>
+            <if test="soNos != null and soNos.size > 0">
+                AND a.so_no IN
+                <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+                    #{soNo}
+                </foreach>
+            </if>
+            <if test="lineNos != null and lineNos != ''">
+                AND (a.so_no, a.line_no) IN (${lineNos})
+            </if>
+            <if test="allocIds != null and allocIds.size > 0">
+                AND a.alloc_id IN
+                <foreach collection="allocIds" item="allocId" index="allocId" open="(" separator="," close=")">
+                    #{allocId}
+                </foreach>
+            </if>
+            <if test="toIds != null and toIds.size > 0">
+                AND a.to_id IN
+                <foreach collection="toIds" item="toId" index="toId" open="(" separator="," close=")">
+                    #{toId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="checkPackingTotalInfo" resultType="java.util.Map" >
+        SELECT sum(wsa.qty_ea * ifNull(cws.gross_weight, 0)) AS weight,
+               sum(wsa.qty_ea * ifNull(cws.cubic, 0)) AS cubic,
+               count(distinct wsa.sku_code) AS skuItemQty,
+               sum(wsa.qty_ea) as skuQty
+         FROM wm_so_alloc wsa
+         LEFT JOIN cd_wh_sku cws ON wsa.owner_code = cws.owner_code AND wsa.sku_code = cws.sku_code AND wsa.org_id = cws.org_id
+         LEFT JOIN wm_so_header wsh ON wsa.so_no = wsh.so_no AND wsa.org_id = wsh.org_id
+        WHERE 1=1
+          AND wsh.status = '60'
+          <if test="soNo != null and soNo != ''">
+              AND wsa.so_no = #{soNo}
+          </if>
+          <if test="traceId != null and traceId != ''">
+              AND wsa.trace_id = #{traceId}
+          </if>
+          AND wsa.check_status != '90'
+          AND wsa.org_id d= #{orgId}
+    </select>
+    
+    <select id="findByWaveNos" resultType="BanQinWmSoAllocEntity">
+        SELECT wsa.id AS id,
+               wsa.uom AS uom,
+               cwl.zone_code AS zoneCode
+          FROM wm_so_alloc wsa
+          LEFT JOIN cd_wh_loc cwl ON wsa.loc_code = cwl.loc_code AND wsa.org_id = cwl.org_id
+         WHERE 1=1
+           AND wsa.org_id = #{orgId}
+           <if test="uom != null and uom != ''">
+               AND wsa.uom = #{uom}
+           </if>
+           AND wsa.wave_no IN
+           <foreach collection="waveNos" item="waveNo" index="waveNo" open="(" separator="," close=")">
+               #{waveNo}
+           </foreach>
+        ORDER BY wsa.uom,cwl.pk_seq
+    </select>
+    
+    <select id="getWmSoAllocToTraceId" resultType="BanQinWmSoAllocEntity">
+        SELECT wsa.to_id AS toId,
+            wsa.tracking_no AS trackingNo,
+            wsa.org_id AS orgId,
+            GROUP_CONCAT(DISTINCT wsa.so_no) AS soNo,
+            SUM(wsa.qty_ea) AS qtyEa,
+            SUM(wsa.qty_ea * IFNULL(cws.gross_weight, 0)) AS grossWeight,
+            SUM(wsa.qty_ea * IFNULL(cws.net_weight, 0)) AS netWeight,
+            SUM(wsa.qty_ea * IFNULL(cws.cubic, 0)) AS cubic,
+            GROUP_CONCAT(DISTINCT wsh.logistic_no) AS logisticNno,
+            GROUP_CONCAT(DISTINCT wsh.consignee_code) AS consigneeCode,
+            GROUP_CONCAT(DISTINCT wsh.consignee_name) AS consigneeName,
+            GROUP_CONCAT(DISTINCT wsh.consignee_tel) AS consigneeTel,
+            GROUP_CONCAT(DISTINCT wsh.consignee_addr) AS consigneeAddr,
+            GROUP_CONCAT(DISTINCT wsh.contact_name) AS contactName,
+            GROUP_CONCAT(DISTINCT wsh.contact_tel) AS contactTel,
+            GROUP_CONCAT(DISTINCT wsh.contact_addr) AS contactAddr
+        FROM wm_so_alloc wsa
+        LEFT JOIN cd_wh_sku cws ON wsa.sku_code = cws.sku_code AND wsa.owner_code = cws.owner_code AND wsa.org_id = cws.org_id
+        LEFT JOIN wm_inv_lot_att wila ON wsa.lot_num = wila.lot_num AND wsa.org_id = wila.org_id
+        LEFT JOIN wm_so_header wsh ON wsa.so_no = wsh.so_no AND wsa.org_id = wsh.org_id
+        LEFT JOIN eb_customer ebcu ON wsh.carrier_code = ebcu.ebcu_customer_no AND wsh.org_id = ebcu.org_id
+        LEFT JOIN wm_ld_detail wld ON wsa.alloc_id = wld.alloc_id AND wsa.org_id = wld.org_id
+        WHERE 1 = 1
+          AND (wld.status IS NULL OR wld.status = '')
+          AND wsa.Check_Status IN ('90','99')
+          AND wsh.status NOT IN ('99')
+          AND wsa.status = #{status}
+          AND wsa.org_id = #{orgId}
+          AND wsa.to_id = #{toId}
+          <if test="carrierCode != null and carrierCode != ''">
+              AND wsh.carrier_code = #{carrierCode} 
+          </if>
+          <if test="consigneeCode != null and consigneeCode != ''">
+              AND wsh.consignee_code = #{consigneeCode}
+          </if>
+          <if test="consigneeName != null and consigneeName != ''">
+              AND wsh.consignee_name = #{consigneeName}
+          </if>
+          <if test="consigneeTel != null and consigneeTel != ''">
+              AND wsh.consignee_tel = #{consigneeTel}
+          </if>
+          <if test="consigneeAddr != null and consigneeAddr != ''">
+              AND wsh.consignee_addr = #{consigneeAddr}
+          </if>
+          <if test="contactName != null and contactName != ''">
+              AND wsh.contact_name = #{contactName}
+          </if>
+          <if test="contactTel != null and contactTel != ''">
+              AND wsh.contact_tel = #{contactTel}
+          </if>
+          <if test="contactAddr != null and contactAddr != ''">
+              AND wsh.contact_addr = #{contactAddr}
+          </if>
+          <if test="line != null and line != ''">
+              AND wsh.line = #{line}
+          </if>
+        GROUP BY wsa.to_id, wsa.tracking_no
+    </select>
+    
+    <select id="getWmInterceptSoAlloc" resultType="BanQinWmSoAllocEntity">
+        SELECT DISTINCT <include refid="banQinWmSoAllocColumns"/>
+          FROM wm_so_alloc a
+          LEFT JOIN wm_so_header wsh ON wsh.so_no = a.so_no AND wsh.org_id = a.org_id
+          LEFT JOIN wm_so_detail wsd ON wsd.so_no = a.so_no AND wsd.line_no = a.line_no AND wsd.org_id = a.org_id
+         WHERE 1 = 1
+           AND wsd.status != '90'
+           AND wsh.status != '90'
+           AND wsh.status != '99'
+           AND (wsh.intercept_status = '10' or wsh.intercept_status = '20')
+           <![CDATA[ AND a.qty_ea > 0 ]]>
+           <if test="allocIds != null and allocIds.size > 0">
+              AND a.alloc_id IN
+              <foreach collection="allocIds" item="allocId" index="allocId" open="(" separator="," close=")">
+                  #{allocId}
+              </foreach>
+           </if>
+           <if test="soNos != null and soNos.size > 0">
+              AND a.so_no IN
+              <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+                  #{soNo}
+              </foreach>
+           </if>
+           <if test="lineNos != null and lineNos != ''">
+              AND (a.so_no,a.line_no) in (${lineNos})
+           </if>
+           <if test="waveNos != null and waveNos.size > 0">
+              AND a.wave_no IN
+              <foreach collection="waveNos" item="waveNo" index="waveNo" open="(" separator="," close=")">
+                  #{waveNo}
+              </foreach>
+           </if>
+           AND a.org_id = #{orgId}
+           AND a.status = #{status}
+    </select>
+    
+    <select id="checkNoFullCheckBySoNos" resultType="java.lang.String">
+        SELECT DISTINCT wsa.so_no
+        FROM wm_so_alloc wsa
+        WHERE wsa.org_id = #{orgId}
+        AND wsa.check_status = '00'
+        AND wsa.status = '60'
+        AND wsa.so_no IN
+        <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+            #{soNos}
+        </foreach>
+    </select>
+    
+    <select id="getWmSoAllocByCd" resultType="BanQinWmSoAllocEntity">
+        SELECT
+            <include refid="banQinWmSoAllocColumns"/>,
+            cws.is_serial AS isSerial,
+            cws.cubic AS cubic,
+            cws.net_weight AS netWeight,
+            cws.gross_weight AS grossWeight,
+            cws.pa_rule AS paRule,
+            cws.reserve_code AS reserve,
+            cws.spec AS skuSpec,
+            cws.qty_unit AS qtyUnit
+        FROM wm_so_alloc a
+        LEFT JOIN wm_so_header wsh ON wsh.so_no = a.so_no AND wsh.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+        WHERE a.status != '90'
+          AND wsh.status != '90'
+          AND wsh.status != '99'
+          AND (wsh.intercept_status = '00' OR wsh.intercept_status = '90')
+          AND wsh.hold_status = '00'
+          AND a.qty_ea > 0
+          AND a.org_id = #{orgId}
+          <if test="asnNo != null and asnNo != ''">
+              AND a.asn_no = #{asnNo}
+          </if>
+          <if test="asnLineNo != null and asnLineNo != ''">
+              AND a.asn_line_no = #{asnLineNo}
+          </if>
+          <if test="rcvLineNo != null and rcvLineNo != ''">
+              AND a.rcv_line_no = #{rcvLineNo}
+          </if>
+          <if test="cdTypeList != null and cdTypeList.size() > 0">
+              AND a.cd_type IN
+              <foreach collection="cdTypeList" item="cdType" index="cdType" open="(" separator="," close=")">
+                  #{cdType}
+              </foreach>
+          </if>
+          <if test="statusList != null and statusList.size() > 0">
+              AND a.status IN
+              <foreach collection="statusList" item="status" index="status" open="(" separator="," close=")">
+                  #{status}
+              </foreach>
+          </if>
+        ORDER BY a.alloc_id
+    </select>
+    
+    <select id="getWmCheck" resultType="BanQinWmSoAllocEntity">
+        SELECT <include refid="banQinWmSoAllocColumns"/>,
+            (CASE a.check_status WHEN '99' THEN a.qty_uom ELSE 0 END) AS qtyCheckUom,
+            (CASE a.check_status WHEN '99' then a.qty_ea ELSE 0 END) AS qtyCheckEa,
+            ec.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+            cws.is_serial AS isSerial,
+            cdpa.cdpa_format AS packDesc,
+            cdpr.cdpr_desc AS uomDesc,
+            cdpr.cdpr_quantity AS uomQty,
+            cws.gross_weight AS grossWeight,
+            cws.net_weight AS netWeight,
+            cws.cubic AS cublic,
+            wsh.tracking_no AS soTrackingNo,
+            cwsb.barcode AS barcode,
+            cws.spec AS skuSpec,
+            cws.qty_unit AS qtyUnit
+        FROM wm_so_alloc a
+        LEFT JOIN wm_so_header wsh ON a.so_no = wsh.so_no AND a.org_id = wsh.org_id
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cdpa ON a.pack_code = cdpa.cdpa_code AND a.org_id = cdpa.org_id
+        LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND a.uom = cdpr.cdpr_unit_level
+        LEFT JOIN
+            (select group_concat(b.barcode) AS barcode, b.owner_code, b.sku_code, b.org_id FROM cd_wh_sku_barcode b GROUP BY b.owner_code, b.sku_code, b.org_id) cwsb
+            ON cws.owner_code = cwsb.owner_code AND cws.sku_code = cwsb.sku_code AND cws.org_id = cwsb.org_id
+        WHERE 1 = 1
+        AND a.status &lt;= '60'
+        AND a.check_status &lt;&gt; '90'
+        <if test="soNo != null and soNo != ''">
+            AND a.so_no like concat(#{soNo}, '%')
+        </if>
+        <if test="toId != null and toId != ''">
+            AND a.to_id like concat(#{toId}, '%')
+        </if>
+        AND a.org_id = #{orgId}
+        ORDER BY a.so_no, a.line_no, cdpr.cdpr_sequences_no desc, a.qty_ea desc
+    </select>
+    
+    <select id="getWmPack" resultType="BanQinWmSoAllocEntity">
+        SELECT <include refid="banQinWmSoAllocColumns"/>,
+            (CASE a.check_status WHEN '99' THEN a.qty_uom ELSE 0 END) AS qtyCheckUom,
+            (CASE a.check_status WHEN '99' THEN a.qty_ea ELSE 0 END) AS qtyCheckEa,
+            0 AS qtyPackUom,
+            0 AS qtyPackEa,
+            ec.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+            cws.is_serial AS isSerial,
+            cdpa.cdpa_format AS packDesc,
+            cdpr.cdpr_desc AS uomDesc,
+            cdpr.cdpr_quantity AS uomQty,
+            cws.gross_weight AS grossWeight,
+            cws.net_weight AS netWeight,
+            cws.cubic AS cubic,
+            wsh.consignee_name AS consigneeName,
+            wsh.consignee_tel AS consigneeTel,
+            wsh.consignee_addr AS consigneeAddr,
+            wsh.contact_name AS contactName,
+            wsh.contact_tel AS contactTel,
+            wsh.contact_addr AS contactAddr,
+            wsh.carrier_code AS carrierCode,
+            wsh.line AS line,
+            wsh.tracking_no AS soTrackingNo,
+            cwsb.barcode AS barcode,
+            wsd.qty_so_ea AS qtySoEa,
+            cws.spec AS skuSpec,
+            cws.qty_unit AS qtyUnit
+        FROM wm_so_alloc a
+        LEFT JOIN wm_so_header wsh ON a.so_no = wsh.so_no AND a.org_id = wsh.org_id
+        LEFT JOIN wm_so_detail wsd ON a.so_no = wsd.so_no AND a.line_no = wsd.line_no AND a.org_id = wsd.org_id
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cdpa ON a.pack_code = cdpa.cdpa_code AND a.org_id = cdpa.org_id
+        LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND a.uom = cdpr.cdpr_unit_level
+        LEFT JOIN
+        (select group_concat(b.barcode) AS barcode, b.owner_code, b.sku_code, b.org_id FROM cd_wh_sku_barcode b GROUP BY b.owner_code, b.sku_code, b.org_id) cwsb
+        ON cws.owner_code = cwsb.owner_code AND cws.sku_code = cwsb.sku_code AND cws.org_id = cwsb.org_id
+        WHERE 1 = 1
+        <![CDATA[ AND a.STATUS <= '60' ]]>
+        <if test="isPack != null and isPack != ''">
+            AND (a.pack_op is null or a.pack_op = '')
+            AND (a.pack_time is null or a.pack_time = '')
+            AND #{isPack} = 'N'
+        </if>
+        <if test="soNo != null and soNo != ''">
+            AND a.so_no like concat(#{soNo}, '%')
+        </if>
+        <if test="caseNo != null and caseNo != ''">
+            AND a.case_no like concat(#{caseNo}, '%')
+        </if>
+        <if test='isPacked == "N"'>
+            AND (a.pack_op is null or a.pack_op = '')
+            AND (a.pack_time is null or a.pack_time = '')
+        </if>
+        <if test='isPacked == "Y"'>
+            AND (a.pack_op is not null and a.pack_op != '')
+            AND (a.pack_time is not null and a.pack_time != '')
+        </if>
+        AND a.org_id = #{orgId}
+        ORDER BY a.so_no, a.line_no, cdpr.cdpr_sequences_no DESC, a.qty_ea DESC
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmSoAlloc" >
+		SELECT 
+			<include refid="banQinWmSoAllocColumns"/>
+		FROM wm_so_alloc a
+		<include refid="banQinWmSoAllocJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_so_alloc(
+			id,
+			alloc_id,
+			prealloc_id,
+			wave_no,
+			so_no,
+			line_no,
+			owner_code,
+			sku_code,
+			lot_num,
+			loc_code,
+			trace_id,
+			consignee_code,
+			status,
+			check_status,
+			pack_code,
+			uom,
+			qty_uom,
+			qty_ea,
+			to_loc,
+			to_id,
+			pick_op,
+			pick_time,
+			check_op,
+			check_time,
+			pack_op,
+			pack_time,
+			ship_op,
+			ship_time,
+			print_num,
+			pick_no,
+			tracking_no,
+			pack_weight,
+			asn_no,
+			asn_line_no,
+			rcv_line_no,
+			cd_type,
+			cd_out_step,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+		    case_no
+		) VALUES (
+			#{id},
+			#{allocId},
+			#{preallocId},
+			#{waveNo},
+			#{soNo},
+			#{lineNo},
+			#{ownerCode},
+			#{skuCode},
+			#{lotNum},
+			#{locCode},
+			#{traceId},
+			#{consigneeCode},
+			#{status},
+			#{checkStatus},
+			#{packCode},
+			#{uom},
+			#{qtyUom},
+			#{qtyEa},
+			#{toLoc},
+			#{toId},
+			#{pickOp},
+			#{pickTime},
+			#{checkOp},
+			#{checkTime},
+			#{packOp},
+			#{packTime},
+			#{shipOp},
+			#{shipTime},
+			#{printNum},
+			#{pickNo},
+			#{trackingNo},
+			#{packWeight},
+			#{asnNo},
+			#{asnLineNo},
+			#{rcvLineNo},
+			#{cdType},
+			#{cdOutStep},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+            #{caseNo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_so_alloc SET 	
+			alloc_id = #{allocId},
+			prealloc_id = #{preallocId},
+			wave_no = #{waveNo},
+			so_no = #{soNo},
+			line_no = #{lineNo},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			lot_num = #{lotNum},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			consignee_code = #{consigneeCode},
+			status = #{status},
+			check_status = #{checkStatus},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_uom = #{qtyUom},
+			qty_ea = #{qtyEa},
+			to_loc = #{toLoc},
+			to_id = #{toId},
+			pick_op = #{pickOp},
+			pick_time = #{pickTime},
+			check_op = #{checkOp},
+			check_time = #{checkTime},
+			pack_op = #{packOp},
+			pack_time = #{packTime},
+			ship_op = #{shipOp},
+			ship_time = #{shipTime},
+			print_num = #{printNum},
+			pick_no = #{pickNo},
+			tracking_no = #{trackingNo},
+			pack_weight = #{packWeight},
+			asn_no = #{asnNo},
+			asn_line_no = #{asnLineNo},
+			rcv_line_no = #{rcvLineNo},
+			cd_type = #{cdType},
+			cd_out_step = #{cdOutStep},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+            case_no = #{caseNo}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_so_alloc
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_so_alloc SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+    <select id="rfPKGetPickNumQuery" resultType="java.util.Map">
+	   SELECT (
+	   	 SELECT COUNT(wmsa.id)
+             FROM wm_so_alloc wmsa
+             LEFT JOIN wm_so_header wmsh ON wmsh.so_no = wmsa.so_no AND wmsh.org_id = wmsa.org_id
+            WHERE 1 = 1
+            <if test="soNo != null and soNo != ''">
+                AND wmsa.so_no = #{soNo}
+            </if>
+            <if test="pickNo != null and pickNo != ''">
+                AND wmsa.pick_no = #{pickNo}
+            </if>
+            <if test="allocId != null and allocId != ''">
+                AND wmsa.alloc_id = #{allocId}
+            </if>
+            <if test="waveNo != null and waveNo != ''">
+                AND wmsa.wave_no = #{waveNo}
+            </if>
+            AND wmsa.org_id = #{orgId}
+            AND wmsh.audit_status = '99') AS totalNum,
+          (SELECT count(wmsa.id)
+             FROM wm_so_alloc wmsa
+             LEFT JOIN wm_so_header wmsh ON wmsh.so_no = wmsa.so_no AND wmsh.org_id = wmsa.org_id
+            WHERE 1=1
+            <if test="soNo != null and soNo != ''">
+                AND wmsa.so_no = #{soNo}
+            </if>
+            <if test="pickNo != null and pickNo != ''">
+                AND wmsa.pick_no = #{pickNo}
+            </if>
+            <if test="allocId != null and allocId != ''">
+                AND wmsa.alloc_id = #{allocId}
+            </if>
+            <if test="waveNo != null and waveNo != ''">
+                AND wmsa.wave_no = #{waveNo}
+            </if>
+            AND wmsa.org_id = #{orgId}
+            AND wmsa.status &gt;= '60'
+            AND wmsh.audit_status = '99') AS pickNum
+     FROM dual
+    </select>
+    
+    <select id="rfPKGetPickDetailQuery" resultType="BanQinWmSoAllocEntity">
+        select
+            wmsa.id AS id,
+            wmsa.alloc_id AS allocId,
+            wmsa.prealloc_id AS preallocId,
+            wmsa.wave_no AS waveNo,
+            wmsa.so_no AS soNo,
+            wmsa.line_no AS lineNo,
+            wmsa.owner_code AS ownerCode,
+            ebcs.ebcu_name_cn AS ownerName,
+            wmsa.sku_code AS skuCode,
+            cdws.sku_name AS skuName,
+            wmsa.lot_num AS lotNum,
+            wmsa.loc_code AS locCode,
+            wmsa.trace_id AS traceId,
+            wmsa.consignee_code AS consigneeCode,
+            wmsa.status AS status,
+            wmsa.check_status AS checkStatus,
+            wmsa.pack_code AS packCode,
+            cdpa.cdpa_format AS packDesc,
+            wmsa.uom AS uom,
+            wmsa.qty_uom AS qtyUom,
+            wmsa.qty_ea AS qtyEa,
+            wmsa.to_loc AS toLoc,
+            wmsa.to_id AS toId,
+            wmsa.pick_op AS pickOp,
+            wmsa.pick_time AS pickTime,
+            wmsa.check_op AS checkOp,
+            wmsa.check_time AS checkTime,
+            wmsa.ship_op AS shipOp,
+            wmsa.ship_time AS shipTime,
+            wmsa.pick_no AS pickNo,
+            wmla.lot_att01 AS lotAtt01,
+            wmla.lot_att02 AS lotAtt02,
+            wmla.lot_att03 AS lotAtt03,
+            wmla.lot_att04 AS lotAtt04,
+            wmla.lot_att05 AS lotAtt05,
+            wmla.lot_att06 AS lotAtt06,
+            wmla.lot_att07 AS lotAtt07,
+            wmla.lot_att08 AS lotAtt08,
+            wmla.lot_att09 AS lotAtt09,
+            wmla.lot_att10 AS lotAtt10,
+            wmla.lot_att11 AS lotAtt11,
+            wmla.lot_att12 AS lotAtt12,
+            wmsa.org_id AS orgId,
+            wwd.def1 AS seq,
+            cwsb.barcode AS barcode,
+            cdws.def3 AS skuSpec,
+            cdws.qty_unit AS qtyUnit
+        FROM wm_so_alloc wmsa
+        LEFT JOIN wm_so_header wmsh ON wmsh.so_no = wmsa.so_no AND wmsh.org_id = wmsa.org_id
+        LEFT JOIN wm_wv_detail wwd ON wmsh.so_no = wwd.so_no AND wmsh.org_id = wwd.org_id
+        LEFT JOIN wm_so_detail wmsd ON wmsd.so_no = wmsa.so_no AND wmsd.sku_code = wmsa.sku_code AND wmsd.owner_code = wmsa.owner_code AND wmsd.org_id = wmsa.org_id AND wmsd.line_no = wmsa.line_no
+        LEFT JOIN cd_wh_sku cdws ON cdws.sku_code = wmsa.sku_code AND cdws.owner_code = wmsa.owner_code AND cdws.org_id = wmsa.org_id
+        LEFT JOIN eb_customer ebcs ON ebcs.ebcu_customer_no = wmsa.owner_code and ebcs.org_id = wmsa.org_id
+        LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = wmsa.pack_code AND cdpa.org_id = wmsa.org_id
+        LEFT JOIN wm_inv_lot_att wmla ON wmla.lot_num = wmsa.lot_num AND wmla.sku_code = wmsa.sku_code AND wmla.owner_code = wmsa.owner_code AND wmla.org_id = wmsa.org_id
+        LEFT JOIN cd_wh_loc cdwl ON cdwl.loc_code = wmsa.loc_code AND cdwl.org_id = wmsa.org_id
+        LEFT JOIN (SELECT GROUP_CONCAT(b.barcode) AS barcode, b.owner_code, b.sku_code, b.org_id FROM cd_wh_sku_barcode b GROUP BY b.owner_code, b.sku_code, b.org_id) cwsb
+        ON cdws.owner_code = cwsb.owner_code AND cdws.sku_code = cwsb.sku_code AND cdws.org_id = cwsb.org_id
+        WHERE 1 = 1
+        <if test="soNo != null and soNo != ''">
+            AND wmsa.so_no = #{soNo}
+        </if>
+        <if test="pickNo != null and pickNo != ''">
+            AND wmsa.pick_no = #{pickNo}
+        </if>
+        <if test="allocId != null and allocId != ''">
+            AND wmsa.alloc_id = #{allocId}
+        </if>
+        <if test="waveNo != null and waveNo != ''">
+            AND wmsa.wave_no = #{waveNo}
+        </if>
+        AND wmsh.audit_status = '99'
+        AND wmsh.status in ('30','40','50','70')
+        AND wmsd.status in ('30','40','50','70')
+        AND wmsa.status = '40'
+        AND wmsa.org_id = #{orgId}
+        ORDER BY cdwl.pk_seq, wmsa.sku_code, wmsa.consignee_code
+    </select>
+    
+    <select id="rfInvGetPickBoxDetailQuery" resultType="BanQinWmSoAllocEntity">
+        SELECT
+            wmsa.alloc_id AS allocId,
+            wmsa.so_no AS soNo,
+            sdv1.label AS status,
+            sdv2.label AS checkStatus,
+            wmsa.sku_code AS skuCode,
+            cdws.sku_name AS skuName,
+            wmsa.owner_code AS ownerCode,
+            ebcu.ebcu_name_cn AS ownerName,
+            wmsa.lot_num AS lotNum,
+            wmsa.trace_id AS traceId,
+            wmsa.loc_code AS locCode,
+            wmsa.pack_code AS packCode,
+            cdpa.cdpa_format AS packDesc,
+            wmsa.uom AS uom,
+            wmsa.qty_uom AS qtyUom,
+            wmsa.qty_ea As qtyEa,
+            wmsa.to_loc AS toLoc,
+            wmsa.to_id AS toId
+        FROM wm_so_alloc wmsa
+        LEFT JOIN sys_dict_type sd1 ON sd1.type = 'SYS_WM_SO_STATUS'
+        lEFT JOIN sys_dict_value sdv1 ON sd1.id = sdv1.dict_type_id AND sdv1.value = wmsa.status
+        LEFT JOIN sys_dict_type sd2 ON sd2.type = 'SYS_WM_CHECK_STATUS'
+        LEFT JOIN sys_dict_value sdv2 ON sd2.id = sdv2.dict_type_id AND sdv2.value = wmsa.check_status
+        LEFT JOIN cd_wh_sku cdws ON cdws.sku_code = wmsa.sku_code AND cdws.owner_code = wmsa.owner_code AND cdws.org_id = wmsa.org_id
+        LEFT JOIN eb_customer ebcu ON ebcu.org_id = wmsa.org_id AND ebcu.ebcu_customer_no = wmsa.owner_code
+        LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = wmsa.pack_code AND cdpa.org_id = wmsa.org_id
+        WHERE 1 = 1
+        AND wmsa.org_id = #{orgId}
+        AND wmsa.to_id = #{toId}
+        AND wmsa.so_no = #{soNo}
+        ORDER BY wmsa.to_id
+    </select>
+    
+    <update id="updatePackInfo">
+        UPDATE wm_so_alloc SET tracking_no = #{trackingNo}, remarks = #{consigneeAddress}, case_no = #{caseNo} WHERE id = #{id}
+    </update>
+
+    <update id="updatePackScanCount">
+        UPDATE wm_so_alloc SET pack_scan_count = #{packScanCount} WHERE id = #{id}
+    </update>
+
+    <update id="cancelPack">
+        UPDATE wm_so_alloc
+        SET check_status    = #{checkStatus},
+            check_op        = #{checkOp},
+            check_time      = #{checkTime},
+            pack_op         = null,
+            pack_time       = null,
+            case_no         = null,
+            tracking_no     = null,
+            pack_weight     = null,
+            pack_scan_count = null,
+            update_date     = now(),
+            update_by       = #{updateBy},
+            remarks         = null
+        WHERE id = #{id}
+    </update>
+
+    <select id="findSkuDataPage" resultType="BanQinWmSoAllocEntity" >
+        SELECT distinct
+            a.owner_code AS "ownerCode",
+            a.sku_code AS "skuCode",
+            ec.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName
+        FROM wm_so_alloc a
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            AND a.org_id = #{orgId}
+            <if test="waveNo != null and waveNo != ''">
+                AND a.wave_no = #{waveNo}
+            </if>
+            <if test="soNo != null and soNo != ''">
+                AND a.so_no = #{soNo}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="pickNo != null and pickNo != ''">
+                AND a.pick_no = #{pickNo}
+            </if>
+            <if test="beginOrderTime != null and beginOrderTime !=''">
+                <![CDATA[ AND wsh.order_time >= #{beginOrderTime} ]]>
+            </if>
+            <if test="endOrderTime != null and endOrderTime !=''">
+                <![CDATA[ AND wsh.order_time <= #{endOrderTime} ]]>
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.sku_code
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getWmSoSkuLabel" resultType="com.yunyou.modules.wms.report.entity.WmSoSkuLabel" >
+        select
+            wmsh.consignee_code as storeCode,
+            wmsh.consignee_name as storeName,
+            wmsa.so_no as soNo,
+            wmsh.def5 as customerNo,
+            wmsa.sku_code as skuCode,
+            cdws.sku_name AS skuName,
+            cdws.def2 as classType,
+            wmsa.owner_code AS ownerCode,
+            ebcs.ebcu_name_cn AS ownerName,
+            wmsh.order_time as orderDate,
+            sum(CEILING(ifnull(wmsa.qty_ea / cwpr.cdpr_quantity, 0))) as boxNum
+        FROM wm_so_alloc wmsa
+        LEFT JOIN wm_so_header wmsh ON wmsh.so_no = wmsa.so_no AND wmsh.org_id = wmsa.org_id
+        LEFT JOIN cd_wh_sku cdws ON cdws.sku_code = wmsa.sku_code AND cdws.owner_code = wmsa.owner_code AND cdws.org_id = wmsa.org_id
+        LEFT JOIN eb_customer ebcs ON ebcs.ebcu_customer_no = wmsa.owner_code and ebcs.org_id = wmsa.org_id
+        LEFT JOIN cd_wh_package cdpa ON cdpa.org_id = wmsa.org_id AND cdpa.cdpa_code = wmsa.pack_code
+        LEFT JOIN cd_wh_package_relation cwpr ON cdpa.pm_code = cwpr.cdpr_cdpa_pm_code AND cdpa.org_id = cwpr.org_id AND cwpr.cdpr_unit_level = 'CS'
+        <where>
+            wmsa.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="waveNo != null and waveNo != ''">
+                AND wmsa.wave_no = #{waveNo}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND wmsa.org_id = #{orgId}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND wmsa.sku_code = #{skuCode}
+            </if>
+        </where>
+        group by
+            wmsh.consignee_code,
+            wmsh.consignee_name,
+            wmsa.so_no,
+            wmsh.def5,
+            wmsa.sku_code,
+            cdws.sku_name,
+            cdws.def2,
+            wmsa.owner_code,
+            ebcs.ebcu_name_cn,
+            wmsh.order_time
+        order by wmsa.sku_code, wmsh.consignee_code
+    </select>
+
+    <select id="findEntityByIds" resultType="BanQinWmSoAllocEntity" >
+        SELECT
+        <include refid="banQinWmSoAllocColumns"/>,
+        ec.ebcu_name_cn AS ownerName,
+        cws.sku_name AS skuName,
+        cws.quick_code AS skuQuickCode,
+        cws.is_serial AS isSerial,
+        cws.cubic AS cubic,
+        cws.net_weight AS netWeight,
+        cws.gross_weight AS grossWeight,
+        cws.pa_rule AS paRule,
+        cws.reserve_code AS reserveCode,
+        cdpa.cdpa_format AS packDesc,
+        cdpr.cdpr_desc AS uomDesc,
+        cdpr.cdpr_quantity AS uomQty,
+        wila.lot_att01 AS lotAtt01,
+        wila.lot_att02 AS lotAtt02,
+        wila.lot_att03 AS lotAtt03,
+        wila.lot_att04 AS lotAtt04,
+        wila.lot_att05 AS lotAtt05,
+        wila.lot_att06 AS lotAtt06,
+        wila.lot_att07 AS lotAtt07,
+        wila.lot_att08 AS lotAtt08,
+        wila.lot_att09 AS lotAtt09,
+        wila.lot_att10 AS lotAtt10,
+        wila.lot_att11 AS lotAtt11,
+        wila.lot_att12 AS lotAtt12,
+        creater.name AS "createBy.name",
+        updater.name AS "updateBy.name",
+        so.name AS orgName,
+        cws.spec AS skuSpec,
+        cws.qty_unit AS qtyUnit
+        FROM wm_so_alloc a
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cdpa ON a.pack_code = cdpa.cdpa_code AND a.org_id = cdpa.org_id
+        LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND cdpr.cdpr_unit_level = 'CS'
+        LEFT JOIN wm_inv_lot_att wila ON a.lot_num = wila.lot_num AND a.org_id = wila.org_id
+        <include refid="banQinWmSoAllocJoins"/>
+        WHERE 1=1
+          AND a.id IN
+        <foreach collection="ids" item="id" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>

@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.qc.mapper.BanQinWmQcDetailMapper">
+    
+	<sql id="banQinWmQcDetailColumns">
+		a.id AS "id",
+		a.qc_no AS "qcNo",
+		a.line_no AS "lineNo",
+		a.qc_line_no AS "qcLineNo",
+		a.order_no AS "orderNo",
+		a.order_line_no AS "orderLineNo",
+		a.status AS "status",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.lot_num AS "lotNum",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.qc_time AS "qcTime",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_avail_qc_ea AS "qtyAvailQcEa",
+		a.qc_rcv_id AS "qcRcvId",
+		a.qua_lot_num AS "quaLotNum",
+		a.qua_loc AS "quaLoc",
+		a.qua_trace_id AS "quaTraceId",
+		a.qc_qua_rcv_id AS "qcQuaRcvId",
+		a.qua_pa_id AS "quaPaId",
+		a.unqua_lot_num AS "unquaLotNum",
+		a.unqua_loc AS "unquaLoc",
+		a.unqua_trace_id AS "unquaTraceId",
+		a.qc_unqua_rcv_id AS "qcUnquaRcvId",
+		a.unqua_pa_id AS "unquaPaId",
+		a.qc_rule AS "qcRule",
+		a.item_group_code AS "itemGroupCode",
+		a.qty_qua_ea AS "qtyQuaEa",
+		a.qty_unqua_ea AS "qtyUnquaEa",
+		a.qty_qc_qua_ea AS "qtyQcQuaEa",
+		a.qty_qc_unqua_ea AS "qtyQcUnquaEa",
+		a.lot_att01 AS "lotAtt01",
+		a.lot_att02 AS "lotAtt02",
+		a.lot_att03 AS "lotAtt03",
+		a.lot_att04 AS "lotAtt04",
+		a.lot_att05 AS "lotAtt05",
+		a.lot_att06 AS "lotAtt06",
+		a.lot_att07 AS "lotAtt07",
+		a.lot_att08 AS "lotAtt08",
+		a.lot_att09 AS "lotAtt09",
+		a.lot_att10 AS "lotAtt10",
+		a.lot_att11 AS "lotAtt11",
+		a.lot_att12 AS "lotAtt12",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.head_id AS "headId"
+	</sql>
+	
+	<sql id="banQinWmQcDetailJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmQcDetail" >
+		SELECT 
+			<include refid="banQinWmQcDetailColumns"/>
+		FROM wm_qc_detail a
+		<include refid="banQinWmQcDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmQcDetail" >
+		SELECT 
+			<include refid="banQinWmQcDetailColumns"/>
+		FROM wm_qc_detail a
+		<include refid="banQinWmQcDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="qcRcvId != null and qcRcvId != ''">
+				AND a.qc_rcv_id = #{qcRcvId}
+			</if>
+			<if test="qcNo != null and qcNo != ''">
+				AND a.qc_no = #{qcNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="qcLineNo != null and qcLineNo != ''">
+				AND a.qc_line_no = #{qcLineNo}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+			<if test="orderLineNo != null and orderLineNo != ''">
+				AND a.order_line_no = #{orderLineNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmQcDetailEntity" >
+		SELECT
+			<include refid="banQinWmQcDetailColumns"/>,
+			cws.sku_name AS skuName,
+			cws.cubic AS cubic,
+			cws.net_weight AS netWeight,
+			cws.gross_weight AS grossWeight,
+			cdpa.cdpa_format AS packDesc,
+			a.qty_avail_qc_ea / (CASE WHEN cdpr.cdpr_quantity = 0 THEN 1 ELSE cdpr.cdpr_quantity END) as qtyAvailQcUom,
+			crqh.rule_name AS qcRuleName,
+			cwqih.item_group_name AS itemGroupName
+		FROM wm_qc_detail a
+		LEFT JOIN cd_wh_sku cws ON cws.sku_code = a.sku_code AND cws.owner_code = a.owner_code AND cws.org_id = a.org_id
+		LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = a.pack_code AND cdpa.org_id = a.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpr.cdpr_unit_level = a.uom AND cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpr.org_id = a.org_id
+		LEFT JOIN cd_rule_qc_header crqh ON crqh.rule_code = a.qc_rule AND crqh.org_id = a.org_id
+		LEFT JOIN cd_wh_qc_item_header cwqih ON cwqih.item_group_code = a.item_group_code AND cwqih.org_id = a.org_id
+		<include refid="banQinWmQcDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND a.org_id = #{orgId}
+			<if test="qcRcvId != null and qcRcvId != ''">
+				AND a.qc_rcv_id = #{qcRcvId}
+			</if>
+			<if test="qcNo != null and qcNo != ''">
+				AND a.qc_no = #{qcNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="qcLineNo != null and qcLineNo != ''">
+				AND a.qc_line_no = #{qcLineNo}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+			<if test="orderLineNo != null and orderLineNo != ''">
+				AND a.order_line_no = #{orderLineNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="headId != null and headId != ''">
+				AND a.head_id = #{headId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.qc_line_no, line_no
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmQcDetail" >
+		SELECT 
+			<include refid="banQinWmQcDetailColumns"/>
+		FROM wm_qc_detail a
+		<include refid="banQinWmQcDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_qc_detail(
+			id,
+			qc_no,
+			line_no,
+			qc_line_no,
+			order_no,
+			order_line_no,
+			status,
+			owner_code,
+			sku_code,
+			lot_num,
+			loc_code,
+			trace_id,
+			qc_time,
+			pack_code,
+			uom,
+			qty_avail_qc_ea,
+			qc_rcv_id,
+			qua_lot_num,
+			qua_loc,
+			qua_trace_id,
+			qc_qua_rcv_id,
+			qua_pa_id,
+			unqua_lot_num,
+			unqua_loc,
+			unqua_trace_id,
+			qc_unqua_rcv_id,
+			unqua_pa_id,
+			qc_rule,
+			item_group_code,
+			qty_qua_ea,
+			qty_unqua_ea,
+			qty_qc_qua_ea,
+			qty_qc_unqua_ea,
+			lot_att01,
+			lot_att02,
+			lot_att03,
+			lot_att04,
+			lot_att05,
+			lot_att06,
+			lot_att07,
+			lot_att08,
+			lot_att09,
+			lot_att10,
+			lot_att11,
+			lot_att12,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			head_id
+		) VALUES (
+			#{id},
+			#{qcNo},
+			#{lineNo},
+			#{qcLineNo},
+			#{orderNo},
+			#{orderLineNo},
+			#{status},
+			#{ownerCode},
+			#{skuCode},
+			#{lotNum},
+			#{locCode},
+			#{traceId},
+			#{qcTime},
+			#{packCode},
+			#{uom},
+			#{qtyAvailQcEa},
+			#{qcRcvId},
+			#{quaLotNum},
+			#{quaLoc},
+			#{quaTraceId},
+			#{qcQuaRcvId},
+			#{quaPaId},
+			#{unquaLotNum},
+			#{unquaLoc},
+			#{unquaTraceId},
+			#{qcUnquaRcvId},
+			#{unquaPaId},
+			#{qcRule},
+			#{itemGroupCode},
+			#{qtyQuaEa},
+			#{qtyUnquaEa},
+			#{qtyQcQuaEa},
+			#{qtyQcUnquaEa},
+			#{lotAtt01},
+			#{lotAtt02},
+			#{lotAtt03},
+			#{lotAtt04},
+			#{lotAtt05},
+			#{lotAtt06},
+			#{lotAtt07},
+			#{lotAtt08},
+			#{lotAtt09},
+			#{lotAtt10},
+			#{lotAtt11},
+			#{lotAtt12},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_qc_detail SET 	
+			qc_no = #{qcNo},
+			line_no = #{lineNo},
+			qc_line_no = #{qcLineNo},
+			order_no = #{orderNo},
+			order_line_no = #{orderLineNo},
+			status = #{status},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			lot_num = #{lotNum},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			qc_time = #{qcTime},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_avail_qc_ea = #{qtyAvailQcEa},
+			qc_rcv_id = #{qcRcvId},
+			qua_lot_num = #{quaLotNum},
+			qua_loc = #{quaLoc},
+			qua_trace_id = #{quaTraceId},
+			qc_qua_rcv_id = #{qcQuaRcvId},
+			qua_pa_id = #{quaPaId},
+			unqua_lot_num = #{unquaLotNum},
+			unqua_loc = #{unquaLoc},
+			unqua_trace_id = #{unquaTraceId},
+			qc_unqua_rcv_id = #{qcUnquaRcvId},
+			unqua_pa_id = #{unquaPaId},
+			qc_rule = #{qcRule},
+			item_group_code = #{itemGroupCode},
+			qty_qua_ea = #{qtyQuaEa},
+			qty_unqua_ea = #{qtyUnquaEa},
+			qty_qc_qua_ea = #{qtyQcQuaEa},
+			qty_qc_unqua_ea = #{qtyQcUnquaEa},
+			lot_att01 = #{lotAtt01},
+			lot_att02 = #{lotAtt02},
+			lot_att03 = #{lotAtt03},
+			lot_att04 = #{lotAtt04},
+			lot_att05 = #{lotAtt05},
+			lot_att06 = #{lotAtt06},
+			lot_att07 = #{lotAtt07},
+			lot_att08 = #{lotAtt08},
+			lot_att09 = #{lotAtt09},
+			lot_att10 = #{lotAtt10},
+			lot_att11 = #{lotAtt11},
+			lot_att12 = #{lotAtt12},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			def6 = #{def6},
+			def7 = #{def7},
+			def8 = #{def8},
+			def9 = #{def9},
+			def10 = #{def10},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			head_id = #{headId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_qc_detail
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_qc_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="BanQinWmQcDetail" statementType="STATEMENT">
+		SELECT * FROM wm_qc_detail WHERE ${propertyName} = '${value}'
+	</select>
+
+    <!--***********************************************************SELECT*************************************************************-->
+	<select id="getMaxLineNo" resultType="java.lang.Integer">
+		SELECT MAX(CAST(line_no AS SINGED)) FROM wm_qc_detail WHERE QC_NO = #{qcNo} AND ORG_ID = #{orgId}
+	</select>
+
+    <!--***********************************************************UPDATE*************************************************************-->
+	<update id="updateStatus">
+        UPDATE wm_qc_detail SET status = #{status}
+        WHERE 1 = 1
+		AND qc_no = #{qcNo}
+		AND qc_line_no = #{qcLineNo}
+		AND org_id = #{orgId}
+    </update>
+
+    <update id="updateQcQuaPaIdNull">
+        UPDATE wm_qc_detail a SET a.qua_pa_id = ''
+        WHERE 1 = 1
+		AND NOT EXISTS(SELECT 1 FROM wm_task_pa wtp WHERE wtp.pa_id = a.qua_pa_id AND wtp.org_id = a.org_id)
+		AND a.qua_pa_id = #{paId}
+		AND a.org_id = #{orgId}
+    </update>
+
+    <update id="updateQcUnquaPaIdNull">
+        UPDATE wm_qc_detail a SET a.unqua_pa_id = ''
+        WHERE 1 = 1
+		AND NOT EXISTS(SELECT 1 FROM wm_task_pa wtp WHERE wtp.pa_id = a.unqua_pa_id AND wtp.org_id = a.org_id)
+		AND a.unqua_pa_id = #{paId}
+		AND a.org_id = #{orgId}
+    </update>
+
+    <!--***********************************************************DELETE*************************************************************-->
+    <delete id="removeByQcNoAndQcLineNo">
+         DELETE FROM wm_qc_detail WHERE 1 = 1 AND qc_no = #{qcNo} AND org_id = #{orgId}
+         <if test="qcLineNos != null and qcLineNos.length > 0">
+             AND qc_line_no IN
+             <foreach collection="qcLineNos" item="qcLineNo" open="(" separator="," close=")">
+                 #{qcLineNo}
+             </foreach>
+         </if>
+    </delete>
+	
+	<select id="getWmQcDetailByQcRcvId" resultType="BanQinWmQcDetailEntity">
+		SELECT t.qc_type AS qcType,
+			   t.qc_no AS qcNo,
+			   t.line_no AS lineNo,
+			   t.qc_line_no AS qcLineNo,
+			   t.owner_code AS ownerCode,
+			   t.sku_code AS skuCode,
+			   t.qua_loc AS locCode,
+			   t.qua_trace_id AS traceId,
+			   t.qua_lot_num AS lotNum,
+			   t.qc_qua_rcv_id AS qcRcvId
+		FROM (SELECT 'Y' AS qc_type,
+				 wqd.qc_no,
+				 wqd.line_no,
+				 wqd.qc_line_no,
+				 wqd.owner_code,
+				 wqd.sku_code,
+				 wqd.qua_loc,
+				 wqd.qua_trace_id,
+				 wqd.qua_lot_num,
+				 wqd.qc_qua_rcv_id
+			  FROM wm_qc_detail wqd
+			  WHERE wqd.qc_qua_rcv_id = #{qcRcvId}
+				AND wqd.org_id = #{orgId}
+			  UNION
+			  SELECT 'N' AS qc_type,
+				  wqd.qc_no,
+				  wqd.line_no,
+				  wqd.qc_line_no,
+				  wqd.owner_code,
+				  wqd.sku_code,
+				  wqd.unqua_loc,
+				  wqd.unqua_trace_id,
+				  wqd.unqua_lot_num,
+				  wqd.qc_unqua_rcv_id
+			  FROM wm_qc_detail wqd
+			  WHERE wqd.qc_unqua_rcv_id = #{qcRcvId}
+				AND wqd.org_id = #{orgId}
+			  UNION
+			  SELECT 'Q' AS qc_type,
+				  wqd.qc_no,
+				  wqd.line_no,
+				  wqd.qc_line_no,
+				  wqd.owner_code,
+				  wqd.sku_code,
+				  wqd.loc_code,
+				  wqd.trace_id,
+				  wqd.lot_num,
+				  wqd.qc_rcv_id
+			  FROM wm_qc_detail wqd
+			  WHERE wqd.qc_rcv_id = #{qcRcvId}
+				AND wqd.org_id = #{orgId}) t
+	</select>
+</mapper>

@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmSoPackMapper">
+    
+	<sql id="banQinWmSoPackColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.so_no AS "soNo",
+		a.so_type AS "soType",
+		a.order_date AS "orderDate",
+		a.owner_code AS "ownerCode",
+		a.owner_name AS "ownerName",
+		a.delivery_name AS "deliveryName",
+		a.delivery_tel AS "deliveryTel",
+		a.delivery_zip AS "deliveryZip",
+		a.delivery_area AS "deliveryArea",
+		a.delivery_address AS "deliveryAddress",
+		a.consignee AS "consignee",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_address AS "consigneeAddress",
+		a.consignee_zip AS "consigneeZip",
+		a.consignee_area AS "consigneeArea",
+		a.business_no AS "businessNo",
+		a.chain_no AS "chainNo",
+		a.task_no AS "taskNo",
+		a.customer_order_no AS "customerOrderNo",
+		a.external_no AS "externalNo",
+		a.alloc_id AS "allocId",
+		a.wave_no AS "waveNo",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.qty AS "qty",
+		a.to_loc AS "toLoc",
+		a.to_id AS "toId",
+		a.pick_op AS "pickOp",
+		a.pick_time AS "pickTime",
+		a.check_op AS "checkOp",
+		a.check_time AS "checkTime",
+		a.pack_op AS "packOp",
+		a.pack_time AS "packTime",
+		a.tracking_no AS "trackingNo",
+		a.org_id AS "orgId",
+		a.case_no AS "caseNo",
+		a.carrier_code AS "carrierCode",
+		a.carrier_name AS "carrierName",
+		a.scan_case_no AS "scanCaseNo"
+	</sql>
+	
+	<sql id="banQinWmSoPackJoins">
+		
+	</sql>
+	
+	<select id="get" resultType="BanQinWmSoPack" >
+		SELECT 
+			<include refid="banQinWmSoPackColumns"/>
+		FROM wm_so_pack a
+		<include refid="banQinWmSoPackJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmSoPack" >
+		SELECT 
+			<include refid="banQinWmSoPackColumns"/>
+		FROM wm_so_pack a
+		<include refid="banQinWmSoPackJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no = #{soNo}
+			</if>
+			<if test="soType != null and soType != ''">
+				AND a.so_type = #{soType}
+			</if>
+			<if test="orderDate != null and orderDate != ''">
+				AND a.order_date = #{orderDate}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="businessNo != null and businessNo != ''">
+				AND a.business_no = #{businessNo}
+			</if>
+			<if test="chainNo != null and chainNo != ''">
+				AND a.chain_no = #{chainNo}
+			</if>
+			<if test="taskNo != null and taskNo != ''">
+				AND a.task_no = #{taskNo}
+			</if>
+			<if test="customerOrderNo != null and customerOrderNo != ''">
+				AND a.customer_order_no = #{customerOrderNo}
+			</if>
+			<if test="externalNo != null and externalNo != ''">
+				AND a.external_no = #{externalNo}
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="trackingNo != null and trackingNo != ''">
+				AND a.tracking_no = #{trackingNo}
+			</if>
+			<if test="allocId != null and allocId != ''">
+				AND a.alloc_id = #{allocId}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmSoPackEntity" >
+		SELECT
+			<include refid="banQinWmSoPackColumns"/>,
+			so.name AS orgName
+		FROM wm_so_pack a
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		<include refid="banQinWmSoPackJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no = #{soNo}
+			</if>
+			<if test="soType != null and soType != ''">
+				AND a.so_type = #{soType}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="businessNo != null and businessNo != ''">
+				AND a.business_no = #{businessNo}
+			</if>
+			<if test="chainNo != null and chainNo != ''">
+				AND a.chain_no = #{chainNo}
+			</if>
+			<if test="taskNo != null and taskNo != ''">
+				AND a.task_no = #{taskNo}
+			</if>
+			<if test="customerOrderNo != null and customerOrderNo != ''">
+				AND a.customer_order_no = #{customerOrderNo}
+			</if>
+			<if test="externalNo != null and externalNo != ''">
+				AND a.external_no = #{externalNo}
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="trackingNo != null and trackingNo != ''">
+				AND a.tracking_no = #{trackingNo}
+			</if>
+			<if test="packTimeFm != null and packTimeFm != ''">
+				<![CDATA[AND a.pack_time >= #{packTimeFm}]]>
+			</if>
+			<if test="packTimeTo != null and packTimeTo != ''">
+				<![CDATA[AND a.pack_time <= #{packTimeTo}]]>
+			</if>
+			<if test="orderTimeFm != null and orderTimeFm != ''">
+				<![CDATA[AND a.order_date >= #{orderTimeFm}]]>
+			</if>
+			<if test="orderTimeTo != null and orderTimeTo != ''">
+				<![CDATA[AND a.order_date <= #{orderTimeTo}]]>
+			</if>
+			<if test="caseNo != null and caseNo != ''">
+				AND a.case_no = #{caseNo}
+			</if>
+			<if test="scanCaseNo != null and scanCaseNo != ''">
+				AND a.scan_case_no = #{scanCaseNo}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmSoPack" >
+		SELECT 
+			<include refid="banQinWmSoPackColumns"/>
+		FROM wm_so_pack a
+		<include refid="banQinWmSoPackJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_so_pack(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			so_no,
+			so_type,
+			order_date,
+			owner_code,
+			owner_name,
+			delivery_name,
+			delivery_tel,
+			delivery_zip,
+			delivery_area,
+			delivery_address,
+			consignee,
+			consignee_tel,
+			consignee_address,
+			consignee_zip,
+			consignee_area,
+			business_no,
+			chain_no,
+			task_no,
+			customer_order_no,
+			external_no,
+			alloc_id,
+			wave_no,
+			sku_code,
+			sku_name,
+			loc_code,
+			trace_id,
+			qty,
+			to_loc,
+			to_id,
+			pick_op,
+			pick_time,
+			check_op,
+			check_time,
+			pack_op,
+			pack_time,
+			tracking_no,
+			org_id,
+		    case_no,
+		    carrier_code,
+		    carrier_name,
+		    scan_case_no
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{soNo},
+			#{soType},
+			#{orderDate},
+			#{ownerCode},
+			#{ownerName},
+			#{deliveryName},
+			#{deliveryTel},
+			#{deliveryZip},
+			#{deliveryArea},
+			#{deliveryAddress},
+			#{consignee},
+			#{consigneeTel},
+			#{consigneeAddress},
+			#{consigneeZip},
+			#{consigneeArea},
+			#{businessNo},
+			#{chainNo},
+			#{taskNo},
+			#{customerOrderNo},
+			#{externalNo},
+			#{allocId},
+			#{waveNo},
+			#{skuCode},
+			#{skuName},
+			#{locCode},
+			#{traceId},
+			#{qty},
+			#{toLoc},
+			#{toId},
+			#{pickOp},
+			#{pickTime},
+			#{checkOp},
+			#{checkTime},
+			#{packOp},
+			#{packTime},
+			#{trackingNo},
+			#{orgId},
+			#{caseNo},
+			#{carrierCode},
+			#{carrierName},
+			#{scanCaseNo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_so_pack SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			so_no = #{soNo},
+			so_type = #{soType},
+			order_date = #{orderDate},
+			owner_code = #{ownerCode},
+			owner_name = #{ownerName},
+			delivery_name = #{deliveryName},
+			delivery_tel = #{deliveryTel},
+			delivery_zip = #{deliveryZip},
+			delivery_area = #{deliveryArea},
+			delivery_address = #{deliveryAddress},
+			consignee = #{consignee},
+			consignee_tel = #{consigneeTel},
+			consignee_address = #{consigneeAddress},
+			consignee_zip = #{consigneeZip},
+			consignee_area = #{consigneeArea},
+			business_no = #{businessNo},
+			chain_no = #{chainNo},
+			task_no = #{taskNo},
+			customer_order_no = #{customerOrderNo},
+			external_no = #{externalNo},
+			alloc_id = #{allocId},
+			wave_no = #{waveNo},
+			sku_code = #{skuCode},
+			sku_name = #{skuName},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			qty = #{qty},
+			to_loc = #{toLoc},
+			to_id = #{toId},
+			pick_op = #{pickOp},
+			pick_time = #{pickTime},
+			check_op = #{checkOp},
+			check_time = #{checkTime},
+			pack_op = #{packOp},
+			pack_time = #{packTime},
+			tracking_no = #{trackingNo},
+			org_id = #{orgId},
+		    case_no = #{caseNo},
+		    carrier_code = #{carrierCode},
+			carrier_name = #{carrierName},
+			scan_case_no = #{scanCaseNo}
+		WHERE id = #{id}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_so_pack
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_so_pack SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="BanQinWmSoPack" statementType="STATEMENT">
+		select * FROM wm_so_pack  where ${propertyName} = '${value}'
+	</select>
+
+	<!--出库交接清单-->
+	<select id="findOutHandoverPage" resultType="com.yunyou.modules.wms.outbound.entity.BanQinWmSoPackEntity" >
+		SELECT
+		<include refid="banQinWmSoPackColumns"/>,
+		so.name AS orgName
+		FROM (
+			SELECT wsp.*,
+			(@row_number := IF(@alloc_id = wsp.alloc_id, @row_number := @row_number + 1, @row_number := 1)) rn,
+			@alloc_id := wsp.alloc_id
+			FROM wm_so_pack wsp,
+			(SELECT @alloc_id := NULL, @row_number := 0) t
+			<where>
+				wsp.del_flag = #{DEL_FLAG_NORMAL}
+				<if test="soNo != null and soNo != ''">
+					AND wsp.so_no = #{soNo}
+				</if>
+				<if test="soType != null and soType != ''">
+					AND wsp.so_type = #{soType}
+				</if>
+				<if test="ownerCode != null and ownerCode != ''">
+					AND wsp.owner_code = #{ownerCode}
+				</if>
+				<if test="businessNo != null and businessNo != ''">
+					AND wsp.business_no = #{businessNo}
+				</if>
+				<if test="chainNo != null and chainNo != ''">
+					AND wsp.chain_no = #{chainNo}
+				</if>
+				<if test="taskNo != null and taskNo != ''">
+					AND wsp.task_no = #{taskNo}
+				</if>
+				<if test="customerOrderNo != null and customerOrderNo != ''">
+					AND wsp.customer_order_no = #{customerOrderNo}
+				</if>
+				<if test="externalNo != null and externalNo != ''">
+					AND wsp.external_no = #{externalNo}
+				</if>
+				<if test="waveNo != null and waveNo != ''">
+					AND wsp.wave_no = #{waveNo}
+				</if>
+				<if test="skuCode != null and skuCode != ''">
+					AND wsp.sku_code = #{skuCode}
+				</if>
+				<if test="trackingNo != null and trackingNo != ''">
+					AND wsp.tracking_no = #{trackingNo}
+				</if>
+				<if test="packTimeFm != null and packTimeFm != ''">
+					<![CDATA[AND wsp.pack_time >= #{packTimeFm}]]>
+				</if>
+				<if test="packTimeTo != null and packTimeTo != ''">
+					<![CDATA[AND wsp.pack_time <= #{packTimeTo}]]>
+				</if>
+				<if test="orderTimeFm != null and orderTimeFm != ''">
+					<![CDATA[AND wsp.order_date >= #{orderTimeFm}]]>
+				</if>
+				<if test="orderTimeTo != null and orderTimeTo != ''">
+					<![CDATA[AND wsp.order_date <= #{orderTimeTo}]]>
+				</if>
+				<if test="caseNo != null and caseNo != ''">
+					AND wsp.case_no = #{caseNo}
+				</if>
+				<if test="carrierCode != null and carrierCode != ''">
+					AND wsp.carrier_code = #{carrierCode}
+				</if>
+			</where>
+			ORDER BY wsp.org_id, wsp.so_no, wsp.alloc_id, wsp.pack_time DESC) a
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		<where>
+			a.rn = 1
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

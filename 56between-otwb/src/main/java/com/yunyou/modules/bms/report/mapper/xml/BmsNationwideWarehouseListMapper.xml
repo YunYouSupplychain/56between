@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.report.mapper.BmsNationwideWarehouseListMapper">
+
+    <select id="findList" resultType="com.yunyou.modules.bms.report.entity.BmsNationwideWarehouseList">
+        select
+            scr.code                                            as regionCode,
+            scr.name                                            as regionName,
+            bcu.area_id                                         as areaId,
+            bc.settle_object_code                               as settleObjectCode,
+            bcu.ebcu_name_cn                                    as settleObjectName,
+            so.code                                             as orgCode,
+            bc.contract_type                                    as contractType,
+            bc.effective_date_fm                                as effectiveDateFm,
+            bc.effective_date_to                                as effectivedateTo,
+            bcci.bill_subject_code                              as billSubjectCode,
+            bbs.bill_subject_name                               as billSubjectName,
+            bcsp.sku_class                                      as skuClass,
+            bcsp.sku_code                                       as skuCode,
+            bcsp.sku_name                                       as skuName,
+            bcssp.fm,
+            bcssp.`to`,
+            if(bcsp.is_use_step = 'Y', bcssp.price, bcsp.price) as price,
+            bcsp.unit,
+            bc.org_id                                           as orgId
+        from bms_contract bc
+        inner join bms_contract_cost_item bcci on bc.sys_contract_no = bcci.sys_contract_no and bc.org_id = bcci.org_id and bcci.bill_module = '01'
+        left join bms_bill_subject bbs on bcci.bill_subject_code = bbs.bill_subject_code and bcci.org_id = bbs.org_id
+        left join bms_contract_storage_price bcsp on bcci.id = bcsp.fk_id and bcci.org_id = bcsp.org_id
+        left join bms_contract_storage_stepped_price bcssp on bcsp.id = bcssp.fk_id and bcsp.org_id = bcssp.org_id
+        left join bms_customer bcu on bc.settle_object_code = bcu.ebcu_customer_no and bc.org_id = bcu.org_id
+        left join sys_office so on bc.org_id = so.id
+        left join sys_data_set_org_relation sdsor on bc.org_id = sdsor.org_id
+        left join sys_common_region_place scrp on bcu.area_id = scrp.place_id and sdsor.data_set = scrp.data_set
+        left join sys_common_region scr on scrp.code = scr.code and scrp.data_set = scr.data_set
+        <where>
+            bc.org_id = #{orgId}
+            <if test="settleObjectCode != null and settleObjectCode != ''">
+                and bc.settle_object_code = #{settleObjectCode}
+            </if>
+            <if test="billSubjectCode != null and billSubjectCode != ''">
+                and bcci.bill_subject_code = #{billSubjectCode}
+            </if>
+        </where>
+    </select>
+</mapper>

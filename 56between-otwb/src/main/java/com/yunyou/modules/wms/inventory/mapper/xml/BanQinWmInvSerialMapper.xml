@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmInvSerialMapper">
+    
+	<sql id="banQinWmInvSerialColumns">
+		a.id AS "id",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.serial_no AS "serialNo",
+		a.lot_num AS "lotNum",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmInvSerialJoins">
+        LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+
+    <select id="countSerialQuery" resultType="BanQinWmInvSerial" >
+        SELECT wis.owner_code AS ownerCode,
+            wis.sku_code AS skuCode,
+            wis.serial_no AS serialNo,
+            wis.lot_num AS lotNum,
+            wis.org_id AS orgId
+        FROM wm_inv_serial wis
+        LEFT JOIN wm_inv_lot_att wmla ON wmla.lot_num = wis.lot_num AND wmla.org_id = wis.org_id
+        WHERE wis.org_id = #{orgId}
+        <if test="ownerCode != null and ownerCode.size > 0">
+            AND wis.owner_code IN
+            <foreach collection="ownerCode" item="ownerCode" index="ownerCode" open="(" separator="," close=")">
+                #{ownerCode}
+            </foreach>
+        </if>
+        <if test="skuCode != null and skuCode.size > 0">
+            AND wis.sku_code IN
+            <foreach collection="skuCode" item="skuCode" index="skuCode" open="(" separator="," close=")">
+                #{skuCode}
+            </foreach>
+        </if>
+        <if test="lotNum != null and lotNum != ''">
+            AND wis.lot_num = #{lotNum}
+        </if>
+        <if test="lotAtt01 != null and lotAtt01 != ''">
+            AND wmla.lot_att01 = #{lotAtt01}
+        </if>
+        <if test="lotAtt02 != null and lotAtt02 != ''">
+            AND wmla.lot_att02 = #{lotAtt02}
+        </if>
+        <if test="lotAtt03 != null and lotAtt03 != ''">
+            AND wmla.lot_att03 = #{lotAtt03}
+        </if>
+        <if test="lotAtt04 != null and lotAtt04 != ''">
+            AND wmla.lot_att04 = #{lotAtt04}
+        </if>
+        <if test="lotAtt05 != null and lotAtt05 != ''">
+            AND wmla.lot_att05 = #{lotAtt05}
+        </if>
+        <if test="lotAtt06 != null and lotAtt06 != ''">
+            AND wmla.lot_att06 = #{lotAtt06}
+        </if>
+        <if test="lotAtt07 != null and lotAtt07 != ''">
+            AND wmla.lot_att07 = #{lotAtt07}
+        </if>
+        <if test="lotAtt08 != null and lotAtt08 != ''">
+            AND wmla.lot_att08 = #{lotAtt08}
+        </if>
+        <if test="lotAtt09 != null and lotAtt09 != ''">
+            AND wmla.lot_att09 = #{lotAtt09}
+        </if>
+        <if test="lotAtt10 != null and lotAtt10 != ''">
+            AND wmla.lot_att10 = #{lotAtt10}
+        </if>
+        <if test="lotAtt11 != null and lotAtt11 != ''">
+            AND wmla.lot_att11 = #{lotAtt11}
+        </if>
+        <if test="lotAtt12 != null and lotAtt12 != ''">
+            AND wmla.lot_att12 = #{lotAtt12}
+        </if>
+    </select>
+
+	<select id="get" resultType="BanQinWmInvSerial" >
+		SELECT 
+			<include refid="banQinWmInvSerialColumns"/>
+		FROM wm_inv_serial a
+		<include refid="banQinWmInvSerialJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="BanQinWmInvSerial" >
+		SELECT
+			<include refid="banQinWmInvSerialColumns"/>
+		FROM wm_inv_serial a
+		<include refid="banQinWmInvSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		    AND a.org_id = #{orgId}
+		    <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="serialNo != null and serialNo != ''">
+                AND a.serial_no = #{serialNo}
+            </if>
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num = #{lotNum}
+            </if>
+		</where>
+	</select>
+
+    <select id="findPage" resultType="BanQinWmInvSerialEntity" >
+        SELECT
+            <include refid="banQinWmInvSerialColumns"/>,
+            cws.sku_name AS skuName,
+            ec.ebcu_name_cn AS ownerName,
+            wila.lot_att01 AS lotAtt01,
+            wila.lot_att02 AS lotAtt02,
+            wila.lot_att03 AS lotAtt03,
+            wila.lot_att04 AS lotAtt04,
+            wila.lot_att05 AS lotAtt05,
+            wila.lot_att06 AS lotAtt06,
+            wila.lot_att07 AS lotAtt07,
+            wila.lot_att08 AS lotAtt08,
+            wila.lot_att09 AS lotAtt09,
+            wila.lot_att10 AS lotAtt10,
+            wila.lot_att11 AS lotAtt11,
+            wila.lot_att12 AS lotAtt12,
+            creater.name AS "createBy.name",
+            updater.name AS "updateBy.name",
+            so.name AS orgName
+        FROM wm_inv_serial a
+        LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = a.lot_num AND wila.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON cws.owner_code = a.owner_code AND cws.sku_code = a.sku_code AND cws.org_id = a.org_id
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id AND ec.ebcu_type like '%OWNER,%'
+        <include refid="banQinWmInvSerialJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="serialNo != null and serialNo != ''">
+                AND a.serial_no LIKE concat(#{serialNo}, '%')
+            </if>
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num LIKE concat(#{lotNum}, '%')
+            </if>
+            <if test="lotAtt01 != null and lotAtt01 != ''">
+                AND wila.lot_att01 = #{lotAtt01}
+            </if>
+            <if test="lotAtt02 != null and lotAtt02 != ''">
+                AND wila.lot_att02 = #{lotAtt02}
+            </if>
+            <if test="lotAtt03 != null and lotAtt03 != ''">
+                AND wila.lot_att03 = #{lotAtt03}
+            </if>
+            <if test="lotAtt04 != null and lotAtt04 != ''">
+                AND wila.lot_att04 LIKE concat('%', #{lotAtt04}, '%')
+            </if>
+            <if test="lotAtt05 != null and lotAtt05 != ''">
+                AND wila.lot_att05 LIKE concat('%', #{lotAtt05}, '%')
+            </if>
+            <if test="lotAtt06 != null and lotAtt06 != ''">
+                AND wila.lot_att06 LIKE concat('%', #{lotAtt06}, '%')
+            </if>
+            <if test="lotAtt07 != null and lotAtt07 != ''">
+                AND wila.lot_att07 LIKE concat('%', #{lotAtt07}, '%')
+            </if>
+            <if test="lotAtt08 != null and lotAtt08 != ''">
+                AND wila.lot_att08 LIKE concat('%', #{lotAtt08}, '%')
+            </if>
+            <if test="lotAtt09 != null and lotAtt09 != ''">
+                AND wila.lot_att09 LIKE concat('%', #{lotAtt09}, '%')
+            </if>
+            <if test="lotAtt10 != null and lotAtt10 != ''">
+                AND wila.lot_att10 LIKE concat('%', #{lotAtt10}, '%')
+            </if>
+            <if test="lotAtt11 != null and lotAtt11 != ''">
+                AND wila.lot_att11 LIKE concat('%', #{lotAtt11}, '%')
+            </if>
+            <if test="lotAtt12 != null and lotAtt12 != ''">
+                AND wila.lot_att12 LIKE concat('%', #{lotAtt12}, '%')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+	
+    <select id="getByAsnNoAndLineNo" resultType="BanQinWmInvSerial">
+        SELECT <include refid="banQinWmInvSerialColumns"/>
+        FROM wm_inv_serial a
+        LEFT JOIN wm_asn_serial was ON was.owner_code = a.owner_code AND was.sku_code = a.sku_code AND was.serial_no = a.serial_no AND a.org_id = was.org_id
+        WHERE was.asn_no = #{asnNo}
+        AND was.rcv_line_no = #{rcvLineNo}
+        AND was.org_id = #{orgId}
+    </select>
+
+    <select id="getByAllocId" resultType="BanQinWmInvSerial">
+        SELECT <include refid="banQinWmInvSerialColumns"/>
+        FROM wm_inv_serial a
+        LEFT JOIN wm_so_serial wss ON a.owner_code = wss.owner_code AND a.sku_code = wss.sku_code AND a.serial_no = wss.serial_no AND a.org_id = wss.org_id
+        WHERE a.org_id = #{orgId}
+        AND wss.alloc_id in
+        <foreach collection="allocIds" item="allocId" index="index" open="(" separator="," close=")">
+            #{allocId}
+        </foreach>
+    </select>
+    
+	<select id="findAllList" resultType="BanQinWmInvSerial" >
+		SELECT 
+			<include refid="banQinWmInvSerialColumns"/>
+		FROM wm_inv_serial a
+		<include refid="banQinWmInvSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_inv_serial(
+			id,
+			owner_code,
+			sku_code,
+			serial_no,
+			lot_num,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{ownerCode},
+			#{skuCode},
+			#{serialNo},
+			#{lotNum},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_inv_serial SET 	
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			serial_no = #{serialNo},
+			lot_num = #{lotNum},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_inv_serial
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_inv_serial SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+    <update id="deleteByAsnNoAndLineNo">
+        DELETE wis
+        FROM wm_inv_serial wis
+            INNER JOIN wm_asn_serial was ON was.owner_code = wis.owner_code AND was.sku_code = wis.sku_code AND was.serial_no = wis.serial_no AND wis.org_id = was.org_id
+        WHERE was.asn_no = #{asnNo}
+          AND was.rcv_line_no = #{rcvLineNo}
+          AND was.org_id = #{orgId}
+    </update>
+
+    <update id="deleteByShip">
+        DELETE wis
+        FROM wm_inv_serial wis
+            INNER JOIN wm_so_serial wss ON wss.serial_no = wis.serial_no AND wss.org_id = wis.org_id
+            LEFT JOIN wm_so_alloc wsa ON wss.alloc_id = wsa.alloc_id AND wss.org_id = wsa.org_id
+        WHERE wss.alloc_id IN
+        <foreach collection="allocIds" item="allocId" index="index" open="(" separator="," close=")">
+            #{allocId}
+        </foreach>
+        AND wis.org_id = #{orgId}
+    </update>
+	
+</mapper>

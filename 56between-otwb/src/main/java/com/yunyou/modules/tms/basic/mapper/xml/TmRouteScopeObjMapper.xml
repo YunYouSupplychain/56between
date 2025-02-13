@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.basic.mapper.TmRouteScopeObjMapper">
+    
+	<sql id="tmRouteScopeObjColumns">
+		a.id AS "id",
+		a.route_scope_code AS "routeScopeCode",
+		a.transport_obj_code AS "transportObjCode",
+		a.scope_type AS "scopeType",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<select id="get" resultType="com.yunyou.modules.tms.basic.entity.TmRouteScopeObj" >
+		SELECT 
+			<include refid="tmRouteScopeObjColumns"/>
+		FROM tm_route_scope_obj a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.tms.basic.entity.TmRouteScopeObj" >
+		SELECT 
+			<include refid="tmRouteScopeObjColumns"/>
+		FROM tm_route_scope_obj a
+		<where>
+			<if test="routeScopeCode != null and routeScopeCode != ''">
+				AND a.route_scope_code = #{routeScopeCode}
+			</if>
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code = #{transportObjCode}
+			</if>
+			<if test="scopeType != null and scopeType != ''">
+				AND a.scope_type = #{scopeType}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		ORDER BY a.transport_obj_code DESC
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.tms.basic.entity.TmRouteScopeObj" >
+		SELECT 
+			<include refid="tmRouteScopeObjColumns"/>
+		FROM tm_route_scope_obj a
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_route_scope_obj(
+			id,
+			route_scope_code,
+			transport_obj_code,
+			scope_type,
+			org_id
+		) VALUES (
+			#{id},
+			#{routeScopeCode},
+			#{transportObjCode},
+			#{scopeType},
+			#{orgId}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE tm_route_scope_obj
+		SET route_scope_code   = #{routeScopeCode},
+			transport_obj_code = #{transportObjCode},
+			scope_type         = #{scopeType},
+			org_id             = #{orgId}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_route_scope_obj WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE trso FROM tm_route_scope_obj trso
+		INNER JOIN tm_route_scope trs ON trso.route_scope_code = trs.code AND trso.org_id = trs.org_id
+		WHERE trs.id = #{routeScopeId}
+	</delete>
+	<select id="findEntity" resultType="com.yunyou.modules.tms.basic.entity.extend.TmRouteScopeObjEntity">
+		SELECT
+		tto.transport_obj_name AS "transportObjName",
+		tto.address AS "transportObjAddress",
+		<include refid="tmRouteScopeObjColumns"/>
+		FROM tm_route_scope_obj a
+		LEFT JOIN tm_transport_obj tto ON a.transport_obj_code = tto.transport_obj_code AND a.org_id = tto.org_id
+		<where>
+			<if test="routeScopeCode != null and routeScopeCode != ''">
+				AND a.route_scope_code = #{routeScopeCode}
+			</if>
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code = #{transportObjCode}
+			</if>
+			<if test="scopeType != null and scopeType != ''">
+				AND a.scope_type = #{scopeType}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		ORDER BY a.transport_obj_code DESC
+	</select>
+
+</mapper>

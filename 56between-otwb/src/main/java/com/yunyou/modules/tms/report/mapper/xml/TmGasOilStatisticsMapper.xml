@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.report.mapper.TmGasOilStatisticsMapper">
+
+    <select id="getGas" resultType="com.yunyou.modules.tms.report.entity.TmGasOilStatistics">
+        SELECT a.transport_obj_code AS "gasCode",
+               a.transport_obj_name AS "gasName"
+        FROM tm_transport_obj a
+        WHERE a.transport_obj_type LIKE '%CONSIGNEE%'
+        <if test="gasCode != null and gasCode != ''">
+            AND a.transport_obj_code LIKE concat('%', #{gasCode}, '%')
+        </if>
+        <if test="gasName != null and gasName != ''">
+            AND a.transport_obj_name LIKE concat('%', #{gasName}, '%')
+        </if>
+        <if test="codeAndName != null and codeAndName != ''">
+            AND (a.transport_obj_name LIKE concat('%', #{codeAndName}, '%') OR a.transport_obj_name LIKE concat('%', #{codeAndName}, '%'))
+        </if>
+          AND a.org_id = #{orgId}
+    </select>
+
+    <select id="getGasOil" resultType="com.yunyou.modules.tms.report.entity.TmGasOilStatistics">
+        SELECT a.transport_obj_code AS "gasCode",
+               a.transport_obj_name AS "gasName",
+               ti.sku_code          AS "oilCode",
+               ti.sku_name          AS "oilName"
+        FROM tm_transport_obj a
+            INNER JOIN tm_item ti ON a.transport_obj_code = ti.owner_code AND a.org_id = ti.org_id
+        WHERE a.transport_obj_type LIKE '%CONSIGNEE%'
+          AND a.transport_obj_code = #{gasCode}
+          AND a.org_id = #{orgId}
+    </select>
+
+    <select id="getGasOilDailyReceivedQty" resultType="com.yunyou.modules.tms.report.entity.TmGasOilStatistics">
+        SELECT DATE_FORMAT(a.dispatch_time, '%Y-%m-%d') AS "date",
+               a.delivery_outlet_code                   AS "gasCode",
+               thos.sku_code                            AS "oilCode",
+               ti.sku_name                              AS "oilName",
+               SUM(thos.actual_qty)                     AS "qty"
+        FROM tm_handover_order_header a
+            INNER JOIN tm_handover_order_sku thos ON a.handover_no = thos.handover_no AND a.org_id = thos.org_id AND thos.receive_ship = 'S'
+            LEFT JOIN tm_item ti ON thos.owner_code = ti.owner_code AND thos.sku_code = ti.sku_code AND thos.base_org_id = ti.org_id
+        WHERE a.dispatch_time &gt;= #{fmDate}
+          AND a.dispatch_time &lt;= #{toDate}
+          AND a.delivery_outlet_code = #{gasCode}
+          AND a.base_org_id = #{baseOrgId}
+            ${dataScope}
+        GROUP BY DATE_FORMAT(a.dispatch_time, '%Y-%m-%d'), a.delivery_outlet_code, thos.sku_code
+    </select>
+
+    <select id="getGasOilMonthReceivedQty" resultType="com.yunyou.modules.tms.report.entity.TmGasOilStatistics">
+        SELECT DATE_FORMAT(a.dispatch_time, '%Y-%m') AS "date",
+               a.delivery_outlet_code                AS "gasCode",
+               thos.sku_code                         AS "oilCode",
+               ti.sku_name                           AS "oilName",
+               SUM(thos.actual_qty)                  AS "qty"
+        FROM tm_handover_order_header a
+            INNER JOIN tm_handover_order_sku thos ON a.handover_no = thos.handover_no AND a.org_id = thos.org_id AND thos.receive_ship = 'S'
+            LEFT JOIN tm_item ti ON thos.owner_code = ti.owner_code AND thos.sku_code = ti.sku_code AND thos.base_org_id = ti.org_id
+        WHERE a.dispatch_time &gt;= #{fmDate}
+          AND a.dispatch_time &lt;= #{toDate}
+          AND a.delivery_outlet_code = #{gasCode}
+          AND a.base_org_id = #{baseOrgId}
+            ${dataScope}
+        GROUP BY DATE_FORMAT(a.dispatch_time, '%Y-%m'), a.delivery_outlet_code, thos.sku_code
+    </select>
+
+    <select id="getGasOilYearReceivedQty" resultType="com.yunyou.modules.tms.report.entity.TmGasOilStatistics">
+        SELECT DATE_FORMAT(a.dispatch_time, '%Y') AS "date",
+               a.delivery_outlet_code             AS "gasCode",
+               thos.sku_code                      AS "oilCode",
+               ti.sku_name                        AS "oilName",
+               SUM(thos.actual_qty)               AS "qty"
+        FROM tm_handover_order_header a
+            INNER JOIN tm_handover_order_sku thos ON a.handover_no = thos.handover_no AND a.org_id = thos.org_id AND thos.receive_ship = 'S'
+            LEFT JOIN tm_item ti ON thos.owner_code = ti.owner_code AND thos.sku_code = ti.sku_code AND thos.base_org_id = ti.org_id
+        WHERE a.dispatch_time &gt;= #{fmDate}
+          AND a.dispatch_time &lt;= #{toDate}
+          AND a.delivery_outlet_code = #{gasCode}
+          AND a.base_org_id = #{baseOrgId}
+            ${dataScope}
+        GROUP BY DATE_FORMAT(a.dispatch_time, '%Y'), a.delivery_outlet_code, thos.sku_code
+    </select>
+
+</mapper>

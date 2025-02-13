@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.basic.mapper.TmVehicleQualificationMapper">
+    
+	<sql id="tmVehicleQualificationColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.car_no AS "carNo",
+		a.qualification_code AS "qualificationCode",
+		a.qualification_name_cn AS "qualificationNameCn",
+		a.qualification_name_en AS "qualificationNameEn",
+		a.qualification_short_name AS "qualificationShortName",
+		a.effective_date AS "effectiveDate",
+		a.expire_date AS "expireDate",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer"
+	</sql>
+	
+	<sql id="tmVehicleQualificationJoins">
+		
+	</sql>
+
+	<select id="get" resultType="TmVehicleQualification" >
+		SELECT 
+			<include refid="tmVehicleQualificationColumns"/>
+		FROM tm_vehicle_qualification a
+		<include refid="tmVehicleQualificationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmVehicleQualification" >
+		SELECT 
+			<include refid="tmVehicleQualificationColumns"/>
+		FROM tm_vehicle_qualification a
+		<include refid="tmVehicleQualificationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.car_no = #{carNo}
+			AND a.org_id = #{orgId}
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmVehicleQualification" >
+		SELECT 
+			<include refid="tmVehicleQualificationColumns"/>
+		FROM tm_vehicle_qualification a
+		<include refid="tmVehicleQualificationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_vehicle_qualification(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			car_no,
+			qualification_code,
+			qualification_name_cn,
+			qualification_name_en,
+			qualification_short_name,
+			effective_date,
+			expire_date,
+			org_id,
+			rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{carNo},
+			#{qualificationCode},
+			#{qualificationNameCn},
+			#{qualificationNameEn},
+			#{qualificationShortName},
+			#{effectiveDate},
+			#{expireDate},
+			#{orgId},
+			#{recVer}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_vehicle_qualification SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			car_no = #{carNo},
+			qualification_code = #{qualificationCode},
+			qualification_name_cn = #{qualificationNameCn},
+			qualification_name_en = #{qualificationNameEn},
+			qualification_short_name = #{qualificationShortName},
+			effective_date = #{effectiveDate},
+			expire_date = #{expireDate},
+			org_id = #{orgId},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_vehicle_qualification
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_vehicle_qualification SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<delete id="deleteByCar">
+		DELETE FROM tm_vehicle_qualification
+		WHERE car_no = #{carNo} AND org_id = #{orgId}
+	</delete>
+	
+</mapper>

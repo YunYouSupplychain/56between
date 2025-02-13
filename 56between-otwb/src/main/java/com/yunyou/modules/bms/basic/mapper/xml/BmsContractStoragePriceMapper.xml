@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.basic.mapper.BmsContractStoragePriceMapper">
+
+    <sql id="bmsContractStoragePriceColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.fk_id AS "fkId",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+		a.sku_class AS "skuClass",
+		a.price AS "price",
+		a.logistics_points AS "logisticsPoints",
+		a.unit AS "unit",
+		a.is_use_step AS "isUseStep",
+		a.is_accumulation_method AS "isAccumulationMethod",
+		a.org_id AS "orgId"
+    </sql>
+    <sql id="extraColumns">
+        bsc.name AS "skuClassName"
+    </sql>
+
+    <sql id="bmsContractStoragePriceJoins">
+        LEFT JOIN bms_sku_classification bsc ON a.sku_class = bsc.code AND a.org_id = bsc.org_id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.basic.entity.BmsContractStoragePrice">
+        SELECT
+        <include refid="bmsContractStoragePriceColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_contract_storage_price a
+        <include refid="bmsContractStoragePriceJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.basic.entity.BmsContractStoragePrice">
+        SELECT
+        <include refid="bmsContractStoragePriceColumns"/>
+        FROM bms_contract_storage_price a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="fkId != null and fkId != ''">
+                AND a.fk_id = #{fkId}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="skuClass != null and skuClass != ''">
+                AND a.sku_class = #{skuClass}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.basic.entity.BmsContractStoragePrice">
+        SELECT
+        <include refid="bmsContractStoragePriceColumns"/>
+        FROM bms_contract_storage_price a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_contract_storage_price
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            fk_id,
+            sku_code,
+            sku_name,
+            sku_class,
+            price,
+            logistics_points,
+            unit,
+            is_use_step,
+            is_accumulation_method,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{fkId},
+            #{skuCode},
+            #{skuName},
+            #{skuClass},
+            #{price},
+            #{logisticsPoints},
+            #{unit},
+            #{isUseStep},
+            #{isAccumulationMethod},
+            #{orgId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_contract_storage_price
+        SET update_by              = #{updateBy.id},
+            update_date            = #{updateDate},
+            remarks                = #{remarks},
+            rec_ver                = rec_ver + 1,
+            fk_id                  = #{fkId},
+            sku_code               = #{skuCode},
+            sku_name               = #{skuName},
+            sku_class              = #{skuClass},
+            price                  = #{price},
+            logistics_points       = #{logisticsPoints},
+            unit                   = #{unit},
+            is_use_step            = #{isUseStep},
+            is_accumulation_method = #{isAccumulationMethod},
+            org_id                 = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_contract_storage_price
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_contract_storage_price WHERE id = #{id}
+    </delete>
+    <delete id="deleteByContract">
+        DELETE bcsp
+        FROM bms_contract_storage_price bcsp
+            INNER JOIN bms_contract_cost_item bcci ON bcsp.fk_id = bcci.id
+        WHERE bcci.sys_contract_no = #{sysContractNo}
+          AND bcci.org_id = #{orgId}
+    </delete>
+    <delete id="deleteByHeaderId">
+        DELETE FROM bms_contract_storage_price WHERE fk_id = #{fkId}
+    </delete>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.basic.entity.BmsContractStoragePrice">
+        SELECT
+        <include refid="bmsContractStoragePriceColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_contract_storage_price a
+        <include refid="bmsContractStoragePriceJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.fk_id = #{fkId}
+            AND a.org_id = #{orgId}
+            ${dataScope}
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="skuClass != null and skuClass != ''">
+                AND a.sku_class = #{skuClass}
+            </if>
+            <if test="searchSku != null and searchSku != ''">
+                AND (a.sku_class like concat('%', #{searchSku},'%')
+                    or a.sku_code like concat('%', #{searchSku},'%')
+                    or a.sku_name like concat('%', #{searchSku},'%')
+                    or bsc.name like concat('%', #{searchSku},'%'))
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.sku_class, a.sku_code
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findByContract" resultType="com.yunyou.modules.bms.basic.entity.BmsContractStoragePrice">
+        SELECT
+        <include refid="bmsContractStoragePriceColumns"/>
+        FROM bms_contract_storage_price a
+        INNER JOIN bms_contract_cost_item bcci ON a.fk_id = bcci.id
+        WHERE a.del_flag = '0'
+        AND bcci.sys_contract_no = #{sysContractNo}
+        AND a.org_id = #{orgId}
+    </select>
+
+    <select id="findByFkId" resultType="com.yunyou.modules.bms.basic.entity.BmsContractStoragePrice">
+        SELECT
+        <include refid="bmsContractStoragePriceColumns"/>
+        FROM bms_contract_storage_price a
+        INNER JOIN bms_contract_cost_item bcci ON a.fk_id = bcci.id
+        WHERE a.del_flag = '0'
+        AND a.fk_id = #{fkId}
+    </select>
+
+    <select id="getByFkIdAndSku" resultType="com.yunyou.modules.bms.basic.entity.BmsContractStoragePrice">
+        SELECT
+        <include refid="bmsContractStoragePriceColumns"/>
+        FROM bms_contract_storage_price a
+        WHERE a.del_flag = '0'
+        AND a.fk_id = #{fkId}
+        AND a.sku_code = #{skuCode}
+        AND a.org_id = #{orgId}
+        LIMIT 1
+    </select>
+    <select id="getByFkIdAndSkuClass" resultType="com.yunyou.modules.bms.basic.entity.BmsContractStoragePrice">
+        SELECT
+        <include refid="bmsContractStoragePriceColumns"/>
+        FROM bms_contract_storage_price a
+        WHERE a.del_flag = '0'
+        AND a.fk_id = #{fkId}
+        AND a.sku_class = #{skuClass}
+        AND (a.sku_code is null OR a.sku_code= '')
+        AND a.org_id = #{orgId}
+        LIMIT 1
+    </select>
+    <select id="getByFkId" resultType="com.yunyou.modules.bms.basic.entity.BmsContractStoragePrice">
+        SELECT
+        <include refid="bmsContractStoragePriceColumns"/>
+        FROM bms_contract_storage_price a
+        WHERE a.del_flag = '0'
+        AND a.fk_id = #{fkId}
+        AND (a.sku_class is null OR a.sku_class= '')
+        AND (a.sku_code is null OR a.sku_code= '')
+        AND a.org_id = #{orgId}
+        LIMIT 1
+    </select>
+
+    <select id="getContractPrice" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsContractPrice">
+        SELECT a.id                     AS "id",
+               a.price                  AS "price",
+               a.logistics_points       AS "logisticsPoints",
+               a.is_use_step            AS "isUseStep",
+               a.is_accumulation_method AS "isAccumulationMethod"
+        FROM bms_contract_storage_price a
+        WHERE a.fk_id = #{fkId}
+          AND a.org_id = #{orgId}
+        <choose>
+            <when test="skuClass != null and skuClass != ''">
+                AND a.sku_class = #{skuClass}
+            </when>
+            <otherwise>
+                AND (a.sku_class = '' or a.sku_class is null)
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </when>
+            <otherwise>
+                AND (a.sku_code = '' or a.sku_code is null)
+            </otherwise>
+        </choose>
+        LIMIT 1
+    </select>
+
+</mapper>

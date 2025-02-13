@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysOmsItemMapper">
+    
+	<sql id="sysOmsItemColumns">
+		a.id                AS "id",
+		a.create_by         AS "createBy.id",
+		a.create_date       AS "createDate",
+		a.update_by         AS "updateBy.id",
+		a.update_date       AS "updateDate",
+		a.remarks           AS "remarks",
+		a.del_flag          AS "delFlag",
+		a.rec_ver           AS "recVer",
+		a.owner_code        AS "ownerCode",
+		oc.ebcu_name_cn     AS "ownerName",
+		a.sku_code          AS "skuCode",
+		a.sku_name          AS "skuName",
+		a.short_name        AS "shortName",
+		a.customer_sku_code AS "customerSkuCode",
+		a.sku_model         AS "skuModel",
+		a.sku_type          AS "skuType",
+		a.pack_code         AS "packCode",
+		a.spec              AS "spec",
+		a.gross_weight      AS "grossWeight",
+		a.net_weight        AS "netWeight",
+		a.volume            AS "volume",
+		a.length            AS "length",
+		a.width             AS "width",
+		a.height            AS "height",
+		a.tare              AS "tare",
+		a.unicode           AS "unicode",
+		a.data_set            AS "dataSet",
+		a.brand             AS "brand",
+		a.big_sort          AS "bigSort",
+		a.mid_sort          AS "midSort",
+		a.small_sort        AS "smallSort",
+		a.unit              AS "unit",
+		a.auxiliary_unit    AS "auxiliaryUnit",
+		a.sku_temp_layer 	AS "skuTempLayer",
+		a.sku_class			AS "skuClass"
+	</sql>
+	
+	<sql id="sysOmsItemJoins">
+		LEFT JOIN sys_oms_customer oc on a.owner_code = oc.ebcu_customer_no and a.data_set = oc.data_set
+	</sql>
+	
+	<insert id="insert">
+		INSERT INTO sys_oms_item(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			owner_code,
+			owner_name,
+			sku_code,
+			sku_name,
+			short_name,
+			customer_sku_code,
+			sku_model,
+			sku_type,
+			pack_code,
+			spec,
+			gross_weight,
+			net_weight,
+			volume,
+			length,
+			width,
+			height,
+			tare,
+			unicode,
+			data_set,
+			brand,
+			big_sort,
+			mid_sort,
+			small_sort,
+			unit,
+			auxiliary_unit,
+			sku_temp_layer,
+			sku_class
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{ownerCode},
+			#{ownerName},
+			#{skuCode},
+			#{skuName},
+			#{shortName},
+			#{customerSkuCode},
+			#{skuModel},
+			#{skuType},
+			#{packCode},
+			#{spec},
+			#{grossWeight},
+			#{netWeight},
+			#{volume},
+			#{length},
+			#{width},
+			#{height},
+			#{tare},
+			#{unicode},
+			#{dataSet},
+			#{brand},
+			#{bigSort},
+			#{midSort},
+			#{smallSort},
+			#{unit},
+			#{auxiliaryUnit},
+			#{skuTempLayer},
+			#{skuClass}
+		)
+	</insert>
+    <insert id="batchInsert">
+		INSERT INTO sys_oms_item
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			owner_code,
+			owner_name,
+			sku_code,
+			sku_name,
+			short_name,
+			customer_sku_code,
+			sku_model,
+			sku_type,
+			pack_code,
+			spec,
+			gross_weight,
+			net_weight,
+			volume,
+			length,
+			width,
+			height,
+			tare,
+			unicode,
+			data_set,
+			brand,
+			big_sort,
+			mid_sort,
+			small_sort,
+			unit,
+			auxiliary_unit,
+			sku_temp_layer,
+			sku_class
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.recVer},
+			#{item.ownerCode},
+			#{item.ownerName},
+			#{item.skuCode},
+			#{item.skuName},
+			#{item.shortName},
+			#{item.customerSkuCode},
+			#{item.skuModel},
+			#{item.skuType},
+			#{item.packCode},
+			#{item.spec},
+			#{item.grossWeight},
+			#{item.netWeight},
+			#{item.volume},
+			#{item.length},
+			#{item.width},
+			#{item.height},
+			#{item.tare},
+			#{item.unicode},
+			#{item.dataSet},
+			#{item.brand},
+			#{item.bigSort},
+			#{item.midSort},
+			#{item.smallSort},
+			#{item.unit},
+			#{item.auxiliaryUnit},
+			#{item.skuTempLayer},
+			#{item.skuClass}
+		)
+		</foreach>
+	</insert>
+
+    <update id="update">
+		UPDATE sys_oms_item
+		SET update_by         = #{updateBy.id},
+			update_date       = #{updateDate},
+			remarks           = #{remarks},
+			rec_ver           = rec_ver + 1,
+			owner_code        = #{ownerCode},
+			owner_name        = #{ownerName},
+			sku_code          = #{skuCode},
+			sku_name          = #{skuName},
+			short_name        = #{shortName},
+			customer_sku_code = #{customerSkuCode},
+			sku_model         = #{skuModel},
+			sku_type          = #{skuType},
+			pack_code         = #{packCode},
+			spec              = #{spec},
+			gross_weight      = #{grossWeight},
+			net_weight        = #{netWeight},
+			volume            = #{volume},
+			length            = #{length},
+			width             = #{width},
+			height            = #{height},
+			tare              = #{tare},
+			unicode           = #{unicode},
+			data_set          = #{dataSet},
+			brand             = #{brand},
+			big_sort          = #{bigSort},
+			mid_sort          = #{midSort},
+			small_sort        = #{smallSort},
+			unit              = #{unit},
+			auxiliary_unit    = #{auxiliaryUnit},
+			sku_temp_layer    = #{skuTempLayer},
+			sku_class         = #{skuClass}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_oms_item SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_oms_item WHERE id = #{id}
+	</delete>
+    <delete id="remove">
+		DELETE FROM sys_oms_item WHERE owner_code = #{ownerCode} AND sku_code = #{skuCode} AND data_set = #{dataSet}
+	</delete>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysOmsItem" >
+		SELECT
+		<include refid="sysOmsItemColumns"/>
+		FROM sys_oms_item a
+		<include refid="sysOmsItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysOmsItem" >
+		SELECT
+		<include refid="sysOmsItemColumns"/>
+		FROM sys_oms_item a
+		<include refid="sysOmsItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="skuName != null and skuName != ''">
+				AND a.sku_name = #{skuName}
+			</if>
+			<if test="customerSkuCode != null and customerSkuCode != ''">
+				AND a.customer_sku_code = #{customerSkuCode}
+			</if>
+			<if test="skuType != null and skuType != ''">
+				AND a.sku_type = #{skuType}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="spec != null and spec != ''">
+				AND a.spec like concat('%',#{spec},'%')
+			</if>
+			<if test="bigSort != null and bigSort != ''">
+				AND a.big_sort = #{bigSort}
+			</if>
+			<if test="midSort != null and midSort != ''">
+				AND a.mid_sort = #{midSort}
+			</if>
+			<if test="smallSort != null and smallSort != ''">
+				AND a.small_sort = #{smallSort}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysOmsItem" >
+		SELECT
+		<include refid="sysOmsItemColumns"/>
+		FROM sys_oms_item a
+		<include refid="sysOmsItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.extend.SysOmsItemEntity" >
+		SELECT
+		<include refid="sysOmsItemColumns"/>
+		FROM sys_oms_item a
+		LEFT JOIN sys_oms_customer oc on a.owner_code = oc.ebcu_customer_no and a.data_set = oc.data_set
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code like concat('%',#{skuCode},'%')
+			</if>
+			<if test="skuName != null and skuName != ''">
+				AND a.sku_name like concat('%',#{skuName},'%')
+			</if>
+			<if test="customerSkuCode != null and customerSkuCode != ''">
+				AND a.customer_sku_code = #{customerSkuCode}
+			</if>
+			<if test="skuType != null and skuType != ''">
+				AND a.sku_type = #{skuType}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="spec != null and spec != ''">
+				AND a.spec like concat('%',#{spec},'%')
+			</if>
+			<if test="bigSort != null and bigSort != ''">
+				AND a.big_sort = #{bigSort}
+			</if>
+			<if test="midSort != null and midSort != ''">
+				AND a.mid_sort = #{midSort}
+			</if>
+			<if test="smallSort != null and smallSort != ''">
+				AND a.small_sort = #{smallSort}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (1 = 2 OR a.sku_code like concat('%',#{codeAndName},'%') OR a.sku_name like concat('%',#{codeAndName},'%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.sys.common.entity.extend.SysOmsItemEntity" >
+		SELECT
+			op.cdpa_format AS packDesc,
+		<include refid="sysOmsItemColumns"/>
+		FROM sys_oms_item a
+		INNER JOIN sys_oms_package op ON a.pack_code = op.cdpa_code AND a.data_set = op.data_set AND op.DEL_FLAG = '0'
+		<include refid="sysOmsItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getByOwnerAndSku" resultType="com.yunyou.modules.sys.common.entity.SysOmsItem">
+		SELECT
+		<include refid="sysOmsItemColumns"/>
+		FROM sys_oms_item a
+		<include refid="sysOmsItemJoins"/>
+		<where>
+			a.owner_code = #{ownerCode}
+			AND a.sku_code = #{skuCode}
+			AND a.data_set = #{dataSet}
+		</where>
+	</select>
+
+	<select id="getPackageQty" resultType="Double">
+		SELECT
+			opr.cdpr_quantity
+		FROM sys_oms_item a
+		INNER JOIN sys_oms_package op ON a.pack_code = op.cdpa_code AND a.data_set = op.data_set AND op.DEL_FLAG = '0'
+		INNER JOIN sys_oms_package_relation opr ON opr.cdpr_cdpa_pm_code = op.pm_code AND opr.data_set = op.data_set AND opr.del_flag = '0'
+		<where>
+			a.del_flag = '0'
+			AND a.owner_code = #{ownerCode}
+			AND a.sku_code = #{skuCode}
+			AND a.data_set = #{dataSet}
+			AND opr.cdpr_unit_level = #{unitLevel}
+		</where>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.extend.SysOmsItemEntity" >
+		SELECT
+			<include refid="sysOmsItemColumns"/>
+		FROM sys_oms_item a
+		LEFT JOIN sys_oms_customer oc on a.owner_code = oc.ebcu_customer_no and a.data_set = oc.data_set
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code like concat('%',#{skuCode},'%')
+			</if>
+			<if test="skuName != null and skuName != ''">
+				AND a.sku_name like concat('%',#{skuName},'%')
+			</if>
+			<if test="customerSkuCode != null and customerSkuCode != ''">
+				AND a.customer_sku_code = #{customerSkuCode}
+			</if>
+			<if test="skuType != null and skuType != ''">
+				AND a.sku_type = #{skuType}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="spec != null and spec != ''">
+				AND a.spec like concat('%',#{spec},'%')
+			</if>
+			<if test="bigSort != null and bigSort != ''">
+				AND a.big_sort = #{bigSort}
+			</if>
+			<if test="midSort != null and midSort != ''">
+				AND a.mid_sort = #{midSort}
+			</if>
+			<if test="smallSort != null and smallSort != ''">
+				AND a.small_sort = #{smallSort}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.sku_code like concat('%',#{codeAndName},'%') OR a.sku_name like concat('%',#{codeAndName},'%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

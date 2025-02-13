@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.basic.mapper.SettlementSkuSupplierMapper">
+
+    <sql id="settlementSkuSupplierColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.sku_id AS "skuId",
+		a.supplier_code AS "supplierCode",
+		a.org_id AS "orgId"
+    </sql>
+
+    <sql id="settlementSkuSupplierJoins">
+
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.basic.entity.SettlementSkuSupplier">
+        SELECT
+        <include refid="settlementSkuSupplierColumns"/>
+        FROM settlement_sku_supplier a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.basic.entity.SettlementSkuSupplier">
+        SELECT
+        <include refid="settlementSkuSupplierColumns"/>
+        FROM settlement_sku_supplier a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="skuId != null and skuId != ''">
+                AND a.sku_id = #{skuId}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code = #{supplierCode}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.basic.entity.SettlementSkuSupplier">
+        SELECT
+        <include refid="settlementSkuSupplierColumns"/>
+        FROM settlement_sku_supplier a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO settlement_sku_supplier
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            sku_id,
+            supplier_code,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{skuId},
+            #{supplierCode},
+            #{orgId}
+        )
+    </insert>
+    <insert id="batchInsert">
+        INSERT INTO settlement_sku_supplier
+        (
+        id,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        remarks,
+        del_flag,
+        rec_ver,
+        sku_id,
+        supplier_code,
+        org_id
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator="," close=";">
+            (
+            #{item.id},
+            #{item.createBy.id},
+            #{item.createDate},
+            #{item.updateBy.id},
+            #{item.updateDate},
+            #{item.remarks},
+            #{item.delFlag},
+            #{item.recVer},
+            #{item.skuId},
+            #{item.supplierCode},
+            #{item.orgId}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE settlement_sku_supplier
+        SET update_by     = #{updateBy.id},
+            update_date   = #{updateDate},
+            remarks       = #{remarks},
+            rec_ver       = rec_ver + 1,
+            sku_id        = #{skuId},
+            supplier_code = #{supplierCode},
+            org_id        = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE settlement_sku_supplier
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM settlement_sku_supplier WHERE id = #{id}
+    </delete>
+    <delete id="remove">
+        DELETE sss
+        FROM settlement_sku_supplier sss
+            INNER JOIN settlement_sku ss ON sss.sku_id = ss.id
+        WHERE ss.owner_code = #{ownerCode}
+          AND ss.sku_code = #{skuCode}
+          AND ss.org_id = #{orgId}
+    </delete>
+
+    <select id="findBySkuId" resultType="com.yunyou.modules.bms.basic.entity.SettlementSkuSupplier">
+        SELECT
+        bc.ebcu_name_cn AS "supplierName",
+        <include refid="settlementSkuSupplierColumns"/>
+        FROM settlement_sku_supplier a
+        LEFT JOIN bms_customer bc ON a.supplier_code = bc.ebcu_customer_no AND a.org_id = bc.org_id
+        WHERE a.del_flag = '0'
+        AND a.sku_id = #{skuId}
+        AND a.org_id = #{orgId}
+    </select>
+
+</mapper>

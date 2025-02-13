@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysTmsTransportEquipmentTypeMapper">
+    
+	<sql id="sysTmsTransportEquipmentTypeColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_equipment_type_code AS "transportEquipmentTypeCode",
+		a.transport_equipment_type_name_cn AS "transportEquipmentTypeNameCn",
+		a.transport_equipment_type_name_en AS "transportEquipmentTypeNameEn",
+		a.temperature_type AS "temperatureType",
+		a.is_temperature_control AS "isTemperatureControl",
+		a.min_allow_temperature AS "minAllowTemperature",
+		a.max_allow_temperature AS "maxAllowTemperature",
+		a.is_humidity_control AS "isHumidityControl",
+		a.min_allow_humidity AS "minAllowHumidity",
+		a.max_allow_humidity AS "maxAllowHumidity",
+		a.is_container AS "isContainer",
+		a.only_allow_lastin_lastout AS "onlyAllowLastInLastOut",
+		a.is_fixed_equipment_space AS "isFixedEquipmentSpace",
+		a.internal_length AS "internalLength",
+		a.internal_width AS "internalWidth",
+		a.internal_height AS "internalHeight",
+		a.external_length AS "externalLength",
+		a.external_width AS "externalWidth",
+		a.external_height AS "externalHeight",
+		a.door_width AS "doorWidth",
+		a.door_height AS "doorHeight",
+		a.min_load_weight AS "minLoadWeight",
+		a.max_load_weight AS "maxLoadWeight",
+		a.left_limit_max_load_weight AS "leftLimitMaxLoadWeight",
+		a.right_limit_max_load_weight AS "rightLimitMaxLoadWeight",
+		a.left_right_diff_limit_max_load_weight AS "leftRightDiffLimitMaxLoadWeight",
+		a.min_load_cubic AS "minLoadCubic",
+		a.max_load_cubic AS "maxLoadCubic",
+		a.allow_overweight_rate AS "allowOverweightRate",
+		a.data_set AS "dataSet",
+		a.rec_ver AS "recVer",
+		scds.name AS "dataSetName"
+	</sql>
+	
+	<sql id="sysTmsTransportEquipmentTypeJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysTmsTransportEquipmentType" >
+		SELECT <include refid="sysTmsTransportEquipmentTypeColumns"/>
+		FROM sys_tms_transport_equipment_type a
+		<include refid="sysTmsTransportEquipmentTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysTmsTransportEquipmentType" >
+		SELECT <include refid="sysTmsTransportEquipmentTypeColumns"/>
+		FROM sys_tms_transport_equipment_type a
+		<include refid="sysTmsTransportEquipmentTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="transportEquipmentTypeCode != null and transportEquipmentTypeCode != ''">
+				AND a.transport_equipment_type_code = #{transportEquipmentTypeCode}
+			</if>
+			<if test="transportEquipmentTypeNameCn != null and transportEquipmentTypeNameCn != ''">
+				AND a.transport_equipment_type_name_cn = #{transportEquipmentTypeNameCn}
+			</if>
+			<if test="transportEquipmentTypeNameEn != null and transportEquipmentTypeNameEn != ''">
+				AND a.transport_equipment_type_name_en = #{transportEquipmentTypeNameEn}
+			</if>
+			<if test="temperatureType != null and temperatureType != ''">
+				AND a.temperature_type = #{temperatureType}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysTmsTransportEquipmentType" >
+		SELECT <include refid="sysTmsTransportEquipmentTypeColumns"/>
+		FROM sys_tms_transport_equipment_type a
+		<include refid="sysTmsTransportEquipmentTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_tms_transport_equipment_type(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			transport_equipment_type_code,
+			transport_equipment_type_name_cn,
+			transport_equipment_type_name_en,
+			temperature_type,
+			is_temperature_control,
+			min_allow_temperature,
+			max_allow_temperature,
+			is_humidity_control,
+			min_allow_humidity,
+			max_allow_humidity,
+			is_container,
+			only_allow_lastin_lastout,
+			is_fixed_equipment_space,
+			internal_length,
+			internal_width,
+			internal_height,
+			external_length,
+			external_width,
+			external_height,
+			door_width,
+			door_height,
+			min_load_weight,
+			max_load_weight,
+			left_limit_max_load_weight,
+			right_limit_max_load_weight,
+			left_right_diff_limit_max_load_weight,
+			min_load_cubic,
+			max_load_cubic,
+			allow_overweight_rate,
+			data_set,
+			rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{transportEquipmentTypeCode},
+			#{transportEquipmentTypeNameCn},
+			#{transportEquipmentTypeNameEn},
+			#{temperatureType},
+			#{isTemperatureControl},
+			#{minAllowTemperature},
+			#{maxAllowTemperature},
+			#{isHumidityControl},
+			#{minAllowHumidity},
+			#{maxAllowHumidity},
+			#{isContainer},
+			#{onlyAllowLastInLastOut},
+			#{isFixedEquipmentSpace},
+			#{internalLength},
+			#{internalWidth},
+			#{internalHeight},
+			#{externalLength},
+			#{externalWidth},
+			#{externalHeight},
+			#{doorWidth},
+			#{doorHeight},
+			#{minLoadWeight},
+			#{maxLoadWeight},
+			#{leftLimitMaxLoadWeight},
+			#{rightLimitMaxLoadWeight},
+			#{leftRightDiffLimitMaxLoadWeight},
+			#{minLoadCubic},
+			#{maxLoadCubic},
+			#{allowOverweightRate},
+			#{dataSet},
+			#{recVer}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_tms_transport_equipment_type
+		SET update_by                             = #{updateBy.id},
+			update_date                           = #{updateDate},
+			del_flag                              = #{delFlag},
+			remarks                               = #{remarks},
+			transport_equipment_type_code         = #{transportEquipmentTypeCode},
+			transport_equipment_type_name_cn      = #{transportEquipmentTypeNameCn},
+			transport_equipment_type_name_en      = #{transportEquipmentTypeNameEn},
+			temperature_type                      = #{temperatureType},
+			is_temperature_control                = #{isTemperatureControl},
+			min_allow_temperature                 = #{minAllowTemperature},
+			max_allow_temperature                 = #{maxAllowTemperature},
+			is_humidity_control                   = #{isHumidityControl},
+			min_allow_humidity                    = #{minAllowHumidity},
+			max_allow_humidity                    = #{maxAllowHumidity},
+			is_container                          = #{isContainer},
+			only_allow_lastin_lastout             = #{onlyAllowLastInLastOut},
+			is_fixed_equipment_space              = #{isFixedEquipmentSpace},
+			internal_length                       = #{internalLength},
+			internal_width                        = #{internalWidth},
+			internal_height                       = #{internalHeight},
+			external_length                       = #{externalLength},
+			external_width                        = #{externalWidth},
+			external_height                       = #{externalHeight},
+			door_width                            = #{doorWidth},
+			door_height                           = #{doorHeight},
+			min_load_weight                       = #{minLoadWeight},
+			max_load_weight                       = #{maxLoadWeight},
+			left_limit_max_load_weight            = #{leftLimitMaxLoadWeight},
+			right_limit_max_load_weight           = #{rightLimitMaxLoadWeight},
+			left_right_diff_limit_max_load_weight = #{leftRightDiffLimitMaxLoadWeight},
+			min_load_cubic                        = #{minLoadCubic},
+			max_load_cubic                        = #{maxLoadCubic},
+			allow_overweight_rate                 = #{allowOverweightRate},
+			data_set                              = #{dataSet},
+			rec_ver                               = rec_ver + 1
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_tms_transport_equipment_type SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_tms_transport_equipment_type WHERE id = #{id}
+	</delete>
+
+	<select id="getEntity" resultType="com.yunyou.modules.sys.common.entity.extend.SysTmsTransportEquipmentTypeEntity" >
+		SELECT <include refid="sysTmsTransportEquipmentTypeColumns"/>
+		FROM sys_tms_transport_equipment_type a
+		<include refid="sysTmsTransportEquipmentTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.extend.SysTmsTransportEquipmentTypeEntity" >
+		SELECT <include refid="sysTmsTransportEquipmentTypeColumns"/>
+		FROM sys_tms_transport_equipment_type a
+		<include refid="sysTmsTransportEquipmentTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+			<if test="transportEquipmentTypeCode != null and transportEquipmentTypeCode != ''">
+				AND a.transport_equipment_type_code LIKE concat('%', #{transportEquipmentTypeCode}, '%')
+			</if>
+			<if test="transportEquipmentTypeNameCn != null and transportEquipmentTypeNameCn != ''">
+				AND a.transport_equipment_type_name_cn LIKE concat('%', #{transportEquipmentTypeNameCn}, '%')
+			</if>
+			<if test="transportEquipmentTypeNameEn != null and transportEquipmentTypeNameEn != ''">
+				AND a.transport_equipment_type_name_en LIKE concat('%', #{transportEquipmentTypeNameEn}, '%')
+			</if>
+			<if test="temperatureType != null and temperatureType != ''">
+				AND a.temperature_type = #{temperatureType}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.extend.SysTmsTransportEquipmentTypeEntity" >
+		SELECT <include refid="sysTmsTransportEquipmentTypeColumns"/>
+		FROM sys_tms_transport_equipment_type a
+		<include refid="sysTmsTransportEquipmentTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="transportEquipmentTypeCode != null and transportEquipmentTypeCode != ''">
+				AND a.transport_equipment_type_code LIKE concat('%', #{transportEquipmentTypeCode}, '%')
+			</if>
+			<if test="transportEquipmentTypeNameCn != null and transportEquipmentTypeNameCn != ''">
+				AND a.transport_equipment_type_name_cn LIKE concat('%', #{transportEquipmentTypeNameCn}, '%')
+			</if>
+			<if test="transportEquipmentTypeNameEn != null and transportEquipmentTypeNameEn != ''">
+				AND a.transport_equipment_type_name_en LIKE concat('%', #{transportEquipmentTypeNameEn}, '%')
+			</if>
+			<if test="temperatureType != null and temperatureType != ''">
+				AND a.temperature_type = #{temperatureType}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.transport_equipment_type_code LIKE concat('%', #{codeAndName}, '%')
+					OR a.transport_equipment_type_name_cn LIKE concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="findSync" resultType="com.yunyou.modules.sys.common.entity.SysTmsTransportEquipmentType">
+		SELECT <include refid="sysTmsTransportEquipmentTypeColumns"/>
+		FROM sys_tms_transport_equipment_type a
+		<include refid="sysTmsTransportEquipmentTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="transportEquipmentTypeCode != null and transportEquipmentTypeCode != ''">
+				AND a.transport_equipment_type_code = #{transportEquipmentTypeCode}
+			</if>
+			<if test="transportEquipmentTypeNameCn != null and transportEquipmentTypeNameCn != ''">
+				AND a.transport_equipment_type_name_cn = #{transportEquipmentTypeNameCn}
+			</if>
+			<if test="transportEquipmentTypeNameEn != null and transportEquipmentTypeNameEn != ''">
+				AND a.transport_equipment_type_name_en = #{transportEquipmentTypeNameEn}
+			</if>
+			<if test="temperatureType != null and temperatureType != ''">
+				AND a.temperature_type = #{temperatureType}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+	</select>
+
+</mapper>

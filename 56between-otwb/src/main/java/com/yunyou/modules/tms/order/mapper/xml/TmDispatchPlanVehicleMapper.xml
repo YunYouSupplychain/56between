@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmDispatchPlanVehicleMapper">
+    
+	<sql id="tmDispatchPlanVehicleColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.plan_no AS "planNo",
+		a.vehicle_no AS "vehicleNo",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId"
+	</sql>
+	
+	<select id="get" resultType="TmDispatchPlanVehicle">
+		SELECT <include refid="tmDispatchPlanVehicleColumns"/>
+		FROM tm_dispatch_plan_vehicle a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmDispatchPlanVehicle">
+		SELECT 
+			<include refid="tmDispatchPlanVehicleColumns"/>
+		FROM tm_dispatch_plan_vehicle a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="planNo != null and planNo != ''">
+				AND a.plan_no = #{planNo}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="baseOrgId != null and baseOrgId != ''">
+				AND a.base_org_id = #{baseOrgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmDispatchPlanVehicle">
+		SELECT 
+			<include refid="tmDispatchPlanVehicleColumns"/>
+		FROM tm_dispatch_plan_vehicle a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_dispatch_plan_vehicle(
+			id,
+			create_by,
+			create_date,
+			remarks,
+			del_flag,
+			plan_no,
+			vehicle_no,
+			org_id,
+			rec_ver,
+		    base_org_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{remarks},
+			#{delFlag},
+			#{planNo},
+			#{vehicleNo},
+			#{orgId},
+			#{recVer},
+		    #{baseOrgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_dispatch_plan_vehicle SET
+			remarks = #{remarks},
+			plan_no = #{planNo},
+			vehicle_no = #{vehicleNo},
+			org_id = #{orgId},
+			rec_ver = rec_ver + 1,
+		    base_org_id = #{baseOrgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_dispatch_plan_vehicle
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_dispatch_plan_vehicle SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

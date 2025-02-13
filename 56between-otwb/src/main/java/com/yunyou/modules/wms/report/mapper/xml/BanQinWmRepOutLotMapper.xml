@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.report.mapper.BanQinWmRepOutLotMapper">
+
+	<select id="findPage" resultType="com.yunyou.modules.wms.report.entity.WmRepOutLotEntity" >
+		SELECT
+			a.id AS "id",
+			a.alloc_id AS "allocId",
+			a.wave_no AS "waveNo",
+			a.so_no AS "soNo",
+			a.line_no AS "lineNo",
+			a.owner_code AS "ownerCode",
+			a.sku_code AS "skuCode",
+			a.lot_num AS "lotNum",
+			a.loc_code AS "locCode",
+			a.trace_id AS "traceId",
+			a.consignee_code AS "consigneeCode",
+			a.status AS "status",
+			a.check_status AS "checkStatus",
+			a.pack_code AS "packCode",
+			a.uom AS "uom",
+			a.qty_uom AS "qtyUom",
+			a.qty_ea AS "qtyEa",
+			a.to_loc AS "toLoc",
+			a.to_id AS "toId",
+			a.pick_op AS "pickOp",
+			a.pick_time AS "pickTime",
+			a.check_op AS "checkOp",
+			a.check_time AS "checkTime",
+			a.pack_op AS "packOp",
+			a.pack_time AS "packTime",
+			a.ship_op AS "shipOp",
+			a.ship_time AS "shipTime",
+			a.print_num AS "printNum",
+			a.pick_no AS "pickNo",
+			a.tracking_no AS "trackingNo",
+			a.pack_weight AS "packWeight",
+			a.asn_no AS "asnNo",
+			a.asn_line_no AS "asnLineNo",
+			a.rcv_line_no AS "rcvLineNo",
+			a.cd_type AS "cdType",
+			a.cd_out_step AS "cdOutStep",
+			a.remarks AS "remarks",
+			a.rec_ver AS "recVer",
+			a.create_by AS "createBy.id",
+			a.create_date AS "createDate",
+			a.update_by AS "updateBy.id",
+			a.update_date AS "updateDate",
+			a.del_flag AS "delFlag",
+			a.org_id AS "orgId",
+			a.case_no AS "caseNo",
+			a.pack_scan_count AS "packScanCount",
+			ec.ebcu_name_cn AS ownerName,
+			cws.sku_name AS skuName,
+			cws.quick_code AS skuQuickCode,
+			cws.is_serial AS isSerial,
+			cws.cubic AS cubic,
+			cws.net_weight AS netWeight,
+			cws.gross_weight AS grossWeight,
+			cws.pa_rule AS paRule,
+			cws.reserve_code AS reserveCode,
+			cdpa.cdpa_format AS packDesc,
+			cdpr.cdpr_desc AS uomDesc,
+			cdpr.cdpr_quantity AS uomQty,
+			wila.lot_att01 AS lotAtt01,
+			wila.lot_att02 AS lotAtt02,
+			wila.lot_att03 AS lotAtt03,
+			wila.lot_att04 AS lotAtt04,
+			wila.lot_att05 AS lotAtt05,
+			wila.lot_att06 AS lotAtt06,
+			wila.lot_att07 AS lotAtt07,
+			wila.lot_att08 AS lotAtt08,
+			wila.lot_att09 AS lotAtt09,
+			wila.lot_att10 AS lotAtt10,
+			wila.lot_att11 AS lotAtt11,
+			wila.lot_att12 AS lotAtt12,
+			so.name AS orgName,
+			wsh.consignee_name AS consigneeName,
+			wsh.order_time AS orderTime,
+			cws.spec AS skuSpec,
+			cws.qty_unit AS qtyUnit,
+			wsh.def5 AS customerNo,
+			wsh.contact_tel AS consigneeTel,
+			wsh.contact_addr AS consigneeAddress,
+			wsh.contact_name AS contactName,
+			wsh.contact_tel AS contactTel,
+			wsh.contact_addr AS contactAddr,
+			wsh.remarks AS orderRemarks,
+			cws.length AS skuLength,
+		  	cws.width AS skuWidth,
+			cws.height AS skuHeight
+		FROM wm_so_alloc a
+		LEFT JOIN wm_so_header wsh ON a.so_no = wsh.so_no AND a.org_id = wsh.org_id
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id
+		LEFT JOIN cd_wh_sku cws ON a.sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cdpa ON a.pack_code = cdpa.cdpa_code AND a.org_id = cdpa.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND a.uom = cdpr.cdpr_unit_level
+		LEFT JOIN wm_inv_lot_att wila ON a.lot_num = wila.lot_num AND a.org_id = wila.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="allocId != null and allocId != ''">
+				AND a.alloc_id = #{allocId}
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no = #{soNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num = #{lotNum}
+			</if>
+			<if test="locCode != null and locCode != ''">
+				AND a.loc_code = #{locCode}
+			</if>
+			<if test="traceId != null and traceId != ''">
+				AND a.trace_id = #{traceId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="consigneeCode != null and consigneeCode != ''">
+				AND a.consignee_code = #{consigneeCode}
+			</if>
+			<if test="pickNo != null and pickNo != ''">
+				AND a.pick_no = #{pickNo}
+			</if>
+			<if test="beginOrderTime != null and beginOrderTime !=''">
+				<![CDATA[ AND wsh.order_time >= #{beginOrderTime} ]]>
+			</if>
+			<if test="endOrderTime != null and endOrderTime !=''">
+				<![CDATA[ AND wsh.order_time <= #{endOrderTime} ]]>
+			</if>
+			<if test="statusList != null and statusList.size() > 0">
+				AND a.status IN
+				<foreach collection="statusList" item="status" index="status" open="(" separator="," close=")">
+					#{status}
+				</foreach>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.alloc_id
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.business.mapper.BmsInventoryDataMapper">
+
+    <sql id="bmsInventoryDataColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.inv_date AS "invDate",
+		a.owner_code AS "ownerCode",
+		a.owner_name AS "ownerName",
+		a.supplier_code AS "supplierCode",
+		a.supplier_name AS "supplierName",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+        a.sku_class AS "skuClass",
+		a.lot_no AS "lotNo",
+		a.lot_att01 AS "lotAtt01",
+		a.lot_att02 AS "lotAtt02",
+		a.lot_att03 AS "lotAtt03",
+		a.lot_att04 AS "lotAtt04",
+		a.lot_att05 AS "lotAtt05",
+		a.lot_att06 AS "lotAtt06",
+		a.lot_att07 AS "lotAtt07",
+		a.lot_att08 AS "lotAtt08",
+		a.lot_att09 AS "lotAtt09",
+		a.lot_att10 AS "lotAtt10",
+		a.lot_att11 AS "lotAtt11",
+		a.lot_att12 AS "lotAtt12",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.in_qty AS "inQty",
+		a.in_qty_cs AS "inQtyCs",
+		a.in_qty_pl AS "inQtyPl",
+		a.out_qty AS "outQty",
+		a.out_qty_cs AS "outQtyCs",
+		a.out_qty_pl AS "outQtyPl",
+		a.begin_qty AS "beginQty",
+		a.begin_qty_cs AS "beginQtyCs",
+		a.begin_qty_pl AS "beginQtyPl",
+		a.end_qty AS "endQty",
+		a.end_qty_cs AS "endQtyCs",
+		a.end_qty_pl AS "endQtyPl",
+        a.weight AS "weight",
+        a.volume AS "volume",
+		a.org_id AS "orgId",
+		a.data_sources AS "dataSources",
+		a.is_fee AS "isFee",
+		a.business_type AS "businessModel",
+		a.project_code AS "projectCode",
+		a.project_name AS "projectName"
+    </sql>
+
+    <sql id="extraColumns">
+        bsc.name AS "skuClassName",
+        so.name AS "orgName"
+    </sql>
+
+    <sql id="bmsInventoryDataJoins">
+        LEFT JOIN bms_sku_classification bsc ON a.sku_class = bsc.code AND a.org_id = bsc.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.business.entity.BmsInventoryData">
+        SELECT
+        <include refid="bmsInventoryDataColumns"/>
+        FROM bms_inventory_data a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.business.entity.BmsInventoryData">
+        SELECT
+        <include refid="bmsInventoryDataColumns"/>
+        FROM bms_inventory_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.business.entity.BmsInventoryData">
+        SELECT
+        <include refid="bmsInventoryDataColumns"/>
+        FROM bms_inventory_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_inventory_data
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            inv_date,
+            owner_code,
+            owner_name,
+            supplier_code,
+            supplier_name,
+            sku_code,
+            sku_name,
+            sku_class,
+            lot_no,
+            lot_att01,
+            lot_att02,
+            lot_att03,
+            lot_att04,
+            lot_att05,
+            lot_att06,
+            lot_att07,
+            lot_att08,
+            lot_att09,
+            lot_att10,
+            lot_att11,
+            lot_att12,
+            loc_code,
+            trace_id,
+            in_qty,
+            in_qty_cs,
+            in_qty_pl,
+            out_qty,
+            out_qty_cs,
+            out_qty_pl,
+            begin_qty,
+            begin_qty_cs,
+            begin_qty_pl,
+            end_qty,
+            end_qty_cs,
+            end_qty_pl,
+            weight,
+            volume,
+            org_id,
+            data_sources,
+            is_fee,
+            business_type,
+            project_code,
+            project_name
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{invDate},
+            #{ownerCode},
+            #{ownerName},
+            #{supplierCode},
+            #{supplierName},
+            #{skuCode},
+            #{skuName},
+            #{skuClass},
+            #{lotNo},
+            #{lotAtt01},
+            #{lotAtt02},
+            #{lotAtt03},
+            #{lotAtt04},
+            #{lotAtt05},
+            #{lotAtt06},
+            #{lotAtt07},
+            #{lotAtt08},
+            #{lotAtt09},
+            #{lotAtt10},
+            #{lotAtt11},
+            #{lotAtt12},
+            #{locCode},
+            #{traceId},
+            #{inQty},
+            #{inQtyCs},
+            #{inQtyPl},
+            #{outQty},
+            #{outQtyCs},
+            #{outQtyPl},
+            #{beginQty},
+            #{beginQtyCs},
+            #{beginQtyPl},
+            #{endQty},
+            #{endQtyCs},
+            #{endQtyPl},
+            #{weight},
+            #{volume},
+            #{orgId},
+            #{dataSources},
+            #{isFee},
+            #{businessModel},
+            #{projectCode},
+            #{projectName}
+        )
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO bms_inventory_data
+        (
+        id,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        remarks,
+        del_flag,
+        inv_date,
+        owner_code,
+        owner_name,
+        supplier_code,
+        supplier_name,
+        sku_code,
+        sku_name,
+        sku_class,
+        lot_no,
+        lot_att01,
+        lot_att02,
+        lot_att03,
+        lot_att04,
+        lot_att05,
+        lot_att06,
+        lot_att07,
+        lot_att08,
+        lot_att09,
+        lot_att10,
+        lot_att11,
+        lot_att12,
+        loc_code,
+        trace_id,
+        in_qty,
+        in_qty_cs,
+        in_qty_pl,
+        out_qty,
+        out_qty_cs,
+        out_qty_pl,
+        begin_qty,
+        begin_qty_cs,
+        begin_qty_pl,
+        end_qty,
+        end_qty_cs,
+        end_qty_pl,
+        weight,
+        volume,
+        org_id,
+        data_sources,
+        is_fee,
+        business_type,
+        project_code,
+        project_name
+        ) VALUES
+        <foreach collection="items" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.createBy.id},
+            #{item.createDate},
+            #{item.updateBy.id},
+            #{item.updateDate},
+            #{item.remarks},
+            #{item.delFlag},
+            #{item.invDate},
+            #{item.ownerCode},
+            #{item.ownerName},
+            #{item.supplierCode},
+            #{item.supplierName},
+            #{item.skuCode},
+            #{item.skuName},
+            #{item.skuClass},
+            #{item.lotNo},
+            #{item.lotAtt01},
+            #{item.lotAtt02},
+            #{item.lotAtt03},
+            #{item.lotAtt04},
+            #{item.lotAtt05},
+            #{item.lotAtt06},
+            #{item.lotAtt07},
+            #{item.lotAtt08},
+            #{item.lotAtt09},
+            #{item.lotAtt10},
+            #{item.lotAtt11},
+            #{item.lotAtt12},
+            #{item.locCode},
+            #{item.traceId},
+            #{item.inQty},
+            #{item.inQtyCs},
+            #{item.inQtyPl},
+            #{item.outQty},
+            #{item.outQtyCs},
+            #{item.outQtyPl},
+            #{item.beginQty},
+            #{item.beginQtyCs},
+            #{item.beginQtyPl},
+            #{item.endQty},
+            #{item.endQtyCs},
+            #{item.endQtyPl},
+            #{item.weight},
+            #{item.volume},
+            #{item.orgId},
+            #{item.dataSources},
+            #{item.isFee},
+            #{item.businessModel},
+            #{item.projectCode},
+            #{item.projectName}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE bms_inventory_data
+        SET update_by     = #{updateBy.id},
+            update_date   = #{updateDate},
+            remarks       = #{remarks},
+            inv_date      = #{invDate},
+            owner_code    = #{ownerCode},
+            owner_name    = #{ownerName},
+            supplier_code = #{supplierCode},
+            supplier_name = #{supplierName},
+            sku_code      = #{skuCode},
+            sku_name      = #{skuName},
+            sku_class     = #{skuClass},
+            lot_no        = #{lotNo},
+            lot_att01     = #{lotAtt01},
+            lot_att02     = #{lotAtt02},
+            lot_att03     = #{lotAtt03},
+            lot_att04     = #{lotAtt04},
+            lot_att05     = #{lotAtt05},
+            lot_att06     = #{lotAtt06},
+            lot_att07     = #{lotAtt07},
+            lot_att08     = #{lotAtt08},
+            lot_att09     = #{lotAtt09},
+            lot_att10     = #{lotAtt10},
+            lot_att11     = #{lotAtt11},
+            lot_att12     = #{lotAtt12},
+            loc_code      = #{locCode},
+            trace_id      = #{traceId},
+            in_qty        = #{inQty},
+            in_qty_cs     = #{inQtyCs},
+            in_qty_pl     = #{inQtyPl},
+            out_qty       = #{outQty},
+            out_qty_cs    = #{outQtyCs},
+            out_qty_pl    = #{outQtyPl},
+            begin_qty     = #{beginQty},
+            begin_qty_cs  = #{beginQtyCs},
+            begin_qty_pl  = #{beginQtyPl},
+            end_qty       = #{endQty},
+            end_qty_cs    = #{endQtyCs},
+            end_qty_pl    = #{endQtyPl},
+            weight        = #{weight},
+            volume        = #{volume},
+            org_id        = #{orgId},
+            data_sources  = #{dataSources},
+            is_fee        = #{isFee},
+            business_type = #{businessModel},
+            project_code  = #{projectCode},
+            project_name  = #{projectName}
+        WHERE id = #{id}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_inventory_data
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_inventory_data WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByCondition">
+        DELETE FROM bms_inventory_data WHERE
+        <![CDATA[inv_date >= #{fmDate}]]>
+        <![CDATA[AND inv_date <= #{toDate}]]>
+        <if test="dataSources != null and dataSources != ''">
+            AND data_sources = #{dataSources}
+        </if>
+        <if test="orgId != null and orgId != ''">
+            AND org_id = #{orgId}
+        </if>
+    </delete>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.business.entity.extend.BmsInventoryDataEntity">
+        SELECT
+        <include refid="bmsInventoryDataColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_inventory_data a
+        <include refid="bmsInventoryDataJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="dateFm != null">
+                AND a.inv_date &gt;= #{dateFm}
+            </if>
+            <if test="dateTo != null">
+                AND a.inv_date &lt;= #{dateTo}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code LIKE concat('%', #{supplierCode}, '%')
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                AND a.supplier_name LIKE concat('%', #{supplierName}, '%')
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code LIKE concat('%', #{ownerCode}, '%')
+            </if>
+            <if test="ownerName != null and ownerName != ''">
+                AND a.owner_name LIKE concat('%', #{ownerName}, '%')
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code LIKE concat('%', #{skuCode}, '%')
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name LIKE concat('%', #{skuName}, '%')
+            </if>
+            <if test="skuClass != null and skuClass != ''">
+                AND a.sku_class = #{skuClass}
+            </if>
+            <if test="businessModel != null and businessModel != ''">
+                AND a.business_type = #{businessModel}
+            </if>
+            <if test="isFee != null and isFee != ''">
+                AND a.is_fee = #{isFee}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.inv_date DESC
+            </otherwise>
+        </choose>
+    </select>
+    <select id="findCalcData" resultType="com.yunyou.modules.bms.business.entity.BmsInventoryData">
+        select * from bms_inventory_data <where>${sql}</where>
+    </select>
+</mapper>

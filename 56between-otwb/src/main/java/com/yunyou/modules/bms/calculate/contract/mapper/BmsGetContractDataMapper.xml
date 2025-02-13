@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.calculate.contract.mapper.BmsGetContractDataMapper">
+
+    <select id="findContractDataByModel" resultType="com.yunyou.modules.bms.calculate.contract.BmsCalcContractData">
+        select bsm.settle_object_code     AS "settleObjectCode",
+               bso.settle_object_name     AS "settleObjectName",
+               bsm.settle_model_code      AS "settleModelCode",
+               bsmd.id                    AS "settleModelDetailId",
+               bc.sys_contract_no         AS "sysContractNo",
+               bc.contract_no             AS "contractNo",
+               bsmd.contract_cost_item_id AS "contractDetailId",
+               bc.effective_date_fm       AS "effectiveDateFm",
+               bc.effective_date_to       AS "effectiveDateTo",
+               bcci.bill_module           AS "billModule",
+               bcci.bill_subject_code     AS "billSubjectCode",
+               bbs.bill_subject_name      AS "billSubjectName",
+               bcci.receivable_payable    AS "arOrAp",
+               bcci.bill_terms_code       AS "billTermsCode",
+               bbt.bill_terms_desc        AS "billTermsDesc",
+               bbt.method_name            AS "methodName",
+               bbt.output_objects         AS "outputObjects",
+               bcci.formula_code          AS "formulaCode",
+               bbf.formula_name           AS "formulaName",
+               bbf.formula                AS "formula",
+               bcci.tax_rate              AS "taxRate",
+               bcci.coefficient           AS "coefficient",
+               bcci.max_amount            AS "maxAmount",
+               bcci.min_amount            AS "minAmount",
+               bsm.org_id                 AS "orgId"
+        from bms_settle_model bsm
+             inner join bms_settle_model_detail bsmd on bsm.settle_model_code = bsmd.settle_model_code and bsm.org_id = bsmd.org_id
+             inner join bms_contract_cost_item bcci on bsmd.contract_cost_item_id = bcci.id
+             inner join bms_contract bc on bcci.sys_contract_no = bc.sys_contract_no and bcci.org_id = bc.org_id
+             inner join bms_bill_subject bbs on bcci.bill_subject_code = bbs.bill_subject_code and bcci.org_id = bbs.org_id
+             inner join bms_bill_terms bbt on bcci.bill_terms_code = bbt.bill_terms_code
+             inner join bms_bill_formula bbf on bcci.formula_code = bbf.formula_code
+             inner join bms_settle_object bso on bsm.settle_object_code = bso.settle_object_code and bsm.org_id = bso.org_id
+        where bc.contract_status = '10'
+          AND bsm.id = #{modelId}
+    </select>
+
+    <select id="findContractDataByContract" resultType="com.yunyou.modules.bms.calculate.contract.BmsCalcContractData">
+        select bc.settle_object_code   AS "settleObjectCode",
+               bso.settle_object_name  AS "settleObjectName",
+               bc.sys_contract_no      AS "sysContractNo",
+               bc.contract_no          AS "contractNo",
+               bcci.id                 AS "contractDetailId",
+               bc.effective_date_fm    AS "effectiveDateFm",
+               bc.effective_date_to    AS "effectiveDateTo",
+               bcci.bill_module        AS "billModule",
+               bcci.bill_subject_code  AS "billSubjectCode",
+               bbs.bill_subject_name   AS "billSubjectName",
+               bcci.receivable_payable AS "arOrAp",
+               bcci.bill_terms_code    AS "billTermsCode",
+               bbt.bill_terms_desc     AS "billTermsDesc",
+               bbt.method_name         AS "methodName",
+               bbt.output_objects      AS "outputObjects",
+               bcci.formula_code       AS "formulaCode",
+               bbf.formula_name        AS "formulaName",
+               bbf.formula             AS "formula",
+               bcci.tax_rate           AS "taxRate",
+               bcci.coefficient        AS "coefficient",
+               bcci.max_amount         AS "maxAmount",
+               bcci.min_amount         AS "minAmount",
+               bc.org_id               AS "orgId"
+        from bms_contract bc
+             inner join bms_contract_cost_item bcci on bcci.sys_contract_no = bc.sys_contract_no and bcci.org_id = bc.org_id
+             inner join bms_bill_subject bbs on bcci.bill_subject_code = bbs.bill_subject_code and bcci.org_id = bbs.org_id
+             inner join bms_bill_terms bbt on bcci.bill_terms_code = bbt.bill_terms_code
+             inner join bms_bill_formula bbf on bcci.formula_code = bbf.formula_code
+             inner join bms_settle_object bso on bc.settle_object_code = bso.settle_object_code and bc.org_id = bso.org_id
+        where bc.contract_status = '10'
+          AND bc.id = #{contractId}
+    </select>
+
+    <select id="findByModelDetailIdAndIoE" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsCalcTermsParams">
+        SELECT a.seq_no         AS "seqNo",
+               a.field          AS "field",
+               a.title          AS "title",
+               a.type           AS "type",
+               a.field_option   AS "fieldOption",
+               a.field_value    AS "fieldValue",
+               a.is_enable      AS "isEnable",
+               a.is_show        AS "isShow",
+               a.is_settle_date AS "isSettleDate"
+        FROM bms_settle_model_detail_params a
+        WHERE a.fk_id = #{modelDetailId}
+          AND a.include_or_exclude = #{includeOrExclude}
+        ORDER BY a.seq_no
+    </select>
+
+    <select id="findByContractDetailIdAndIoE" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsCalcTermsParams">
+        SELECT a.seq_no         AS "seqNo",
+               a.field          AS "field",
+               a.title          AS "title",
+               a.type           AS "type",
+               a.field_option   AS "fieldOption",
+               a.field_value    AS "fieldValue",
+               a.is_enable      AS "isEnable",
+               a.is_show        AS "isShow",
+               a.is_settle_date AS "isSettleDate"
+        FROM bms_contract_detail_terms_params a
+        WHERE a.fk_id = #{contractDetailId}
+          AND a.include_or_exclude = #{includeOrExclude}
+        ORDER BY a.seq_no
+    </select>
+
+</mapper>

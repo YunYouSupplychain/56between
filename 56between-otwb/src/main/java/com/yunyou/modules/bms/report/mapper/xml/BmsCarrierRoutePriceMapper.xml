@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.report.mapper.BmsCarrierRoutePriceMapper">
+
+    <select id="findList" resultType="com.yunyou.modules.bms.report.entity.BmsCarrierRoutePrice">
+        select bcr.carrier_code                                 as carrierCode,
+               bc.ebcu_name_cn                                  as carrierName,
+               sas.code                                         as startAreaCode,
+               sas.name                                         as startAreaName,
+               sae.code                                         as endAreaCode,
+               sae.name                                         as endAreaName,
+               bcr.mileage                                      as mileage,
+               btp.car_type_code                                as carType,
+               btg.transport_group_code                         as transportGroupCode,
+               btg.transport_group_name                         as transportGroupName,
+               btsp.fm,
+               btsp.`to`,
+               if(btp.is_use_step = 'Y', btsp.price, btp.price) as price,
+               bcr.org_id                                       as orgId
+        from bms_carrier_route bcr
+            inner join sys_area sas on bcr.start_area_id = sas.id
+            inner join sys_area sae on bcr.end_area_id = sae.id
+            inner join bms_transport_price btp on sas.code = btp.start_place_code and sae.code = btp.end_place_code and bcr.org_id = btp.org_id
+            inner join bms_transport_stepped_price btsp on btp.id = btsp.fk_id and btp.org_id = btsp.org_id
+            inner join bms_transport_group btg on btp.fk_id = btg.id and btp.org_id = btg.org_id
+            left join bms_customer bc on bcr.carrier_code = bc.ebcu_customer_no and bcr.org_id = bc.org_id
+    </select>
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.manager.mapper.TmReceiveMapper">
+
+    <select id="findPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmReceiveEntity">
+        SELECT a.label_no              AS "labelNo",
+               a.transport_no          AS "transportNo",
+               ttoh.customer_no        AS "customerNo",
+               a.dispatch_no           AS "dispatchNo",
+               a.pre_outlet_code       AS "preOutletCode",
+               tto3.transport_obj_name AS "preOutletName",
+               a.now_outlet_code       AS "nowOutletCode",
+               tto4.transport_obj_name AS "nowOutletName",
+               a.next_outlet_code      AS "nextOutletCode",
+               tto5.transport_obj_name AS "nextOutletName",
+               a.base_org_id           AS "baseOrgId",
+               ttoh.org_id             AS "orgId",
+               ttoh.ship_code          AS "shipCode",
+               tto1.transport_obj_name AS "shipName",
+               ttoh.shipper            AS "shipper",
+               ttoh.shipper_tel        AS "shipperTel",
+               ttoh.ship_city_id       AS "shipCityId",
+               ttoh.ship_address       AS "shipAddress",
+               ttoh.consignee_code     AS "consigneeCode",
+               tto2.transport_obj_name AS "consigneeName",
+               ttoh.consignee          AS "consignee",
+               ttoh.consignee_tel      AS "consigneeTel",
+               ttoh.consignee_city_id  AS "consigneeCityId",
+               ttoh.consignee_address  AS "consigneeAddress"
+        FROM tm_transport_order_route a
+            LEFT JOIN tm_transport_order_header ttoh ON a.transport_no = ttoh.transport_no AND a.base_org_id = ttoh.base_org_id
+            LEFT JOIN tm_transport_obj tto1 ON ttoh.ship_code = tto1.transport_obj_code AND ttoh.base_org_id = tto1.org_id
+            LEFT JOIN tm_transport_obj tto2 ON ttoh.consignee_code = tto2.transport_obj_code AND ttoh.base_org_id = tto2.org_id
+            LEFT JOIN tm_transport_obj tto3 ON a.pre_outlet_code = tto3.transport_obj_code AND a.base_org_id = tto3.org_id
+            LEFT JOIN tm_transport_obj tto4 ON a.now_outlet_code = tto4.transport_obj_code AND a.base_org_id = tto4.org_id
+            LEFT JOIN tm_transport_obj tto5 ON a.next_outlet_code = tto5.transport_obj_code AND a.base_org_id = tto5.org_id
+        WHERE a.dispatch_no != '*'
+            ${dataScope}
+        <if test="labelNo != null and labelNo != ''">
+            AND a.label_no LIKE CONCAT('%', #{labelNo}, '%')
+        </if>
+        <if test="dispatchNo != null and dispatchNo != ''">
+            AND a.dispatch_no LIKE CONCAT('%', #{dispatchNo}, '%')
+        </if>
+        <if test="transportNo != null and transportNo != ''">
+            AND a.transport_no LIKE CONCAT('%', #{transportNo}, '%')
+        </if>
+        <if test="customerNo != null and customerNo != ''">
+            AND ttoh.customer_no LIKE CONCAT('%', #{customerNo}, '%')
+        </if>
+        <if test="nowOutletCode != null and nowOutletCode != ''">
+            AND a.now_outlet_code = #{nowOutletCode}
+        </if>
+        <if test="nextOutletCode != null and nextOutletCode != ''">
+            AND a.next_outlet_code = #{nextOutletCode}
+        </if>
+        <if test="shipCode != null and shipCode != ''">
+            AND ttoh.ship_code = #{shipCode}
+        </if>
+        <if test="consigneeCode != null and consigneeCode != ''">
+            AND ttoh.consignee_code = #{consigneeCode}
+        </if>
+        <if test="shipCityId != null and shipCityId != ''">
+            AND ttoh.ship_city_id = #{shipCityId}
+        </if>
+        <if test="consigneeCityId != null and consigneeCityId != ''">
+            AND ttoh.consignee_city_id = #{consigneeCityId}
+        </if>
+        <if test="shipper != null and shipper != ''">
+            AND ttoh.shipper LIKE concat('%', #{shipper}, '%')
+        </if>
+        <if test="consignee != null and consignee != ''">
+            AND ttoh.consignee LIKE concat('%', #{consignee}, '%')
+        </if>
+        <if test="shipAddress != null and shipAddress != ''">
+            AND ttoh.ship_address LIKE concat('%', #{shipAddress}, '%')
+        </if>
+        <if test="consigneeAddress != null and consigneeAddress != ''">
+            AND ttoh.consignee_address LIKE concat('%', #{consigneeAddress}, '%')
+        </if>
+        <if test="receiveOutletCodes != null and receiveOutletCodes.size > 0">
+            AND a.next_outlet_code IN
+            <foreach collection="receiveOutletCodes" item="receiveOutletCode" open="(" separator="," close=")">
+                #{receiveOutletCode}
+            </foreach>
+        </if>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+</mapper>

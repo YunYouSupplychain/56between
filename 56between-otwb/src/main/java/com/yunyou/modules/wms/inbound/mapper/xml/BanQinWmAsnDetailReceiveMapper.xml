@@ -1,0 +1,1223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inbound.mapper.BanQinWmAsnDetailReceiveMapper">
+    
+	<sql id="banQinWmAsnDetailReceiveColumns">
+		a.id AS "id",
+		a.asn_no AS "asnNo",
+		a.line_no AS "lineNo",
+		a.asn_line_no AS "asnLineNo",
+		a.logistic_no AS "logisticNo",
+		a.logistic_line_no AS "logisticLineNo",
+		a.po_no AS "poNo",
+		a.po_line_no AS "poLineNo",
+		a.status AS "status",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.rcv_time AS "rcvTime",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_plan_ea AS "qtyPlanEa",
+		a.plan_id AS "planId",
+		a.qty_rcv_ea AS "qtyRcvEa",
+		a.to_loc AS "toLoc",
+		a.to_id AS "toId",
+		a.plan_pa_loc AS "planPaLoc",
+		a.reserve_code AS "reserveCode",
+		a.pa_rule AS "paRule",
+		a.pa_id AS "paId",
+		a.voucher_no AS "voucherNo",
+		a.price AS "price",
+		a.is_qc AS "isQc",
+		a.qc_status AS "qcStatus",
+		a.qc_phase AS "qcPhase",
+		a.qc_rule AS "qcRule",
+		a.item_group_code AS "itemGroupCode",
+		a.so_no AS "soNo",
+		a.so_line_no AS "soLineNo",
+		a.cd_type AS "cdType",
+		a.cd_rcv_id AS "cdRcvId",
+		a.qc_rcv_id AS "qcRcvId",
+		a.lot_num AS "lotNum",
+		a.lot_att01 AS "lotAtt01",
+		a.lot_att02 AS "lotAtt02",
+		a.lot_att03 AS "lotAtt03",
+		a.lot_att04 AS "lotAtt04",
+		a.lot_att05 AS "lotAtt05",
+		a.lot_att06 AS "lotAtt06",
+		a.lot_att07 AS "lotAtt07",
+		a.lot_att08 AS "lotAtt08",
+		a.lot_att09 AS "lotAtt09",
+		a.lot_att10 AS "lotAtt10",
+		a.lot_att11 AS "lotAtt11",
+		a.lot_att12 AS "lotAtt12",
+		a.edi_send_time AS "ediSendTime",
+		a.is_edi_send AS "isEdiSend",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.head_id AS "headId"
+	</sql>
+	
+	<sql id="banQinWmAsnDetailReceiveJoins">
+		
+	</sql>
+    
+	<select id="get" resultType="BanQinWmAsnDetailReceive" >
+		SELECT 
+			<include refid="banQinWmAsnDetailReceiveColumns"/>
+		FROM wm_asn_detail_receive a
+		<include refid="banQinWmAsnDetailReceiveJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmAsnDetailReceive" >
+		SELECT 
+			<include refid="banQinWmAsnDetailReceiveColumns"/>
+		FROM wm_asn_detail_receive a
+		<include refid="banQinWmAsnDetailReceiveJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="headId != null and headId != ''">
+                AND a.head_id = #{headId}
+            </if>
+			<if test="asnNo != null and asnNo != ''">
+				AND a.asn_no = #{asnNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="asnLineNo != null and asnLineNo != ''">
+				AND a.asn_line_no = #{asnLineNo}
+			</if>
+			<if test="logisticNo != null and logisticNo != ''">
+				AND a.logistic_no = #{logisticNo}
+			</if>
+			<if test="logisticLineNo != null and logisticLineNo != ''">
+				AND a.logistic_line_no = #{logisticLineNo}
+			</if>
+			<if test="poNo != null and poNo != ''">
+				AND a.po_no = #{poNo}
+			</if>
+			<if test="poLineNo != null and poLineNo != ''">
+				AND a.po_line_no = #{poLineNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+            <if test="toId != null and toId != ''">
+                AND a.to_id = #{toId}
+            </if>
+			<if test="qcRcvId != null and qcRcvId != ''">
+				AND a.qc_rcv_id = #{qcRcvId}
+			</if>
+		</where>
+	</select>
+
+    <select id="findPage" resultType="BanQinWmAsnDetailReceiveEntity" >
+        SELECT
+            <include refid="banQinWmAsnDetailReceiveColumns"/>,
+            cws.sku_name AS skuName,
+            cws.quick_code AS quickCode,
+            cws.bar_code AS barCode,
+            cws.sup_bar_code AS supBarCode,
+            cws.is_serial AS isSerial,
+            cws.shelf_life AS shelfLife,
+            cws.life_type AS lifeType,
+            cws.is_validity AS isValidity,
+            cws.in_life_days AS inLifeDays,
+            cws.out_life_days AS outLifeDays,
+            cws.is_over_rcv AS isOverRcv,
+            cws.over_rcv_pct AS overRcvPct,
+            cws.cubic AS cubic,
+            cws.net_weight AS netWeight,
+            cws.gross_weight AS grossWeight,
+            cwp.cdpa_format AS packDesc,
+            cwpr.cdpr_desc AS uomDesc,
+            cwpr.cdpr_quantity AS uomQty,
+            crph.rule_name AS paRuleName,
+			cws.spec AS skuSpec,
+			cws.qty_unit AS qtyUnit
+        FROM wm_asn_detail_receive a
+        LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sku_code = cws.sku_code AND a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+        LEFT JOIN cd_wh_package_relation cwpr ON cwp.pm_code = cwpr.cdpr_cdpa_pm_code AND cwp.org_id = cwpr.org_id AND cwpr.cdpr_unit_level = a.uom
+        LEFT JOIN cd_rule_pa_header crph ON crph.rule_code = a.pa_rule AND crph.org_id = a.org_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+			AND a.org_id = #{orgId}
+            <if test="headId != null and headId != ''">
+                AND a.head_id = #{headId}
+            </if>
+            <if test="asnNo != null and asnNo != ''">
+                AND a.asn_no = #{asnNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="asnLineNo != null and asnLineNo != ''">
+                AND a.asn_line_no = #{asnLineNo}
+            </if>
+            <if test="logisticNo != null and logisticNo != ''">
+                AND a.logistic_no = #{logisticNo}
+            </if>
+            <if test="logisticLineNo != null and logisticLineNo != ''">
+                AND a.logistic_line_no = #{logisticLineNo}
+            </if>
+            <if test="poNo != null and poNo != ''">
+                AND a.po_no = #{poNo}
+            </if>
+            <if test="poLineNo != null and poLineNo != ''">
+                AND a.po_line_no = #{poLineNo}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+			<if test="isSerial != null and isSerial != ''">
+				AND cws.is_serial = #{isSerial}
+			</if>
+            <if test="planId != null and planId != ''">
+				AND a.plan_id = #{planId}
+			</if>
+			<if test="toId != null and toId != ''">
+				AND a.to_id = #{toId}
+			</if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.line_no
+            </otherwise>
+        </choose>
+    </select>
+
+	<select id="findGrid" resultType="BanQinWmAsnDetailReceiveEntity" >
+		SELECT
+			<include refid="banQinWmAsnDetailReceiveColumns"/>,
+			cws.sku_name AS skuName,
+		    ebcu.ebcu_name_cn AS ownerName,
+		    cws.bar_code AS barCode,
+			cws.sup_bar_code AS supBarCode,
+			cws.is_serial AS isSerial,
+			cws.spec AS skuSpec,
+			cws.qty_unit AS qtyUnit
+		FROM wm_asn_detail_receive a
+		LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sku_code = cws.sku_code AND a.org_id = cws.org_id
+		LEFT JOIN eb_customer ebcu ON ebcu.ebcu_customer_no = a.owner_code AND ebcu.org_id = a.org_id AND ebcu.ebcu_type like '%OWNER,%'
+		<where>
+		    a.status = '00'
+		    AND cws.is_serial = 'Y'
+			AND a.org_id = #{orgId}
+			<if test="headId != null and headId != ''">
+				AND a.head_id = #{headId}
+			</if>
+			<if test="asnNo != null and asnNo != ''">
+				AND a.asn_no = #{asnNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.sku_code like concat('%', #{codeAndName}, '%') OR cws.sku_name like concat('%', #{codeAndName}, '%'))
+			</if>
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.line_no
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmAsnDetailReceive" >
+		SELECT 
+			<include refid="banQinWmAsnDetailReceiveColumns"/>
+		FROM wm_asn_detail_receive a
+		<include refid="banQinWmAsnDetailReceiveJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_asn_detail_receive(
+			id,
+			asn_no,
+			line_no,
+			asn_line_no,
+			logistic_no,
+			logistic_line_no,
+			po_no,
+			po_line_no,
+			status,
+			owner_code,
+			sku_code,
+			rcv_time,
+			pack_code,
+			uom,
+			qty_plan_ea,
+			plan_id,
+			qty_rcv_ea,
+			to_loc,
+			to_id,
+			plan_pa_loc,
+			reserve_code,
+			pa_rule,
+			pa_id,
+			voucher_no,
+			price,
+			is_qc,
+			qc_status,
+			qc_phase,
+			qc_rule,
+			item_group_code,
+			so_no,
+			so_line_no,
+			cd_type,
+			cd_rcv_id,
+			qc_rcv_id,
+			lot_num,
+			lot_att01,
+			lot_att02,
+			lot_att03,
+			lot_att04,
+			lot_att05,
+			lot_att06,
+			lot_att07,
+			lot_att08,
+			lot_att09,
+			lot_att10,
+			lot_att11,
+			lot_att12,
+			edi_send_time,
+			is_edi_send,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			head_id
+		) VALUES (
+			#{id},
+			#{asnNo},
+			#{lineNo},
+			#{asnLineNo},
+			#{logisticNo},
+			#{logisticLineNo},
+			#{poNo},
+			#{poLineNo},
+			#{status},
+			#{ownerCode},
+			#{skuCode},
+			#{rcvTime},
+			#{packCode},
+			#{uom},
+			#{qtyPlanEa},
+			#{planId},
+			#{qtyRcvEa},
+			#{toLoc},
+			#{toId},
+			#{planPaLoc},
+			#{reserveCode},
+			#{paRule},
+			#{paId},
+			#{voucherNo},
+			#{price},
+			#{isQc},
+			#{qcStatus},
+			#{qcPhase},
+			#{qcRule},
+			#{itemGroupCode},
+			#{soNo},
+			#{soLineNo},
+			#{cdType},
+			#{cdRcvId},
+			#{qcRcvId},
+			#{lotNum},
+			#{lotAtt01},
+			#{lotAtt02},
+			#{lotAtt03},
+			#{lotAtt04},
+			#{lotAtt05},
+			#{lotAtt06},
+			#{lotAtt07},
+			#{lotAtt08},
+			#{lotAtt09},
+			#{lotAtt10},
+			#{lotAtt11},
+			#{lotAtt12},
+			#{ediSendTime},
+			#{isEdiSend},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_asn_detail_receive SET 	
+			asn_no = #{asnNo},
+			line_no = #{lineNo},
+			asn_line_no = #{asnLineNo},
+			logistic_no = #{logisticNo},
+			logistic_line_no = #{logisticLineNo},
+			po_no = #{poNo},
+			po_line_no = #{poLineNo},
+			status = #{status},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			rcv_time = #{rcvTime},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_plan_ea = #{qtyPlanEa},
+			plan_id = #{planId},
+			qty_rcv_ea = #{qtyRcvEa},
+			to_loc = #{toLoc},
+			to_id = #{toId},
+			plan_pa_loc = #{planPaLoc},
+			reserve_code = #{reserveCode},
+			pa_rule = #{paRule},
+			pa_id = #{paId},
+			voucher_no = #{voucherNo},
+			price = #{price},
+			is_qc = #{isQc},
+			qc_status = #{qcStatus},
+			qc_phase = #{qcPhase},
+			qc_rule = #{qcRule},
+			item_group_code = #{itemGroupCode},
+			so_no = #{soNo},
+			so_line_no = #{soLineNo},
+			cd_type = #{cdType},
+			cd_rcv_id = #{cdRcvId},
+			qc_rcv_id = #{qcRcvId},
+			lot_num = #{lotNum},
+			lot_att01 = #{lotAtt01},
+			lot_att02 = #{lotAtt02},
+			lot_att03 = #{lotAtt03},
+			lot_att04 = #{lotAtt04},
+			lot_att05 = #{lotAtt05},
+			lot_att06 = #{lotAtt06},
+			lot_att07 = #{lotAtt07},
+			lot_att08 = #{lotAtt08},
+			lot_att09 = #{lotAtt09},
+			lot_att10 = #{lotAtt10},
+			lot_att11 = #{lotAtt11},
+			lot_att12 = #{lotAtt12},
+			edi_send_time = #{ediSendTime},
+			is_edi_send = #{isEdiSend},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			def6 = #{def6},
+			def7 = #{def7},
+			def8 = #{def8},
+			def9 = #{def9},
+			def10 = #{def10},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			head_id = #{headId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_asn_detail_receive SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM wm_asn_detail_receive WHERE id = #{id}
+	</delete>
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="BanQinWmAsnDetailReceive" statementType="STATEMENT">
+		select * FROM wm_asn_detail_receive  where ${propertyName} = '${value}'
+	</select>
+
+    <!--*******************************************************SELECT*************************************************************-->
+    <select id="getMaxLineNo" resultType="java.lang.Integer">
+		SELECT max(cast(a.line_no AS SIGNED)) FROM wm_asn_detail_receive a WHERE a.asn_no = #{asnNo} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getVoucherDetail" resultType="BanQinWmAsnDetail">
+		SELECT <include refid="banQinWmAsnDetailReceiveColumns" />
+		FROM wm_asn_detail_receive a
+		WHERE a.status = '20'
+	    AND a.head_id = #{headId}
+        <choose>
+            <when test='isVoucher == "N".toString()'>
+                AND a.voucher_no IS NOT NULL
+				AND a.voucher_no != ''
+            </when>
+            <when test='isVoucher == "Y".toString()'>
+                AND (a.voucher_no IS NULL OR a.voucher_no = '')
+            </when>
+            <otherwise>
+                AND 1 = 2
+            </otherwise>
+        </choose>
+        <if test="lienNo != null and lienNo != ''">
+            AND a.asn_line_no = #{lienNo}
+        </if>
+	</select>
+
+    <select id="getArrangeLocDetail" resultType="BanQinWmAsnDetail">
+        SELECT <include refid="banQinWmAsnDetailReceiveColumns" />
+        FROM wm_asn_detail_receive a
+        WHERE a.head_id = #{headId}
+        <choose>
+            <when test='isArrangeLoc == "N".toString()'>
+                AND (a.plan_pa_loc IS NULL OR a.plan_pa_loc = '')
+            </when>
+            <when test='isArrangeLoc == "Y".toString()'>
+                AND a.plan_pa_loc IS NOT NULL
+				AND a.plan_pa_loc != ''
+            </when>
+            <otherwise>
+                AND 1 = 2
+            </otherwise>
+        </choose>
+        <if test="lienNo != null and lienNo != ''">
+            AND a.asn_line_no = #{lienNo}
+        </if>
+    </select>
+
+    <select id="getCrossDockDetail" resultType="BanQinWmAsnDetailReceive">
+        SELECT <include refid="banQinWmAsnDetailReceiveColumns" />
+        FROM wm_asn_detail_receive a
+        WHERE a.del_flag = '0'
+        AND a.head_id = #{headId}
+        <choose>
+            <when test='isCrossDock == "N".toString()'>
+                AND (a.cd_Type IS NULL OR a.cd_Type = '')
+            </when>
+            <when test='isCrossDock == "Y".toString()'>
+                AND a.cd_Type IS NOT NULL
+				AND a.cd_type != ''
+            </when>
+            <otherwise>
+                AND 1 = 2
+            </otherwise>
+        </choose>
+        <if test="lienNo != null and lienNo != ''">
+            AND a.asn_line_no = #{lienNo}
+        </if>
+    </select>
+
+    <select id="findCanPalletizeDetail" resultType="BanQinWmAsnDetailReceive">
+        SELECT <include refid="banQinWmAsnDetailReceiveColumns"/>
+        FROM wm_asn_detail_receive a
+        <where>
+            (a.plan_pa_loc IS NULL OR a.plan_pa_loc = '')
+            AND (a.qc_status IS NULL OR a.qc_status = '' OR a.qc_status != '00')
+            <choose>
+                <when test='isCrossDock == "Y".toString()'>
+					AND a.cd_type IS NOT NULL
+					AND a.cd_type != ''
+				</when>
+                <when test='isCrossDock == "N".toString()'>
+					AND (a.cd_type IS NULL OR a.cd_type = '')
+				</when>
+                <otherwise>AND 1 = 2</otherwise>
+            </choose>
+            AND a.asn_no = #{asnNo}
+            AND a.asn_line_no = #{asnLineNo}
+            AND a.status = #{status}
+            AND a.org_id = #{orgId}
+        </where>
+        ORDER BY a.line_no ASC
+    </select>
+
+    <select id="findCancelPalletizeDetail" resultType="BanQinWmAsnDetailReceive">
+        SELECT <include refid="banQinWmAsnDetailReceiveColumns"/>
+        FROM wm_asn_detail_receive a
+        <where>
+            (a.plan_pa_loc IS NULL OR a.plan_pa_loc = '')
+            AND (a.qc_status IS NULL OR a.qc_status = '20' OR a.qc_status = '')
+            <choose>
+                <when test='isCrossDock == "Y".toString()'>
+					AND a.cd_type IS NOT NULL
+					AND a.cd_type != ''
+				</when>
+                <when test='isCrossDock == "N".toString()'>
+					AND (a.cd_type IS NULL OR a.cd_type = '')
+				</when>
+                <otherwise>AND 1 = 2</otherwise>
+            </choose>
+            AND a.asn_no = #{asnNo}
+            AND a.asn_line_no = #{asnLineNo}
+            AND a.status = #{status}
+            AND a.org_id = #{orgId}
+        </where>
+        ORDER BY a.line_no ASC
+    </select>
+
+    <select id="getRepeatPlanId" resultType="BanQinWmAsnDetailReceive">
+        SELECT a.asn_no, a.asn_line_no, a.plan_id
+        FROM wm_asn_detail_receive a
+        WHERE a.asn_no = #{asnNo}
+		  AND a.org_id = #{orgId}
+          AND a.asn_line_no IN
+		<foreach collection="asnLineNos" item="asnLineNo" open="(" separator="," close=")">
+			#{asnLineNo}
+		</foreach>
+        GROUP BY a.asn_no, a.asn_line_no, a.plan_id
+        HAVING COUNT(a.plan_id) > 1
+    </select>
+
+    <select id="findCancelReceiveDetail" resultType="BanQinWmAsnDetailReceive">
+        SELECT <include refid="banQinWmAsnDetailReceiveColumns"/>
+        FROM wm_asn_detail_receive a
+        <where>
+         	a.asn_no = #{asnNo}
+            AND a.asn_line_no = #{asnLineNo}
+            AND a.plan_id = #{planId}
+            AND a.status = #{status}
+            AND a.org_id = #{orgId}
+            AND (a.plan_pa_loc IS NULL OR a.plan_pa_loc = '')
+            <choose>
+                <when test="cdRcvId != null and cdRcvId != ''">
+                    AND a.cd_rcv_id = #{cdRcvId}
+                </when>
+                <otherwise>
+                    AND (a.cd_rcv_id IS NULL OR a.cd_rcv_id = '')
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="qcRcvId != null and qcRcvId != ''">
+                    AND a.qc_rcv_id = #{qcRcvId}
+                </when>
+                <otherwise>
+                    AND (a.qc_rcv_id IS NULL OR a.qc_rcv_id = '')
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <select id="getLineNoByCheckStatus" resultType="java.lang.String">
+        SELECT DISTINCT a.line_no
+        FROM wm_asn_detail_receive a
+        WHERE a.asn_no = #{asnNo}
+          AND a.org_id = #{orgId}
+        <if test="lineNos != null and lineNos.length > 0">
+            AND a.line_no IN
+            <foreach collection="lineNos" item="lineNo" open="(" separator="," close=")">
+                #{lineNo}
+            </foreach>
+        </if>
+        <if test="lineStatus != null and lineStatus.length > 0">
+            AND a.status IN
+            <foreach collection="lineStatus" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+        <if test='isArrangeLoc == "Y".toString()'>
+            AND a.plan_pa_loc IS NOT NULL
+        </if>
+        <if test='isArrangeLoc == "N".toString()'>
+            AND (a.plan_pa_loc IS NULL OR a.plan_pa_loc = '')
+        </if>
+        <if test='isVoucher == "Y".toString()'>
+            AND a.voucher_no IS NOT NULL
+			AND a.voucher_no != ''
+        </if>
+        <if test='isVoucher == "N".toString()'>
+            AND (a.voucher_no IS NULL OR a.voucher_no = '')
+        </if>
+    </select>
+
+    <select id="findUnQcDetail" resultType="BanQinWmAsnDetailReceive">
+        SELECT
+        <include refid="banQinWmAsnDetailReceiveColumns"/>
+        FROM wm_asn_detail_receive a
+        <where>
+            (a.qc_status IS NULL OR a.qc_status = '')
+            AND (a.plan_pa_loc IS NULL OR a.plan_pa_loc = '')
+            AND a.asn_no = #{asnNo}
+            AND a.asn_line_no = #{asnLineNo}
+            AND a.org_id = #{orgId}
+        </where>
+    </select>
+
+    <!--*******************************************************UPDATE*************************************************************-->
+    <update id="updateLogisticNo">
+		UPDATE wm_asn_detail_receive set logistic_no = #{logisticNo} where asn_no = #{asnNo} AND org_id = #{orgId}
+	</update>
+
+    <update id="updateStatus">
+		UPDATE wm_asn_detail_receive wadr
+		SET wadr.status = #{status}
+		WHERE wadr.asn_no = #{asnNo}
+		  AND wadr.asn_line_no = #{asnLineNo}
+		  AND wadr.org_id = #{orgId}
+    </update>
+
+    <update id="createVoucherNoByAsn">
+        UPDATE wm_asn_detail_receive SET voucher_no = #{voucherNo}
+        WHERE status = '20'
+        AND (voucher_no IS NULL OR voucher_no = '')
+        AND head_id = #{asnId}
+        <if test="lineNos != null and lineNos.length > 0">
+            AND asn_line_no IN
+            <foreach collection="lineNos" item="lineNo" open="(" separator="," close=")">
+                #{lineNo}
+            </foreach>
+        </if>
+    </update>
+
+    <update id="cancelVoucherNoByAsn">
+        UPDATE wm_asn_detail_receive SET voucher_no = null
+        WHERE status = '20'
+		AND voucher_no IS NOT NULL
+		AND voucher_no != ''
+		AND head_id = #{asnId}
+		<if test="lineNos != null and lineNos.length > 0">
+			AND asn_line_no IN
+			<foreach collection="lineNos" item="lineNo" open="(" separator="," close=")">
+				#{lineNo}
+			</foreach>
+		</if>
+		AND org_id = #{orgId}
+    </update>
+
+    <update id="updatePlanPaLoc">
+        UPDATE wm_asn_detail_receive wadr
+        SET wadr.plan_pa_loc = NULL,
+          wadr.lot_num = NULL,
+          wadr.to_id = wadr.plan_id,
+          wadr.to_loc = (SELECT wad.plan_to_loc FROM wm_asn_detail wad WHERE wad.asn_no = wadr.asn_no AND wad.line_no = wadr.asn_line_no AND wad.org_id = wadr.org_id),
+          wadr.reserve_code = (SELECT wad.reserve_code FROM wm_asn_detail wad WHERE wad.asn_no = wadr.asn_no AND wad.line_no = wadr.asn_line_no AND wad.org_id = wadr.org_id),
+          wadr.pa_rule = (SELECT wad.pa_rule FROM wm_asn_detail wad WHERE wad.asn_no = wadr.asn_no AND wad.line_no = wadr.asn_line_no AND wad.org_id = wadr.org_id)
+        WHERE wadr.asn_no = #{asnNo}
+		  AND wadr.line_no = #{lineNo}
+		  AND wadr.org_id = #{orgId}
+    </update>
+	
+	<update id="updatePaIdNull">
+		UPDATE wm_asn_detail_receive a
+		SET a.pa_id = NULL
+		WHERE NOT EXISTS(SELECT 1 FROM wm_task_pa wtp WHERE wtp.pa_id = a.pa_id AND wtp.org_id = a.org_id)
+		  AND a.pa_id = #{paId}
+		  AND a.org_id = #{orgId}
+    </update>
+
+    <!--*******************************************************DELETE*************************************************************-->
+    <delete id="removeByAsnNo">
+        DELETE FROM wm_asn_detail_receive WHERE status = '00' AND asn_no = #{asnNo} AND org_id = #{orgId}
+    </delete>
+
+    <delete id="removeByAsnNoAndLineNo">
+        DELETE FROM wm_asn_detail_receive WHERE status = '00' AND asn_no = #{asnNo} AND org_id = #{orgId} AND asn_line_no IN
+        <foreach collection="lineNos" item="lineNo" open="(" separator="," close=")">
+            #{lineNo}
+        </foreach>
+    </delete>
+
+	<select id="rfPaCheckCreatePATaskByToIDQuery" resultType="BanQinWmAsnDetailReceive">
+		SELECT DISTINCT
+			wmdr.pa_id AS paId,
+			wmdr.reserve_code AS reserveCode,
+			wmdr.asn_no AS asnNo,
+			wmdr.line_no AS lineNo,
+			wmdr.asn_line_no AS asnLineNo
+		FROM wm_asn_detail_receive wmdr
+		WHERE wmdr.status = '20'
+		AND wmdr.to_id= #{toId}
+		AND wmdr.org_id = #{orgId}
+	</select>
+
+	<select id="getTraceLabel" resultType="com.yunyou.modules.wms.report.entity.TraceLabel">
+		SELECT r.to_id                                       AS traceId,
+			   r.owner_code                                  As ownerCode,
+			   ebcu.ebcu_name_cn                             AS ownerName,
+			   r.sku_code                                    As skuCode,
+			   cws.sku_name                                  AS skuName,
+			   cws.spec                                      AS skuDef3,
+			   r.pack_code                                   AS packCode,
+			   cwp.cdpa_format                               AS packDesc,
+			   DATE_FORMAT(r.lot_att01, '%Y-%m-%d')          AS lotAtt01,
+			   DATE_FORMAT(r.lot_att02, '%Y-%m-%d')          AS lotAtt02,
+			   DATE_FORMAT(r.lot_att03, '%Y-%m-%d')          AS lotAtt03,
+			   r.org_id                                      AS orgId,
+			   so.`name`                                     AS orgName,
+			   r.qty_plan_ea                                 AS qtyPlanEa,
+			   cwpr.cdpr_quantity                            AS unitQty,
+		       ROUND(r.qty_plan_ea / cwpr.cdpr_quantity, 2)  AS qtyPlanBox,
+			   r.to_loc                                      AS toLoc
+		FROM wm_asn_detail_receive r
+			LEFT JOIN wm_asn_detail d ON d.asn_no = r.asn_no AND d.line_no = r.asn_line_no AND d.org_id = r.org_id
+			LEFT JOIn wm_asn_header h ON h.asn_no = r.asn_no AND h.org_id = r.org_id
+			LEFT JOIN cd_wh_sku cws ON r.owner_code = cws.owner_code AND r.sku_code = cws.sku_code AND r.org_id = cws.org_id
+			LEFT JOIN eb_customer ebcu ON r.owner_code = ebcu.ebcu_customer_no AND ebcu.ebcu_type LIKE '%OWNER,%' AND ebcu.org_id = r.org_id
+			LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = r.pack_code AND cwp.org_id = r.org_id
+			LEFT JOIN cd_wh_package_relation cwpr ON cwp.pm_code = cwpr.cdpr_cdpa_pm_code AND cwp.org_id = cwpr.org_id AND cwpr.cdpr_unit = 'CS'
+			LEFT JOIN sys_office so ON r.org_id = so.id
+		WHERE r.id IN
+		<foreach collection="list" item="asnDetailReceiveId" index="asnDetailReceiveId" open="(" separator="," close=")">
+			#{asnDetailReceiveId}
+		</foreach>
+		ORDER BY h.asn_no, r.asn_line_no, r.line_no
+	</select>
+	
+	<select id="getEntityByCdAndSku" resultType="com.yunyou.modules.wms.inbound.entity.BanQinWmAsnReceiveByCdQuery">
+		SELECT wadr.id                                                                                                                                                       AS id,
+			   wadr.asn_no                                                                                                                                                   AS asnNo,
+			   wadr.line_no                                                                                                                                                  AS lineNo,
+			   wadr.asn_line_no                                                                                                                                              AS asnLineNo,
+			   wadr.logistic_no                                                                                                                                              AS logisticNo,
+			   wadr.logistic_line_no                                                                                                                                         AS logisticLineNo,
+			   wadr.po_no                                                                                                                                                    AS poNo,
+			   wadr.po_line_no                                                                                                                                               AS poLineNo,
+			   wadr.status                                                                                                                                                   AS status,
+			   wadr.qc_status                                                                                                                                                AS qcStatus,
+			   wadr.is_qc                                                                                                                                                    AS isQc,
+			   wadr.qc_phase                                                                                                                                                 AS qcPhase,
+			   wadr.qc_rule                                                                                                                                                  AS qcRule,
+			   wadr.item_group_code                                                                                                                                          AS itemGroupCode,
+			   wadr.owner_code                                                                                                                                               AS ownerCode,
+			   wadr.sku_code                                                                                                                                                 AS skuCode,
+			   cws.sku_name                                                                                                                                                  AS skuName,
+			   cws.quick_code                                                                                                                                                AS quickCode,
+			   cws.bar_code                                                                                                                                                  AS barCode,
+			   cws.sup_bar_code                                                                                                                                              AS supBarCode,
+			   cws.is_serial                                                                                                                                                 AS isSerial,
+			   cws.shelf_life                                                                                                                                                AS shelfLife,
+			   cws.life_type                                                                                                                                                 AS lifeType,
+			   cws.is_validity                                                                                                                                               AS isValidyty,
+			   cws.in_life_days                                                                                                                                              AS inLifeDays,
+			   cws.out_life_days                                                                                                                                             AS outLifeDays,
+			   cws.is_over_rcv                                                                                                                                               AS isOverRcv,
+			   cws.over_rcv_pct                                                                                                                                              AS overRcvPct,
+			   cws.cubic                                                                                                                                                     AS cubic,
+			   cws.net_weight                                                                                                                                                AS netWeight,
+			   cws.gross_weight                                                                                                                                              AS grossWeight,
+			   wadr.rcv_time                                                                                                                                                 AS rcvTime,
+			   wadr.pack_code                                                                                                                                                AS packCode,
+			   cdpa.cdpa_format                                                                                                                                              AS packDesc,
+			   wadr.uom                                                                                                                                                      AS uom,
+			   cdpr.cdpr_desc                                                                                                                                                AS uomDesc,
+			   cdpr.cdpr_quantity                                                                                                                                            AS uomQty,
+			   wadr.qty_plan_ea                                                                                                                                              AS qtyPlanEa,
+			   wadr.qty_plan_ea / (CASE WHEN cdpr.cdpr_quantity = 0 THEN 1 ELSE cdpr.cdpr_quantity END)                                                                      AS qtyPlanUom,
+			<![CDATA[ (CASE WHEN (wadr.qty_plan_ea - wadr.qty_rcv_ea) < 0 THEN 0 ELSE (wadr.qty_plan_ea - wadr.qty_rcv_ea) END) / IF(cdpr.cdpr_quantity = 0, 1, cdpr.cdpr_quantity) AS currentQtyRcvUom, ]]>
+			<![CDATA[ (CASE WHEN (wadr.qty_plan_ea - wadr.qty_rcv_ea) < 0 THEN 0 ELSE (wadr.qty_plan_ea - wadr.qty_rcv_ea) END)                                                     AS currentQtyRcvEa, ]]>
+			wadr.plan_id                                                                                                                                                  AS planId,
+			   wadr.qty_rcv_ea                                                                                                                                               AS qtyRcvEa,
+			   wadr.qty_rcv_ea / (CASE WHEN cdpr.cdpr_quantity = 0 THEN 1 ELSE cdpr.cdpr_quantity END)                                                                       AS qtyRcvUom,
+			   wadr.to_loc                                                                                                                                                   AS toLoc,
+			   wadr.to_id                                                                                                                                                    AS toId,
+			   wadr.pa_rule                                                                                                                                                  AS paRule,
+			   wadr.reserve_code                                                                                                                                             AS reserveCode,
+			   crph.rule_name                                                                                                                                                AS paRuleName,
+			   wadr.pa_id                                                                                                                                                    AS paId,
+			   wadr.price                                                                                                                                                    AS price,
+			   wadr.lot_num                                                                                                                                                  AS lotNum,
+			   wadr.plan_pa_loc                                                                                                                                              AS planPaLoc,
+			   wadr.voucher_no                                                                                                                                               AS voucherNo,
+			   wadr.lot_att01                                                                                                                                                AS lotAtt01,
+			   wadr.lot_att02                                                                                                                                                AS lotAtt02,
+			   wadr.lot_att03                                                                                                                                                AS lotAtt03,
+			   wadr.lot_att04                                                                                                                                                AS lotAtt04,
+			   wadr.lot_att05                                                                                                                                                AS lotAtt05,
+			   wadr.lot_att06                                                                                                                                                AS lotAtt06,
+			   wadr.lot_att07                                                                                                                                                AS lotAtt07,
+			   wadr.lot_att08                                                                                                                                                AS lotAtt08,
+			   wadr.lot_att09                                                                                                                                                AS lotAtt09,
+			   wadr.lot_att10                                                                                                                                                AS lotAtt10,
+			   wadr.lot_att11                                                                                                                                                AS lotAtt11,
+			   wadr.lot_att12                                                                                                                                                AS lotAtt12,
+			   wadr.edi_send_time                                                                                                                                            AS ediSendTime,
+			   wadr.is_edi_send                                                                                                                                              AS isEdiSend,
+			   wadr.def1                                                                                                                                                     AS def1,
+			   wadr.def2                                                                                                                                                     AS def2,
+			   wadr.def3                                                                                                                                                     AS def3,
+			   wadr.def4                                                                                                                                                     AS def4,
+			   wadr.def5                                                                                                                                                     AS def5,
+			   wadr.def6                                                                                                                                                     AS def6,
+			   wadr.def7                                                                                                                                                     AS def7,
+			   wadr.def8                                                                                                                                                     AS def8,
+			   wadr.def9                                                                                                                                                     AS def9,
+			   wadr.def10                                                                                                                                                    AS def10,
+			   wadr.remarks                                                                                                                                                  AS remarks,
+			   wadr.rec_ver                                                                                                                                                  AS recVer,
+			   wadr.org_id                                                                                                                                                   AS orgId,
+			   wadr.so_no                                                                                                                                                    AS soNo,
+			   wadr.so_line_no                                                                                                                                               AS soLineNo,
+			   wadr.cd_type                                                                                                                                                  AS cdType,
+			   wadr.cd_rcv_id                                                                                                                                                AS cdRcvId,
+			   wadr.qc_rcv_id                                                                                                                                                AS qcRcvId,
+			   wah.asn_type                                                                                                                                                  AS asnType,
+			   wadr.head_id                                                                                                                                                  AS headId
+		FROM wm_asn_detail_receive wadr
+			LEFT JOIN wm_asn_header wah ON wah.asn_no = wadr.asn_no AND wah.org_id = wadr.org_id
+			LEFT JOIN cd_wh_sku cws ON cws.sku_code = wadr.sku_code AND cws.owner_code = wadr.owner_code AND cws.org_id = wadr.org_id
+			LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = wadr.pack_code AND cdpa.org_id = wadr.org_id
+			LEFT JOIN cd_wh_package_relation cdpr ON cdpr.cdpr_unit_level = wadr.uom AND cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpr.org_id = wadr.org_id
+			LEFT JOIN cd_rule_pa_header crph ON crph.rule_code = wadr.pa_rule AND crph.org_id = wadr.org_id
+		WHERE wah.status != '90'
+		  AND wah.status != '99'
+		  AND wah.audit_status != '00'
+		  AND wah.hold_status != '99'
+		  AND cws.is_serial = 'N'
+		  AND wadr.org_id = #{orgId}
+			/*不质检/需质检并且必须是收货前质检，未生成质检单/完全质检，品质必须是良品*/
+		  AND (wadr.is_qc = 'N' OR
+			   (wadr.is_qc = 'Y' AND wadr.qc_phase = 'RCV'
+				   AND (wadr.qc_status IS NULL OR (wadr.qc_status = '20' AND (wadr.lot_att04 = 'Y' OR wadr.lot_att04 IS NULL OR wadr.lot_att04 = '')) OR wadr.qc_status = '')
+				   )
+			)
+		<if test="asnTypes != null and asnTypes.length > 0">
+			AND wah.asn_type IN
+			<foreach collection="asnTypes" item="asnType" index="asnType" open="(" separator="," close=")">
+				#{asnType}
+			</foreach>
+		</if>
+		<if test="fmEtaFm != null and fmEtaFm != ''">
+			<![CDATA[ AND wah.fm_eta >= #{fmEtaFm} ]]>
+		</if>
+		<if test="fmEtaTo != null and fmEtaTo != ''">
+			<![CDATA[ AND wah.fm_eta <= #{fmEtaTo} ]]>
+		</if>
+		<if test="toEtaFm != null and toEtaFm != ''">
+			<![CDATA[ AND wah.to_eta >= #{toEtaFm} ]]>
+		</if>
+		<if test="toEtaTo != null and toEtaTo != ''">
+			<![CDATA[ AND wah.to_eta <= #{toEtaTo} ]]>
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND wadr.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND wadr.sku_code = #{skuCode}
+		</if>
+		<if test="status != null and status != ''">
+			AND wadr.status = #{status}
+		</if>
+		<if test="isCd != null and isCd != ''">
+			AND (wadr.cd_type IS NULL OR wadr.cd_type = '') AND 'Y' = #{isCd}
+		</if>
+		<if test="toId != null and toId != ''">
+			AND wadr.to_id = #{toId}
+		</if>
+		<if test="asnNo != null and asnNo != ''">
+			AND wah.asn_no LIKE CONCAT(#{asnNo}, '%')
+		</if>
+		<if test="lineNo != null and lineNo != ''">
+			AND wadr.line_no = #{lineNo}
+		</if>
+		<if test="asnLineNo != null and asnLineNo != ''">
+			AND wadr.asn_line_no = #{asnLineNo}
+		</if>
+		<if test="asnAndLineNos != null and asnAndLineNos != ''">
+			AND (wadr.asn_no, wadr.line_no) IN (${asnAndLineNos})
+		</if>
+		<if test="cdTypes != null and cdTypes.length > 0">
+			AND wadr.cd_type IN
+			<foreach collection="cdTypes" item="cdType" index="asnType" open="(" separator="," close=")">
+				#{cdType}
+			</foreach>
+		</if>
+		ORDER BY wah.to_eta is null, wah.to_eta, wah.priority is null || wah.priority = '', wah.priority, wah.order_time is null, wah.order_time, wadr.asn_no ,wadr.asn_line_no, wadr.line_no
+	</select>
+	
+	<select id="findEntityList" resultType="com.yunyou.modules.wms.inbound.entity.BanQinWmAsnDetailReceiveEntity">
+		SELECT wadr.id                                                                                                                                          AS id,
+			   wadr.asn_no                                                                                                                                      AS asnNO,
+			   wadr.line_no                                                                                                                                     AS lineNo,
+			   wadr.asn_line_no                                                                                                                                 AS asnLineNo,
+			   wadr.logistic_no                                                                                                                                 AS logisticNo,
+			   wadr.logistic_line_no                                                                                                                            AS logisticLineNo,
+			   wadr.po_no                                                                                                                                       AS poNo,
+			   wadr.po_line_no                                                                                                                                  AS poLineNo,
+			   wadr.status                                                                                                                                      AS status,
+			   wadr.qc_status                                                                                                                                   AS qcStatus,
+			   wadr.is_qc                                                                                                                                       AS isQc,
+			   wadr.qc_phase                                                                                                                                    AS qcPhase,
+			   wadr.qc_rule                                                                                                                                     AS qcRule,
+			   wadr.item_group_code                                                                                                                             AS itemGroupCode,
+			   wadr.owner_code                                                                                                                                  AS ownerCode,
+			   wadr.sku_code                                                                                                                                    AS skuCode,
+			   cws.sku_name                                                                                                                                     AS skuName,
+			   cws.quick_code                                                                                                                                   AS quickCode,
+			   cws.bar_code                                                                                                                                     AS barCode,
+			   cws.sup_bar_code                                                                                                                                 AS supBarCode,
+			   cws.is_serial                                                                                                                                    AS isSerial,
+			   cws.shelf_life                                                                                                                                   AS shelfLife,
+			   cws.life_type                                                                                                                                    AS lifeType,
+			   cws.is_validity                                                                                                                                  AS isValidity,
+			   cws.in_life_days                                                                                                                                 AS inLifeDays,
+			   cws.out_life_days                                                                                                                                AS outLifeDays,
+			   cws.is_over_rcv                                                                                                                                  AS isOverRcv,
+			   cws.over_rcv_pct                                                                                                                                 AS overRcvPct,
+			   cws.cubic                                                                                                                                        AS cubic,
+			   cws.net_weight                                                                                                                                   AS netWeight,
+			   cws.gross_weight                                                                                                                                 AS grossWeight,
+			   wadr.rcv_time                                                                                                                                    AS rcvTime,
+			   wadr.pack_code                                                                                                                                   AS packCode,
+			   cdpa.cdpa_format                                                                                                                                 AS packDesc,
+			   wadr.uom                                                                                                                                         AS uom,
+			   cdpr.cdpr_desc                                                                                                                                   AS uomDesc,
+			   cdpr.cdpr_quantity                                                                                                                               as uomQty,
+			   wadr.qty_plan_ea,
+			   wadr.qty_plan_ea / IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 1, cdpr.cdpr_quantity)                                                                  AS qtyPlanUom,
+			<![CDATA[ IF(wadr.qty_plan_ea - wadr.qty_rcv_ea < 0, 0, wadr.qty_plan_ea - wadr.qty_rcv_ea) / IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 1, cdpr.cdpr_quantity) AS currentQtyRcvUom, ]]>
+			<![CDATA[ IF(wadr.qty_plan_ea - wadr.qty_rcv_ea < 0, 0, wadr.qty_plan_ea - wadr.qty_rcv_ea)                                                                AS currentQtyRcvEa, ]]>
+			wadr.plan_id                                                                                                                                     AS planId,
+			   wadr.qty_rcv_ea                                                                                                                                  AS qtyRcvEa,
+			   wadr.qty_rcv_ea / IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 1, cdpr.cdpr_quantity)                                                                   AS qtyRcvUom,
+			   wadr.to_loc                                                                                                                                      AS toLoc,
+			   wadr.to_id                                                                                                                                       AS toId,
+			   wadr.pa_rule                                                                                                                                     AS paRule,
+			   wadr.reserve_code                                                                                                                                AS reserveCode,
+			   crph.rule_name                                                                                                                                   AS paRuleName,
+			   wadr.pa_id                                                                                                                                       AS paId,
+			   wadr.price                                                                                                                                       AS price,
+			   wadr.lot_num                                                                                                                                     AS lotNum,
+			   wadr.plan_pa_loc                                                                                                                                 AS planPaLoc,
+			   wadr.voucher_no                                                                                                                                  AS voucherNo,
+			   wadr.lot_att01                                                                                                                                   AS lotAtt01,
+			   wadr.lot_att02                                                                                                                                   AS lotAtt02,
+			   wadr.lot_att03                                                                                                                                   AS lotAtt03,
+			   wadr.lot_att04                                                                                                                                   AS lotAtt04,
+			   wadr.lot_att05                                                                                                                                   AS lotAtt05,
+			   wadr.lot_att06                                                                                                                                   AS lotAtt06,
+			   wadr.lot_att07                                                                                                                                   AS lotAtt07,
+			   wadr.lot_att08                                                                                                                                   AS lotAtt08,
+			   wadr.lot_att09                                                                                                                                   AS lotAtt09,
+			   wadr.lot_att10                                                                                                                                   AS lotAtt10,
+			   wadr.lot_att11                                                                                                                                   AS lotAtt11,
+			   wadr.lot_att12                                                                                                                                   AS lotAtt12,
+			   wadr.edi_send_time                                                                                                                               AS ediSendTime,
+			   wadr.is_edi_send                                                                                                                                 AS isEdiSend,
+			   wadr.def1                                                                                                                                        AS def1,
+			   wadr.def2                                                                                                                                        AS def2,
+			   wadr.def3                                                                                                                                        AS def3,
+			   wadr.def4                                                                                                                                        AS def4,
+			   wadr.def5                                                                                                                                        AS def5,
+			   wadr.def6                                                                                                                                        AS def6,
+			   wadr.def7                                                                                                                                        AS def7,
+			   wadr.def8                                                                                                                                        AS def8,
+			   wadr.def9                                                                                                                                        AS def9,
+			   wadr.def10                                                                                                                                       AS def10,
+			   wadr.remarks                                                                                                                                     AS remarks,
+			   wadr.rec_ver                                                                                                                                     AS recVer,
+			   wadr.org_id                                                                                                                                      AS orgId,
+			   wadr.so_no                                                                                                                                       AS soNo,
+			   wadr.so_line_no                                                                                                                                  AS soLineNo,
+			   wadr.cd_type                                                                                                                                     AS cdType,
+			   wadr.cd_rcv_id                                                                                                                                   AS cdRcvId,
+			   wadr.qc_rcv_id                                                                                                                                   AS qcRcvId,
+			   wadr.head_id                                                                                                                                     AS headId,
+			   cws.spec                                                                                                                                         AS skuSpec,
+			   cws.qty_unit                                                                                                                                     AS qtyUnit
+		FROM wm_asn_detail_receive wadr
+			LEFT JOIN cd_wh_sku cws ON cws.sku_code = wadr.sku_code AND cws.owner_code = wadr.owner_code AND cws.org_id = wadr.org_id
+			LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = wadr.pack_code AND cdpa.org_id = wadr.org_id
+			LEFT JOIN cd_wh_package_relation cdpr ON cdpr.cdpr_unit_level = wadr.uom AND cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpr.org_id = wadr.org_id
+			LEFT JOIN cd_rule_pa_header crph ON crph.rule_code = wadr.pa_rule AND crph.org_id = wadr.org_id
+		WHERE wadr.org_id = #{orgId}
+		<if test="ownerCode != null and ownerCode != ''">
+			AND wadr.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND wadr.sku_code = #{skuCode}
+		</if>
+		<if test="status != null and status != ''">
+			AND wadr.status = #{status}
+		</if>
+		<if test="isSerial != null and isSerial != ''">
+			AND cws.is_serial = #{isSerial}
+		</if>
+		<if test="toId != null and toId != ''">
+			AND wadr.to_id = #{toId}
+		</if>
+		<if test="asnNo != null and asnNo != ''">
+			AND wadr.asn_no = #{asnNo}
+		</if>
+		<if test="lineNo != null and lineNo != ''">
+			AND wadr.line_no = #{lineNo}
+		</if>
+		<if test="asnLineNo != null and asnLineNo != ''">
+			AND wadr.asn_line_no = #{asnLineNo}
+		</if>
+		<if test="asnLineNo != null and asnLineNo != ''">
+			AND wadr.asn_line_no = #{asnLineNo}
+		</if>
+		<if test="cdType != null and cdType != ''">
+			AND wadr.cd_type = #{cdType}
+		</if>
+		ORDER BY wadr.asn_line_no, wadr.line_no
+	</select>
+
+	<select id="findEntityByIds" resultType="com.yunyou.modules.wms.inbound.entity.BanQinWmAsnDetailReceiveEntity">
+		SELECT wadr.id                                                                         AS id,
+			   wadr.asn_no                                                                     AS asnNO,
+			   wadr.line_no                                                                    AS lineNo,
+			   wadr.asn_line_no                                                                AS asnLineNo,
+			   wadr.logistic_no                                                                AS logisticNo,
+			   wadr.logistic_line_no                                                           AS logisticLineNo,
+			   wadr.po_no                                                                      AS poNo,
+			   wadr.po_line_no                                                                 AS poLineNo,
+			   wadr.status                                                                     AS status,
+			   wadr.qc_status                                                                  AS qcStatus,
+			   wadr.is_qc                                                                      AS isQc,
+			   wadr.qc_phase                                                                   AS qcPhase,
+			   wadr.qc_rule                                                                    AS qcRule,
+			   wadr.item_group_code                                                            AS itemGroupCode,
+			   wadr.owner_code                                                                 AS ownerCode,
+			   ec.ebcu_name_cn                                                                 AS ownerName,
+			   wadr.sku_code                                                                   AS skuCode,
+			   cws.sku_name                                                                    AS skuName,
+			   cws.quick_code                                                                  AS quickCode,
+			   cws.bar_code                                                                    AS barCode,
+			   cws.sup_bar_code                                                                AS supBarCode,
+			   cws.is_serial                                                                   AS isSerial,
+			   cws.shelf_life                                                                  AS shelfLife,
+			   cws.life_type                                                                   AS lifeType,
+			   cws.is_validity                                                                 AS isValidity,
+			   cws.in_life_days                                                                AS inLifeDays,
+			   cws.out_life_days                                                               AS outLifeDays,
+			   cws.is_over_rcv                                                                 AS isOverRcv,
+			   cws.over_rcv_pct                                                                AS overRcvPct,
+			   cws.cubic                                                                       AS cubic,
+			   cws.net_weight                                                                  AS netWeight,
+			   cws.gross_weight                                                                AS grossWeight,
+			   wadr.rcv_time                                                                   AS rcvTime,
+			   wadr.pack_code                                                                  AS packCode,
+			   cdpa.cdpa_format                                                                AS packDesc,
+			   wadr.uom                                                                        AS uom,
+			   cdpr.cdpr_desc                                                                  AS uomDesc,
+			   cdpr.cdpr_quantity                                                              as uomQty,
+			   wadr.qty_plan_ea,
+			   wadr.qty_plan_ea / IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 1, cdpr.cdpr_quantity) AS qtyPlanUom,
+			   wadr.plan_id                                                                    AS planId,
+			   wadr.qty_rcv_ea                                                                 AS qtyRcvEa,
+			   wadr.qty_rcv_ea / IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 1, cdpr.cdpr_quantity)  AS qtyRcvUom,
+			   wadr.to_loc                                                                     AS toLoc,
+			   wadr.to_id                                                                      AS toId,
+			   wadr.pa_rule                                                                    AS paRule,
+			   wadr.reserve_code                                                               AS reserveCode,
+			   wadr.pa_id                                                                      AS paId,
+			   wadr.price                                                                      AS price,
+			   wadr.lot_num                                                                    AS lotNum,
+			   wadr.plan_pa_loc                                                                AS planPaLoc,
+			   wadr.voucher_no                                                                 AS voucherNo,
+			   wadr.lot_att01                                                                  AS lotAtt01,
+			   wadr.lot_att02                                                                  AS lotAtt02,
+			   wadr.lot_att03                                                                  AS lotAtt03,
+			   wadr.lot_att04                                                                  AS lotAtt04,
+			   wadr.lot_att05                                                                  AS lotAtt05,
+			   wadr.lot_att06                                                                  AS lotAtt06,
+			   wadr.lot_att07                                                                  AS lotAtt07,
+			   wadr.lot_att08                                                                  AS lotAtt08,
+			   wadr.lot_att09                                                                  AS lotAtt09,
+			   wadr.lot_att10                                                                  AS lotAtt10,
+			   wadr.lot_att11                                                                  AS lotAtt11,
+			   wadr.lot_att12                                                                  AS lotAtt12,
+			   wadr.edi_send_time                                                              AS ediSendTime,
+			   wadr.is_edi_send                                                                AS isEdiSend,
+			   wadr.def1                                                                       AS def1,
+			   wadr.def2                                                                       AS def2,
+			   wadr.def3                                                                       AS def3,
+			   wadr.def4                                                                       AS def4,
+			   wadr.def5                                                                       AS def5,
+			   wadr.def6                                                                       AS def6,
+			   wadr.def7                                                                       AS def7,
+			   wadr.def8                                                                       AS def8,
+			   wadr.def9                                                                       AS def9,
+			   wadr.def10                                                                      AS def10,
+			   wadr.remarks                                                                    AS remarks,
+			   wadr.rec_ver                                                                    AS recVer,
+			   wadr.org_id                                                                     AS orgId,
+			   wadr.so_no                                                                      AS soNo,
+			   wadr.so_line_no                                                                 AS soLineNo,
+			   wadr.cd_type                                                                    AS cdType,
+			   wadr.cd_rcv_id                                                                  AS cdRcvId,
+			   wadr.qc_rcv_id                                                                  AS qcRcvId,
+			   wadr.head_id                                                                    AS headId,
+			   cws.spec                                                                        AS skuSpec,
+			   cws.qty_unit                                                                    AS qtyUnit
+		FROM wm_asn_detail_receive wadr
+			LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = wadr.owner_code AND ec.org_id = wadr.org_id
+			LEFT JOIN cd_wh_sku cws ON cws.sku_code = wadr.sku_code AND cws.owner_code = wadr.owner_code AND cws.org_id = wadr.org_id
+			LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = wadr.pack_code AND cdpa.org_id = wadr.org_id
+			LEFT JOIN cd_wh_package_relation cdpr ON cdpr.cdpr_unit_level = 'CS' AND cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpr.org_id = wadr.org_id
+		WHERE wadr.id IN
+		<foreach collection="ids" item="id" index="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+</mapper>

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmPackSerialMapper">
+
+    <sql id="banQinWmPackSerialColumns">
+        a.id AS "id",
+		a.so_no AS "soNo",
+		a.sku_code AS "skuCode",
+		a.serial_no AS "serialNo",
+		a.line_no AS "lineNo",
+		a.alloc_id AS "allocId",
+		a.owner_code AS "ownerCode",
+		a.lot_num AS "lotNum",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+    </sql>
+
+    <sql id="banQinWmPackSerialJoins">
+
+    </sql>
+
+    <select id="get" resultType="BanQinWmPackSerial" >
+        SELECT
+        <include refid="banQinWmPackSerialColumns"/>
+        FROM wm_pack_serial a
+        <include refid="banQinWmPackSerialJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="BanQinWmPackSerial" >
+        SELECT
+        <include refid="banQinWmPackSerialColumns"/>
+        FROM wm_pack_serial a
+        <include refid="banQinWmPackSerialJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="soNo != null and soNo != ''">
+                AND a.so_no = #{soNo}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="allocId != null and allocId != ''">
+                AND a.alloc_id = #{allocId}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num = #{lotNum}
+            </if>
+            <if test="serialNo != null and serialNo != ''">
+                AND a.serial_no = #{serialNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="findPage" resultType="BanQinWmPackSerialEntity" >
+        SELECT
+            wsh.def5 AS customerNo,
+            wsa.tracking_no AS trackingNo,
+            wsa.case_no AS caseNo,
+            wsa.pack_op AS packOp,
+            wsa.pack_time AS packTime,
+            ec.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+            <include refid="banQinWmPackSerialColumns"/>
+        FROM wm_pack_serial a
+        LEFT JOIN wm_so_header wsh ON a.so_no = wsh.so_no AND a.org_id = wsh.org_id
+        LEFT JOIN wm_so_alloc wsa ON a.alloc_id = wsa.alloc_id AND a.org_id = wsa.org_id
+        LEFT JOIN eb_customer ec ON a.owner_code = ec.ebcu_customer_no AND a.org_id = ec.org_id
+        LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sku_code = cws.sku_code AND a.org_id = cws.org_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            AND a.org_id = #{orgId}
+            <if test="soNo != null and soNo != ''">
+                AND a.so_no = #{soNo}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="allocId != null and allocId != ''">
+                AND a.alloc_id = #{allocId}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="serialNo != null and serialNo != ''">
+                AND a.serial_no = #{serialNo}
+            </if>
+            <if test="customerNo != null and customerNo != ''">
+                AND wsh.def5 = #{customerNo}
+            </if>
+            <if test="trackingNo != null and trackingNo != ''">
+                AND wsa.tracking_no = #{trackingNo}
+            </if>
+            <if test="caseNo != null and caseNo != ''">
+                AND wsa.case_no = #{caseNo}
+            </if>
+            <if test="packTimeFm != null and packTimeFm != ''">
+                <![CDATA[ AND wsa.pack_time >= #{packTimeFm} ]]>
+            </if>
+            <if test="packTimeTo != null and packTimeTo != ''">
+                <![CDATA[ AND wsa.pack_time <= #{packTimeTo} ]]>
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="BanQinWmPackSerial" >
+        SELECT
+        <include refid="banQinWmPackSerialColumns"/>
+        FROM wm_pack_serial a
+        <include refid="banQinWmPackSerialJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO wm_pack_serial (
+            id,
+            so_no,
+            sku_code,
+            serial_no,
+            line_no,
+            alloc_id,
+            owner_code,
+            lot_num,
+            rec_ver,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag,
+            org_id
+        ) VALUES (
+             #{id},
+             #{soNo},
+             #{skuCode},
+             #{serialNo},
+             #{lineNo},
+             #{allocId},
+             #{ownerCode},
+             #{lotNum},
+             #{recVer},
+             #{createBy.id},
+             #{createDate},
+             #{updateBy.id},
+             #{updateDate},
+             #{delFlag},
+             #{orgId}
+         )
+    </insert>
+
+    <update id="update">
+        UPDATE wm_pack_serial SET
+            so_no = #{soNo},
+            sku_code = #{skuCode},
+            serial_no = #{serialNo},
+            line_no = #{lineNo},
+            alloc_id = #{allocId},
+            owner_code = #{ownerCode},
+            lot_num = #{lotNum},
+            rec_ver = #{recVer} + 1,
+            update_by = #{updateBy.id},
+            update_date = #{updateDate},
+            org_id = #{orgId}
+        WHERE id = #{id} AND rec_ver = #{recVer}
+    </update>
+
+    <!--物理删除-->
+    <update id="delete">
+        DELETE FROM wm_pack_serial
+        WHERE id = #{id}
+    </update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE wm_pack_serial SET
+            del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="removeByAllocId">
+        DELETE FROM wm_pack_serial WHERE alloc_id = #{allocId} AND org_id = #{orgId}
+    </delete>
+
+</mapper>

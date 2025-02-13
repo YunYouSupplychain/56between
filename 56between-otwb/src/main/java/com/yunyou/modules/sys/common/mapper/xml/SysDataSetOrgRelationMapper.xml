@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysDataSetOrgRelationMapper">
+
+	<sql id="sysDataSetOrgRelationColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.rec_ver AS "recVer",
+		a.data_set AS "dataSet",
+		a.org_id AS "orgId"
+	</sql>
+
+	<sql id="extraColumns">
+		scds.name AS "dataSetName",
+		so.code AS "orgCode",
+		so.name AS "orgName"
+	</sql>
+
+	<sql id="sysDataSetOrgRelationJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+		LEFT JOIN sys_office so ON a.org_id = so.id
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysDataSetOrgRelation" >
+		SELECT
+		<include refid="sysDataSetOrgRelationColumns"/>
+		FROM sys_data_set_org_relation a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysDataSetOrgRelation" >
+		SELECT
+		<include refid="sysDataSetOrgRelationColumns"/>
+		FROM sys_data_set_org_relation a
+		<where>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysDataSetOrgRelation" >
+		SELECT
+		<include refid="sysDataSetOrgRelationColumns"/>
+		FROM sys_data_set_org_relation a
+	</select>
+
+	<insert id="insert">
+		INSERT INTO sys_data_set_org_relation
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			rec_ver,
+			data_set,
+			org_id
+		)
+		VALUES
+		(
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{recVer},
+			#{dataSet},
+			#{orgId}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE sys_data_set_org_relation
+		SET update_by   = #{updateBy.id},
+			update_date = #{updateDate},
+			rec_ver     = rec_ver + 1,
+			data_set    = #{dataSet},
+			org_id      = #{orgId}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_data_set_org_relation
+        <where>
+            <if test="id != null and id != ''">
+                AND id = #{id}
+            </if>
+            <if test="dataSet != null and dataSet != ''">
+                AND data_set = #{dataSet}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND org_id = #{orgId}
+            </if>
+        </where>
+	</delete>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.extend.SysDataSetOrgRelationEntity">
+		SELECT <include refid="sysDataSetOrgRelationColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_data_set_org_relation a
+		<include refid="sysDataSetOrgRelationJoins"/>
+		<where>
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findEntity" resultType="com.yunyou.modules.sys.common.entity.extend.SysDataSetOrgRelationEntity">
+		SELECT <include refid="sysDataSetOrgRelationColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_data_set_org_relation a
+		<include refid="sysDataSetOrgRelationJoins"/>
+		<where>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+
+    <select id="getEntityByOrgId" resultType="com.yunyou.modules.sys.common.entity.extend.SysDataSetOrgRelationEntity">
+		SELECT <include refid="sysDataSetOrgRelationColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_data_set_org_relation a
+		<include refid="sysDataSetOrgRelationJoins"/>
+		WHERE a.org_id = #{orgId}
+	</select>
+
+	<select id="findDataSetByOrgCodes" resultType="java.lang.String">
+		SELECT DISTINCT
+			a.data_set AS "dataSet"
+		FROM sys_data_set_org_relation a
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		WHERE so.code IN
+		<foreach collection="orgCodes" index="orgCode" item="orgCode" open="(" separator="," close=")">
+			#{orgCode}
+		</foreach>
+	</select>
+</mapper>

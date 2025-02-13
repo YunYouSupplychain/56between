@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmBusinessInvMapper">
+
+    <sql id="banQinWmBusinessInvColumns">
+        a.id AS "id",
+		a.tran_type AS "tranType",
+		a.order_type AS "orderType",
+		a.order_no AS "orderNo",
+		a.line_no AS "lineNo",
+		a.op_time AS "opTime",
+        a.zone_code AS "zoneCode",
+        a.owner_code AS "ownerCode",
+        a.sku_code AS "skuCode",
+        a.lot_num AS "lotNum",
+		a.qty_ea_op AS "qtyEaOp",
+		a.qty_ea_before AS "qtyEaBefore",
+		a.qty_ea_after AS "qtyEaAfter",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+        a.first_owner AS "firstOwner",
+        a.to_owner AS "toOwner",
+        a.bg_date AS "bgDate",
+        a.store_days AS "storeDays",
+        a.lot AS "lot",
+        a.qty_in AS "qtyIn",
+        a.qty_out AS "qtyOut",
+        a.weight_in AS "weightIn",
+        a.weight_out AS "weightOut",
+        a.weight_inv AS "weightInv",
+        a.seq AS "seq"
+    </sql>
+
+    <select id="get" resultType="BanQinWmBusinessInv" >
+        SELECT
+        <include refid="banQinWmBusinessInvColumns"/>
+        FROM wm_business_inv a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="BanQinWmBusinessInv" >
+        SELECT
+        <include refid="banQinWmBusinessInvColumns"/>
+        FROM wm_business_inv a
+        <where>
+            1 = 1
+            AND a.org_id = #{orgId}
+            <if test="orderType != null and orderType != ''">
+                AND a.order_type = #{orderType}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no = #{orderNo}
+            </if>
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num = #{lotNum}
+            </if>
+            <if test="lot != null and lot != ''">
+                AND a.lot = #{lot}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="BanQinWmBusinessInv" >
+        SELECT
+        <include refid="banQinWmBusinessInvColumns"/>
+        FROM wm_business_inv a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <select id="findPage" resultType="BanQinWmBusinessInvEntity" >
+        SELECT
+            <include refid="banQinWmBusinessInvColumns"/>,
+            wila.lot_att01 AS lotAtt01,
+            wila.lot_att02 AS lotAtt02,
+            wila.lot_att03 AS lotAtt03,
+            wila.lot_att04 AS lotAtt04,
+            wila.lot_att05 AS lotAtt05,
+            wila.lot_att06 AS lotAtt06,
+            wila.lot_att07 AS lotAtt07,
+            wila.lot_att08 AS lotAtt08,
+            wila.lot_att09 AS lotAtt09,
+            wila.lot_att10 AS lotAtt10,
+            wila.lot_att11 AS lotAtt11,
+            wila.lot_att12 AS lotAtt12,
+            ec.ebcu_short_name AS ownerName,
+            cws.sku_name AS skuName,
+            cwz.zone_name AS zoneName,
+            (CASE WHEN a.order_type = 'SO' THEN a.op_time END) AS outboundDate,
+            (CASE WHEN a.order_type = 'AD' THEN a.op_time END) AS adDate,
+            (CASE WHEN a.order_type = 'TF' THEN a.op_time END) AS tfDate,
+            wsd.def1 AS def1,
+            wsd.def2 AS def2,
+            wsd.def3 AS def3,
+            wsd.def4 AS def4,
+            wsd.def5 AS def5,
+            wsd.def6 AS def6,
+            wsd.def7 AS def7,
+            wsd.def8 AS def8,
+            wsd.def9 AS def9,
+            wsd.def10 AS def10
+        FROM wm_business_inv a
+        LEFT JOIN wm_inv_lot_att wila ON a.lot_num = wila.lot_num AND a.org_id = wila.org_id
+        LEFT JOIN eb_customer ec ON a.owner_code = ec.ebcu_customer_no AND a.org_id = ec.org_id
+        LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sku_code = cws.sku_code AND a.org_id = cws.org_id
+        LEFT JOIN cd_wh_zone cwz ON a.zone_code = cwz.zone_code AND a.org_id = cwz.org_id
+        LEFT JOIN wm_so_alloc wsa ON a.order_no = wsa.so_no AND a.line_no = wsa.alloc_id AND a.org_id = wsa.org_id
+        LEFT JOIN wm_so_detail wsd ON wsa.so_no = wsa.so_no AND wsd.line_no = wsa.line_no AND wsa.org_id = wsd.org_id AND a.order_no = wsd.so_no
+        <where>
+            1 = 1
+            AND a.org_id = #{orgId}
+            <if test="ownerCode != null and ownerCode != ''">
+                 AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="orderType != null and orderType != ''">
+                AND a.order_type = #{orderType}
+            </if>
+            <if test="zoneCode != null and zoneCode != ''">
+                AND a.zone_code = #{zoneCode}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no = #{orderNo}
+            </if>
+            <if test="lotAtt06 != null and lotAtt06 != ''">
+                AND wila.lot_att06 = #{lotAtt06}
+            </if>
+            <if test="lot != null and lot != ''">
+                AND a.lot = #{lot}
+            </if>
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num = #{lotNum}
+            </if>
+            <if test="opTimeFm != null and opTimeFm != ''">
+                <![CDATA[ AND a.op_time >= #{opTimeFm} ]]>
+            </if>
+            <if test="opTimeTo != null and opTimeTo != ''">
+                <![CDATA[ AND a.op_time <= #{opTimeTo} ]]>
+            </if>
+            <if test="tranType != null and tranType != ''">
+                AND a.tran_type = #{tranType}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.lot_num, a.lot, a.seq
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO wm_business_inv (
+            id,
+            tran_type,
+            order_type,
+            order_no,
+            line_no,
+            op_time,
+            zone_code,
+            owner_code,
+            sku_code,
+            lot_num,
+            qty_ea_op,
+            qty_ea_before,
+            qty_ea_after,
+            rec_ver,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag,
+            org_id,
+            first_owner,
+            to_owner,
+            bg_date,
+            store_days,
+            lot,
+            qty_in,
+            qty_out,
+            weight_in,
+            weight_out,
+            weight_inv,
+            seq
+        ) VALUES (
+             #{id},
+             #{tranType},
+             #{orderType},
+             #{orderNo},
+             #{lineNo},
+             #{opTime},
+             #{zoneCode},
+             #{ownerCode},
+             #{skuCode},
+             #{lotNum},
+             #{qtyEaOp},
+             #{qtyEaBefore},
+             #{qtyEaAfter},
+             #{recVer},
+             #{createBy.id},
+             #{createDate},
+             #{updateBy.id},
+             #{updateDate},
+             #{delFlag},
+             #{orgId},
+             #{firstOwner},
+             #{toOwner},
+             #{bgDate},
+             #{storeDays},
+             #{lot},
+             #{qtyIn},
+             #{qtyOut},
+             #{weightIn},
+             #{weightOut},
+             #{weightInv},
+             #{seq}
+         )
+    </insert>
+
+    <update id="update">
+        UPDATE wm_business_inv SET
+           tran_type = #{tranType},
+           order_type = #{orderType},
+           order_no = #{orderNo},
+           line_no = #{lineNo},
+           op_time = #{opTime},
+           zone_code = #{zoneCode},
+           owner_code = #{ownerCode},
+           sku_code = #{skuCode},
+           lot_num = #{lotNum},
+           qty_ea_op = #{qtyEaOp},
+           qty_ea_before = #{qtyEaBefore},
+           qty_ea_after = #{qtyEaAfter},
+           rec_ver = #{recVer} + 1,
+           update_by = #{updateBy.id},
+           update_date = #{updateDate},
+           org_id = #{orgId},
+           first_owner = #{firstOwner},
+           to_owner = #{toOwner},
+           bg_date = #{bgDate},
+           store_days = #{storeDays},
+           lot = #{lot},
+           qty_in = #{qtyIn},
+           qty_out = #{qtyOut},
+           weight_in = #{weightIn},
+           weight_out = #{weightOut},
+           weight_inv = #{weightInv},
+           seq = #{seq}
+        WHERE id = #{id} AND rec_ver = #{recVer}
+    </update>
+
+    <!--物理删除-->
+    <update id="delete">
+        DELETE FROM wm_business_inv
+        WHERE id = #{id}
+    </update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE wm_business_inv SET
+            del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

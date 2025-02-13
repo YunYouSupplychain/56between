@@ -1,0 +1,1324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmSoHeaderMapper">
+    
+	<sql id="banQinWmSoHeaderColumns">
+		a.id AS "id",
+		a.so_no AS "soNo",
+		a.logistic_no AS "logisticNo",
+		a.so_type AS "soType",
+		a.priority AS "priority",
+		a.status AS "status",
+		a.audit_status AS "auditStatus",
+		a.audit_op AS "auditOp",
+		a.audit_time AS "auditTime",
+		a.hold_status AS "holdStatus",
+		a.hold_op AS "holdOp",
+		a.hold_time AS "holdTime",
+		a.intercept_status AS "interceptStatus",
+		a.intercept_time AS "interceptTime",
+		a.order_time AS "orderTime",
+		a.fm_etd AS "fmEtd",
+		a.to_etd AS "toEtd",
+		a.tracking_no AS "trackingNo",
+		a.ld_status AS "ldStatus",
+		a.owner_code AS "ownerCode",
+		a.carrier_code AS "carrierCode",
+		a.trans_type AS "transType",
+		a.line AS "line",
+		a.stop AS "stop",
+		a.vehicle_no AS "vehicleNo",
+		a.driver AS "driver",
+		a.driver_tel AS "driverTel",
+		a.consignee_code AS "consigneeCode",
+		a.consignee_name AS "consigneeName",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_addr AS "consigneeAddr",
+		a.consignee_zip AS "consigneeZip",
+		a.consignee_email AS "consigneeEmail",
+		a.consignee_fax AS "consigneeFax",
+		a.contact_code AS "contactCode",
+		a.contact_name AS "contactName",
+		a.contact_tel AS "contactTel",
+		a.contact_addr AS "contactAddr",
+		a.contact_zip AS "contactZip",
+		a.contact_email AS "contactEmail",
+		a.contact_fax AS "contactFax",
+		a.settle_code AS "settleCode",
+		a.edi_send_time AS "ediSendTime",
+		a.is_edi_send AS "isEdiSend",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10",
+		a.def11 AS "def11",
+		a.def12 AS "def12",
+		a.def13 AS "def13",
+		a.def14 AS "def14",
+		a.def15 AS "def15",
+		a.def16 AS "def16",
+		a.def17 AS "def17",
+		a.def18 AS "def18",
+		a.def19 AS "def19",
+		a.def20 AS "def20",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.data_source AS "dataSource",
+		a.pack_status AS "packStatus",
+		a.is_pushed AS "isPushed"
+	</sql>
+	
+	<sql id="banQinWmSoHeaderJoins">
+        LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="BanQinWmSoHeader" >
+		SELECT 
+			<include refid="banQinWmSoHeaderColumns"/>
+		FROM wm_so_header a
+		<include refid="banQinWmSoHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="getEntity" resultType="BanQinWmSoEntity" >
+        SELECT
+            <include refid="banQinWmSoHeaderColumns"/>,
+            owner.ebcu_name_cn AS ownerName,
+            carrier.ebcu_name_cn AS carrierName,
+			settle.ebcu_name_cn AS settleName,
+            settle.ebcu_tel AS settleTel,
+            settle.ebcu_fax AS settleFax,
+            settle.ebcu_industry_type AS settleIndustryType,
+            settle.ebcu_address AS settleAddress,
+            wwd.wave_no AS waveNo
+        FROM wm_so_header a
+        LEFT JOIN wm_wv_detail wwd ON wwd.so_no = a.so_no AND wwd.org_id = a.org_id
+        LEFT JOIN eb_customer owner ON a.owner_code = owner.ebcu_customer_no AND a.org_id = owner.org_id
+        LEFT JOIN eb_customer carrier ON a.carrier_code = carrier.ebcu_customer_no and a.org_id = carrier.org_id
+        LEFT JOIN eb_customer consignee ON a.consignee_code = consignee.ebcu_customer_no and a.org_id = consignee.org_id
+        LEFT JOIN eb_customer settle ON a.settle_code = settle.ebcu_customer_no and a.org_id = settle.org_id
+        WHERE a.id = #{id}
+    </select>
+    
+	<select id="findList" resultType="BanQinWmSoHeader" >
+		SELECT 
+			<include refid="banQinWmSoHeaderColumns"/>
+		FROM wm_so_header a
+		<include refid="banQinWmSoHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no = #{soNo}
+			</if>
+			<if test="logisticNo != null and logisticNo != ''">
+				AND a.logistic_no = #{logisticNo}
+			</if>
+			<if test="soType != null and soType != ''">
+				AND a.so_type = #{soType}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="fmEtd != null and fmEtd != ''">
+				AND a.fm_etd &gt;= #{fmEtd}
+			</if>
+			<if test="toEtd != null and toEtd != ''">
+				AND a.to_etd &lt;= #{toEtd}
+			</if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 = #{def1}
+			</if>
+			<if test="def2 != null and def2 != ''">
+				AND a.def2 = #{def2}
+			</if>
+			<if test="def3 != null and def3 != ''">
+				AND a.def3 = #{def3}
+			</if>
+			<if test="def5 != null and def5 != ''">
+				AND a.def5 = #{def5}
+			</if>
+			<if test="def16 != null and def16 != ''">
+				AND a.def16 = #{def16}
+			</if>
+		</where>
+	</select>
+
+    <select id="findPage" resultType="BanQinWmSoEntity" >
+        SELECT
+            <include refid="banQinWmSoHeaderColumns"/>,
+            owner.ebcu_name_cn AS ownerName,
+            carrier.ebcu_name_cn AS carrierName,
+			settle.ebcu_name_cn AS settleName,
+            settle.ebcu_tel AS settleTel,
+            settle.ebcu_fax AS settleFax,
+            settle.ebcu_industry_type AS settleIndustryType,
+            settle.ebcu_address AS settleAddress,
+            wwd.wave_no AS waveNo,
+            creater.name AS "createBy.name",
+            updater.name AS "updateBy.name",
+			so.name AS orgName
+        FROM wm_so_header a
+        LEFT JOIN wm_wv_detail wwd ON wwd.so_no = a.so_no AND wwd.org_id = a.org_id
+        LEFT JOIN eb_customer owner ON a.owner_code = owner.ebcu_customer_no AND a.org_id = owner.org_id
+        LEFT JOIN eb_customer carrier ON a.carrier_code = carrier.ebcu_customer_no and a.org_id = carrier.org_id
+        LEFT JOIN eb_customer consignee ON a.consignee_code = consignee.ebcu_customer_no and a.org_id = consignee.org_id
+        LEFT JOIN eb_customer settle ON a.settle_code = settle.ebcu_customer_no and a.org_id = settle.org_id
+        <include refid="banQinWmSoHeaderJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="soNo != null and soNo != ''">
+                AND a.so_no like concat(#{soNo}, '%')
+            </if>
+            <if test="logisticNo != null and logisticNo != ''">
+                AND a.logistic_no like concat(#{logisticNo}, '%')
+            </if>
+            <if test="soType != null and soType != ''">
+                AND a.so_type = #{soType}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
+            </if>
+			<if test="beginOrderTime != null and beginOrderTime !=''">
+				<![CDATA[ AND a.order_time >= #{beginOrderTime} ]]>
+			</if>
+			<if test="endOrderTime != null and endOrderTime !=''">
+				<![CDATA[ AND a.order_time <= #{endOrderTime} ]]>
+			</if>
+            <if test="fmEtd != null and fmEtd != ''">
+                AND a.fm_etd &gt;= #{fmEtd}
+            </if>
+            <if test="toEtd != null and toEtd != ''">
+                AND a.to_etd &lt;= #{toEtd}
+            </if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="consigneeCode != null and consigneeCode != ''">
+				AND a.consignee_code = #{consigneeCode}
+			</if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 like concat(#{def1}, '%')
+			</if>
+			<if test="def2 != null and def2 != ''">
+				AND a.def2 like concat(#{def2}, '%')
+			</if>
+			<if test="def3 != null and def3 != ''">
+				AND a.def3 like concat(#{def3}, '%')
+			</if>
+			<if test="def5 != null and def5 != ''">
+				AND a.def5 like concat(#{def5}, '%')
+			</if>
+			<if test="def16 != null and def16 != ''">
+				AND a.def16 like concat(#{def16}, '%')
+			</if>
+			<if test="def17 != null and def17 != ''">
+				AND a.def17 like concat('%', #{def17}, '%')
+			</if>
+        	<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND EXISTS(SELECT 1 FROM WM_SO_DETAIL d WHERE d.so_no = a.so_no AND d.org_id = a.org_id AND d.sku_code = #{skuCode} )
+			</if>
+			<if test="contactName != null and contactName != ''">
+				AND a.contact_name like concat('%', #{contactName}, '%')
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND wwd.wave_no like concat(#{waveNo}, '%')
+			</if>
+			<if test="holdStatus != null and holdStatus != ''">
+				AND a.hold_status = #{holdStatus}
+			</if>
+			<if test="interceptStatus != null and interceptStatus != ''">
+				AND a.intercept_status = #{interceptStatus}
+			</if>
+			<if test="packStatus != null and packStatus != ''">
+				AND a.pack_status = #{packStatus}
+			</if>
+        	<if test="customerNoList != null and customerNoList.size > 0">
+				AND a.def5 IN
+        		<foreach collection="customerNoList" item="customerNo" index="customerNo" open="(" separator="," close=")">
+					#{customerNo}
+				</foreach>
+			</if>
+			<if test="extendNoList != null and extendNoList.size > 0">
+				AND a.def16 IN
+				<foreach collection="extendNoList" item="extendNo" index="customerNo" open="(" separator="," close=")">
+					#{extendNo}
+				</foreach>
+			</if>
+			<if test="soNoList != null and soNoList.size > 0">
+				AND a.so_no IN
+				<foreach collection="soNoList" item="soNo" index="customerNo" open="(" separator="," close=")">
+					#{soNo}
+				</foreach>
+			</if>
+			<if test="createDateFm != null and createDateFm !=''">
+				<![CDATA[ AND a.create_date >= #{createDateFm} ]]>
+			</if>
+			<if test="endDateTo != null and endDateTo !=''">
+				<![CDATA[ AND a.create_date <= #{endDateTo} ]]>
+			</if>
+			<if test="ldStatus != null and ldStatus != ''">
+				AND a.ld_status = #{ldStatus}
+			</if>
+			<if test="isPushed != null and isPushed != ''">
+				<choose>
+					<when test="isPushed == 'Y'.toString()">
+						AND a.is_pushed = 'Y'
+					</when>
+        			<otherwise>
+						<![CDATA[ AND (a.is_pushed <> 'Y' or a.is_pushed is null) ]]>
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+	<select id="findGrid" resultType="BanQinWmSoEntity" >
+		SELECT
+			<include refid="banQinWmSoHeaderColumns"/>,
+			owner.ebcu_name_cn AS ownerName,
+			carrier.ebcu_name_cn AS carrierName,
+			settle.ebcu_name_cn AS settleName,
+			settle.ebcu_tel AS settleTel,
+			settle.ebcu_fax AS settleFax,
+			settle.ebcu_industry_type AS settleIndustryType,
+			settle.ebcu_address AS settleAddress,
+			wwd.wave_no AS waveNo,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName
+		FROM wm_so_header a
+		LEFT JOIN wm_wv_detail wwd ON wwd.so_no = a.so_no AND wwd.org_id = a.org_id
+		LEFT JOIN eb_customer owner ON a.owner_code = owner.ebcu_customer_no AND a.org_id = owner.org_id
+		LEFT JOIN eb_customer carrier ON a.carrier_code = carrier.ebcu_customer_no and a.org_id = carrier.org_id
+		LEFT JOIN eb_customer consignee ON a.consignee_code = consignee.ebcu_customer_no and a.org_id = consignee.org_id
+		LEFT JOIN eb_customer settle ON a.settle_code = settle.ebcu_customer_no and a.org_id = settle.org_id
+		<include refid="banQinWmSoHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no like concat('%', #{soNo}, '%')
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND wwd.wave_no like concat(#{waveNo}, '%')
+			</if>
+			<if test="logisticNo != null and logisticNo != ''">
+				AND a.logistic_no like concat('%', #{logisticNo}, '%')
+			</if>
+			<if test="soType != null and soType != ''">
+				AND a.so_type = #{soType}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="beginOrderTime != null and endOrderTime != null and beginOrderTime != '' and endOrderTime != ''">
+				AND a.order_time BETWEEN #{beginOrderTime} AND #{endOrderTime}
+			</if>
+			<if test="fmEtd != null and fmEtd != ''">
+				AND a.fm_etd &gt;= #{fmEtd}
+			</if>
+			<if test="toEtd != null and toEtd != ''">
+				AND a.to_etd &lt;= #{toEtd}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="consigneeCode != null and consigneeCode != ''">
+				AND a.consignee_code = #{consigneeCode}
+			</if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 like concat('%', #{def1}, '%')
+			</if>
+			<if test="def2 != null and def2 != ''">
+				AND a.def2 like concat('%', #{def2}, '%')
+			</if>
+			<if test="def3 != null and def3 != ''">
+				AND a.def3 like concat('%', #{def3}, '%')
+			</if>
+			<if test="def5 != null and def5 != ''">
+				AND a.def5 like concat('%', #{def5}, '%')
+			</if>
+			<if test="def16 != null and def16 != ''">
+				AND a.def16 like concat('%', #{def16}, '%')
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.so_no
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="checkSoIsCdByCreateWave" resultType="java.lang.String">
+        SELECT wsh.so_no
+          FROM wm_so_header wsh
+         WHERE 1 = 1
+           AND wsh.org_id = #{orgId}
+           AND wsh.so_no IN
+           <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+               #{soNo}
+           </foreach>
+           AND exists (SELECT 1
+                  FROM wm_so_detail wsd
+                 WHERE wsh.so_no = wsd.so_no
+                   AND wsh.org_id = wsd.org_id
+                   AND wsd.cd_type IS NOT NULL
+                   AND wsd.cd_type != '')
+    </select>
+	
+    <select id="checkSoIsClose" resultType="BanQinWmSoHeader">
+        SELECT distinct wsh.so_no AS soNo, wsh.status AS status
+        FROM wm_so_header wsh
+        LEFT JOIN wm_so_alloc wsa ON wsh.so_no = wsa.so_no AND wsh.org_id = wsa.org_id
+        LEFT JOIN wm_ld_detail wld ON wsa.alloc_id = wld.alloc_id AND wld.org_id = wsa.org_id
+        WHERE wsh.status = '99'
+          AND wld.ld_no = #{ldNo}
+          and wld.org_id = #{orgId}
+    </select>
+    
+	<select id="findAllList" resultType="BanQinWmSoHeader" >
+		SELECT 
+			<include refid="banQinWmSoHeaderColumns"/>
+		FROM wm_so_header a
+		<include refid="banQinWmSoHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_so_header(
+			id,
+			so_no,
+			logistic_no,
+			so_type,
+			priority,
+			status,
+			audit_status,
+			audit_op,
+			audit_time,
+			hold_status,
+			hold_op,
+			hold_time,
+			intercept_status,
+			intercept_time,
+			order_time,
+			fm_etd,
+			to_etd,
+			tracking_no,
+			ld_status,
+			owner_code,
+			carrier_code,
+			trans_type,
+			line,
+			stop,
+			vehicle_no,
+			driver,
+			driver_tel,
+			consignee_code,
+			consignee_name,
+			consignee_tel,
+			consignee_addr,
+			consignee_zip,
+			consignee_email,
+			consignee_fax,
+			contact_code,
+			contact_name,
+			contact_tel,
+			contact_addr,
+			contact_zip,
+			contact_email,
+			contact_fax,
+			settle_code,
+			edi_send_time,
+			is_edi_send,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			def11,
+			def12,
+			def13,
+			def14,
+			def15,
+			def16,
+			def17,
+			def18,
+			def19,
+			def20,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			data_source,
+		    pack_status,
+		    is_pushed
+		) VALUES (
+			#{id},
+			#{soNo},
+			#{logisticNo},
+			#{soType},
+			#{priority},
+			#{status},
+			#{auditStatus},
+			#{auditOp},
+			#{auditTime},
+			#{holdStatus},
+			#{holdOp},
+			#{holdTime},
+			#{interceptStatus},
+			#{interceptTime},
+			#{orderTime},
+			#{fmEtd},
+			#{toEtd},
+			#{trackingNo},
+			#{ldStatus},
+			#{ownerCode},
+			#{carrierCode},
+			#{transType},
+			#{line},
+			#{stop},
+			#{vehicleNo},
+			#{driver},
+			#{driverTel},
+			#{consigneeCode},
+			#{consigneeName},
+			#{consigneeTel},
+			#{consigneeAddr},
+			#{consigneeZip},
+			#{consigneeEmail},
+			#{consigneeFax},
+			#{contactCode},
+			#{contactName},
+			#{contactTel},
+			#{contactAddr},
+			#{contactZip},
+			#{contactEmail},
+			#{contactFax},
+			#{settleCode},
+			#{ediSendTime},
+			#{isEdiSend},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{def11},
+			#{def12},
+			#{def13},
+			#{def14},
+			#{def15},
+			#{def16},
+			#{def17},
+			#{def18},
+			#{def19},
+			#{def20},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{dataSource},
+		    #{packStatus},
+			#{isPushed}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_so_header SET
+			so_no = #{soNo},
+			logistic_no = #{logisticNo},
+			so_type = #{soType},
+			priority = #{priority},
+			status = #{status},
+			audit_status = #{auditStatus},
+			audit_op = #{auditOp},
+			audit_time = #{auditTime},
+			hold_status = #{holdStatus},
+			hold_op = #{holdOp},
+			hold_time = #{holdTime},
+			intercept_status = #{interceptStatus},
+			intercept_time = #{interceptTime},
+			order_time = #{orderTime},
+			fm_etd = #{fmEtd},
+			to_etd = #{toEtd},
+			tracking_no = #{trackingNo},
+			ld_status = #{ldStatus},
+			owner_code = #{ownerCode},
+			carrier_code = #{carrierCode},
+			trans_type = #{transType},
+			line = #{line},
+			stop = #{stop},
+			vehicle_no = #{vehicleNo},
+			driver = #{driver},
+			driver_tel = #{driverTel},
+			consignee_code = #{consigneeCode},
+			consignee_name = #{consigneeName},
+			consignee_tel = #{consigneeTel},
+			consignee_addr = #{consigneeAddr},
+			consignee_zip = #{consigneeZip},
+			consignee_email = #{consigneeEmail},
+			consignee_fax = #{consigneeFax},
+			contact_code = #{contactCode},
+			contact_name = #{contactName},
+			contact_tel = #{contactTel},
+			contact_addr = #{contactAddr},
+			contact_zip = #{contactZip},
+			contact_email = #{contactEmail},
+			contact_fax = #{contactFax},
+			settle_code = #{settleCode},
+			edi_send_time = #{ediSendTime},
+			is_edi_send = #{isEdiSend},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			def6 = #{def6},
+			def7 = #{def7},
+			def8 = #{def8},
+			def9 = #{def9},
+			def10 = #{def10},
+			def11 = #{def11},
+			def12 = #{def12},
+			def13 = #{def13},
+			def14 = #{def14},
+			def15 = #{def15},
+			def16 = #{def16},
+			def17 = #{def17},
+			def18 = #{def18},
+			def19 = #{def19},
+			def20 = #{def20},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			data_source = #{dataSource},
+			pack_status = #{packStatus}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_so_header
+		WHERE id = #{id}
+	</update>
+    
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_so_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+    <!--***********************************SELECT区*******************************************-->
+	<select id="findEntity" resultType="BanQinWmSoEntity">
+        select
+            <include refid="banQinWmSoHeaderColumns"/>,
+            owner.ebcu_name_cn AS ownerName,
+            carrier.ebcu_name_cn AS carrierName,
+            settle.ebcu_tel AS settleTel,
+            settle.ebcu_fax AS settleFax,
+            settle.ebcu_industry_type AS settleIndustryType,
+            settle.ebcu_address AS settleAddress,
+            wwd.wave_no AS waveNo,
+            owner.ebcu_short_name AS ownerShortName,
+            owner.ebcu_tel AS ownerTel,
+            owner.ebcu_address AS ownerAddress,
+			owner.ebcu_zip_code AS ownerPostCode,
+            owner.ebcu_substr1 AS ownerArea,
+            owner.ebcu_substr8 AS ownerRemarks,
+			wwd.def1 AS orderSeq
+        FROM wm_so_header a
+        LEFT JOIN wm_wv_detail wwd ON wwd.so_no = a.so_no AND wwd.org_id = a.org_id
+        LEFT JOIN eb_customer owner ON a.owner_code = owner.ebcu_customer_no AND a.org_id = owner.org_id
+        LEFT JOIN eb_customer carrier ON a.carrier_code = carrier.ebcu_customer_no AND a.org_id = carrier.org_id
+        LEFT JOIN eb_customer consignee ON a.consignee_code = consignee.ebcu_customer_no AND a.org_id = consignee.org_id
+        LEFT JOIN eb_customer settle ON a.settle_code = settle.ebcu_customer_no AND a.org_id = settle.org_id
+        WHERE 1 = 1
+        AND a.org_id = #{orgId}
+        <if test="waveNo != null and waveNo != ''">
+            AND wwd.wave_no = #{waveNo}
+        </if>
+        <if test="soNo != null and soNo != ''">
+            AND a.so_no = #{soNo}
+        </if>
+        <if test="soTypeList != null and soTypeList.size > 0">
+            AND a.so_type in
+            <foreach collection="soTypeList" item="soType" open="(" separator="," close=")">
+                #{soType}
+            </foreach>
+        </if>
+        <if test="statusList != null and statusList.size > 0">
+            AND a.status in
+            <foreach collection="statusList" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+        <if test="auditStatusList != null and auditStatusList.size > 0">
+            AND a.audit_status in
+            <foreach collection="auditStatusList" item="auditStatus" open="(" separator="," close=")">
+                #{auditStatus}
+            </foreach>
+        </if>
+        <if test="ownerCodeList != null and ownerCodeList.size > 0">
+            AND a.owner_code in
+            <foreach collection="ownerCodeList" item="ownerCode" open="(" separator="," close=")">
+                #{ownerCode}
+            </foreach>
+        </if>
+        <if test="skuCodeList != null and skuCodeList.size > 0">
+            AND EXISTS (
+                SELECT 1
+                  FROM wm_so_detail wsd
+                 WHERE wsd.so_no = a.so_no
+                   AND wsd.org_id = a.org_id
+                   AND wsd.sku_code in
+                   <foreach collection="skuCodeList" item="skuCode" open="(" separator="," close=")">
+                       #{skuCode}
+                   </foreach>
+            )
+        </if>
+        <if test="priorityList != null and priorityList.size > 0">
+            AND a.priority in
+            <foreach collection="priorityList" item="priority" open="(" separator="," close=")">
+                #{priority}
+            </foreach>
+        </if>
+        <if test="logisticNo != null and logisticNo != ''">
+            AND a.logistic_no = #{logisticNo}
+        </if>
+        <if test="interceptStatusList != null and interceptStatusList.size > 0">
+            AND a.intercept_status in
+            <foreach collection="interceptStatusList" item="interceptStatus" open="(" separator="," close=")">
+                #{interceptStatus}
+            </foreach>
+        </if>
+        <if test="holdStatusList != null and holdStatusList.size > 0">
+            AND A.hold_status in
+            <foreach collection="holdStatusList" item="holdStatus" open="(" separator="," close=")">
+                #{holdStatus}
+            </foreach>
+        </if>
+        <if test="carrierCodeList != null and carrierCodeList.size > 0">
+            AND a.carrier_code in
+            <foreach collection="carrierCodeList" item="carrierCode" open="(" separator="," close=")">
+                #{carrierCode}
+            </foreach>
+        </if>
+        <if test="consigneeCodeList != null and consigneeCodeList.size > 0">
+            AND a.consignee_code in
+            <foreach collection="consigneeCodeList" item="consigneeCode" open="(" separator="," close=")">
+                #{consigneeCode}
+            </foreach>
+        </if>
+        <if test="settleCodeList != null and settleCodeList.size > 0">
+            AND a.settle_code in
+            <foreach collection="settleCodeList" item="settleCode" open="(" separator="," close=")">
+                #{settleCode}
+            </foreach>
+        </if>
+        <if test="lineList != null and lineList.size > 0">
+            AND a.line in
+            <foreach collection="lineList" item="line" open="(" separator="," close=")">
+                #{line}
+            </foreach>
+        </if>
+        <if test="ldStatusList != null and ldStatusList.size > 0">
+            AND a.ld_status in
+            <foreach collection="ldStatusList" item="ldStatus" open="(" separator="," close=")">
+                #{ldStatus}
+            </foreach>
+        </if>
+        <if test='isLd == "Y".toString()'>
+            AND EXISTS (
+                SELECT 1
+                  FROM wm_ld_detail wld
+                  LEFT join wm_so_alloc wsa
+                    ON wld.alloc_id = wsa.alloc_id
+                   AND wld.org_id = wsa.org_id
+                 WHERE a.so_no = wsa.so_no
+                   AND a.org_id = wsa.org_id
+            )
+        </if>
+        <if test='isLd == "N".toString()'>
+            AND NOT EXISTS (
+                SELECT 1
+                  FROM wm_ld_detail wld
+                  LEFT JOIN wm_so_alloc wsa
+                    ON wld.alloc_id = wsa.alloc_id
+                   AND wld.org_id = wsa.org_id
+                 WHERE a.so_no = wsa.so_no
+                   AND a.org_id = wsa.org_id
+            )
+        </if>
+        <if test="saleNo != null and saleNo != '' and saleLineNo != null and saleLineNo != ''">
+            AND EXISTS (
+                SELECT 1
+                  FROM wm_so_detail wsd
+                 WHERE wsd.so_no = a.so_no
+                   AND wsd.org_id = a.org_id
+                   AND wsd.sale_no = #{saleNo}
+                   AND wsd.sale_line_no = #{saleLineNo}
+            )
+        </if>
+    </select>
+
+    <select id="findSoNoInterceptOrHoldStatus" resultType="java.lang.String">
+        SELECT DISTINCT wsh.so_no
+        FROM wm_so_header wsh
+        LEFT JOIN wm_so_detail wsd ON wsh.so_no = wsd.so_no AND wsh.org_id = wsd.org_id
+        LEFT JOIN wm_wv_detail wwd ON wsd.so_no = wwd.so_no AND wsd.org_id = wwd.org_id
+        LEFT JOIN wm_so_prealloc wsp ON wsd.so_no = wsp.so_no AND wsd.line_no = wsp.line_no AND wsd.org_id = wsp.org_id
+        LEFT JOIN wm_so_alloc wsa ON wsd.so_no = wsa.so_no AND wsd.line_no = wsa.line_no AND wsd.org_id = wsa.org_id
+        WHERE 1 = 1
+        AND WSH.STATUS != '90'
+        AND WSH.STATUS != '99'
+        AND WSH.ORG_ID = #{orgId}
+        <if test='isInterceptStatus == "Y".toString()'>
+            AND (wsh.intercept_status = '10' OR wsh.intercept_status = '20' OR wsh.intercept_status = '99')
+        </if>
+        <if test='isHoldStatus == "Y".toString()'>
+            AND (wsh.intercept_status = '00' OR wsh.intercept_status = '90') AND wsh.hold_status = '99'
+        </if>
+        <if test="soNos != null and soNos.size > 0">
+            AND wsh.so_no IN
+            <foreach collection="soNos" item="soNo" open="(" separator="," close=")">
+                #{soNo}
+            </foreach>
+        </if>
+        <if test="lineNos != null and lineNos.size > 0">
+            AND (wsd.so_no, wsd.line_no) IN
+            <foreach collection="lineNos" item="item" open="(" separator="," close=")">
+                ${item}
+            </foreach>
+        </if>
+        <if test="preallocIds != null and preallocIds.size > 0">
+            AND wsp.prealloc_id IN
+            <foreach collection="preallocIds" item="preallocId" open="(" separator="," close=")">
+                #{preallocId}
+            </foreach>
+        </if>
+        <if test="allocIds != null and allocIds.size > 0">
+            AND wsa.alloc_id IN
+            <foreach collection="allocIds" item="allocId" open="(" separator="," close=")">
+                #{allocId}
+            </foreach>
+        </if>
+        <if test="waveNos != null and waveNos.size > 0">
+            AND wwd.wave_no IN
+            <foreach collection="waveNos" item="waveNo" open="(" separator="," close=")">
+                #{waveNo}
+            </foreach>
+        </if>
+    </select>
+
+    <update id="updateSoHeaderStatusByWave">
+        UPDATE wm_so_header wsh
+		SET wsh.status = (
+                CASE WHEN (
+                    SELECT COUNT(1) FROM wm_so_detail wsd
+					WHERE wsh.so_no = wsd.so_no
+					AND wsh.org_id = wsd.org_id
+					AND wsd.status &lt;&gt; '90'
+					LIMIT 1) = 0 THEN '00'
+                ELSE (SELECT (CASE
+						WHEN (MAX(wsd.status) = MIN(wsd.status)) THEN (MAX(wsd.status))
+						WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(wsd.status) &lt;&gt; '20') THEN '10'
+						WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(wsd.status) &lt;= '40') THEN '30'
+						WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(wsd.status) &lt;= '60') THEN '50'
+						WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(wsd.status) &lt;= '80') THEN '70' END)
+                    FROM wm_so_detail wsd
+                    WHERE wsd.status &lt;&gt; '90'
+                    AND wsd.status &lt;&gt; '99'
+                    AND wsh.so_no = wsd.so_no
+                    AND wsh.org_id = wsd.org_id)
+                END),
+			wsh.update_by = #{userId},
+            wsh.update_date = now()
+        WHERE 1 = 1
+        AND wsh.status &lt;&gt; '90'
+        AND wsh.status &lt;&gt; '99'
+        AND wsh.org_id = #{orgid}
+        AND EXISTS (SELECT 1
+				FROM wm_wv_detail wwd
+				WHERE 1 = 1
+				AND wwd.so_no = wsh.so_no
+				AND wwd.org_id = wsh.org_id
+				AND wwd.wave_no IN
+				<foreach collection="waveNos" item="waveNo" index="waveNo" open="(" separator="," close=")">
+					#{waveNo}
+				</foreach>
+				limit 1)
+    </update>
+    
+    <update id="updateSoHeaderStatusBySo">
+        UPDATE wm_so_header wsh
+		SET wsh.status = (
+		    CASE WHEN (
+		        SELECT COUNT(1)
+				FROM wm_so_detail wsd
+				WHERE wsh.so_no = wsd.so_no
+				AND wsh.org_id = wsd.org_id
+				AND wsd.status &lt;&gt; '90'
+				LIMIT 1) = 0 then '00'
+			ELSE (
+			    SELECT (CASE
+					WHEN (MAX(wsd.status) = MIN(wsd.status)) THEN (MAX(wsd.status))
+					WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(wsd.status) &lt;= '20') THEN '10'
+					WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(wsd.status) &lt;= '40') THEN '30'
+					WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(wsd.status) &lt;= '60') THEN '50'
+					WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(wsd.status) &lt;= '80') THEN '70' END)
+				FROM wm_so_detail wsd
+				WHERE wsd.status &lt;&gt; '90'
+				AND wsd.status &lt;&gt; '99'
+				AND wsh.so_no = wsd.so_no
+				AND wsh.org_id = wsd.org_id)
+			END),
+            wsh.update_by = #{userId},
+            wsh.update_date = now()
+        WHERE 1 = 1
+        AND wsh.status &lt;&gt; '90'
+        AND wsh.status &lt;&gt; '99'
+        AND wsh.org_id = #{orgId}
+        AND wsh.so_no IN
+        <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+            #{soNo}
+        </foreach>
+    </update>
+
+	<select id="getPickingOrder" resultType="com.yunyou.modules.wms.report.entity.PickingOrderLabel">
+		SELECT
+			wsh.so_no AS soNo,
+			wsh.owner_code AS ownerCode,
+			ebcu.ebcu_name_cn AS ownerName,
+			CASE wsh.so_type WHEN 'PO' THEN '普通出库' WHEN 'AO' THEN '调拨出库'  WHEN 'RO' THEN '退厂出库' WHEN 'EO' THEN '换货出库' ELSE '普通出库' END AS soType,
+			wsa.trace_id AS traceId,
+			wsa.lot_num AS lotNum,
+			wila.lot_att01 AS lotAtt01,
+			wsa.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cwp.cdpa_format AS packDesc,
+			wsa.loc_code AS pickLoc,
+			cwl.pk_seq AS pkSeq,
+			wsa.qty_ea AS qty,
+			wsa.qty_ea / cwpr.cdpr_quantity AS boxQty,
+			(will.qty - will.qty_alloc - will.qty_hold - will.qty_pk - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out) / cwpr.cdpr_quantity AS qtyAvailable,
+			so.name AS storehouse,
+			wsh.org_id AS orgId,
+			CASE WHEN (wsd.def4 REGEXP '[^0-9.]') = 0 THEN wsd.def4 ELSE 0 END AS riceNum,
+			cws.spec AS skuDef3,
+			wsh.consignee_code AS consigneeCode,
+			wsh.consignee_name AS consigneeName
+		FROM wm_so_header wsh
+		LEFT JOIN wm_so_detail wsd On wsh.so_no = wsd.so_no AND wsh.org_id = wsd.org_id
+		LEFT JOIN wm_so_alloc wsa ON wsa.so_no = wsd.so_no AND wsa.org_id = wsd.org_id AND wsa.line_no = wsd.line_no
+		LEFT JOIN wm_inv_lot_att wila ON wsa.lot_num = wila.lot_num AND wsa.org_id = wila.org_id
+		LEFT JOIN eb_customer ebcu ON wsh.owner_code = ebcu.ebcu_customer_no AND wsh.org_id = ebcu.org_id
+		LEFT JOIN cd_wh_sku cws ON wsa.owner_code = cws.owner_code AND wsa.sku_code = cws.sku_code AND wsa.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cwp ON cws.pack_code = cwp.cdpa_code AND cws.org_id = cwp.org_id
+		LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = 'CS' AND cwpr.org_id = cwp.org_id
+		LEFT JOIN sys_office so ON wsh.org_id = so.id
+		LEFT JOIN wm_inv_lot_loc will ON wsa.lot_num = will.lot_num AND wsa.loc_code = will.loc_code AND wsa.trace_id = will.trace_id and wsa.org_id = will.org_id
+		LEFT JOIN cd_wh_loc cwl ON wsa.loc_code = cwl.loc_code AND wsa.org_id = cwl.org_id
+		WHERE 1=1
+		AND wsd.status > '20'
+		AND wsh.id IN
+		<foreach collection="list" item="id" index="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="getShipOrder" resultType="com.yunyou.modules.wms.report.entity.ShipOrderLabel">
+		SELECT
+			wsh.def4 AS storeName,
+			wsh.def5 AS orderNo,
+			wsh.def6 AS orderDate,
+			wsh.def7 AS payingDate,
+			ebcu.ebcu_name_cn AS consigneeName,
+			wsh.def8 AS memberLevel,
+			wsh.def9 AS payingType,
+			wsh.def10 AS payingStatus,
+			wsh.def11 AS shipNo,
+            CASE WHEN (wsh.def12 REGEXP '[^0-9.]') = 0 THEN wsh.def12 ELSE 0 END AS fare,
+            CASE WHEN (wsh.def13 REGEXP '[^0-9.]') = 0 THEN wsh.def13 ELSE 0 END AS coupon,
+			wsh.contact_addr AS consigneeAddr,
+			wsh.contact_name AS concatName,
+			wsh.contact_tel AS concatTel,
+			wsd.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			wsd.qty_so_ea AS qtySo,
+			sdv.label AS unit,
+            CASE WHEN (wsd.def3 REGEXP '[^0-9.]') = 0 THEN wsd.def3 ELSE 0 END AS skuPrice,
+			wsd.so_no AS soNo,
+			CASE WHEN (wsd.def4 REGEXP '[^0-9.]') = 0 THEN wsd.def4 ELSE 0 END AS riceNum,
+			wsh.def14 AS transportMode,
+			wsh.remarks AS remark,
+			cwp.cdpa_format AS packDesc,
+			sdv2.label AS auxiliaryUnit,
+			CASE WHEN (wsd.def5 REGEXP '[^0-9.]') = 0 THEN wsd.def5 ELSE 0 END AS auxiliaryQty,
+			wsd.remarks as detailRemark,
+			so.name AS orgName,
+			wsh.def15 AS clerkName,
+			wsh.driver AS driver,
+			wsh.vehicle_no AS vehicleNo,
+			wsh.driver_tel AS driverTel,
+			cws.def1 AS spec
+		FROM wm_so_header wsh
+		LEFT JOIN wm_so_detail wsd ON wsd.so_no = wsh.so_no AND wsd.org_id = wsh.org_id
+		LEFT JOIN eb_customer ebcu ON wsh.consignee_code = ebcu.ebcu_customer_no AND wsh.org_id = ebcu.org_id AND ebcu.ebcu_type like '%CONSIGNEE,%'
+		LEFT JOIN cd_wh_sku cws ON wsd.owner_code = cws.owner_code AND wsd.sku_code = cws.sku_code AND wsd.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = wsd.pack_code AND cwp.org_id = wsd.org_id
+		LEFT JOIN sys_dict_type sdt ON sdt.type = 'OMS_ITEM_UNIT'
+		LEFT JOIN sys_dict_value sdv ON sdv.dict_type_id = sdt.id AND wsd.def1 = sdv.value
+		LEFT JOIN sys_dict_type sdt2 ON sdt2.type = 'OMS_UNIT'
+		LEFT JOIN sys_dict_value sdv2 ON sdv2.dict_type_id = sdt2.id AND wsd.def2 = sdv2.value
+		LEFT JOIN sys_office so ON so.id = wsh.org_id
+		WHERE 1=1
+		AND wsh.id IN
+		<foreach collection="list" item="id" index="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+	
+	<select id="wmRepOutDailyQuery" resultType="com.yunyou.modules.wms.outbound.entity.BanQinWmRepOutDailyQueryEntity">
+		SELECT wsh.so_no AS soNo,
+			wsd.line_no As lineNo,
+			wsh.status AS status,
+			wsh.so_type AS soType,
+			wsd.logistic_no AS logisticNo,
+			wsd.logistic_line_no AS logisticLineNo,
+			wsh.owner_code AS ownerCode,
+			ec.ebcu_name_cn AS ownerName,
+			wsd.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cdpa.cdpa_format AS packCode,
+			wsd.uom AS uom,
+			wsd.qty_so_ea AS qtySoEa,
+			wsd.qty_so_ea / cwpr.cdpr_quantity AS qtySoUom,
+			wsd.qty_ship_ea AS qtyShipEa,
+			wsd.qty_ship_ea / cwpr.cdpr_quantity AS qtyShipUom,
+			wsh.consignee_code AS consigneeCode,
+			wsh.consignee_name AS consigneeName,
+			wsh.fm_etd AS fmEtd,
+			wsh.to_etd AS toEtd,
+			wsd.org_id AS orgId,
+			wsh.def1 AS def1,
+			wsh.def2 AS def2,
+			wsh.def3 AS def3,
+			wsh.def4 AS def4,
+			wsh.def5 AS def5,
+			so.name AS orgName,
+			wsh.order_time AS orderTime
+		FROM wm_so_header wsh
+		LEFT JOIN wm_so_detail wsd ON wsh.so_no = wsd.so_no AND wsh.org_id = wsd.org_id
+		LEFT JOIN cd_wh_sku cws ON wsd.owner_code = cws.owner_code AND wsd.sku_code = cws.sku_code AND wsd.org_id = cws.org_id
+		LEFT JOIN eb_customer ec ON wsd.owner_code = ec.ebcu_customer_no AND wsd.org_id=ec.org_id AND ec.ebcu_type LIKE concat('%OWNER%')
+		LEFT JOIN cd_wh_package cdpa ON cdpa.org_id =  wsd.org_id AND cdpa.cdpa_code = wsd.pack_code
+		LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cdpa.pm_code AND cwpr.cdpr_unit_level = 'CS' AND cwpr.org_id = wsd.org_id
+		LEFT JOIN sys_office so ON so.id = wsh.org_id
+		WHERE 1=1
+		${dataScope}
+		<if test="soNo != null and soNo != ''">
+			AND wsh.so_no LIKE concat('%', #{soNo}, '%')
+		</if>
+		<if test="soType != null and soType != ''">
+			AND wsh.so_type = #{soType}
+		</if>
+		<if test="def5 != null and def5 != ''">
+			AND wsh.def5 = #{def5}
+		</if>
+		<if test="status != null and status != ''">
+			AND wsh.status = #{status}
+		</if>
+		<if test="logisticNo != null and logisticNo != ''">
+			AND wsd.logistic_no = #{logisticNo}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND wsh.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND wsd.sku_code = #{skuCode}
+		</if>
+		<if test="consigneeCode != null and consigneeCode != ''">
+			AND wsh.consignee_code = #{consigneeCode}
+		</if>
+		<if test="createTimeF != null and createTimeF != ''">
+			AND wsh.create_date &gt;= #{createTimeF}
+		</if>
+		<if test="createTimeT != null and createTimeT != ''">
+			AND wsh.create_date &lt;= #{createTimeT}
+		</if>
+		<if test="beginOrderTime != null and beginOrderTime != ''">
+			AND wsh.order_time &gt;= #{beginOrderTime}
+		</if>
+		<if test="endOrderTime != null and endOrderTime != ''">
+			AND wsh.order_time &lt;= #{endOrderTime}
+		</if>
+	</select>
+
+	<select id="countTotalQuery" resultType="com.yunyou.modules.wms.outbound.entity.BanQinWmRepOutDailyQueryEntity">
+		SELECT wsd.qty_so_ea AS qtySoEa,
+			wsd.qty_ship_ea AS qtyShipEa
+		FROM wm_so_header wsh
+		LEFT JOIN wm_so_detail wsd ON wsh.so_no = wsd.so_no AND wsh.org_id = wsd.org_id
+		WHERE 1=1
+		${dataScope}
+		<if test="soNo != null and soNo != ''">
+			AND wsh.so_no LIKE concat('%', #{soNo}, '%')
+		</if>
+		<if test="soType != null and soType != ''">
+			AND wsh.so_type = #{soType}
+		</if>
+		<if test="status != null and status != ''">
+			AND wsh.status = #{status}
+		</if>
+		<if test="logisticNo != null and logisticNo != ''">
+			AND wsd.logistic_no = #{logisticNo}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND wsh.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND wsd.sku_code = #{skuCode}
+		</if>
+		<if test="consigneeCode != null and consigneeCode != ''">
+			AND wsh.consignee_code = #{consigneeCode}
+		</if>
+		<if test="createTimeF != null and createTimeF != ''">
+			AND wsh.create_date &gt;= #{createTimeF}
+		</if>
+		<if test="createTimeT != null and createTimeT != ''">
+			AND wsh.create_date &lt;= #{createTimeT}
+		</if>
+	</select>
+	
+	<select id="rfInvGetPickBoxHeaderQuery" resultType="BanQinWmSoEntity">
+		SELECT
+		   a.soNo,
+		   a.status,
+		   a.checkStatus,
+		   a.consigneeCode,
+		   a.consigneeName,
+		   a.consigneeTel,
+		   a.consigneeAddr,
+		   a.contactCode,
+		   a.contactName,
+		   a.contactTel,
+		   a.contactAddr,
+		   a.toId,
+		   COUNT(skuCode) as qtySku,
+		   SUM(qtySoEa) as qtyTotal
+		 FROM (
+			SELECT
+				wmsh.so_no AS soNo,
+				sdv1.label AS status,
+				sdv2.label AS checkStatus,
+				wmsh.consignee_code AS consigneeCode,
+				wmsh.consignee_name AS consigneeName,
+				wmsh.consignee_tel AS consigneeTel,
+				wmsh.consignee_addr AS consigneeAddr,
+				wmsh.contact_code AS contactCode,
+				wmsh.contact_name AS contactName,
+				wmsh.contact_tel AS contactTel,
+				wmsh.contact_addr AS contactAddr,
+				wmsd.sku_code AS skuCode,
+				wmsd.qty_so_ea AS qtySoEa,
+				wmsa.to_id AS toId,
+				wmsa.org_id AS orgId
+			FROM wm_so_header wmsh
+			LEFT JOIN wm_so_alloc wmsa ON wmsa.so_no = wmsh.so_no AND wmsa.org_id = wmsh.org_id
+			LEFT JOIN wm_so_detail wmsd ON wmsd.so_no = wmsh.so_no AND wmsd.org_id = wmsh.org_id
+			LEFT JOIN sys_dict_type sd1 ON sd1.type = 'SYS_WM_SO_STATUS'
+			LEFT JOIN sys_dict_value sdv1 ON sd1.id = sdv1.dict_type_id AND wmsh.status = sdv1.value
+			LEFT JOIN sys_dict_type sd2 ON sd2.type = 'SYS_WM_CHECK_STATUS'
+			LEFT JOIN sys_dict_value sdv2 ON sd2.id = sdv2.dict_type_id AND wmsa.check_status = sdv2.value
+			WHERE 1=1
+			AND wmsh.org_id = #{orgId}
+			AND wmsa.to_id = #{toId}
+		) a
+		GROUP BY
+		 a.soNo,
+		 a.status,
+		 a.checkStatus,
+		 a.consigneeCode,
+		 a.consigneeName,
+		 a.consigneeTel,
+		 a.consigneeAddr,
+		 a.contactCode,
+		 a.contactName,
+		 a.contactTel,
+		 a.contactAddr,
+		 a.toId
+	  order by a.soNo
+	</select>
+
+	<update id="updateConsigneeInfo">
+		UPDATE wm_so_header SET contact_name = #{contactName}, contact_tel = #{contactTel}, contact_addr = #{contactAddr}, def17 = #{def17} WHERE id = #{id}
+	</update>
+
+	<update id="updateCarrierInfo">
+		UPDATE wm_so_header SET carrier_code = #{carrierCode} WHERE id = #{id}
+	</update>
+
+    <select id="countBySoQuery" resultType="java.util.Map" >
+        SELECT
+        wsh.so_no as soNo,
+        ifnull(wsd.qty_so_ea, 0) as soQty
+        FROM wm_so_header wsh
+        LEFT JOIN wm_so_detail wsd ON wsh.so_no = wsd.so_no AND wsh.org_id = wsd.org_id
+        <where>
+            ${dataScope}
+            <if test="soType != null and soType != ''">
+                AND wsh.so_type = #{soType}
+            </if>
+            <if test="status != null and status != ''">
+                AND wsh.status = #{status}
+            </if>
+            <if test="beginOrderTime != null and endOrderTime != null and beginOrderTime != '' and endOrderTime != ''">
+                AND wsh.order_time BETWEEN #{beginOrderTime} AND #{endOrderTime}
+            </if>
+        </where>
+    </select>
+
+	<update id="updateInterceptStatus">
+		UPDATE wm_so_header SET
+			intercept_status = #{interceptStatus},
+			intercept_time = #{interceptTime}
+		WHERE so_no = #{soNo}
+		  AND org_id = #{orgId}
+	</update>
+	<update id="pushedToTms">
+		UPDATE wm_so_header SET is_pushed = #{isPushed} WHERE id = #{id}
+	</update>
+
+	<select id="findSoNosByWaveGroup" resultType="java.lang.String">
+		SELECT wsh.so_no
+		FROM wm_so_header wsh
+	 	WHERE wsh.status = '00'
+        AND wsh.audit_status = '99'
+		AND wsh.org_id = #{orgId}
+		<if test="orderDateFm != null and orderDateTo != null and orderDateFm != '' and orderDateTo != ''">
+			AND wsh.order_time BETWEEN #{orderDateFm} AND #{orderDateTo}
+		</if>
+		<if test="ownerCodes != null and ownerCodes.length > 0">
+			AND wsh.owner_code IN
+			<foreach collection="ownerCodes" index="item" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="skuCodes != null and skuCodes.length > 0">
+			AND EXISTS(SELECT 1 FROM WM_SO_DETAIL d WHERE d.so_no = wsh.so_no AND d.org_id = wsh.org_id AND d.sku_code IN
+			<foreach collection="skuCodes" index="item" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>)
+		</if>
+		<if test="addrArea != null and addrArea != ''">
+			AND wsh.def17 = #{addrArea}
+		</if>
+	</select>
+
+	<select id="findSoNosForIntercept" resultType="BanQinWmSoHeader">
+		SELECT <include refid="banQinWmSoHeaderColumns"/>
+		FROM wm_so_header a
+		WHERE (a.intercept_status = '10' OR a.intercept_status = '20')
+		  AND a.hold_status = '00'
+		  AND a.status != '90'
+		  AND a.status != '99'
+	</select>
+
+	<select id="getShipHandoverOrder" resultType="com.yunyou.modules.wms.report.entity.ShipHandoverOrder">
+		SELECT wsh.owner_code                                                                 AS ownerCode,
+			   ec.ebcu_name_cn                                                                AS ownerName,
+			   wsh.update_date                                                                as shipDate,
+			   wsh.consignee_name                                                             AS consigneeName,
+			   wsh.consignee_addr                                                             AS consigneeAddr,
+			   wsh.so_no                                                                      AS soNo,
+			   wsh.def5 																	  AS customerNo,
+			   wsh.contact_name                                                               AS contactName,
+			   wsh.contact_tel                                                                AS contactTel,
+			   wsh.remarks                                                                    AS remarks,
+			   a.line_no                                                                      AS lineNo,
+			   a.sku_code                                                                     AS skuCode,
+			   cws.sku_name                                                                   AS skuName,
+			   cws.spec                                                                       AS skuSpec,
+			   a.uom,
+			   (IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, a.qty_ship_ea / cdpr.cdpr_quantity)) AS qtyShipUom,
+			   a.qty_ship_ea                                                                  AS qtyShipEa,
+			   cwsb.barcode                                                                   AS skuBarCodo
+		FROM wm_so_detail a
+			LEFT JOIN wm_so_header wsh ON wsh.so_no = a.so_no AND wsh.org_id = a.org_id
+			LEFT JOIN eb_customer ec on wsh.owner_code = ec.ebcu_customer_no and wsh.org_id = ec.org_id
+			LEFT JOIN cd_wh_sku cws on a.owner_code = cws.owner_code and a.sku_code = cws.sku_code and a.org_id = cws.org_id
+			LEFT JOIN cd_wh_sku_barcode cwsb on cws.owner_code = cwsb.owner_code and cws.sku_code = cwsb.sku_code and cws.org_id = cwsb.org_id and cwsb.is_default = 'Y'
+			LEFT JOIN cd_wh_package cdpa on a.pack_code = cdpa.cdpa_code and a.org_id = cdpa.org_id
+			LEFT JOIN cd_wh_package_relation cdpr on cdpa.pm_code = cdpr.cdpr_cdpa_pm_code and cdpa.org_id = cdpr.org_id and cdpr.cdpr_unit_level = 'CS'
+		WHERE 1=1
+		AND a.status IN ('70', '80')
+		  AND wsh.id IN
+		<foreach collection="list" item="id" index="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+</mapper>

@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.basic.mapper.OmItemPriceMapper">
+
+	<sql id="omItemPriceColumns">
+		a.id AS "id",
+		a.customer_no AS "customerNo",
+		a.sku_code AS "skuCode",
+		a.channel AS "channel",
+		a.price_type AS "priceType",
+		a.purchase_multiple AS "purchaseMultiple",
+		a.sale_multiple AS "saleMultiple",
+		a.unit AS "unit",
+		a.auxiliary_unit AS "auxiliaryUnit",
+		a.discount AS "discount",
+		a.tax_price AS "taxPrice",
+		a.price AS "price",
+		a.effective_time AS "effectiveTime",
+		a.expired_time AS "expirationTime",
+		a.is_enable AS "isEnable",
+		a.is_allow_adjustment AS "isAllowAdjustment",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.convert_ratio AS "convertRatio",
+		a.tax_rate AS "taxRate",
+		a.audit_status AS "auditStatus",
+		a.audit_date AS "auditDate",
+		a.auditor AS "auditor",
+		a.logistics_muq_type AS "logisticsMuqType",
+		a.owner_code AS "ownerCode"
+	</sql>
+
+	<sql id="omItemPriceJoins">
+
+	</sql>
+
+	<select id="get" resultType="OmItemPrice" >
+		SELECT
+		<include refid="omItemPriceColumns"/>
+		FROM om_item_price a
+		<include refid="omItemPriceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="OmItemPrice" >
+		SELECT
+		<include refid="omItemPriceColumns"/>
+		FROM om_item_price a
+		<include refid="omItemPriceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel = #{channel}
+			</if>
+			<if test="priceType != null and priceType != ''">
+				AND a.price_type = #{priceType}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="OmItemPrice" >
+		SELECT
+		<include refid="omItemPriceColumns"/>
+		FROM om_item_price a
+		<include refid="omItemPriceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO om_item_price(
+			id,
+			customer_no,
+			sku_code,
+			channel,
+			price_type,
+			purchase_multiple,
+			sale_multiple,
+			unit,
+			auxiliary_unit,
+			discount,
+			tax_price,
+			price,
+			effective_time,
+			expired_time,
+			is_enable,
+			is_allow_adjustment,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			org_id,
+			convert_ratio,
+			tax_rate,
+			audit_status,
+			audit_date,
+			auditor,
+			logistics_muq_type,
+			owner_code
+		) VALUES (
+			#{id},
+			#{customerNo},
+			#{skuCode},
+			#{channel},
+			#{priceType},
+			#{purchaseMultiple},
+			#{saleMultiple},
+			#{unit},
+			#{auxiliaryUnit},
+			#{discount},
+			#{taxPrice},
+			#{price},
+			#{effectiveTime},
+			#{expirationTime},
+			#{isEnable},
+			#{isAllowAdjustment},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{orgId},
+			#{convertRatio},
+			#{taxRate},
+			#{auditStatus},
+			#{auditDate},
+			#{auditor},
+			#{logisticsMuqType},
+			#{ownerCode}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE om_item_price SET
+			customer_no = #{customerNo},
+			sku_code = #{skuCode},
+			channel = #{channel},
+			price_type = #{priceType},
+			purchase_multiple = #{purchaseMultiple},
+			sale_multiple = #{saleMultiple},
+			unit = #{unit},
+			auxiliary_unit = #{auxiliaryUnit},
+			discount = #{discount},
+			tax_price = #{taxPrice},
+			price = #{price},
+			effective_time = #{effectiveTime},
+			expired_time = #{expirationTime},
+			is_enable = #{isEnable},
+			is_allow_adjustment = #{isAllowAdjustment},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			org_id = #{orgId},
+			convert_ratio = #{convertRatio},
+			tax_rate = #{taxRate},
+			audit_status = #{auditStatus},
+			audit_date = #{auditDate},
+			auditor = #{auditor},
+			logistics_muq_type = #{logisticsMuqType},
+			owner_code = #{ownerCode}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM om_item_price WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE om_item_price SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+
+	<select id="findPage" resultType="OmItemPriceEntity" >
+		SELECT
+		o.ebcu_name_cn AS "ownerName",
+		b.ebcu_name_cn AS "customerName",
+		c.sku_name AS "skuName",
+		c.spec AS "spec",
+		<include refid="omItemPriceColumns"/>
+		FROM om_item_price a
+		LEFT JOIN om_customer b ON a.customer_no = b.ebcu_customer_no AND a.org_id = b.org_id
+		LEFT JOIN om_customer o ON a.owner_code = o.ebcu_customer_no AND a.org_id = o.org_id
+		LEFT JOIN om_item c ON a.owner_code = c.owner_code AND a.sku_code = c.sku_code AND  a.org_id = c.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel = #{channel}
+			</if>
+			<if test="priceType != null and priceType != ''">
+				AND a.price_type = #{priceType}
+			</if>
+			<if test="beginEffectiveTime != null and endEffectiveTime != null and beginEffectiveTime != '' and endEffectiveTime != ''">
+				AND a.effective_time BETWEEN #{beginEffectiveTime} AND #{endEffectiveTime}
+			</if>
+			<if test="beginExpirationTime != null and endExpirationTime != null and beginExpirationTime != '' and endExpirationTime != ''">
+				AND a.expired_time BETWEEN #{beginExpirationTime} AND #{endExpirationTime}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="OmItemPriceEntity" >
+		SELECT
+		o.ebcu_name_cn AS "ownerName",
+		b.ebcu_name_cn AS "customerName",
+		c.sku_name AS "skuName",
+		c.spec AS "spec",
+		<include refid="omItemPriceColumns"/>
+		FROM om_item_price a
+		LEFT JOIN om_customer b ON a.customer_no = b.ebcu_customer_no AND a.org_id = b.org_id
+		LEFT JOIN om_customer o ON a.owner_code = o.ebcu_customer_no AND a.org_id = o.org_id
+		LEFT JOIN om_item c ON a.owner_code = c.owner_code AND a.sku_code = c.sku_code AND  a.org_id = c.org_id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findEntity" resultType="OmItemPriceEntity">
+		SELECT
+		o.ebcu_name_cn AS "ownerName",
+		b.ebcu_name_cn AS "customerName",
+		c.sku_name AS "skuName",
+		c.spec AS "spec",
+		<include refid="omItemPriceColumns"/>
+		FROM om_item_price a
+		LEFT JOIN om_customer b ON a.customer_no = b.ebcu_customer_no AND a.org_id = b.org_id
+		LEFT JOIN om_customer o ON a.owner_code = o.ebcu_customer_no AND a.org_id = o.org_id
+		LEFT JOIN om_item c ON a.owner_code = c.owner_code AND a.sku_code = c.sku_code AND a.org_id = c.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND (a.effective_time &lt;= #{expirationTime} AND a.expired_time &gt;= #{effectiveTime})
+			AND (a.customer_no = #{customerNo} or a.customer_no = '无')
+			AND a.sku_code = #{skuCode}
+			AND a.channel = #{channel}
+			AND a.price_type = #{priceType}
+			AND a.org_id = #{orgId}
+		</where>
+	</select>
+
+	<select id="popData" resultType="OmItemPriceEntity" >
+		SELECT
+		b.ebcu_name_cn AS "customerName",
+		c.sku_name AS "skuName",
+		c.spec AS "spec",
+		<include refid="omItemPriceColumns"/>
+		FROM om_item_price a
+		LEFT JOIN om_customer b ON a.customer_no = b.ebcu_customer_no AND a.org_id = b.org_id
+		LEFT JOIN om_item c ON a.owner_code = c.owner_code AND a.sku_code = c.sku_code AND  a.org_id = c.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			AND a.is_enable = 'Y'
+			AND (a.effective_time &lt;= #{expirationTime} AND a.expired_time &gt;= #{effectiveTime})
+			${dataScope}
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel = #{channel}
+			</if>
+			<if test="priceType != null and priceType != ''">
+				AND a.price_type = #{priceType}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findValidityTermData" resultType="OmItemPriceEntity" >
+		SELECT
+		b.ebcu_name_cn AS "customerName",
+		c.sku_name AS "skuName",
+		c.spec AS "spec",
+		<include refid="omItemPriceColumns"/>
+		FROM om_item_price a
+		LEFT JOIN om_customer b ON a.customer_no = b.ebcu_customer_no AND a.org_id = b.org_id
+		LEFT JOIN om_item c ON a.owner_code = c.owner_code AND a.sku_code = c.sku_code AND  a.org_id = c.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND (a.effective_time &lt;= #{expirationTime} AND a.expired_time &gt;= #{effectiveTime})
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel = #{channel}
+			</if>
+			<if test="priceType != null and priceType != ''">
+				AND a.price_type = #{priceType}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+
+	<select id="popSkuData" resultType="String" >
+		SELECT
+			a.sku_code
+		FROM om_item c
+		LEFT JOIN om_item_price a ON a.owner_code = c.owner_code AND a.sku_code = c.sku_code AND a.org_id = c.org_id
+		<where>
+			c.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND c.org_id = #{orgId}
+			AND a.audit_status = '99'
+			AND a.is_enable = 'Y'
+			AND (a.effective_time &lt;= #{expirationTime} AND a.expired_time &gt;= #{effectiveTime})
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel = #{channel}
+			</if>
+			<if test="priceType != null and priceType != ''">
+				AND a.price_type = #{priceType}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND c.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND c.sku_code = #{skuCode}
+			</if>
+		</where>
+	</select>
+
+	<select id="popDataAll" resultType="OmItemPriceEntity" >
+		SELECT
+			b.ebcu_name_cn AS "customerName",
+			c.sku_name AS "skuName",
+			c.spec AS "spec",
+			a.customer_no AS "customerNo",
+			c.sku_code AS "skuCode",
+			a.channel AS "channel",
+			a.price_type AS "priceType",
+			a.purchase_multiple AS "purchaseMultiple",
+			a.sale_multiple AS "saleMultiple",
+			ifnull(a.unit, c.unit) AS "unit",
+			ifnull(a.auxiliary_unit, c.auxiliary_unit) AS "auxiliaryUnit",
+			a.discount AS "discount",
+			a.tax_price AS "taxPrice",
+			a.price AS "price",
+			a.effective_time AS "effectiveTime",
+			a.expired_time AS "expirationTime",
+			a.is_allow_adjustment AS "isAllowAdjustment",
+			c.org_id AS "orgId",
+			a.convert_ratio AS "convertRatio",
+			a.tax_rate AS "taxRate",
+			a.logistics_muq_type AS "logisticsMuqType",
+			c.owner_code AS "ownerCode"
+		FROM om_item c
+		LEFT JOIN om_item_price a ON a.owner_code = c.owner_code AND a.sku_code = c.sku_code AND a.org_id = c.org_id AND a.audit_status = '99' AND a.is_enable = 'Y'
+		<if test="expirationTime != null and effectiveTime != null">
+			AND (a.effective_time &lt;= #{expirationTime} AND a.expired_time &gt;= #{effectiveTime})
+		</if>
+		<if test="channel != null and channel != ''">
+			AND a.channel = #{channel}
+		</if>
+		<if test="priceType != null and priceType != ''">
+			AND a.price_type = #{priceType}
+		</if>
+		<if test="customerNo != null and customerNo != ''">
+			AND (
+			    a.customer_no = #{customerNo}
+			    OR (a.customer_no = '无'
+					<if test="noSkuList != null and noSkuList.size > 0">
+						AND a.sku_code NOT IN
+						<foreach collection="noSkuList" item="noSkuCode" open="(" separator=","  close=")">
+							#{noSkuCode}
+						</foreach>
+					</if>
+			    )
+			)
+		</if>
+		LEFT JOIN om_customer b ON a.customer_no = b.ebcu_customer_no AND a.org_id = b.org_id
+		<where>
+			c.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND c.org_id = #{orgId}
+			<if test="ownerCode != null and ownerCode != ''">
+				AND c.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND c.sku_code = #{skuCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY c.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

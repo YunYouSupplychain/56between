@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.business.mapper.BmsDispatchOrderDataMapper">
+
+    <sql id="bmsDispatchOrderDataColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.order_no AS "orderNo",
+		a.order_type AS "orderType",
+		a.order_date AS "orderDate",
+		a.dispatch_time AS "dispatchTime",
+		a.carrier_code AS "carrierCode",
+		a.carrier_name AS "carrierName",
+		a.car_type AS "carType",
+		a.vehicle_no AS "vehicleNo",
+		a.driver_code AS "driverCode",
+		a.driver_name AS "driverName",
+		a.dispatcher AS "dispatcher",
+		a.tran_type AS "tranType",
+		a.total_qty_ea AS "totalQtyEa",
+		a.org_id AS "orgId",
+		a.data_sources AS "dataSources",
+		a.is_fee AS "isFee",
+		a.total_qty_frame AS "totalQtyFrame",
+		a.sign_by AS "signBy",
+		a.sign_time AS "signTime",
+		a.platform AS "platform",
+		a.seal_no AS "sealNo",
+		a.shift AS "shift"
+    </sql>
+
+    <sql id="extraColumns">
+        so.name AS "orgName"
+    </sql>
+
+    <sql id="bmsDispatchOrderDataJoins">
+        LEFT JOIN sys_office so ON a.org_id = so.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchOrderData">
+        SELECT
+        <include refid="bmsDispatchOrderDataColumns"/>
+        FROM bms_dispatch_order_data a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchOrderData">
+        SELECT
+        <include refid="bmsDispatchOrderDataColumns"/>
+        FROM bms_dispatch_order_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchOrderData">
+        SELECT
+        <include refid="bmsDispatchOrderDataColumns"/>
+        FROM bms_dispatch_order_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_dispatch_order_data
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            order_no,
+            order_type,
+            order_date,
+            dispatch_time,
+            carrier_code,
+            carrier_name,
+            car_type,
+            vehicle_no,
+            driver_code,
+            driver_name,
+            dispatcher,
+            tran_type,
+            total_qty_ea,
+            org_id,
+            data_sources,
+            is_fee,
+            total_qty_frame,
+            sign_by,
+            sign_time,
+            platform,
+            seal_no,
+            shift
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{orderNo},
+            #{orderType},
+            #{orderDate},
+            #{dispatchTime},
+            #{carrierCode},
+            #{carrierName},
+            #{carType},
+            #{vehicleNo},
+            #{driverCode},
+            #{driverName},
+            #{dispatcher},
+            #{tranType},
+            #{totalQtyEa},
+            #{orgId},
+            #{dataSources},
+            #{isFee},
+            #{totalQtyFrame},
+            #{signBy},
+            #{signTime},
+            #{platform},
+            #{sealNo},
+            #{shift}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_dispatch_order_data
+        SET update_by       = #{updateBy.id},
+            update_date     = #{updateDate},
+            remarks         = #{remarks},
+            order_no        = #{orderNo},
+            order_type      = #{orderType},
+            order_date      = #{orderDate},
+            dispatch_time   = #{dispatchTime},
+            carrier_code    = #{carrierCode},
+            carrier_name    = #{carrierName},
+            car_type        = #{carType},
+            vehicle_no      = #{vehicleNo},
+            driver_code     = #{driverCode},
+            driver_name     = #{driverName},
+            dispatcher      = #{dispatcher},
+            tran_type       = #{tranType},
+            total_qty_ea    = #{totalQtyEa},
+            org_id          = #{orgId},
+            data_sources    = #{dataSources},
+            is_fee          = #{isFee},
+            total_qty_frame = #{totalQtyFrame},
+            sign_by         = #{signBy},
+            sign_time       = #{signTime},
+            platform        = #{platform},
+            seal_no         = #{sealNo},
+            shift           = #{shift}
+        WHERE id = #{id}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_dispatch_order_data
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_dispatch_order_data WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByCondition">
+        DELETE FROM bms_dispatch_order_data WHERE
+        <![CDATA[order_date >= #{fmDate}]]>
+        <![CDATA[AND order_date <= #{toDate}]]>
+        <if test="dataSources != null and dataSources != ''">
+            AND data_sources = #{dataSources}
+        </if>
+        <if test="orgId != null and orgId != ''">
+            AND org_id = #{orgId}
+        </if>
+    </delete>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.business.entity.extend.BmsDispatchOrderDataEntity">
+        SELECT
+        <include refid="bmsDispatchOrderDataColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_dispatch_order_data a
+        <include refid="bmsDispatchOrderDataJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="orderDateFm != null">
+                AND a.order_date &gt;= #{orderDateFm}
+            </if>
+            <if test="orderDateTo != null">
+                AND a.order_date &lt;= #{orderDateTo}
+            </if>
+            <if test="dispatchDateFm != null">
+                AND a.dispatch_time &gt;= #{dispatchDateFm}
+            </if>
+            <if test="dispatchDateTo != null">
+                AND a.dispatch_time &lt;= #{dispatchDateTo}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no LIKE concat(#{orderNo}, '%')
+            </if>
+            <if test="orderType != null and orderType != ''">
+                AND a.order_type = #{orderType}
+            </if>
+            <if test="carrierCode != null and carrierCode != ''">
+                AND a.carrier_code LIKE concat(#{carrierCode}, '%')
+            </if>
+            <if test="carrierName != null and carrierName != ''">
+                AND a.carrier_name LIKE concat(#{carrierName}, '%')
+            </if>
+            <if test="tranType != null and tranType != ''">
+                AND a.tran_type = #{tranType}
+            </if>
+            <if test="carType != null and carType != ''">
+                AND a.car_type = #{carType}
+            </if>
+            <if test="vehicleNo != null and vehicleNo != ''">
+                AND a.vehicle_no LIKE concat(#{vehicleNo}, '%')
+            </if>
+            <if test="driverName != null and driverName != ''">
+                AND a.driver_name LIKE concat(#{driverName}, '%')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getEntity" resultType="com.yunyou.modules.bms.business.entity.extend.BmsDispatchOrderDataEntity">
+        SELECT
+        <include refid="bmsDispatchOrderDataColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_dispatch_order_data a
+        <include refid="bmsDispatchOrderDataJoins"/>
+        WHERE a.id = #{id}
+    </select>
+    <select id="findCalcData" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchOrderData">
+        select * from bms_dispatch_order_data <where>${sql}</where>
+    </select>
+</mapper>

@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.kit.mapper.BanQinWmTaskKitMapper">
+    
+	<sql id="banQinWmTaskKitColumns">
+		a.id AS "id",
+		a.kit_task_id AS "kitTaskId",
+		a.kit_no AS "kitNo",
+		a.sub_line_no AS "subLineNo",
+		a.parent_line_no AS "parentLineNo",
+		a.owner_code AS "ownerCode",
+		a.sub_sku_code AS "subSkuCode",
+		a.lot_num AS "lotNum",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.status AS "status",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_uom AS "qtyUom",
+		a.qty_ea AS "qtyEa",
+		a.to_loc AS "toLoc",
+		a.to_id AS "toId",
+		a.pick_op AS "pickOp",
+		a.pick_time AS "pickTime",
+		a.kit_op AS "kitOp",
+		a.kit_time AS "kitTime",
+		a.kit_line_no AS "kitLineNo",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinWmTaskKitJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmTaskKit" >
+		SELECT 
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		<include refid="banQinWmTaskKitJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmTaskKit" >
+		SELECT 
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		<include refid="banQinWmTaskKitJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="kitTaskId != null and kitTaskId != ''">
+				AND a.kit_task_id = #{kitTaskId}
+			</if>
+			<if test="kitNo != null and kitNo != ''">
+				AND a.kit_no = #{kitNo}
+			</if>
+			<if test="subLineNo != null and subLineNo != ''">
+				AND a.sub_line_no = #{subLineNo}
+			</if>
+			<if test="parentLineNo != null and parentLineNo != ''">
+				AND a.parent_line_no = #{parentLineNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="subSkuCode != null and subSkuCode != ''">
+				AND a.sub_sku_code = #{subSkuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num = #{lotNum}
+			</if>
+			<if test="locCode != null and locCode != ''">
+				AND a.loc_code = #{locCode}
+			</if>
+			<if test="traceId != null and traceId != ''">
+				AND a.trace_id = #{traceId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="packCode != null and packCode != ''">
+				AND a.pack_code = #{packCode}
+			</if>
+			<if test="uom != null and uom != ''">
+				AND a.uom = #{uom}
+			</if>
+			<if test="toLoc != null and toLoc != ''">
+				AND a.to_loc = #{toLoc}
+			</if>
+			<if test="toId != null and toId != ''">
+				AND a.to_id = #{toId}
+			</if>
+			<if test="kitLineNo != null and kitLineNo != ''">
+				AND a.kit_line_no = #{kitLineNo}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmTaskKit" >
+		SELECT 
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		<include refid="banQinWmTaskKitJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_task_kit(
+			id,
+			kit_task_id,
+			kit_no,
+			sub_line_no,
+			parent_line_no,
+			owner_code,
+			sub_sku_code,
+			lot_num,
+			loc_code,
+			trace_id,
+			status,
+			pack_code,
+			uom,
+			qty_uom,
+			qty_ea,
+			to_loc,
+			to_id,
+			pick_op,
+			pick_time,
+			kit_op,
+			kit_time,
+			kit_line_no,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+		    header_id
+		) VALUES (
+			#{id},
+			#{kitTaskId},
+			#{kitNo},
+			#{subLineNo},
+			#{parentLineNo},
+			#{ownerCode},
+			#{subSkuCode},
+			#{lotNum},
+			#{locCode},
+			#{traceId},
+			#{status},
+			#{packCode},
+			#{uom},
+			#{qtyUom},
+			#{qtyEa},
+			#{toLoc},
+			#{toId},
+			#{pickOp},
+			#{pickTime},
+			#{kitOp},
+			#{kitTime},
+			#{kitLineNo},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+		    #{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_task_kit SET 	
+			kit_task_id = #{kitTaskId},
+			kit_no = #{kitNo},
+			sub_line_no = #{subLineNo},
+			parent_line_no = #{parentLineNo},
+			owner_code = #{ownerCode},
+			sub_sku_code = #{subSkuCode},
+			lot_num = #{lotNum},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			status = #{status},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_uom = #{qtyUom},
+			qty_ea = #{qtyEa},
+			to_loc = #{toLoc},
+			to_id = #{toId},
+			pick_op = #{pickOp},
+			pick_time = #{pickTime},
+			kit_op = #{kitOp},
+			kit_time = #{kitTime},
+			kit_line_no = #{kitLineNo},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			header_id = #{headerId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_task_kit
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_task_kit SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findPage" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmTaskKitEntity" >
+		SELECT
+		   	cws.sku_name AS "subSkuName",
+		   	cws.cubic AS "cubic",
+		   	cws.net_weight AS "netWeight",
+		   	cws.gross_weight AS "grossWeight",
+		   	cws.pa_rule	AS "paRule",
+		   	cwp.cdpa_format AS "packDesc",
+		   	cwpr.cdpr_desc AS "uomDesc",
+		   	cwpr.cdpr_quantity AS "uomQty",
+		   	sup.name AS "pickOpName",
+		   	suo.name AS "kitOpName",
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sub_sku_code = cws.sku_code AND a.org_id = cws.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwp.pm_code = cwpr.cdpr_cdpa_pm_code
+		  LEFT JOIN sys_user sup ON a.pick_op = sup.id
+		  LEFT JOIN sys_user suo ON a.kit_op = suo.id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND a.org_id = #{orgId}
+			<if test="kitNo != null and kitNo != ''">
+				AND a.kit_no = #{kitNo}
+			</if>
+			<if test="kitTaskId != null and kitTaskId != ''">
+				AND a.kit_task_id = #{kitTaskId}
+			</if>
+			<if test="subLineNo != null and subLineNo != ''">
+				AND a.sub_line_no = #{subLineNo}
+			</if>
+			<if test="parentLineNo != null and parentLineNo != ''">
+				AND a.parent_line_no = #{parentLineNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="subSkuCode != null and subSkuCode != ''">
+				AND a.sub_sku_code = #{subSkuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num = #{lotNum}
+			</if>
+			<if test="locCode != null and locCode != ''">
+				AND a.loc_code = #{locCode}
+			</if>
+			<if test="traceId != null and traceId != ''">
+				AND a.trace_id = #{traceId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="packCode != null and packCode != ''">
+				AND a.pack_code = #{packCode}
+			</if>
+			<if test="uom != null and uom != ''">
+				AND a.uom = #{uom}
+			</if>
+			<if test="toLoc != null and toLoc != ''">
+				AND a.to_loc = #{toLoc}
+			</if>
+			<if test="toId != null and toId != ''">
+				AND a.to_id = #{toId}
+			</if>
+			<if test="kitLineNo != null and kitLineNo != ''">
+				AND a.kit_line_no = #{kitLineNo}
+			</if>
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.kit_line_no ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmTaskKitEntity" >
+		SELECT
+		   	cws.sku_name       	AS "subSkuName",
+		   	cws.cubic 			AS "cubic",
+		   	cws.net_weight 		AS "netWeight",
+		   	cws.gross_weight	AS "grossWeight",
+		   	cws.pa_rule		   	AS "paRule",
+		   	cwp.cdpa_format    	AS "packDesc",
+		   	cwpr.cdpr_desc     	AS "uomDesc",
+		   	cwpr.cdpr_quantity 	AS "uomQty",
+		   	sup.name 			AS "pickOpName",
+		   	suo.name 			AS "kitOpName",
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sub_sku_code = cws.sku_code AND a.org_id = cws.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwp.pm_code = cwpr.cdpr_cdpa_pm_code
+		  LEFT JOIN sys_user sup ON a.pick_op = sup.id
+		  LEFT JOIN sys_user suo ON a.kit_op = suo.id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntityByKitNoAndKitLineNo" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmTaskKitEntity" >
+		SELECT
+		   	cws.sku_name       	AS "subSkuName",
+		   	cws.cubic 			AS "cubic",
+		   	cws.net_weight 		AS "netWeight",
+		   	cws.gross_weight	AS "grossWeight",
+		   	cws.pa_rule		   	AS "paRule",
+		   	cwp.cdpa_format    	AS "packDesc",
+		   	cwpr.cdpr_desc     	AS "uomDesc",
+		   	cwpr.cdpr_quantity 	AS "uomQty",
+		   	sup.name 			AS "pickOpName",
+		   	suo.name 			AS "kitOpName",
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sub_sku_code = cws.sku_code AND a.org_id = cws.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwp.pm_code = cwpr.cdpr_cdpa_pm_code
+		  LEFT JOIN sys_user sup ON a.pick_op = sup.id
+		  LEFT JOIN sys_user suo ON a.kit_op = suo.id
+		WHERE a.kit_no = #{kitNo} AND a.kit_line_no = #{kitLineNo} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getEntityByKitNo" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmTaskKitEntity" >
+		SELECT
+		   	cws.sku_name       	AS "subSkuName",
+		   	cws.cubic 			AS "cubic",
+		   	cws.net_weight 		AS "netWeight",
+		   	cws.gross_weight	AS "grossWeight",
+		   	cws.pa_rule		   	AS "paRule",
+		   	cwp.cdpa_format    	AS "packDesc",
+		   	cwpr.cdpr_desc     	AS "uomDesc",
+		   	cwpr.cdpr_quantity 	AS "uomQty",
+		   	sup.name 			AS "pickOpName",
+		   	suo.name 			AS "kitOpName",
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sub_sku_code = cws.sku_code AND a.org_id = cws.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwp.pm_code = cwpr.cdpr_cdpa_pm_code
+		  LEFT JOIN sys_user sup ON a.pick_op = sup.id
+		  LEFT JOIN sys_user suo ON a.kit_op = suo.id
+		WHERE a.kit_no = #{kitNo} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getEntityByKitTaskId" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmTaskKitEntity" >
+		SELECT
+		   	cws.sku_name       	AS "subSkuName",
+		   	cws.cubic 			AS "cubic",
+		   	cws.net_weight 		AS "netWeight",
+		   	cws.gross_weight	AS "grossWeight",
+		   	cws.pa_rule		   	AS "paRule",
+		   	cwp.cdpa_format    	AS "packDesc",
+		   	cwpr.cdpr_desc     	AS "uomDesc",
+		   	cwpr.cdpr_quantity 	AS "uomQty",
+		   	sup.name 			AS "pickOpName",
+		   	suo.name 			AS "kitOpName",
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sub_sku_code = cws.sku_code AND a.org_id = cws.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwp.pm_code = cwpr.cdpr_cdpa_pm_code
+		  LEFT JOIN sys_user sup ON a.pick_op = sup.id
+		  LEFT JOIN sys_user suo ON a.kit_op = suo.id
+		WHERE a.kit_task_id = #{kitTaskId} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getEntityByKitNoAndSubLineNoAndStatus" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmTaskKitEntity" >
+		SELECT
+		   	cws.sku_name       	AS "subSkuName",
+		   	cws.cubic 			AS "cubic",
+		   	cws.net_weight 		AS "netWeight",
+		   	cws.gross_weight	AS "grossWeight",
+		   	cws.pa_rule		   	AS "paRule",
+		   	cwp.cdpa_format    	AS "packDesc",
+		   	cwpr.cdpr_desc     	AS "uomDesc",
+		   	cwpr.cdpr_quantity 	AS "uomQty",
+		   	sup.name 			AS "pickOpName",
+		   	suo.name 			AS "kitOpName",
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sub_sku_code = cws.sku_code AND a.org_id = cws.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwp.pm_code = cwpr.cdpr_cdpa_pm_code
+		  LEFT JOIN sys_user sup ON a.pick_op = sup.id
+		  LEFT JOIN sys_user suo ON a.kit_op = suo.id
+		WHERE a.kit_no = #{kitNo} AND a.org_id = #{orgId} AND a.sub_line_no IN
+		  <foreach collection="subLineNos" item="subLineNo" open="(" separator="," close=")">
+			  #{subLineNo}
+		  </foreach>
+	</select>
+
+	<select id="getEntityByKitNoAndTaskIdAndStatus" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmTaskKitEntity" >
+		SELECT
+		   	cws.sku_name       	AS "subSkuName",
+		   	cws.cubic 			AS "cubic",
+		   	cws.net_weight 		AS "netWeight",
+		   	cws.gross_weight	AS "grossWeight",
+		   	cws.pa_rule		   	AS "paRule",
+		   	cwp.cdpa_format    	AS "packDesc",
+		   	cwpr.cdpr_desc     	AS "uomDesc",
+		   	cwpr.cdpr_quantity 	AS "uomQty",
+		   	sup.name 			AS "pickOpName",
+		   	suo.name 			AS "kitOpName",
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sub_sku_code = cws.sku_code AND a.org_id = cws.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwp.pm_code = cwpr.cdpr_cdpa_pm_code
+		  LEFT JOIN sys_user sup ON a.pick_op = sup.id
+		  LEFT JOIN sys_user suo ON a.kit_op = suo.id
+		WHERE a.kit_no = #{kitNo} AND a.status = #{status} AND a.org_id = #{orgId} AND a.kit_task_id IN
+		  <foreach collection="kitTaskIds" item="kitTaskId" open="(" separator="," close=")">
+			  #{kitTaskId}
+		  </foreach>
+	</select>
+
+	<select id="getEntityByParentLineNoAndStatus" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmTaskKitEntity" >
+		SELECT
+		   	cws.sku_name       	AS "subSkuName",
+		   	cws.cubic 			AS "cubic",
+		   	cws.net_weight 		AS "netWeight",
+		   	cws.gross_weight	AS "grossWeight",
+		   	cws.pa_rule		   	AS "paRule",
+		   	cwp.cdpa_format    	AS "packDesc",
+		   	cwpr.cdpr_desc     	AS "uomDesc",
+		   	cwpr.cdpr_quantity 	AS "uomQty",
+		   	sup.name 			AS "pickOpName",
+		   	suo.name 			AS "kitOpName",
+			<include refid="banQinWmTaskKitColumns"/>
+		FROM wm_task_kit a
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sub_sku_code = cws.sku_code AND a.org_id = cws.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwp.pm_code = cwpr.cdpr_cdpa_pm_code
+		  LEFT JOIN sys_user sup ON a.pick_op = sup.id
+		  LEFT JOIN sys_user suo ON a.kit_op = suo.id
+		WHERE a.kit_no = #{kitNo} AND a.parent_line_no = #{parentLineNo} AND a.status = #{status} AND a.org_id = #{orgId}
+	</select>
+
+</mapper>

@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmOutHandoverMapper">
+
+	<sql id="banQinWmOutHandoverHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.handover_no AS "handoverNo",
+		a.carrier_code AS "carrierCode",
+		a.carrier_name AS "carrierName",
+		a.handover_op AS "handoverOp",
+		a.handover_time AS "handoverTime",
+		a.ship_time_fm AS "shipTimeFm",
+		a.ship_time_to AS "shipTimeTo",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer"
+	</sql>
+
+	<sql id="banQinWmOutHandoverDetailColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.handover_no AS "handoverNo",
+		a.so_no AS "soNo",
+		a.so_type AS "soType",
+		a.order_date AS "orderDate",
+		a.owner_code AS "ownerCode",
+		a.owner_name AS "ownerName",
+		a.delivery_name AS "deliveryName",
+		a.delivery_tel AS "deliveryTel",
+		a.delivery_zip AS "deliveryZip",
+		a.delivery_area AS "deliveryArea",
+		a.delivery_address AS "deliveryAddress",
+		a.consignee AS "consignee",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_address AS "consigneeAddress",
+		a.consignee_zip AS "consigneeZip",
+		a.consignee_area AS "consigneeArea",
+		a.business_no AS "businessNo",
+		a.chain_no AS "chainNo",
+		a.task_no AS "taskNo",
+		a.customer_order_no AS "customerOrderNo",
+		a.external_no AS "externalNo",
+		a.alloc_id AS "allocId",
+		a.wave_no AS "waveNo",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.qty AS "qty",
+		a.to_loc AS "toLoc",
+		a.to_id AS "toId",
+		a.pick_op AS "pickOp",
+		a.pick_time AS "pickTime",
+		a.check_op AS "checkOp",
+		a.check_time AS "checkTime",
+		a.pack_op AS "packOp",
+		a.pack_time AS "packTime",
+		a.tracking_no AS "trackingNo",
+		a.org_id AS "orgId",
+		a.case_no AS "caseNo",
+		a.carrier_code AS "carrierCode",
+		a.carrier_name AS "carrierName",
+		a.ship_time AS "shipTime",
+		a.rec_ver AS "recVer"
+	</sql>
+
+	<select id="get" resultType="BanQinWmOutHandoverHeader" >
+		SELECT
+		<include refid="banQinWmOutHandoverHeaderColumns"/>
+		FROM wm_out_handover_header a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="BanQinWmOutHandoverHeader" >
+		SELECT
+		<include refid="banQinWmOutHandoverHeaderColumns"/>
+		FROM wm_out_handover_header a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="handoverNo != null and handoverNo != ''">
+				AND a.handover_no = #{handoverNo}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="BanQinWmOutHandoverHeader" >
+		SELECT
+		<include refid="banQinWmOutHandoverHeaderColumns"/>
+		FROM wm_out_handover_header a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO wm_out_handover_header(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			handover_no,
+		    carrier_code,
+		    carrier_name,
+		    handover_op,
+		    handover_time,
+		    ship_time_fm,
+		    ship_time_to,
+		    org_id,
+		    rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{handoverNo},
+			#{carrierCode},
+			#{carrierName},
+			#{handoverOp},
+			#{handoverTime},
+			#{shipTimeFm},
+			#{shipTimeTo},
+			#{orgId},
+			#{recVer}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE wm_out_handover_header SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			del_flag = #{delFlag},
+			handover_no = #{handoverNo},
+		    carrier_code = #{carrierCode},
+		    carrier_name = #{carrierName},
+		    handover_op = #{handoverOp},
+		    handover_time = #{handoverTime},
+		    ship_time_fm = #{shipTimeFm},
+		    ship_time_to = #{shipTimeTo},
+		    org_id = #{orgId},
+		    rec_ver = #{recVer} + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_out_handover_header
+		WHERE id = #{id}
+	</update>
+
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_out_handover_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findPage" resultType="com.yunyou.modules.wms.outbound.entity.BanQinWmOutHandoverHeaderEntity">
+		SELECT
+			sc.name AS "createBy.name",
+			su.name AS "updateBy.name",
+			so.name AS "orgName",
+			<include refid="banQinWmOutHandoverHeaderColumns"/>
+		FROM wm_out_handover_header a
+		LEFT JOIN sys_user sc ON a.create_by = sc.id
+		LEFT JOIN sys_user su ON a.update_by = su.id
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="handoverNo != null and handoverNo != ''">
+				AND a.handover_no = #{handoverNo}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="handoverTimeFm != null">
+				AND a.handover_time &gt;= #{handoverTimeFm}
+			</if>
+			<if test="handoverTimeTo != null">
+				AND a.handover_time &lt;= #{handoverTimeTo}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.wms.outbound.entity.BanQinWmOutHandoverHeaderEntity">
+		SELECT
+			sc.name AS "createBy.name",
+			su.name AS "updateBy.name",
+			so.name AS "orgName",
+			<include refid="banQinWmOutHandoverHeaderColumns"/>
+		FROM wm_out_handover_header a
+		LEFT JOIN sys_user sc ON a.create_by = sc.id
+		LEFT JOIN sys_user su ON a.update_by = su.id
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getByNo" resultType="BanQinWmOutHandoverHeader">
+		SELECT <include refid="banQinWmOutHandoverHeaderColumns"/>
+		FROM wm_out_handover_header a
+		WHERE a.handover_no = #{handoverNo} AND a.org_id = #{orgId}
+	</select>
+
+	<delete id="deleteByNo">
+		DELETE FROM wm_out_handover_header WHERE handover_no = #{handoverNo} AND org_id = #{orgId}
+	</delete>
+
+	<!--****************************************交接单明细************************************************************-->
+	<!--插入交接单明细-->
+	<insert id="insertDetail">
+		INSERT INTO wm_out_handover_detail(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			handover_no,
+			so_no,
+			so_type,
+			order_date,
+			owner_code,
+			owner_name,
+			delivery_name,
+			delivery_tel,
+			delivery_zip,
+			delivery_area,
+			delivery_address,
+			consignee,
+			consignee_tel,
+			consignee_address,
+			consignee_zip,
+			consignee_area,
+			business_no,
+			chain_no,
+			task_no,
+			customer_order_no,
+			external_no,
+			alloc_id,
+			wave_no,
+			sku_code,
+			sku_name,
+			loc_code,
+			trace_id,
+			qty,
+			to_loc,
+			to_id,
+			pick_op,
+			pick_time,
+			check_op,
+			check_time,
+			pack_op,
+			pack_time,
+			tracking_no,
+			org_id,
+		    case_no,
+		    carrier_code,
+		    carrier_name,
+		    ship_time,
+		    rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{handoverNo},
+			#{soNo},
+			#{soType},
+			#{orderDate},
+			#{ownerCode},
+			#{ownerName},
+			#{deliveryName},
+			#{deliveryTel},
+			#{deliveryZip},
+			#{deliveryArea},
+			#{deliveryAddress},
+			#{consignee},
+			#{consigneeTel},
+			#{consigneeAddress},
+			#{consigneeZip},
+			#{consigneeArea},
+			#{businessNo},
+			#{chainNo},
+			#{taskNo},
+			#{customerOrderNo},
+			#{externalNo},
+			#{allocId},
+			#{waveNo},
+			#{skuCode},
+			#{skuName},
+			#{locCode},
+			#{traceId},
+			#{qty},
+			#{toLoc},
+			#{toId},
+			#{pickOp},
+			#{pickTime},
+			#{checkOp},
+			#{checkTime},
+			#{packOp},
+			#{packTime},
+			#{trackingNo},
+			#{orgId},
+			#{caseNo},
+			#{carrierCode},
+			#{carrierName},
+			#{shipTime},
+		    #{recVer}
+		)
+	</insert>
+
+	<!--更新交接单明细-->
+	<update id="updateDetail">
+		UPDATE wm_out_handover_detail SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			handover_no = #{handoverNo},
+			so_no = #{soNo},
+			so_type = #{soType},
+			order_date = #{orderDate},
+			owner_code = #{ownerCode},
+			owner_name = #{ownerName},
+			delivery_name = #{deliveryName},
+			delivery_tel = #{deliveryTel},
+			delivery_zip = #{deliveryZip},
+			delivery_area = #{deliveryArea},
+			delivery_address = #{deliveryAddress},
+			consignee = #{consignee},
+			consignee_tel = #{consigneeTel},
+			consignee_address = #{consigneeAddress},
+			consignee_zip = #{consigneeZip},
+			consignee_area = #{consigneeArea},
+			business_no = #{businessNo},
+			chain_no = #{chainNo},
+			task_no = #{taskNo},
+			customer_order_no = #{customerOrderNo},
+			external_no = #{externalNo},
+			alloc_id = #{allocId},
+			wave_no = #{waveNo},
+			sku_code = #{skuCode},
+			sku_name = #{skuName},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			qty = #{qty},
+			to_loc = #{toLoc},
+			to_id = #{toId},
+			pick_op = #{pickOp},
+			pick_time = #{pickTime},
+			check_op = #{checkOp},
+			check_time = #{checkTime},
+			pack_op = #{packOp},
+			pack_time = #{packTime},
+			tracking_no = #{trackingNo},
+			org_id = #{orgId},
+		    case_no = #{caseNo},
+		    carrier_code = #{carrierCode},
+			carrier_name = #{carrierName},
+			ship_time = #{shipTime},
+		    rec_ver = #{recVer} + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--删除交接单明细-->
+	<update id="deleteDetail">
+		DELETE FROM wm_out_handover_detail
+		<where>
+			<choose>
+				<when test="id != null and id != ''">
+					id = #{id}
+				</when>
+				<otherwise>
+					handover_no = #{handoverNo} AND org_id = #{orgId}
+				</otherwise>
+			</choose>
+		</where>
+	</update>
+
+	<select id="findDetailList" resultType="BanQinWmOutHandoverDetail">
+		SELECT
+			so.name AS "orgName",
+			<include refid="banQinWmOutHandoverDetailColumns"/>
+		FROM wm_out_handover_detail a
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="handoverNo != null and handoverNo != ''">
+				AND a.handover_no = #{handoverNo}
+			</if>
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no = #{soNo}
+			</if>
+			<if test="soType != null and soType != ''">
+				AND a.so_type = #{soType}
+			</if>
+			<if test="orderDate != null and orderDate != ''">
+				AND a.order_date = #{orderDate}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="businessNo != null and businessNo != ''">
+				AND a.business_no = #{businessNo}
+			</if>
+			<if test="chainNo != null and chainNo != ''">
+				AND a.chain_no = #{chainNo}
+			</if>
+			<if test="taskNo != null and taskNo != ''">
+				AND a.task_no = #{taskNo}
+			</if>
+			<if test="customerOrderNo != null and customerOrderNo != ''">
+				AND a.customer_order_no = #{customerOrderNo}
+			</if>
+			<if test="externalNo != null and externalNo != ''">
+				AND a.external_no = #{externalNo}
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="trackingNo != null and trackingNo != ''">
+				AND a.tracking_no = #{trackingNo}
+			</if>
+			<if test="allocId != null and allocId != ''">
+				AND a.alloc_id = #{allocId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.alloc_id
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getMeetHandoverData" resultType="BanQinWmOutHandoverDetail">
+		SELECT wsa.so_no       AS soNo,
+			wsh.so_type		   AS soType,
+			wsh.order_time     AS orderDate,
+			wsh.owner_code 	   AS ownerCode,
+			ebcuO.ebcu_name_cn AS ownerName,
+			ec.ebcu_name_cn    AS deliveryName,
+			ec.ebcu_tel        AS deliveryTel,
+			ec.ebcu_zip_code   AS deliveryZip,
+			ec.ebcu_substr1    AS deliveryArea,
+			wsh.consignee_name AS consignee,
+			wsh.contact_tel    AS consigneeTel,
+			wsh.contact_addr   AS consigneeAddress,
+			wsh.contact_zip    AS consigneeZip,
+			wsh.def17          AS consigneeArea,
+			wsh.def1           AS businessNo,
+			wsh.def2           AS chainNo,
+			wsh.def3           AS taskNo,
+			wsh.def5           AS customerOrderNo,
+			wsh.def16          AS externalNo,
+			wsa.alloc_id AS allocId,
+			wsa.wave_no AS waveNo,
+			wsa.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			wsa.loc_code AS locCode,
+			wsa.trace_id AS traceId,
+			wsa.qty_ea AS qty,
+			wsa.to_loc AS toLoc,
+			wsa.to_id AS toId,
+			wsa.pick_op AS pickOp,
+			wsa.pick_time AS pickTime,
+			wsa.check_op AS checkOp,
+			wsa.check_time AS checkTime,
+			wsa.pack_op As packOp,
+			wsa.pack_time AS packTime,
+			wsa.tracking_no AS trackingNo,
+			wsa.org_id AS orgId,
+			wsa.case_no AS caseNo,
+			wsh.carrier_code AS carrierCode,
+			ebcuC.ebcu_name_cn AS carrierName,
+			wsa.ship_time AS shipTime
+		FROM wm_so_header wsh
+		LEFT JOIN wm_so_alloc wsa ON wsa.status = '80' AND wsa.so_no = wsh.so_no AND wsa.org_id = wsh.org_id
+		LEFT JOIN eb_customer ebcuO ON ebcuO.ebcu_customer_no = wsh.owner_code AND ebcuO.org_id = wsh.org_id
+		LEFT JOIN eb_customer ebcuC ON ebcuC.ebcu_customer_no = wsh.carrier_code AND ebcuC.org_id = wsh.org_id
+		LEFT JOIN eb_customer ec ON wsh.owner_code = ec.ebcu_customer_no AND wsh.org_id = ec.org_id
+		LEFT JOIN cd_wh_sku cws ON cws.owner_code = wsa.owner_code AND cws.sku_code = wsa.sku_code AND cws.org_id = wsa.org_id
+		WHERE wsa.org_id = #{orgId}
+		  AND wsh.carrier_code = #{carrierCode}
+		  AND wsa.ship_time &gt;= #{shipTimeFm}
+		  AND wsa.ship_time &lt;= #{shipTimeTo}
+		  AND NOT EXISTS(SELECT 1 FROM wm_out_handover_detail WHERE alloc_id = wsa.alloc_id AND org_id = wsa.org_id)
+	</select>
+
+	<!--查询指定承运商与指定交接时间范围内的交接单号,升序-->
+	<select id="findNoByCarrierAndHandoverTime" resultType="java.lang.String">
+		SELECT handover_no
+		FROM wm_out_handover_header
+		WHERE carrier_code = #{carrierCode}
+		AND org_id = #{orgId}
+		AND handover_time &gt;= #{handoverTimeFm}
+		AND handover_time &lt;= #{handoverTimeTo}
+		ORDER BY handover_no
+	</select>
+
+</mapper>

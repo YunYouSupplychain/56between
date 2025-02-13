@@ -1,0 +1,753 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.order.mapper.OmChainHeaderMapper">
+
+	<sql id="omChainHeaderColumns">
+		a.id                       as "id",
+		a.create_by                as "createBy.id",
+		a.create_date              as "createDate",
+		a.update_by                as "updateBy.id",
+		a.update_date              as "updateDate",
+		a.remarks                  as "remarks",
+		a.del_flag                 as "delFlag",
+		a.rec_ver                  as "recVer",
+		a.chain_no                 as "chainNo",
+		a.order_date               as "orderDate",
+		a.status                   as "status",
+		a.business_order_type      as "businessOrderType",
+		a.data_source              as "dataSource",
+		a.customer_no              as "customerNo",
+		a.business_no              as "businessNo",
+		a.source_order_no          as "sourceOrderNo",
+		a.source_order_type        as "sourceOrderType",
+		a.source_order_id          as "sourceOrderId",
+		a.owner                    as "owner",
+		a.customer                 as "customer",
+		a.supplier_code            as "supplierCode",
+		a.principal                as "principal",
+		a.carrier                  as "carrier",
+		a.settlement               as "settlement",
+		a.shipper_code		   	   as "shipperCode",
+		a.consignee_code		   as "consigneeCode",
+		a.shipper                  as "shipper",
+		a.shipper_tel              as "shipperTel",
+		a.shipper_area             as "shipperArea",
+		a.shipper_address          as "shipperAddress",
+		a.shipper_address_area     as "shipperAddressArea",
+		a.consignee                as "consignee",
+		a.consignee_tel            as "consigneeTel",
+		a.consignee_area           as "consigneeArea",
+		a.consignee_address        as "consigneeAddress",
+		a.consignee_address_area   as "consigneeAddressArea",
+		a.warehouse                as "warehouse",
+		a.audit_by                 as "auditBy",
+		a.audit_date               as "auditDate",
+		a.is_available_stock       as "isAvailableStock",
+		a.intercept_status         as "interceptStatus",
+		a.intercept_time           as "interceptTime",
+		a.handle_status            as "handleStatus",
+		a.org_id                   as "orgId",
+		a.validity_period          as "validityPeriod",
+		a.pre_sale_no              as "preSaleNo",
+		a.send_order_no            as "sendOrderNo",
+		a.logistics_no             as "logisticsNo",
+		a.transport_mode           as "transportMode",
+		a.vehicle_no               as "vehicleNo",
+		a.driver                   as "driver",
+		a.contact_tel              as "contactTel",
+		a.delivery_date            as "deliveryDate",
+		a.arrival_time             as "arrivalTime",
+		a.contract_no              as "contractNo",
+		a.settle_mode              as "settleMode",
+		a.exchange_rate            as "exchangeRate",
+		a.currency                 as "currency",
+		a.invoice                  as "invoice",
+		a.tax_no                   as "taxNo",
+		a.invoice_type             as "invoiceType",
+		a.company_name             as "companyName",
+		a.taxpayer_identity_number as "taxpayerIdentityNumber",
+		a.deposit_bank             as "depositBank",
+		a.deposit_bank_account     as "depositBankAccount",
+		a.registered_area          as "registeredArea",
+		a.registered_telephone     as "registeredTelephone",
+		a.ticket_collector_name    as "ticketCollectorName",
+		a.ticket_collector_phone   as "ticketCollectorPhone",
+		a.ticket_collector_address as "ticketCollectorAddress",
+		a.pay_way                  as "payWay",
+		a.pay_date                 as "payDate",
+		a.pay_status               as "payStatus",
+		a.prepaid_amount           as "prepaidAmount",
+		a.freight_charge           as "freightCharge",
+		a.coupon_amount            as "couponAmount",
+		a.total_tax                as "totalTax",
+		a.total_amount             as "totalAmount",
+		a.total_tax_in_amount      as "totalTaxInAmount",
+		a.chain_type               as "chainType",
+		a.project                  as "project",
+		a.channel                  as "channel",
+		a.shop                     as "shop",
+		a.vip_no                   as "vipNo",
+		a.vip_status               as "vipStatus",
+		a.clerk_code               as "clerkCode",
+		a.business_by              as "businessBy",
+		a.prepared_by              as "preparedBy",
+		a.sale_by                  as "saleBy",
+		a.service_mode			   as "serviceMode",
+		a.push_system			   as "pushSystem",
+		a.order_source			   as "orderSource",
+		a.def1                     as "def1",
+		a.def2                     as "def2",
+		a.def3                     as "def3",
+		a.def4                     as "def4",
+		a.def5                     as "def5",
+		a.def6                     as "def6",
+		a.def7                     as "def7",
+		a.def8                     as "def8",
+		a.def9                     as "def9",
+		a.def10                    as "def10"
+	</sql>
+
+	<insert id="insert">
+		INSERT INTO om_chain_header
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			chain_no,
+			order_date,
+			status,
+			business_order_type,
+			data_source,
+			customer_no,
+			business_no,
+			source_order_no,
+			source_order_type,
+			source_order_id,
+			owner,
+			customer,
+			supplier_code,
+			principal,
+			carrier,
+			settlement,
+			shipper_code,
+			consignee_code,
+			shipper,
+			shipper_tel,
+			shipper_area,
+			shipper_address,
+			shipper_address_area,
+			consignee,
+			consignee_tel,
+			consignee_area,
+			consignee_address,
+			consignee_address_area,
+			warehouse,
+			audit_by,
+			audit_date,
+			is_available_stock,
+			intercept_status,
+			intercept_time,
+			handle_status,
+			org_id,
+			validity_period,
+			pre_sale_no,
+			send_order_no,
+			logistics_no,
+			transport_mode,
+			vehicle_no,
+			driver,
+			contact_tel,
+			delivery_date,
+			arrival_time,
+			contract_no,
+			settle_mode,
+			exchange_rate,
+			currency,
+			invoice,
+			tax_no,
+			invoice_type,
+			company_name,
+			taxpayer_identity_number,
+			deposit_bank,
+			deposit_bank_account,
+			registered_area,
+			registered_telephone,
+			ticket_collector_name,
+			ticket_collector_phone,
+			ticket_collector_address,
+			pay_way,
+			pay_date,
+			pay_status,
+			prepaid_amount,
+			freight_charge,
+			coupon_amount,
+			total_tax,
+			total_amount,
+			total_tax_in_amount,
+			chain_type,
+			project,
+			channel,
+			shop,
+			vip_no,
+			vip_status,
+			clerk_code,
+			business_by,
+			prepared_by,
+			sale_by,
+			service_mode,
+			push_system,
+			order_source,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{chainNo},
+			#{orderDate},
+			#{status},
+			#{businessOrderType},
+			#{dataSource},
+			#{customerNo},
+			#{businessNo},
+			#{sourceOrderNo},
+			#{sourceOrderType},
+			#{sourceOrderId},
+			#{owner},
+			#{customer},
+			#{supplierCode},
+			#{principal},
+			#{carrier},
+			#{settlement},
+			#{shipperCode},
+			#{consigneeCode},
+			#{shipper},
+			#{shipperTel},
+			#{shipperArea},
+			#{shipperAddress},
+			#{shipperAddressArea},
+			#{consignee},
+			#{consigneeTel},
+			#{consigneeArea},
+			#{consigneeAddress},
+			#{consigneeAddressArea},
+			#{warehouse},
+			#{auditBy},
+			#{auditDate},
+			#{isAvailableStock},
+			#{interceptStatus},
+			#{interceptTime},
+			#{handleStatus},
+			#{orgId},
+			#{validityPeriod},
+			#{preSaleNo},
+			#{sendOrderNo},
+			#{logisticsNo},
+			#{transportMode},
+			#{vehicleNo},
+			#{driver},
+			#{contactTel},
+			#{deliveryDate},
+			#{arrivalTime},
+			#{contractNo},
+			#{settleMode},
+			#{exchangeRate},
+			#{currency},
+			#{invoice},
+			#{taxNo},
+			#{invoiceType},
+			#{companyName},
+			#{taxpayerIdentityNumber},
+			#{depositBank},
+			#{depositBankAccount},
+			#{registeredArea},
+			#{registeredTelephone},
+			#{ticketCollectorName},
+			#{ticketCollectorPhone},
+			#{ticketCollectorAddress},
+			#{payWay},
+			#{payDate},
+			#{payStatus},
+			#{prepaidAmount},
+			#{freightCharge},
+			#{couponAmount},
+			#{totalTax},
+			#{totalAmount},
+			#{totalTaxInAmount},
+			#{chainType},
+			#{project},
+			#{channel},
+			#{shop},
+			#{vipNo},
+			#{vipStatus},
+			#{clerkCode},
+			#{businessBy},
+			#{preparedBy},
+			#{saleBy},
+			#{serviceMode},
+			#{pushSystem},
+			#{orderSource},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10}
+		)
+	</insert>
+
+	<update id="update">
+        UPDATE om_chain_header
+        SET update_by                = #{updateBy.id},
+            update_date              = #{updateDate},
+            remarks                  = #{remarks},
+            rec_ver                  = rec_ver + 1,
+            chain_no                 = #{chainNo},
+            order_date               = #{orderDate},
+            status                   = #{status},
+            business_order_type      = #{businessOrderType},
+            data_source              = #{dataSource},
+            customer_no              = #{customerNo},
+            business_no              = #{businessNo},
+            source_order_no          = #{sourceOrderNo},
+            source_order_type        = #{sourceOrderType},
+            source_order_id          = #{sourceOrderId},
+            owner                    = #{owner},
+            customer                 = #{customer},
+            supplier_code            = #{supplierCode},
+            principal                = #{principal},
+            carrier                  = #{carrier},
+            settlement               = #{settlement},
+			shipper_code             = #{shipperCode},
+			consignee_code           = #{consigneeCode},
+            shipper                  = #{shipper},
+            shipper_tel              = #{shipperTel},
+            shipper_area             = #{shipperArea},
+            shipper_address          = #{shipperAddress},
+            shipper_address_area     = #{shipperAddressArea},
+            consignee                = #{consignee},
+            consignee_tel            = #{consigneeTel},
+            consignee_area           = #{consigneeArea},
+            consignee_address        = #{consigneeAddress},
+            consignee_address_area   = #{consigneeAddressArea},
+            warehouse                = #{warehouse},
+            audit_by                 = #{auditBy},
+            audit_date               = #{auditDate},
+            is_available_stock       = #{isAvailableStock},
+            intercept_status         = #{interceptStatus},
+            intercept_time           = #{interceptTime},
+            handle_status            = #{handleStatus},
+            org_id                   = #{orgId},
+            validity_period          = #{validityPeriod},
+            pre_sale_no              = #{preSaleNo},
+            send_order_no            = #{sendOrderNo},
+            logistics_no             = #{logisticsNo},
+            transport_mode           = #{transportMode},
+            vehicle_no               = #{vehicleNo},
+            driver                   = #{driver},
+            contact_tel              = #{contactTel},
+            delivery_date            = #{deliveryDate},
+            arrival_time             = #{arrivalTime},
+            contract_no              = #{contractNo},
+            settle_mode              = #{settleMode},
+            exchange_rate            = #{exchangeRate},
+            currency                 = #{currency},
+            invoice                  = #{invoice},
+            tax_no                   = #{taxNo},
+            invoice_type             = #{invoiceType},
+            company_name             = #{companyName},
+            taxpayer_identity_number = #{taxpayerIdentityNumber},
+            deposit_bank             = #{depositBank},
+            deposit_bank_account     = #{depositBankAccount},
+            registered_area          = #{registeredArea},
+            registered_telephone     = #{registeredTelephone},
+            ticket_collector_name    = #{ticketCollectorName},
+            ticket_collector_phone   = #{ticketCollectorPhone},
+            ticket_collector_address = #{ticketCollectorAddress},
+            pay_way                  = #{payWay},
+            pay_date                 = #{payDate},
+            pay_status               = #{payStatus},
+            prepaid_amount           = #{prepaidAmount},
+            freight_charge           = #{freightCharge},
+            coupon_amount            = #{couponAmount},
+            total_tax                = #{totalTax},
+            total_amount             = #{totalAmount},
+            total_tax_in_amount      = #{totalTaxInAmount},
+            chain_type               = #{chainType},
+            project                  = #{project},
+            channel                  = #{channel},
+            shop                     = #{shop},
+            vip_no                   = #{vipNo},
+            vip_status               = #{vipStatus},
+            clerk_code               = #{clerkCode},
+            business_by              = #{businessBy},
+            prepared_by              = #{preparedBy},
+            sale_by                  = #{saleBy},
+			service_mode        	 = #{serviceMode},
+			push_system        	     = #{pushSystem},
+			order_source        	 = #{orderSource},
+            def1                     = #{def1},
+            def2                     = #{def2},
+            def3                     = #{def3},
+            def4                     = #{def4},
+            def5                     = #{def5},
+			def6                     = #{def6},
+			def7                     = #{def7},
+			def8                     = #{def8},
+			def9                     = #{def9},
+			def10                    = #{def10}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE om_chain_header SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM om_chain_header WHERE id = #{id}
+	</delete>
+
+	<select id="get" resultType="com.yunyou.modules.oms.order.entity.OmChainHeader" >
+		SELECT
+		<include refid="omChainHeaderColumns"/>
+		FROM om_chain_header a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.oms.order.entity.OmChainHeader" >
+		SELECT
+		<include refid="omChainHeaderColumns"/>
+		FROM om_chain_header a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="chainNo != null and chainNo != ''">
+				AND a.chain_no = #{chainNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="businessOrderType != null and businessOrderType != ''">
+				AND a.business_order_type = #{businessOrderType}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="businessNo != null and businessNo != ''">
+				AND a.business_no = #{businessNo}
+			</if>
+			<if test="supplierCode != null and supplierCode != ''">
+				AND a.supplier_code = #{supplierCode}
+			</if>
+			<if test="interceptStatus != null and interceptStatus != ''">
+				AND a.intercept_status = #{interceptStatus}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.oms.order.entity.OmChainHeader" >
+		SELECT
+		<include refid="omChainHeaderColumns"/>
+		FROM om_chain_header a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.oms.order.entity.OmChainHeaderEntity" >
+		SELECT
+			c1.ebcu_name_cn AS "customerName",
+			c2.ebcu_name_cn AS "principalName",
+			c3.ebcu_name_cn AS "settlementName",
+			c4.ebcu_name_cn AS "ownerName",
+			c5.ebcu_name_cn AS "supplierName",
+			c6.ebcu_name_cn AS "carrierName",
+			c7.ebcu_name_cn AS "consigneeName",
+			c8.ebcu_name_cn AS "shipperName",
+			so1.name AS "orgName",
+			so2.name AS "warehouseName",
+			sa1.name AS "consigneeAreaName",
+			sa2.name AS "shipperAreaName",
+			<include refid="omChainHeaderColumns"/>
+		FROM om_chain_header a
+			LEFT JOIN om_customer c1 ON c1.ebcu_customer_no = a.customer AND c1.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c1.org_id
+			LEFT JOIN om_customer c2 ON c2.ebcu_customer_no = a.principal AND c2.ebcu_type LIKE '%CUSTOMER%' AND a.org_id = c2.org_id
+			LEFT JOIN om_customer c3 ON c3.ebcu_customer_no = a.settlement AND c3.ebcu_type LIKE '%SETTLEMENT%' AND a.org_id = c3.org_id
+			LEFT JOIN om_customer c4 ON c4.ebcu_customer_no = a.owner AND c4.ebcu_type LIKE '%OWNER%' AND a.org_id = c4.org_id
+			LEFT JOIN om_customer c5 ON c5.ebcu_customer_no = a.supplier_code AND c5.ebcu_type LIKE '%SUPPLIER%' AND a.org_id = c5.org_id
+			LEFT JOIN om_customer c6 ON c6.ebcu_customer_no = a.carrier AND c6.ebcu_type LIKE '%CARRIER%' AND a.org_id = c6.org_id
+			LEFT JOIN om_customer c7 ON c7.ebcu_customer_no = a.consignee_code AND c7.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c7.org_id
+			LEFT JOIN om_customer c8 ON c8.ebcu_customer_no = a.shipper_code AND c8.ebcu_type LIKE '%SHIPPER%' AND a.org_id = c8.org_id
+			LEFT JOIN sys_office so1 ON so1.id = a.org_id
+			LEFT JOIN sys_office so2 ON so2.id = a.warehouse
+			LEFT JOIN sys_area sa1 ON sa1.id = a.consignee_area
+			LEFT JOIN sys_area sa2 ON sa2.id = a.shipper_area
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="supplierCode != null and supplierCode != ''">
+				AND a.supplier_code = #{supplierCode}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="businessOrderType != null and businessOrderType != ''">
+				AND a.business_order_type = #{businessOrderType}
+			</if>
+			<if test="businessNo != null and businessNo != ''">
+				AND a.business_no LIKE concat(#{businessNo}, '%')
+			</if>
+			<if test="chainNo != null and chainNo != ''">
+				AND a.chain_no LIKE concat(#{chainNo}, '%')
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no LIKE concat(#{customerNo}, '%')
+			</if>
+			<if test="orderDateFm != null">
+				AND a.order_date &gt;= #{orderDateFm}
+			</if>
+			<if test="orderDateTo != null">
+				AND a.order_date &lt;= #{orderDateTo}
+			</if>
+			<if test="owner != null and owner != ''">
+				AND a.owner = #{owner}
+			</if>
+			<if test="customer != null and customer != ''">
+				AND a.customer = #{customer}
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel = #{channel}
+			</if>
+			<if test="dataSource != null and dataSource != ''">
+				AND a.data_source = #{dataSource}
+			</if>
+			<if test="orderSource != null and orderSource != ''">
+				AND a.order_source = #{orderSource}
+			</if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 LIKE concat(#{def1}, '%')
+			</if>
+			<if test="interceptStatus != null and interceptStatus != ''">
+				AND a.intercept_status = #{interceptStatus}
+			</if>
+			<if test="consignee != null and consignee != ''">
+				AND a.consignee = #{consignee}
+			</if>
+			<if test="consigneeTel != null and consigneeTel != ''">
+				AND a.consignee_tel = #{consigneeTel}
+			</if>
+			<if test="consigneeAddressArea != null and consigneeAddressArea != ''">
+				AND a.consignee_address_area = #{consigneeAddressArea}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND EXISTS(SELECT 1 FROM om_chain_detail d WHERE d.header_id = a.id AND d.org_id = a.org_id AND d.sku_code = #{skuCode})
+			</if>
+			<if test="customerNoList != null and customerNoList.size > 0">
+				AND a.customer_no IN
+				<foreach collection="customerNoList" item="customerNoItem" index="customerNoIndex" open="(" separator="," close=")">
+					#{customerNoItem}
+				</foreach>
+			</if>
+			<if test="extendNoList != null and extendNoList.size > 0">
+				AND a.def1 IN
+				<foreach collection="extendNoList" item="extendNoItem" index="extendNoIndex" open="(" separator="," close=")">
+					#{extendNoItem}
+				</foreach>
+			</if>
+			<if test="businessOrderTypeList != null and businessOrderTypeList.size > 0">
+				AND a.business_order_type IN
+				<foreach collection="businessOrderTypeList" item="businessOrderTypeItem" index="businessOrderTypeIndex" open="(" separator="," close=")">
+					#{businessOrderTypeItem}
+				</foreach>
+			</if>
+			<if test="def10 != null and def10 != ''">
+				AND a.def10 = #{def10}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.chain_no DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findDelayOrder" resultType="com.yunyou.modules.oms.report.entity.OmDelayOrderEntity" >
+		SELECT
+			owner.ebcu_name_cn AS ownerName,
+			d.sku_code AS skuCode,
+		    d.sku_name AS skuName,
+		    d.qty AS qty,
+			<include refid="omChainHeaderColumns"/>
+		FROM om_chain_header a
+		LEFT JOIN om_customer owner ON owner.ebcu_customer_no = a.owner AND owner.ebcu_type LIKE '%OWNER%' AND a.org_id = owner.org_id
+		LEFT JOIN om_chain_detail d ON a.id = d.header_id AND a.org_id = d.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND (a.status = '30' OR (a.status = '35' AND d.qty != d.task_qty))
+			<if test="supplierCode != null and supplierCode != ''">
+				AND a.supplier_code = #{supplierCode}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="businessOrderType != null and businessOrderType != ''">
+				AND a.business_order_type = #{businessOrderType}
+			</if>
+			<if test="businessNo != null and businessNo != ''">
+				AND a.business_no LIKE concat(#{businessNo}, '%')
+			</if>
+			<if test="chainNo != null and chainNo != ''">
+				AND a.chain_no LIKE concat(#{chainNo}, '%')
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no LIKE concat(#{customerNo}, '%')
+			</if>
+			<if test="orderDateFm != null">
+				AND a.order_date &gt;= #{orderDateFm}
+			</if>
+			<if test="orderDateTo != null">
+				AND a.order_date &lt;= #{orderDateTo}
+			</if>
+			<if test="owner != null and owner != ''">
+				AND a.owner = #{owner}
+			</if>
+			<if test="customer != null and customer != ''">
+				AND a.customer = #{customer}
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel = #{channel}
+			</if>
+			<if test="dataSource != null and dataSource != ''">
+				AND a.data_source = #{dataSource}
+			</if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 LIKE concat(#{def1}, '%')
+			</if>
+			<if test="interceptStatus != null and interceptStatus != ''">
+				AND a.intercept_status = #{interceptStatus}
+			</if>
+			<if test="consignee != null and consignee != ''">
+				AND a.consignee = #{consignee}
+			</if>
+			<if test="consigneeTel != null and consigneeTel != ''">
+				AND a.consignee_tel = #{consigneeTel}
+			</if>
+			<if test="consigneeAddressArea != null and consigneeAddressArea != ''">
+				AND a.consignee_address_area = #{consigneeAddressArea}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND EXISTS(SELECT 1 FROM om_chain_detail d WHERE d.header_id = a.id AND d.org_id = a.org_id AND d.sku_code = #{skuCode})
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.chain_no DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.oms.order.entity.OmChainHeaderEntity" >
+		SELECT
+		c1.ebcu_name_cn AS "customerName",
+		c2.ebcu_name_cn AS "principalName",
+		c3.ebcu_name_cn AS "settlementName",
+		c4.ebcu_name_cn AS "ownerName",
+		c4.ebcu_tax_rate AS "ownerTaxRate",
+		c5.ebcu_name_cn AS "supplierName",
+		c5.ebcu_tax_rate AS "supplierTaxRate",
+		c6.ebcu_name_cn AS "carrierName",
+		c7.ebcu_name_cn AS "consigneeName",
+		c8.ebcu_name_cn AS "shipperName",
+		so1.name AS "orgName",
+		so2.name AS "warehouseName",
+		sa1.name AS "consigneeAreaName",
+		sa2.name AS "shipperAreaName",
+		su1.name AS "createBy.name",
+		su2.name AS "updateBy.name",
+		<include refid="omChainHeaderColumns"/>
+		FROM om_chain_header a
+		LEFT JOIN om_customer c1 ON c1.ebcu_customer_no = a.customer AND c1.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c1.org_id
+		LEFT JOIN om_customer c2 ON c2.ebcu_customer_no = a.principal AND c2.ebcu_type LIKE '%CUSTOMER%' AND a.org_id = c2.org_id
+		LEFT JOIN om_customer c3 ON c3.ebcu_customer_no = a.settlement AND c3.ebcu_type LIKE '%SETTLEMENT%' AND a.org_id = c3.org_id
+		LEFT JOIN om_customer c4 ON c4.ebcu_customer_no = a.owner AND c4.ebcu_type LIKE '%OWNER%' AND a.org_id = c4.org_id
+		LEFT JOIN om_customer c5 ON c5.ebcu_customer_no = a.supplier_code AND c5.ebcu_type LIKE '%SUPPLIER%' AND a.org_id = c5.org_id
+		LEFT JOIN om_customer c6 ON c6.ebcu_customer_no = a.carrier AND c6.ebcu_type LIKE '%CARRIER%' AND a.org_id = c6.org_id
+		LEFT JOIN om_customer c7 ON c7.ebcu_customer_no = a.consignee_code AND c7.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c7.org_id
+		LEFT JOIN om_customer c8 ON c8.ebcu_customer_no = a.shipper_code AND c8.ebcu_type LIKE '%SHIPPER%' AND a.org_id = c8.org_id
+		LEFT JOIN sys_office so1 ON so1.id = a.org_id
+		LEFT JOIN sys_office so2 ON so2.id = a.warehouse
+		LEFT JOIN sys_area sa1 ON sa1.id = a.consignee_area
+		LEFT JOIN sys_area sa2 ON sa2.id = a.shipper_area
+		LEFT JOIN sys_user su1 ON su1.id = a.create_by
+		LEFT JOIN sys_user su2 ON su2.id = a.update_by
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getByCustomerNo" resultType="com.yunyou.modules.oms.order.entity.OmChainHeader">
+		select <include refid="omChainHeaderColumns"/>
+		from om_chain_header a
+		where a.customer_no = #{customerNo}
+		  and a.business_order_type = #{orderType}
+		  and a.data_source = #{dataSource}
+		  and a.org_id = #{orgId}
+	</select>
+
+	<select id="isIntercepted" resultType="java.lang.String">
+		select 1
+		from om_chain_header a
+		where a.intercept_status in ('10', '90', '99')
+		  and a.chain_no = #{chainNo}
+		  and a.org_id = #{orgId}
+	</select>
+
+	<select id="findChainIdForTimer" resultType="java.lang.String">
+		SELECT id
+		FROM om_chain_header
+		WHERE status = '30'
+		  AND intercept_status = '00'
+		  AND handle_status = 'N'
+		ORDER BY order_date
+	</select>
+
+	<select id="findInterceptChainIdForTimer" resultType="java.lang.String">
+		select och.id from om_chain_header och where intercept_status = '10' order by order_date
+	</select>
+
+	<select id="getByNo" resultType="com.yunyou.modules.oms.order.entity.OmChainHeader">
+	select <include refid="omChainHeaderColumns"/>
+	from om_chain_header a
+	where a.chain_no = #{chainNo}
+	  and a.org_id = #{orgId}
+	</select>
+
+</mapper>

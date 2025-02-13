@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdRuleRotationHeaderMapper">
+    
+	<sql id="banQinCdRuleRotationHeaderColumns">
+		a.id AS "id",
+		a.rule_code AS "ruleCode",
+		a.rule_name AS "ruleName",
+		a.rotation_type AS "rotationType",
+		a.lot_code AS "lotCode",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinCdRuleRotationHeaderJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinCdRuleRotationHeader" >
+		SELECT 
+			<include refid="banQinCdRuleRotationHeaderColumns"/>
+		FROM cd_rule_rotation_header a
+		<include refid="banQinCdRuleRotationHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="getEntity" resultType="BanQinCdRuleRotationHeaderEntity" >
+        SELECT
+            <include refid="banQinCdRuleRotationHeaderColumns"/>,
+            c.lot_name As lotName
+        FROM cd_rule_rotation_header a
+        LEFT JOIN cd_wh_lot_header c ON a.lot_code = c.lot_code AND a.org_id = c.org_id
+        <include refid="banQinCdRuleRotationHeaderJoins"/>
+        WHERE a.id = #{id}
+    </select>
+	
+	<select id="findList" resultType="BanQinCdRuleRotationHeader" >
+		SELECT 
+			<include refid="banQinCdRuleRotationHeaderColumns"/>
+		FROM cd_rule_rotation_header a
+		<include refid="banQinCdRuleRotationHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="ruleCode != null and ruleCode != ''">
+				AND a.rule_code = #{ruleCode}
+			</if>
+			<if test="ruleName != null and ruleName != ''">
+				AND a.rule_name = #{ruleName}
+			</if>
+			<if test="rotationType != null and rotationType != ''">
+				AND a.rotation_type = #{rotationType}
+			</if>
+			<if test="lotCode != null and lotCode != ''">
+				AND a.lot_code = #{lotCode}
+			</if>
+		</where>
+	</select>
+
+    <select id="findPage" resultType="BanQinCdRuleRotationHeaderEntity" >
+        SELECT
+            <include refid="banQinCdRuleRotationHeaderColumns"/>,
+            c.lot_name As lotName
+        FROM cd_rule_rotation_header a
+        LEFT JOIN cd_wh_lot_header c ON a.lot_code = c.lot_code AND a.org_id = c.org_id
+        <include refid="banQinCdRuleRotationHeaderJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            ${dataScope}
+            <if test="ruleCode != null and ruleCode != ''">
+                AND a.rule_code like concat('%', #{ruleCode}, '%')
+            </if>
+            <if test="ruleName != null and ruleName != ''">
+                AND a.rule_name like concat('%', #{ruleName}, '%')
+            </if>
+            <if test="rotationType != null and rotationType != ''">
+                AND a.rotation_type = #{rotationType}
+            </if>
+            <if test="lotCode != null and lotCode != ''">
+                AND a.lot_code = #{lotCode}
+            </if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.rule_code like concat('%', #{codeAndName}, '%') OR a.rule_name like concat('%', #{codeAndName}, '%'))
+			</if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+	
+	<select id="findAllList" resultType="BanQinCdRuleRotationHeader" >
+		SELECT 
+			<include refid="banQinCdRuleRotationHeaderColumns"/>
+		FROM cd_rule_rotation_header a
+		<include refid="banQinCdRuleRotationHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_rule_rotation_header(
+			id,
+			rule_code,
+			rule_name,
+			rotation_type,
+			lot_code,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{ruleCode},
+			#{ruleName},
+			#{rotationType},
+			#{lotCode},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cd_rule_rotation_header SET 	
+			rule_code = #{ruleCode},
+			rule_name = #{ruleName},
+			rotation_type = #{rotationType},
+			lot_code = #{lotCode},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_rule_rotation_header SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM cd_rule_rotation_header WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM cd_rule_rotation_header WHERE rule_code = #{ruleCode} AND org_id = #{orgId}
+	</delete>
+
+</mapper>

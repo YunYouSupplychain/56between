@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysWmsRuleWvGroupDetailMapper">
+    
+	<sql id="sysWmsRuleWvGroupDetailColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.group_code AS "groupCode",
+		a.line_no AS "lineNo",
+		a.rule_code AS "ruleCode",
+		a.data_set AS "dataSet",
+		a.header_id AS "headerId",
+		srwh.rule_name AS "ruleName",
+		scds.name AS "dataSetName"
+	</sql>
+	
+	<sql id="sysWmsRuleWvGroupDetailJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+		LEFT JOIN sys_wms_rule_wv_header srwh ON a.rule_code = srwh.rule_code AND a.data_set = srwh.data_set
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvGroupDetail" >
+		SELECT 
+			<include refid="sysWmsRuleWvGroupDetailColumns"/>
+		FROM sys_wms_rule_wv_group_detail a
+		<include refid="sysWmsRuleWvGroupDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvGroupDetail" >
+		SELECT 
+			<include refid="sysWmsRuleWvGroupDetailColumns"/>
+		FROM sys_wms_rule_wv_group_detail a
+		<include refid="sysWmsRuleWvGroupDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+			<if test="groupCode != null and groupCode != ''">
+				AND a.group_code = #{groupCode}
+			</if>
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvGroupDetail" >
+		SELECT 
+			<include refid="sysWmsRuleWvGroupDetailColumns"/>
+		FROM sys_wms_rule_wv_group_detail a
+		<include refid="sysWmsRuleWvGroupDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_wms_rule_wv_group_detail(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			group_code,
+			line_no,
+			rule_code,
+			data_set,
+			header_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+		    #{groupCode},
+		    #{lineNo},
+			#{ruleCode},
+			#{dataSet},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_wms_rule_wv_group_detail
+		SET update_by   = #{updateBy.id},
+			update_date = #{updateDate},
+			rec_ver		= rec_ver + 1,
+			remarks     = #{remarks},
+			group_code  = #{groupCode},
+			line_no     = #{lineNo},
+			rule_code   = #{ruleCode},
+			data_set    = #{dataSet},
+			header_id   = #{headerId}
+		WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_wms_rule_wv_group_detail SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_wms_rule_wv_group_detail WHERE id = #{id}
+	</delete>
+
+	<delete id="deleteByHeaderId">
+		DELETE FROM sys_wms_rule_wv_group_detail WHERE header_id = #{headerId}
+	</delete>
+
+</mapper>

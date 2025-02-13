@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.order.mapper.OmTaskHeaderMapper">
+
+	<sql id="omTaskHeaderColumns">
+		a.id                       as "id",
+		a.create_by                as "createBy.id",
+		a.create_date              as "createDate",
+		a.update_by                as "updateBy.id",
+		a.update_date              as "updateDate",
+		a.remarks                  as "remarks",
+		a.del_flag                 as "delFlag",
+		a.rec_ver                  as "recVer",
+		a.task_no                  as "taskNo",
+		a.status                   as "status",
+		a.task_type                as "taskType",
+		a.business_order_type      as "businessOrderType",
+		a.order_date               as "orderDate",
+		a.data_source              as "dataSource",
+		a.customer_no              as "customerNo",
+		a.business_no              as "businessNo",
+		a.chain_no                 as "chainNo",
+		a.owner                    as "owner",
+		a.customer                 as "customer",
+		a.supplier_code            as "supplierCode",
+		a.principal                as "principal",
+		a.carrier                  as "carrier",
+		a.settlement               as "settlement",
+		a.shipper                  as "shipper",
+		a.shipper_tel              as "shipperTel",
+		a.shipper_area             as "shipperArea",
+		a.shipper_address          as "shipperAddress",
+		a.shipper_address_area     as "shipperAddressArea",
+		a.consignee                as "consignee",
+		a.consignee_tel            as "consigneeTel",
+		a.consignee_area           as "consigneeArea",
+		a.consignee_address        as "consigneeAddress",
+		a.consignee_address_area   as "consigneeAddressArea",
+		a.task_source              as "taskSource",
+		a.warehouse                as "warehouse",
+		a.push_system			   as "pushSystem",
+		a.push_order_type		   as "pushOrderType",
+		a.is_available_stock       as "isAvailableStock",
+		a.lot_num                  as "lotNum",
+		a.associated_task_id       as "associatedTaskId",
+		a.handle_status            as "handleStatus",
+		a.is_need_dispatch         as "isNeedDispatch",
+		a.org_id                   as "orgId",
+		a.validity_period          as "validityPeriod",
+		a.pre_sale_no              as "preSaleNo",
+		a.send_order_no            as "sendOrderNo",
+		a.logistics_no             as "logisticsNo",
+		a.transport_mode           as "transportMode",
+		a.vehicle_no               as "vehicleNo",
+		a.driver                   as "driver",
+		a.contact_tel              as "contactTel",
+		a.arrival_time             as "arrivalTime",
+		a.contract_no              as "contractNo",
+		a.settle_mode              as "settleMode",
+		a.pay_way                  as "payWay",
+		a.pay_status               as "payStatus",
+		a.pay_date                 as "payDate",
+		a.currency                 as "currency",
+		a.exchange_rate            as "exchangeRate",
+		a.invoice                  as "invoice",
+		a.tax_no                   as "taxNo",
+		a.invoice_type             as "invoiceType",
+		a.company_name             as "companyName",
+		a.taxpayer_identity_number as "taxpayerIdentityNumber",
+		a.deposit_bank             as "depositBank",
+		a.deposit_bank_account     as "depositBankAccount",
+		a.registered_area          as "registeredArea",
+		a.registered_telephone     as "registeredTelephone",
+		a.ticket_collector_name    as "ticketCollectorName",
+		a.ticket_collector_phone   as "ticketCollectorPhone",
+		a.ticket_collector_address as "ticketCollectorAddress",
+		a.freight_charge           as "freightCharge",
+		a.prepaid_amount           as "prepaidAmount",
+		a.coupon_amount            as "couponAmount",
+		a.total_tax                as "totalTax",
+		a.total_amount             as "totalAmount",
+		a.total_tax_in_amount      as "totalTaxInAmount",
+		a.project                  as "project",
+		a.channel                  as "channel",
+		a.shop                     as "shop",
+		a.clerk_code               as "clerkCode",
+		a.vip_no                   as "vipNo",
+		a.vip_status               as "vipStatus",
+		a.business_by              as "businessBy",
+		a.sale_by                  as "saleBy",
+		a.prepared_by              as "preparedBy",
+		a.audit_by                 as "auditBy",
+		a.shipper_code		   	   as "shipperCode",
+		a.consignee_code		   as "consigneeCode",
+		a.service_mode			   as "serviceMode",
+		a.order_source			   as "orderSource",
+		a.source_order_no 		   as "sourceOrderNo",
+		a.def1                     as "def1",
+		a.def2                     as "def2",
+		a.def3                     as "def3",
+		a.def4                     as "def4",
+		a.def5                     as "def5",
+		a.def6                     as "def6",
+		a.def7                     as "def7",
+		a.def8                     as "def8",
+		a.def9                     as "def9",
+		a.def10                    as "def10"
+	</sql>
+
+	<insert id="insert">
+		INSERT INTO om_task_header
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			task_no,
+			status,
+			task_type,
+			business_order_type,
+			order_date,
+			data_source,
+			customer_no,
+			business_no,
+			chain_no,
+			owner,
+			customer,
+			supplier_code,
+			principal,
+			carrier,
+			settlement,
+			shipper,
+			shipper_tel,
+			shipper_area,
+			shipper_address,
+			shipper_address_area,
+			consignee,
+			consignee_tel,
+			consignee_area,
+			consignee_address,
+			consignee_address_area,
+			task_source,
+			warehouse,
+			push_system,
+			push_order_type,
+			is_available_stock,
+			lot_num,
+			associated_task_id,
+			handle_status,
+		    is_need_dispatch,
+			org_id,
+			validity_period,
+			pre_sale_no,
+			send_order_no,
+			logistics_no,
+			transport_mode,
+			vehicle_no,
+			driver,
+			contact_tel,
+			arrival_time,
+			contract_no,
+			settle_mode,
+			pay_way,
+			pay_status,
+			pay_date,
+			currency,
+			exchange_rate,
+			invoice,
+			tax_no,
+			invoice_type,
+			company_name,
+			taxpayer_identity_number,
+			deposit_bank,
+			deposit_bank_account,
+			registered_area,
+			registered_telephone,
+			ticket_collector_name,
+			ticket_collector_phone,
+			ticket_collector_address,
+			freight_charge,
+			prepaid_amount,
+			coupon_amount,
+			total_tax,
+			total_amount,
+			total_tax_in_amount,
+			project,
+			channel,
+			shop,
+			clerk_code,
+			vip_no,
+			vip_status,
+			business_by,
+			sale_by,
+			prepared_by,
+			audit_by,
+			shipper_code,
+			consignee_code,
+			service_mode,
+			order_source,
+			source_order_no,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10
+		)
+		VALUES
+		(
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{taskNo},
+			#{status},
+			#{taskType},
+			#{businessOrderType},
+			#{orderDate},
+			#{dataSource},
+			#{customerNo},
+			#{businessNo},
+			#{chainNo},
+			#{owner},
+			#{customer},
+			#{supplierCode},
+			#{principal},
+			#{carrier},
+			#{settlement},
+			#{shipper},
+			#{shipperTel},
+			#{shipperArea},
+			#{shipperAddress},
+			#{shipperAddressArea},
+			#{consignee},
+			#{consigneeTel},
+			#{consigneeArea},
+			#{consigneeAddress},
+			#{consigneeAddressArea},
+			#{taskSource},
+			#{warehouse},
+			#{pushSystem},
+			#{pushOrderType},
+			#{isAvailableStock},
+			#{lotNum},
+			#{associatedTaskId},
+			#{handleStatus},
+			#{isNeedDispatch},
+			#{orgId},
+			#{validityPeriod},
+			#{preSaleNo},
+			#{sendOrderNo},
+			#{logisticsNo},
+			#{transportMode},
+			#{vehicleNo},
+			#{driver},
+			#{contactTel},
+			#{arrivalTime},
+			#{contractNo},
+			#{settleMode},
+			#{payWay},
+			#{payStatus},
+			#{payDate},
+			#{currency},
+			#{exchangeRate},
+			#{invoice},
+			#{taxNo},
+			#{invoiceType},
+			#{companyName},
+			#{taxpayerIdentityNumber},
+			#{depositBank},
+			#{depositBankAccount},
+			#{registeredArea},
+			#{registeredTelephone},
+			#{ticketCollectorName},
+			#{ticketCollectorPhone},
+			#{ticketCollectorAddress},
+			#{freightCharge},
+			#{prepaidAmount},
+			#{couponAmount},
+			#{totalTax},
+			#{totalAmount},
+			#{totalTaxInAmount},
+			#{project},
+			#{channel},
+			#{shop},
+			#{clerkCode},
+			#{vipNo},
+			#{vipStatus},
+			#{businessBy},
+			#{saleBy},
+			#{preparedBy},
+			#{auditBy},
+			#{shipperCode},
+			#{consigneeCode},
+			#{serviceMode},
+			#{orderSource},
+			#{sourceOrderNo},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE om_task_header
+		SET update_by                = #{updateBy.id},
+			update_date              = #{updateDate},
+			remarks                  = #{remarks},
+			rec_ver                  = rec_ver + 1,
+			task_no                  = #{taskNo},
+			status                   = #{status},
+			task_type                = #{taskType},
+			business_order_type      = #{businessOrderType},
+			order_date               = #{orderDate},
+			data_source              = #{dataSource},
+			customer_no              = #{customerNo},
+			business_no              = #{businessNo},
+			chain_no                 = #{chainNo},
+			owner                    = #{owner},
+			customer                 = #{customer},
+			supplier_code            = #{supplierCode},
+			principal                = #{principal},
+			carrier                  = #{carrier},
+			settlement               = #{settlement},
+			shipper                  = #{shipper},
+			shipper_tel              = #{shipperTel},
+			shipper_area             = #{shipperArea},
+			shipper_address          = #{shipperAddress},
+			shipper_address_area     = #{shipperAddressArea},
+			consignee                = #{consignee},
+			consignee_tel            = #{consigneeTel},
+			consignee_area           = #{consigneeArea},
+			consignee_address        = #{consigneeAddress},
+			consignee_address_area   = #{consigneeAddressArea},
+			task_source              = #{taskSource},
+			warehouse                = #{warehouse},
+			push_system              = #{pushSystem},
+			push_order_type          = #{pushOrderType},
+			is_available_stock       = #{isAvailableStock},
+			lot_num                  = #{lotNum},
+			associated_task_id       = #{associatedTaskId},
+			handle_status            = #{handleStatus},
+			is_need_dispatch         = #{isNeedDispatch},
+			org_id                   = #{orgId},
+			validity_period          = #{validityPeriod},
+			pre_sale_no              = #{preSaleNo},
+			send_order_no            = #{sendOrderNo},
+			logistics_no             = #{logisticsNo},
+			transport_mode           = #{transportMode},
+			vehicle_no               = #{vehicleNo},
+			driver                   = #{driver},
+			contact_tel              = #{contactTel},
+			arrival_time             = #{arrivalTime},
+			contract_no              = #{contractNo},
+			settle_mode              = #{settleMode},
+			pay_way                  = #{payWay},
+			pay_status               = #{payStatus},
+			pay_date                 = #{payDate},
+			currency                 = #{currency},
+			exchange_rate            = #{exchangeRate},
+			invoice                  = #{invoice},
+			tax_no                   = #{taxNo},
+			invoice_type             = #{invoiceType},
+			company_name             = #{companyName},
+			taxpayer_identity_number = #{taxpayerIdentityNumber},
+			deposit_bank             = #{depositBank},
+			deposit_bank_account     = #{depositBankAccount},
+			registered_area          = #{registeredArea},
+			registered_telephone     = #{registeredTelephone},
+			ticket_collector_name    = #{ticketCollectorName},
+			ticket_collector_phone   = #{ticketCollectorPhone},
+			ticket_collector_address = #{ticketCollectorAddress},
+			freight_charge           = #{freightCharge},
+			prepaid_amount           = #{prepaidAmount},
+			coupon_amount            = #{couponAmount},
+			total_tax                = #{totalTax},
+			total_amount             = #{totalAmount},
+			total_tax_in_amount      = #{totalTaxInAmount},
+			project                  = #{project},
+			channel                  = #{channel},
+			shop                     = #{shop},
+			clerk_code               = #{clerkCode},
+			vip_no                   = #{vipNo},
+			vip_status               = #{vipStatus},
+			business_by              = #{businessBy},
+			sale_by                  = #{saleBy},
+			prepared_by              = #{preparedBy},
+			audit_by                 = #{auditBy},
+			shipper_code          	 = #{shipperCode},
+			consignee_code           = #{consigneeCode},
+			service_mode        	 = #{serviceMode},
+			order_source        	 = #{orderSource},
+			source_order_no        	 = #{sourceOrderNo},
+			def1                     = #{def1},
+			def2                     = #{def2},
+			def3                     = #{def3},
+			def4                     = #{def4},
+			def5                     = #{def5},
+			def6                     = #{def6},
+			def7                     = #{def7},
+			def8                     = #{def8},
+			def9                     = #{def9},
+			def10                    = #{def10}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE om_task_header SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM om_task_header WHERE id = #{id}
+	</delete>
+
+	<select id="get" resultType="com.yunyou.modules.oms.order.entity.OmTaskHeader" >
+		SELECT
+		<include refid="omTaskHeaderColumns"/>
+		FROM om_task_header a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.oms.order.entity.OmTaskHeader" >
+		SELECT
+		<include refid="omTaskHeaderColumns"/>
+		FROM om_task_header a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="taskNo != null and taskNo != ''">
+				AND a.task_no = #{taskNo}
+			</if>
+			<if test="chainNo != null and chainNo != ''">
+				AND a.chain_no = #{chainNo}
+			</if>
+			<if test="orderDate != null and orderDate != ''">
+				AND a.order_date = #{orderDate}
+			</if>
+			<if test="supplierCode != null and supplierCode != ''">
+				AND a.supplier_code = #{supplierCode}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="taskType != null and taskType != ''">
+				AND a.task_type = #{taskType}
+			</if>
+			<if test="businessNo != null and businessNo != ''">
+				AND a.business_no = #{businessNo}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num = #{lotNum}
+			</if>
+			<if test="warehouse != null and warehouse != ''">
+				AND a.warehouse = #{warehouse}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no LIKE concat('%', #{customerNo}, '%')
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.oms.order.entity.OmTaskHeader" >
+		SELECT
+		<include refid="omTaskHeaderColumns"/>
+		FROM om_task_header a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.oms.order.entity.OmTaskHeaderEntity" >
+		SELECT
+			c1.ebcu_name_cn AS customerName,
+			c2.ebcu_name_cn AS principalName,
+			c3.ebcu_name_cn AS settlementName,
+			c4.ebcu_name_cn AS ownerName,
+			c5.ebcu_name_cn AS supplierName,
+			c6.ebcu_name_cn AS carrierName,
+			c7.ebcu_name_cn AS "consigneeName",
+			c8.ebcu_name_cn AS "shipperName",
+			so1.name AS orgName,
+			so2.name AS warehouseName,
+			sa1.name AS consigneeAreaName,
+			sa2.name AS shipperAreaName,
+			<include refid="omTaskHeaderColumns"/>
+		FROM om_task_header a
+		LEFT JOIN om_customer c1 ON c1.ebcu_customer_no = a.customer AND c1.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c1.org_id
+		LEFT JOIN om_customer c2 ON c2.ebcu_customer_no = a.principal AND c2.ebcu_type LIKE '%CUSTOMER%' AND a.org_id = c2.org_id
+		LEFT JOIN om_customer c3 ON c3.ebcu_customer_no = a.settlement AND c3.ebcu_type LIKE '%SETTLEMENT%' AND a.org_id = c3.org_id
+		LEFT JOIN om_customer c4 ON c4.ebcu_customer_no = a.owner AND c4.ebcu_type LIKE '%OWNER%' AND a.org_id = c4.org_id
+		LEFT JOIN om_customer c5 ON c5.ebcu_customer_no = a.supplier_code AND c5.ebcu_type LIKE '%SUPPLIER%' AND a.org_id = c5.org_id
+		LEFT JOIN om_customer c6 ON c6.ebcu_customer_no = a.carrier AND c6.ebcu_type LIKE '%CARRIER%' AND a.org_id = c6.org_id
+		LEFT JOIN om_customer c7 ON c7.ebcu_customer_no = a.consignee_code AND c7.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c7.org_id
+		LEFT JOIN om_customer c8 ON c8.ebcu_customer_no = a.shipper_code AND c8.ebcu_type LIKE '%SHIPPER%' AND a.org_id = c8.org_id
+		LEFT JOIN sys_office so1 ON so1.id = a.org_id
+		LEFT JOIN sys_office so2 ON so2.id = a.warehouse
+		LEFT JOIN sys_area sa1 ON sa1.id = a.consignee_area
+		LEFT JOIN sys_area sa2 ON sa2.id = a.shipper_area
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="remarks != null and remarks != ''">
+				AND a.remarks LIKE concat('%', #{remarks}, '%')
+			</if>
+			<if test="taskNo != null and taskNo != ''">
+				AND a.task_no LIKE concat(#{taskNo}, '%')
+			</if>
+			<if test="chainNo != null and chainNo != ''">
+				AND a.chain_no LIKE concat('%', #{chainNo}, '%')
+			</if>
+			<if test="businessNo != null and businessNo != ''">
+				AND a.business_no LIKE concat('%', #{businessNo}, '%')
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no LIKE concat('%', #{customerNo}, '%')
+			</if>
+			<if test="warehouse != null and warehouse != ''">
+				AND a.warehouse = #{warehouse}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num LIKE concat(#{lotNum}, '%')
+			</if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 LIKE concat(#{def1}, '%')
+			</if>
+			<if test="orderDateFm != null">
+				AND a.order_date &gt;= #{orderDateFm}
+			</if>
+			<if test="orderDateTo != null">
+				AND a.order_date &lt;= #{orderDateTo}
+			</if>
+			<if test="owner != null and owner != ''">
+				AND a.owner = #{owner}
+			</if>
+			<if test="customer != null and customer != ''">
+				AND a.customer = #{customer}
+			</if>
+			<if test="supplierCode != null and supplierCode != ''">
+				AND a.supplier_code = #{supplierCode}
+			</if>
+			<if test="principal != null and principal != ''">
+				AND a.principal = #{principal}
+			</if>
+			<if test="carrier != null and carrier != ''">
+				AND a.carrier = #{carrier}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="taskType != null and taskType != ''">
+				AND a.task_type = #{taskType}
+			</if>
+			<if test="pushSystem != null and pushSystem != ''">
+				AND a.push_system = #{pushSystem}
+			</if>
+			<if test="consignee != null and consignee != ''">
+				AND a.consignee = #{consignee}
+			</if>
+			<if test="consigneeTel != null and consigneeTel != ''">
+				AND a.consignee_tel = #{consigneeTel}
+			</if>
+			<if test="consigneeAddressArea != null and consigneeAddressArea != ''">
+				AND a.consignee_address_area = #{consigneeAddressArea}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND EXISTS(SELECT 1 FROM om_task_detail d WHERE d.header_id = a.id AND d.org_id = a.org_id AND d.sku_code = #{skuCode})
+			</if>
+			<if test="customerNoList != null and customerNoList.size > 0">
+				AND a.customer_no IN
+				<foreach collection="customerNoList" item="customerNo" index="customerNo" open="(" separator="," close=")">
+					#{customerNo}
+				</foreach>
+			</if>
+			<if test="extendNoList != null and extendNoList.size > 0">
+				AND a.def1 IN
+				<foreach collection="extendNoList" item="extendNo" index="customerNo" open="(" separator="," close=")">
+					#{extendNo}
+				</foreach>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC, a.task_no
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.oms.order.entity.OmTaskHeaderEntity" >
+		SELECT
+			c1.ebcu_name_cn AS customerName,
+			c2.ebcu_name_cn AS principalName,
+			c3.ebcu_name_cn AS settlementName,
+			c4.ebcu_name_cn AS ownerName,
+			c5.ebcu_name_cn AS supplierName,
+			c6.ebcu_name_cn AS carrierName,
+			c7.ebcu_name_cn AS "consigneeName",
+			c8.ebcu_name_cn AS "shipperName",
+			so1.name AS orgName,
+			so2.name AS warehouseName,
+			sa1.name AS consigneeAreaName,
+			sa2.name AS shipperAreaName,
+			<include refid="omTaskHeaderColumns"/>
+		FROM om_task_header a
+		LEFT JOIN om_customer c1 ON c1.ebcu_customer_no = a.customer AND c1.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c1.org_id
+		LEFT JOIN om_customer c2 ON c2.ebcu_customer_no = a.principal AND c2.ebcu_type LIKE '%CUSTOMER%' AND a.org_id = c2.org_id
+		LEFT JOIN om_customer c3 ON c3.ebcu_customer_no = a.settlement AND c3.ebcu_type LIKE '%SETTLEMENT%' AND a.org_id = c3.org_id
+		LEFT JOIN om_customer c4 ON c4.ebcu_customer_no = a.owner AND c4.ebcu_type LIKE '%OWNER%' AND a.org_id = c4.org_id
+		LEFT JOIN om_customer c5 ON c5.ebcu_customer_no = a.supplier_code AND c5.ebcu_type LIKE '%SUPPLIER%' AND a.org_id = c5.org_id
+		LEFT JOIN om_customer c6 ON c6.ebcu_customer_no = a.carrier AND c6.ebcu_type LIKE '%CARRIER%' AND a.org_id = c6.org_id
+		LEFT JOIN om_customer c7 ON c7.ebcu_customer_no = a.consignee_code AND c7.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c7.org_id
+		LEFT JOIN om_customer c8 ON c8.ebcu_customer_no = a.shipper_code AND c8.ebcu_type LIKE '%SHIPPER%' AND a.org_id = c8.org_id
+		LEFT JOIN sys_office so1 ON so1.id = a.org_id
+		LEFT JOIN sys_office so2 ON so2.id = a.warehouse
+		LEFT JOIN sys_area sa1 ON sa1.id = a.consignee_area
+		LEFT JOIN sys_area sa2 ON sa2.id = a.shipper_area
+		WHERE a.id = #{id}
+	</select>
+
+	<update id="updateStatus">
+		UPDATE om_task_header
+		SET status      = #{status},
+			update_by   = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE task_no = #{taskNo}
+		  AND org_id = #{orgId}
+	</update>
+	<update id="updateAssociatedTask">
+		UPDATE om_task_header
+		SET associated_task_id = #{associatedTaskId},
+			del_flag           = #{delFlag},
+			rec_ver            = rec_ver + 1
+		WHERE id = #{id}
+	</update>
+
+	<select id="getMaxLotNumBySourceNo" resultType="String">
+		SELECT max(a.lot_num) as lotNum FROM om_task_header a WHERE a.del_flag = '0' AND a.chain_no = #{sourceNo} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getByChainNo" resultType="com.yunyou.modules.oms.order.entity.OmTaskHeader">
+		SELECT
+		<include refid="omTaskHeaderColumns"/>
+		FROM om_task_detail otd
+			INNER JOIN om_task_header a ON a.id = otd.header_id
+		WHERE a.del_flag = '0'
+		  AND otd.chain_no = #{chainNo}
+		  AND otd.org_id = #{orgId}
+	</select>
+
+	<select id="getByAssociatedTaskId" resultType="com.yunyou.modules.oms.order.entity.OmTaskHeader">
+		SELECT <include refid="omTaskHeaderColumns"/> FROM om_task_header a WHERE a.associated_task_id = #{associatedTaskId}
+	</select>
+
+	<select id="getBatchTask" resultType="com.yunyou.modules.oms.order.entity.OmTaskHeader">
+		SELECT <include refid="omTaskHeaderColumns"/>
+		FROM om_task_header a
+		WHERE a.task_type = #{taskType}
+		 AND a.org_id = #{orgId}
+		 AND a.lot_num IN
+		<foreach collection="lotNums" item="lotNum" open="(" separator="," close=")">
+			#{lotNum}
+		</foreach>
+	</select>
+
+	<select id="findTaskIdByChainIdForTimer" resultType="java.lang.String">
+		SELECT a.id
+		FROM om_task_header a
+		WHERE a.chain_no = #{chainNo}
+		  AND a.org_id = #{orgId}
+	</select>
+
+	<select id="findCanPushTaskIdForTimer" resultType="java.lang.String">
+		SELECT a.id
+		FROM om_task_header a
+		WHERE a.handle_status = 'N'
+		  AND a.del_flag = '0'
+		  AND a.status = #{status}
+		  AND a.task_type = #{taskType}
+		ORDER BY a.order_date
+	</select>
+
+	<select id="getByTaskNoAndWarehouse" resultType="com.yunyou.modules.oms.order.entity.OmTaskHeader" >
+		SELECT <include refid="omTaskHeaderColumns"/>
+		FROM om_task_header a
+		WHERE a.task_no = #{taskNo}
+		  AND a.warehouse = #{warehouse}
+	</select>
+
+</mapper>

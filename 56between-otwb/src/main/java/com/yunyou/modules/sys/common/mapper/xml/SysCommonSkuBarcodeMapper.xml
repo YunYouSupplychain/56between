@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysCommonSkuBarcodeMapper">
+
+    <sql id="sysCommonSkuBarcodeColumns">
+        a.id AS "id",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.barcode AS "barcode",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.data_set AS "dataSet",
+		a.header_id AS "headerId",
+        a.is_default AS "isDefault"
+    </sql>
+
+    <sql id="sysCommonSkuBarcodeJoins">
+
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.sys.common.entity.SysCommonSkuBarcode" >
+        SELECT
+        <include refid="sysCommonSkuBarcodeColumns"/>
+        FROM sys_common_sku_barcode a
+        <include refid="sysCommonSkuBarcodeJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysCommonSkuBarcode" >
+        SELECT
+            <include refid="sysCommonSkuBarcodeColumns"/>
+        FROM sys_common_sku_barcode a
+        <include refid="sysCommonSkuBarcodeJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.data_set = #{dataSet}
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="barcode != null and barcode != ''">
+                AND a.barcode = #{barcode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysCommonSkuBarcode" >
+        SELECT
+        <include refid="sysCommonSkuBarcodeColumns"/>
+        FROM sys_common_sku_barcode a
+        <include refid="sysCommonSkuBarcodeJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sys_common_sku_barcode(
+            id,
+            owner_code,
+            sku_code,
+            barcode,
+            rec_ver,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag,
+            data_set,
+            header_id,
+            is_default
+        ) VALUES (
+             #{id},
+             #{ownerCode},
+             #{skuCode},
+             #{barcode},
+             #{recVer},
+             #{createBy.id},
+             #{createDate},
+             #{updateBy.id},
+             #{updateDate},
+             #{delFlag},
+             #{dataSet},
+             #{headerId},
+             #{isDefault}
+         )
+    </insert>
+
+    <update id="update">
+        UPDATE sys_common_sku_barcode
+        SET owner_code  = #{ownerCode},
+            sku_code    = #{skuCode},
+            barcode     = #{barcode},
+            rec_ver     = rec_ver + 1,
+            update_by   = #{updateBy.id},
+            update_date = #{updateDate},
+            header_id   = #{headerId},
+            data_set    = #{dataSet},
+            is_default  = #{isDefault}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE sys_common_sku_barcode
+        SET del_flag = #{DEL_FLAG_DELETE}
+        <choose>
+            <when test="id !=null and id != ''">
+                WHERE id = #{id}
+            </when>
+            <otherwise>
+                WHERE header_id = #{headerId}
+            </otherwise>
+        </choose>
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM sys_common_sku_barcode
+        <choose>
+            <when test="id !=null and id != ''">
+                WHERE id = #{id}
+            </when>
+            <otherwise>
+                WHERE header_id = #{headerId}
+            </otherwise>
+        </choose>
+    </delete>
+
+    <select id="findPage" resultType="com.yunyou.modules.sys.common.entity.SysCommonSkuBarcode" >
+        SELECT
+        <include refid="sysCommonSkuBarcodeColumns"/>
+        FROM sys_common_sku_barcode a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="dataSet != null and dataSet != ''">
+                AND a.data_set = #{dataSet}
+            </if>
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="barcode != null and barcode != ''">
+                AND a.barcode = #{barcode}
+            </if>
+        </where>
+    </select>
+
+    <insert id="batchInsert">
+        INSERT INTO sys_common_sku_barcode(
+            id,
+            owner_code,
+            sku_code,
+            barcode,
+            rec_ver,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag,
+            data_set,
+            header_id,
+            is_default
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator="," close=";">
+        (
+            #{item.id},
+            #{item.ownerCode},
+            #{item.skuCode},
+            #{item.barcode},
+            #{item.recVer},
+            #{item.createBy.id},
+            #{item.createDate},
+            #{item.updateBy.id},
+            #{item.updateDate},
+            #{item.delFlag},
+            #{item.dataSet},
+            #{item.headerId},
+            #{item.isDefault}
+        )
+        </foreach>
+    </insert>
+
+</mapper>

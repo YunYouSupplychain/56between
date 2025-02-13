@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmHandoverOrderSkuMapper">
+    
+	<sql id="tmHandoverOrderSkuColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.handover_no AS "handoverNo",
+		a.transport_no AS "transportNo",
+		a.customer_no AS "customerNo",
+		a.owner_code AS "ownerCode",
+		a.line_no AS "lineNo",
+		a.sku_code AS "skuCode",
+		a.order_qty	AS "orderQty",
+		a.actual_qty AS "actualQty",
+		a.unloading_time AS "unloadingTime",
+		a.receive_ship AS "receiveShip",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId"
+	</sql>
+	
+	<sql id="tmHandoverOrderSkuJoins">
+		
+	</sql>
+	
+	<select id="get" resultType="TmHandoverOrderSku" >
+		SELECT 
+			<include refid="tmHandoverOrderSkuColumns"/>
+		FROM tm_handover_order_sku a
+		<include refid="tmHandoverOrderSkuJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmHandoverOrderSku" >
+		SELECT 
+			<include refid="tmHandoverOrderSkuColumns"/>
+		FROM tm_handover_order_sku a
+		<include refid="tmHandoverOrderSkuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="handoverNo != null and handoverNo != ''">
+				AND a.handover_no = #{handoverNo}
+			</if>
+			<if test="transportNo != null and transportNo != ''">
+				AND a.transport_no = #{transportNo}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="receiveShip != null and receiveShip != ''">
+				AND a.receive_ship = #{receiveShip}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmHandoverOrderSku" >
+		SELECT 
+			<include refid="tmHandoverOrderSkuColumns"/>
+		FROM tm_handover_order_sku a
+		<include refid="tmHandoverOrderSkuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_handover_order_sku(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			handover_no,
+			transport_no,
+			customer_no,
+			owner_code,
+			line_no,
+			sku_code,
+			order_qty,
+			actual_qty,
+			unloading_time,
+			receive_ship,
+			org_id,
+			rec_ver,
+			base_org_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{handoverNo},
+			#{transportNo},
+			#{customerNo},
+			#{ownerCode},
+			#{lineNo},
+			#{skuCode},
+			#{orderQty},
+			#{actualQty},
+			#{unloadingTime},
+			#{receiveShip},
+			#{orgId},
+			#{recVer},
+			#{baseOrgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_handover_order_sku SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			handover_no = #{handoverNo},
+			transport_no = #{transportNo},
+			customer_no = #{customerNo},
+			owner_code = #{ownerCode},
+			line_no = #{lineNo},
+			sku_code = #{skuCode},
+			order_qty = #{orderQty},
+			actual_qty = #{actualQty},
+			unloading_time = #{unloadingTime},
+			receive_ship = #{receiveShip},
+			org_id = #{orgId},
+			base_org_id = #{baseOrgId},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_handover_order_sku
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_handover_order_sku SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

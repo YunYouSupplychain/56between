@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysWmsRuleWvGroupHeaderMapper">
+
+	<sql id="sysWmsRuleWvGroupHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.rec_ver AS "recVer",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.group_code AS "groupCode",
+		a.group_name AS "groupName",
+		a.order_date_fm AS "orderDateFm",
+		a.order_date_to AS "orderDateTo",
+		a.data_set AS "dataSet",
+		a.owner_code AS "ownerCode",
+		a.owner_name AS "ownerName",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+		a.addr_area AS "addrArea",
+		scds.name AS "dataSetName"
+	</sql>
+
+	<sql id="sysWmsRuleWvGroupHeaderJoins">
+        LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvGroupHeader" >
+		SELECT <include refid="sysWmsRuleWvGroupHeaderColumns"/>
+		FROM sys_wms_rule_wv_group_header a
+		<include refid="sysWmsRuleWvGroupHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvGroupHeader" >
+		SELECT <include refid="sysWmsRuleWvGroupHeaderColumns"/>
+		FROM sys_wms_rule_wv_group_header a
+		<include refid="sysWmsRuleWvGroupHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				AND a.group_code = #{groupCode}
+			</if>
+			<if test="groupName != null and groupName != ''">
+				AND a.group_name = #{groupName}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvGroupHeader" >
+		SELECT <include refid="sysWmsRuleWvGroupHeaderColumns"/>
+		FROM sys_wms_rule_wv_group_header a
+		<include refid="sysWmsRuleWvGroupHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO sys_wms_rule_wv_group_header(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			group_code,
+			group_name,
+			order_date_fm,
+			order_date_to,
+			data_set,
+			owner_code,
+			sku_code,
+			owner_name,
+			sku_name,
+			addr_area
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{groupCode},
+			#{groupName},
+			#{orderDateFm},
+			#{orderDateTo},
+			#{dataSet},
+		    #{ownerCode},
+		    #{skuCode},
+			#{ownerName},
+		    #{skuName},
+		    #{addrArea}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE sys_wms_rule_wv_group_header
+		SET update_by     = #{updateBy.id},
+			update_date   = #{updateDate},
+			rec_ver       = rec_ver + 1,
+			remarks       = #{remarks},
+			group_code    = #{groupCode},
+			group_name    = #{groupName},
+			order_date_fm = #{orderDateFm},
+			order_date_to = #{orderDateTo},
+			data_set      = #{dataSet},
+			owner_code    = #{ownerCode},
+			sku_code      = #{skuCode},
+			owner_name    = #{ownerName},
+			sku_name      = #{skuName},
+			addr_area     = #{addrArea}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE sys_wms_rule_wv_group_header SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+    </update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_wms_rule_wv_group_header WHERE id = #{id}
+	</delete>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvGroupHeader" >
+		SELECT <include refid="sysWmsRuleWvGroupHeaderColumns"/>
+		FROM sys_wms_rule_wv_group_header a
+		<include refid="sysWmsRuleWvGroupHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				AND a.group_code = #{groupCode}
+			</if>
+			<if test="groupName != null and groupName != ''">
+				AND a.group_name = #{groupName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvGroupHeader" >
+		SELECT <include refid="sysWmsRuleWvGroupHeaderColumns"/>
+		FROM sys_wms_rule_wv_group_header a
+		<include refid="sysWmsRuleWvGroupHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				AND a.group_code = #{groupCode}
+			</if>
+			<if test="groupName != null and groupName != ''">
+				AND a.group_name = #{groupName}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.group_code like concat('%', #{codeAndName}, '%')
+				OR a.group_name like concat('%', #{codeAndName}, '%')
+				)
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="findSync" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvGroupHeader">
+		SELECT <include refid="sysWmsRuleWvGroupHeaderColumns"/>
+		FROM sys_wms_rule_wv_group_header a
+		<include refid="sysWmsRuleWvGroupHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				AND a.group_code = #{groupCode}
+			</if>
+			<if test="groupName != null and groupName != ''">
+				AND a.group_name = #{groupName}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+	</select>
+
+</mapper>

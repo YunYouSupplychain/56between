@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdWhLotDetailMapper">
+    
+	<sql id="banQinCdWhLotDetailColumns">
+		a.id AS "id",
+		a.lot_code AS "lotCode",
+		a.lot_att AS "lotAtt",
+		a.title AS "title",
+		a.foreign_title AS "foreignTitle",
+		a.input_control AS "inputControl",
+		a.field_type AS "fieldType",
+		a.key AS "key",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinCdWhLotDetailJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinCdWhLotDetail" >
+		SELECT 
+			<include refid="banQinCdWhLotDetailColumns"/>
+		FROM cd_wh_lot_detail a
+		<include refid="banQinCdWhLotDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinCdWhLotDetail" >
+		SELECT 
+			<include refid="banQinCdWhLotDetailColumns"/>
+		FROM cd_wh_lot_detail a
+		<include refid="banQinCdWhLotDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="lotCode != null and lotCode != ''">
+                AND a.lot_code = #{lotCode}
+            </if>
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+		</where>
+		ORDER BY a.lot_att
+	</select>
+
+	<select id="findPage" resultType="BanQinCdWhLotDetail" >
+		SELECT
+			<include refid="banQinCdWhLotDetailColumns"/>
+		FROM cd_wh_lot_detail a
+		<include refid="banQinCdWhLotDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="lotCode != null and lotCode != ''">
+				AND a.lot_code = #{lotCode}
+			</if>
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+			<if test="lotAtt != null and lotAtt != ''">
+				AND a.lot_att = #{lotAtt}
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title = #{title}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (1 = 2
+				OR a.lot_att like concat('%', #{codeAndName}, '%')
+				OR a.title like concat('%', #{codeAndName}, '%')
+				)
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.lot_att
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinCdWhLotDetail" >
+		SELECT 
+			<include refid="banQinCdWhLotDetailColumns"/>
+		FROM cd_wh_lot_detail a
+		<include refid="banQinCdWhLotDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_wh_lot_detail(
+			id,
+			lot_code,
+			lot_att,
+			title,
+			foreign_title,
+			input_control,
+			field_type,
+			`key`,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			header_id
+		) VALUES (
+			#{id},
+			#{lotCode},
+			#{lotAtt},
+			#{title},
+			#{foreignTitle},
+			#{inputControl},
+			#{fieldType},
+			#{key},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cd_wh_lot_detail
+		SET lot_code      = #{lotCode},
+			lot_att       = #{lotAtt},
+			title         = #{title},
+			foreign_title = #{foreignTitle},
+			input_control = #{inputControl},
+			field_type    = #{fieldType},
+			`key`         = #{key},
+			rec_ver       = #{recVer} + 1,
+			update_by     = #{updateBy.id},
+			update_date   = #{updateDate}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_wh_lot_detail SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM cd_wh_lot_detail WHERE id = #{id}
+	</delete>
+    <delete id="deleteByHeaderId">
+        DELETE FROM cd_wh_lot_detail WHERE header_id = #{headerId}
+    </delete>
+    <delete id="remove">
+		DELETE cwld
+		FROM cd_wh_lot_detail cwld
+			INNER JOIN cd_wh_lot_header cwlh ON cwlh.id = cwld.header_id
+		WHERE cwlh.lot_code = #{lotCode}
+		  AND cwlh.org_id = #{orgId}
+	</delete>
+
+</mapper>

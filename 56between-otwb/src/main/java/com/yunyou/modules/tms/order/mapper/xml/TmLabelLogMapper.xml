@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmLabelLogMapper">
+
+	<sql id="tmLabelLogColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.op_time AS "opTime",
+		a.op_type AS "opType",
+		a.label_no AS "labelNo",
+		a.transport_no AS "transportNo",
+		a.line_no AS "lineNo",
+		a.dispatch_no AS "dispatchNo",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.qty AS "qty",
+		a.weight AS "weight",
+		a.volume AS "volume",
+		a.pre_outlet_code AS "preOutletCode",
+		a.now_outlet_code AS "nowOutletCode",
+		a.next_outlet_code AS "nextOutletCode",
+		a.base_org_id AS "baseOrgId",
+		a.org_id AS "orgId"
+	</sql>
+
+	<sql id="extraColumns">
+       ttopoc.transport_obj_name AS "preOutletName",
+       ttonoc.transport_obj_name AS "nowOutletName",
+       ttonec.transport_obj_name AS "nextOutletName",
+       ttocc.transport_obj_name  AS "ownerName",
+       ti.sku_name               AS "skuName",
+       ttoh.customer_no          AS "customerNo",
+       ttoh.ship_code            AS "shipCode",
+       ttosc.transport_obj_name  AS "shipName",
+       ttoh.ship_city_name       AS "shipCityName",
+       ttoh.shipper              AS "shipper",
+       ttoh.shipper_tel          AS "shipperTel",
+       ttoh.ship_address         AS "shipAddress",
+       ttoh.consignee_code       AS "consigneeCode",
+       ttocc.transport_obj_name  AS "consigneeName",
+       ttoh.consignee_city_name  AS "consigneeCityName",
+       ttoh.consignee            AS "consignee",
+       ttoh.consignee_tel        AS "consigneeTel",
+       ttoh.consignee_address    AS "consigneeAddress",
+       tdoh.carrier_code         AS "carrierCode",
+       ttoca.transport_obj_name  AS "carrierName",
+       tdoh.car_no               AS "vehicleNo",
+       so.name                   AS "orgName"
+	</sql>
+
+	<sql id="tmLabelLogJoins">
+		LEFT JOIN tm_transport_order_header ttoh ON a.transport_no = ttoh.transport_no AND a.org_id = ttoh.org_id
+		LEFT JOIN tm_dispatch_order_header tdoh ON a.dispatch_no = tdoh.dispatch_no AND a.base_org_id = tdoh.base_org_id
+		LEFT JOIN tm_transport_obj ttosc ON ttoh.ship_code = ttosc.transport_obj_code AND ttoh.base_org_id = ttosc.org_id
+		LEFT JOIN tm_transport_obj ttocc ON ttoh.consignee_code = ttocc.transport_obj_code AND ttoh.base_org_id = ttocc.org_id
+		LEFT JOIN tm_transport_obj ttooc ON a.owner_code = ttocc.transport_obj_code AND a.base_org_id = ttocc.org_id
+		LEFT JOIN tm_transport_obj ttoca ON tdoh.carrier_code = ttoca.transport_obj_code AND tdoh.base_org_id = ttoca.org_id
+		LEFT JOIN tm_transport_obj ttopoc ON a.pre_outlet_code = ttopoc.transport_obj_code AND a.base_org_id = ttopoc.org_id
+		LEFT JOIN tm_transport_obj ttonoc ON a.now_outlet_code = ttonoc.transport_obj_code AND a.base_org_id = ttonoc.org_id
+		LEFT JOIN tm_transport_obj ttonec ON a.next_outlet_code = ttonec.transport_obj_code AND a.base_org_id = ttonec.org_id
+		LEFT JOIN tm_item ti ON a.owner_code = ti.owner_code AND a.sku_code = ti.sku_code AND a.base_org_id = ti.org_id
+		LEFT JOIN sys_office so ON a.org_id = so.id
+	</sql>
+
+	<select id="get" resultType="TmLabelLog" >
+		SELECT <include refid="tmLabelLogColumns"/>
+		FROM tm_label_log a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="TmLabelLog" >
+		SELECT <include refid="tmLabelLogColumns"/>
+		FROM tm_label_log a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="baseOrgId != null and baseOrgId != ''">
+				AND a.base_org_id = #{baseOrgId}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO tm_label_log(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			op_time,
+			op_type,
+			label_no,
+			transport_no,
+			line_no,
+			dispatch_no,
+			owner_code,
+			sku_code,
+			qty,
+			weight,
+			volume,
+			pre_outlet_code,
+			now_outlet_code,
+			next_outlet_code,
+			base_org_id,
+			org_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{opTime},
+			#{opType},
+			#{labelNo},
+			#{transportNo},
+			#{lineNo},
+			#{dispatchNo},
+			#{ownerCode},
+			#{skuCode},
+			#{qty},
+			#{weight},
+			#{volume},
+			#{preOutletCode},
+			#{nowOutletCode},
+			#{nextOutletCode},
+			#{baseOrgId},
+			#{orgId}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE tm_label_log
+		SET update_by        = #{updateBy.id},
+			update_date      = #{updateDate},
+			remarks          = #{remarks},
+			op_time          = #{opTime},
+			op_type          = #{opType},
+			label_no         = #{labelNo},
+			transport_no     = #{transportNo},
+			line_no          = #{lineNo},
+			dispatch_no      = #{dispatchNo},
+			owner_code       = #{ownerCode},
+			sku_code         = #{skuCode},
+			qty              = #{qty},
+			weight           = #{weight},
+			volume           = #{volume},
+			pre_outlet_code  = #{preOutletCode},
+			now_outlet_code  = #{nowOutletCode},
+			next_outlet_code = #{nextOutletCode},
+			base_org_id      = #{baseOrgId},
+			org_id           = #{orgId},
+			rec_ver          = rec_ver + 1
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_label_log WHERE id = #{id}
+	</delete>
+
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_label_log SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmLabelLogEntity">
+		SELECT
+			<include refid="tmLabelLogColumns"/>,
+			<include refid="extraColumns"/>
+		FROM tm_label_log a
+		<include refid="tmLabelLogJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="baseOrgId != null and baseOrgId != ''">
+				AND a.base_org_id = #{baseOrgId}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="opType != null and opType != ''">
+				AND a.op_type = #{opType}
+			</if>
+			<if test="opTimeFm != null">
+				<![CDATA[AND a.op_time >= #{opTimeFm}]]>
+			</if>
+			<if test="opTimeTo != null">
+				<![CDATA[AND a.op_time <= #{opTimeTo}]]>
+			</if>
+			<if test="labelNo != null and labelNo != ''">
+				AND a.label_no = #{labelNo}
+			</if>
+			<if test="transportNo != null and transportNo != ''">
+				AND a.transport_no = #{transportNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="dispatchNo != null and dispatchNo != ''">
+				AND a.dispatch_no = #{dispatchNo}
+			</if>
+			<if test="preOutletCode != null and preOutletCode != ''">
+				AND a.pre_outlet_code = #{preOutletCode}
+			</if>
+			<if test="nowOutletCode != null and nowOutletCode != ''">
+				AND a.now_outlet_code = #{nowOutletCode}
+			</if>
+			<if test="nextOutletCode != null and nextOutletCode != ''">
+				AND a.next_outlet_code = #{nextOutletCode}
+			</if>
+		</where>
+		ORDER BY a.op_time DESC, a.op_type DESC
+	</select>
+
+</mapper>

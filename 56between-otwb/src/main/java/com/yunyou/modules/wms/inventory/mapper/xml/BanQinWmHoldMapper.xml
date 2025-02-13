@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmHoldMapper">
+    
+	<sql id="banQinWmHoldColumns">
+		a.id AS "id",
+		a.hold_id AS "holdId",
+		a.hold_type AS "holdType",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.lot_num AS "lotNum",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.reason_code AS "reasonCode",
+		a.reason AS "reason",
+		a.is_allow_mv AS "isAllowMv",
+		a.is_allow_ad AS "isAllowAd",
+		a.is_allow_tf AS "isAllowTf",
+		a.hold_op AS "holdOp",
+		a.hold_time AS "holdTime",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmHoldJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+	
+	<select id="get" resultType="BanQinWmHold" >
+		SELECT 
+			<include refid="banQinWmHoldColumns"/>
+		FROM wm_hold a
+		<include refid="banQinWmHoldJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="getEntity" resultType="BanQinWmHoldEntity" >
+        SELECT
+            <include refid="banQinWmHoldColumns"/>,
+            ebc.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName
+        FROM wm_hold a
+        LEFT JOIN eb_customer ebc ON a.owner_code = ebc.ebcu_customer_no AND a.org_id = ebc.org_id AND ebc.ebcu_type LIKE concat('%OWNER,%')
+        LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sku_code = cws.sku_code AND a.org_id = cws.org_id
+		<include refid="banQinWmHoldJoins"/>
+        WHERE a.id = #{id}
+    </select>
+	
+	<select id="findList" resultType="BanQinWmHold" >
+		SELECT 
+			<include refid="banQinWmHoldColumns"/>
+		FROM wm_hold a
+		<include refid="banQinWmHoldJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="holdId != null and holdId != ''">
+                AND a.hold_id = #{holdId}
+            </if>
+            <if test="holdType != null and holdType != ''">
+                AND a.hold_type = #{holdType}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num = #{lotNum}
+            </if>
+            <if test="locCode != null and locCode != ''">
+                AND a.loc_code = #{locCode}
+            </if>
+            <if test="traceId != null and traceId != ''">
+                AND a.trace_id = #{traceId}
+            </if>
+		</where>
+	</select>
+
+    <select id="findPage" resultType="BanQinWmHoldEntity" >
+        SELECT
+            <include refid="banQinWmHoldColumns"/>,
+            ebc.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName
+        FROM wm_hold a
+        LEFT JOIN eb_customer ebc ON a.owner_code = ebc.ebcu_customer_no AND a.org_id = ebc.org_id AND ebc.ebcu_type LIKE concat('%OWNER,%')
+        LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sku_code = cws.sku_code AND a.org_id = cws.org_id
+		<include refid="banQinWmHoldJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="holdId != null and holdId != ''">
+                AND a.hold_id = #{holdId}
+            </if>
+            <if test="holdType != null and holdType != ''">
+                AND a.hold_type = #{holdType}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num = #{lotNum}
+            </if>
+            <if test="locCode != null and locCode != ''">
+                AND a.loc_code = #{locCode}
+            </if>
+            <if test="traceId != null and traceId != ''">
+                AND a.trace_id = #{traceId}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmHold" >
+		SELECT 
+			<include refid="banQinWmHoldColumns"/>
+		FROM wm_hold a
+		<include refid="banQinWmHoldJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_hold(
+			id,
+			hold_id,
+			hold_type,
+			owner_code,
+			sku_code,
+			lot_num,
+			loc_code,
+			trace_id,
+			reason_code,
+			reason,
+			is_allow_mv,
+			is_allow_ad,
+			is_allow_tf,
+			hold_op,
+			hold_time,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{holdId},
+			#{holdType},
+			#{ownerCode},
+			#{skuCode},
+			#{lotNum},
+			#{locCode},
+			#{traceId},
+			#{reasonCode},
+			#{reason},
+			#{isAllowMv},
+			#{isAllowAd},
+			#{isAllowTf},
+			#{holdOp},
+			#{holdTime},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_hold SET 	
+			hold_id = #{holdId},
+			hold_type = #{holdType},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			lot_num = #{lotNum},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			reason_code = #{reasonCode},
+			reason = #{reason},
+			is_allow_mv = #{isAllowMv},
+			is_allow_ad = #{isAllowAd},
+			is_allow_tf = #{isAllowTf},
+			hold_op = #{holdOp},
+			hold_time = #{holdTime},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_hold
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_hold SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

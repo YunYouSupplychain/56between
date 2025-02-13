@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.mapper.AnnexMapper">
+
+    <sql id="annexColumns">
+        a.id AS "id",
+        a.type AS "type",
+        a.pk_id AS "pkId",
+        a.file_name AS fileName,
+        a.file_size AS fileSize,
+        a.path AS "path",
+        a.upload_by AS "uploadBy.id",
+        a.upload_date AS "uploadDate"
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.sys.entity.Annex">
+        SELECT
+          <include refid="annexColumns"/>
+        FROM sys_annex a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.sys.entity.Annex">
+        SELECT
+          <include refid="annexColumns"/>,
+          su.name AS "uploadBy.name"
+        FROM sys_annex a
+        LEFT JOIN sys_user su ON a.upload_by = su.id
+        WHERE a.type = #{type}
+          AND a.pk_id = #{pkId}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sys_annex (
+            id,
+            type,
+            pk_id,
+            file_name,
+            file_size,
+            path,
+            upload_by,
+            upload_date
+        ) VALUES (
+             #{id},
+             #{type},
+             #{pkId},
+             #{fileName},
+             #{fileSize},
+             #{path},
+             #{uploadBy.id},
+             #{uploadDate}
+        )
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM sys_annex WHERE id = #{id}
+    </delete>
+
+</mapper>

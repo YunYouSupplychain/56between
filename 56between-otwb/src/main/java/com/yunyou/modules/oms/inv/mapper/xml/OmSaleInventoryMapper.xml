@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.inv.mapper.OmSaleInventoryMapper">
+    
+	<sql id="omSaleInventoryColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.rec_ver AS "recVer",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.warehouse AS "warehouse",
+		a.owner AS "owner",
+		a.sku_code AS "skuCode",
+		a.alloc_qty AS "allocQty",
+		a.shipment_qty AS "shipmentQty",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="omSaleInventoryJoins">
+		
+	</sql>
+
+	<select id="get" resultType="OmSaleInventory" >
+		SELECT 
+			<include refid="omSaleInventoryColumns"/>
+		FROM om_sale_inventory a
+		<include refid="omSaleInventoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OmSaleInventory" >
+		SELECT 
+			<include refid="omSaleInventoryColumns"/>
+		FROM om_sale_inventory a
+		<include refid="omSaleInventoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="warehouse != null and warehouse != ''">
+				AND a.warehouse = #{warehouse}
+			</if>
+			<if test="owner != null and owner != ''">
+				AND a.owner = #{owner}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="OmSaleInventory" >
+		SELECT 
+			<include refid="omSaleInventoryColumns"/>
+		FROM om_sale_inventory a
+		<include refid="omSaleInventoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO om_sale_inventory(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+            rec_ver,
+			remarks,
+			del_flag,
+			warehouse,
+			owner,
+			sku_code,
+			alloc_qty,
+			shipment_qty,
+			org_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+            #{recVer},
+			#{remarks},
+			#{delFlag},
+			#{warehouse},
+			#{owner},
+			#{skuCode},
+			#{allocQty},
+			#{shipmentQty},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+        UPDATE om_sale_inventory
+        SET update_by    = #{updateBy.id},
+            update_date  = #{updateDate},
+            rec_ver      = rec_ver + 1,
+            remarks      = #{remarks},
+            warehouse    = #{warehouse},
+            owner        = #{owner},
+            sku_code     = #{skuCode},
+            alloc_qty    = #{allocQty},
+            shipment_qty = #{shipmentQty},
+            org_id       = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+
+	<update id="updateAllocQty">
+        UPDATE om_sale_inventory
+        SET alloc_qty = alloc_qty + #{addAllocQty},
+            rec_ver   = rec_ver + 1
+        WHERE owner = #{owner}
+          AND sku_code = #{skuCode}
+          AND warehouse = #{warehouse}
+          AND org_id = #{orgId}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE om_sale_inventory SET
+            del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM om_sale_inventory WHERE id = #{id}
+	</delete>
+
+    <select id="findInv" resultType="com.yunyou.modules.oms.inv.entity.OmSaleInventoryEntity">
+        select
+          a.owner_code                          AS owner,
+          a.owner_name                     AS ownerName,
+          a.sku_code                            AS skuCode,
+          a.sku_name                         AS skuName,
+          a.status                              AS status,
+          a.qty_available                       AS qtyAvailable,
+          a.qty                                 AS qty,
+          'EA'                                  AS uom,
+          '件'                                  AS uomDesc,
+          a.org_id                              AS warehouse,
+          office.name                           AS warehouseName
+        from (
+               select
+                 inv.owner_code         AS owner_code,
+                 inv.owner_name         AS owner_name,
+                 inv.sku_code           AS sku_code,
+                 inv.sku_name           AS sku_name,
+                 inv.status             AS status,
+                 sum(inv.qty)           AS qty,
+                 sum(inv.qty_available) AS qty_available,
+                 inv.warehouse          AS warehouse,
+                 inv.org_id             AS org_id
+               from (
+                      select
+                        intransit.owner_code     AS owner_code,
+                        intransit.owner_name     AS owner_name,
+                        intransit.sku_code       AS sku_code,
+                        intransit.sku_name       AS sku_name,
+                        '在途'                    AS status,
+                        ifnull(intransit.qty, 0) AS qty,
+                        intransit.qty_available  AS qty_available,
+                        intransit.warehouse      AS warehouse,
+                        intransit.org_id         AS org_id
+                      from (
+                             select
+                               omph.owner                    as owner_code,
+                               omcu.ebcu_name_cn             as owner_name,
+                               ompd.sku_code                 as sku_code,
+                               item.sku_name                 as sku_name,
+                               ompd.qty                      as qty,
+                               0                             as qty_available,
+                               ifnull(omph.sub_org_id, '-')  as warehouse,
+                               omph.org_id                   as org_id
+                             from om_po_header omph
+                               inner join om_po_detail ompd on omph.id = ompd.header_id and omph.status = '30'
+                               inner join om_customer omcu on omph.owner = omcu.ebcu_customer_no and omph.org_id = omcu.org_id
+                               inner join om_item item on omph.owner = item.owner_code and ompd.sku_code = item.sku_code and ompd.org_id = item.org_id
+                                <where>
+                                    1 = 1
+                                    <if test="owner != null and owner != ''">
+                                        AND omph.owner = #{owner}
+                                    </if>
+                                    <if test="skuCode != null and skuCode != ''">
+                                        AND ompd.sku_code = #{skuCode}
+                                    </if>
+                                    <if test="warehouse != null and warehouse != ''">
+                                        AND omph.org_id = #{warehouse}
+                                    </if>
+                                </where>
+                             union all
+                             select
+                               omch.owner                    as owner_code,
+                               omcu.ebcu_name_cn             as owner_name,
+                               omcd.sku_code                 as sku_code,
+                               item.sku_name                 as sku_name,
+                               (ifnull(omcd.qty, 0) - ifnull(omcd.task_qty, 0)) as qty,
+                               0                             as qty_available,
+                               ifnull(omch.warehouse, '-')   as warehouse,
+                               omch.org_id                   as org_id
+                             from om_chain_header omch
+                               inner join om_chain_detail omcd on omch.id = omcd.header_id and omch.status in ('10', '20', '30', '35') and omch.chain_type in ('2', '4')
+                               inner join om_customer omcu on omch.owner = omcu.ebcu_customer_no and omch.org_id = omcu.org_id
+                               inner join om_item item on omch.owner = item.owner_code and  omcd.sku_code = item.sku_code and omcd.org_id = item.org_id
+                                <where>
+                                    1 = 1
+                                    <if test="owner != null and owner != ''">
+                                        AND omch.owner = #{owner}
+                                    </if>
+                                    <if test="skuCode != null and skuCode != ''">
+                                        AND omcd.sku_code = #{skuCode}
+                                    </if>
+                                    <if test="warehouse != null and warehouse != ''">
+                                        AND omch.org_id = #{warehouse}
+                                    </if>
+                                </where>
+                             union all
+                             select
+                               omth.owner                    as owner_code,
+                               omcu.ebcu_name_cn             as owner_name,
+                               omtd.sku_code                 as sku_code,
+                               item.sku_name                 as sku_name,
+                               omtd.qty                      as qty,
+                               0                             as qty_available,
+                               ifnull(omth.warehouse, '-')   as warehouse,
+                               omth.org_id                   as org_id
+                             from om_task_header omth
+                               inner join om_task_detail omtd on omth.id = omtd.header_id and omtd.alloc_status = '90'
+                               inner join om_customer omcu on omth.owner = omcu.ebcu_customer_no and omth.org_id = omcu.org_id
+                               inner join om_item item on omth.owner = item.owner_code and omtd.sku_code = item.sku_code and omtd.org_id = item.org_id
+                                <where>
+                                    1 = 1
+                                    AND omth.task_type = '2'
+                                    and omth.status in ('10', '20')
+                                    <if test="owner != null and owner != ''">
+                                        AND omth.owner = #{owner}
+                                    </if>
+                                    <if test="skuCode != null and skuCode != ''">
+                                        AND omtd.sku_code = #{skuCode}
+                                    </if>
+                                    <if test="warehouse != null and warehouse != ''">
+                                        AND omth.org_id = #{warehouse}
+                                    </if>
+                                </where>
+                             union all
+                             select
+                               wmad.owner_code                   as owner_code,
+                               ec.ebcu_name_cn                   as owner_name,
+                               wmad.sku_code                     as sku_code,
+                               cws.sku_name                      as sku_name,
+                               wmad.qty_asn_ea - wmad.qty_rcv_ea as qty,
+                               0                                 as qty_available,
+                               wmad.org_id                       as warehouse,
+                               wmad.org_id                       as org_id
+                             from wm_asn_detail wmad
+                               inner join wm_asn_header wmah on wmad.head_id = wmah.id and wmah.status not in ('90', '99')
+                               inner join eb_customer ec on ec.ebcu_customer_no = wmad.owner_code and wmad.org_id = ec.org_id
+                               inner join cd_wh_sku cws on wmad.owner_code = cws.owner_code and wmad.sku_code = cws.sku_code and wmad.org_id = cws.org_id
+                                <where>
+                                    1 = 1
+                                    and wmad.`status` in ('00', '10')
+                                    <if test="owner != null and owner != ''">
+                                        AND wmad.owner_code = #{owner}
+                                    </if>
+                                    <if test="skuCode != null and skuCode != ''">
+                                        AND wmad.sku_code = #{skuCode}
+                                    </if>
+                                    <if test="warehouse != null and warehouse != ''">
+                                        AND wmad.org_id = #{warehouse}
+                                    </if>
+                                </where>
+                      ) intransit
+                      union all
+                      select
+                        wmil.owner_code                                                                             AS owner_code,
+                        wmil.owner_name                                                                             AS owner_name,
+                        wmil.sku_code                                                                               AS sku_code,
+                        wmil.sku_name                                                                               AS sku_name,
+                        '库存'                                                                                      AS status,
+                        ifnull(wmil.qty, 0)                                                                         AS qty,
+                        ifnull(wmil.qty, 0) - ifnull(wmil.qty_hold, 0) - ifnull(wmil.qty_pa_out, 0)
+                            - ifnull(wmil.qty_rp_out, 0) - ifnull(wmil.qty_mv_out, 0)
+                            - ifnull(osi.alloc_qty, 0) + ifnull(osi.shipment_qty, 0)                              AS qty_available,
+                        wmil.org_id                                                                                 AS warehouse,
+                        wmil.org_id                                                                                 AS org_id
+                      from (
+                            SELECT
+                                will.owner_code                   AS owner_code,
+                                ec.ebcu_name_cn                   as owner_name,
+                                will.sku_code                     AS sku_code,
+                                cws.sku_name                      as sku_name,
+                                sum(ifnull( will.qty, 0 ))        AS qty,
+                                sum(ifnull( will.qty_hold, 0 ))   AS qty_hold,
+                                sum(ifnull( will.qty_pk, 0 ))     AS qty_pk,
+                                sum(ifnull( will.qty_pa_out, 0 )) AS qty_pa_out,
+                                sum(ifnull( will.qty_rp_out, 0 )) AS qty_rp_out,
+                                sum(ifnull( will.qty_mv_out, 0 )) AS qty_mv_out,
+                                will.org_id AS org_id
+                            from wm_inv_lot_loc will
+                            inner join eb_customer ec on ec.ebcu_customer_no = will.owner_code and will.org_id = ec.org_id
+                            inner join cd_wh_sku cws on will.owner_code = cws.owner_code and will.sku_code = cws.sku_code and will.org_id = cws.org_id
+
+                            group by
+                                will.owner_code,
+                                ec.ebcu_name_cn,
+                                will.sku_code,
+                                cws.sku_name,
+                                will.org_id
+                        ) wmil
+                        left join (
+                            select
+                                omsi.owner,
+                                omsi.sku_code,
+                                omsi.warehouse,
+                                sum(ifnull(omsi.alloc_qty, 0)) as alloc_qty,
+                                sum(ifnull(omsi.shipment_qty, 0)) as shipment_qty
+                                from om_sale_inventory omsi
+                            group by
+                                omsi.owner,
+                                omsi.sku_code,
+                                omsi.warehouse
+                        ) osi
+                         on wmil.owner_code = osi.owner
+                        and wmil.sku_code = osi.sku_code
+                        and wmil.org_id = osi.warehouse
+                        <where>
+                            1 = 1
+                            <if test="owner != null and owner != ''">
+                                AND wmil.owner_code = #{owner}
+                            </if>
+                            <if test="skuCode != null and skuCode != ''">
+                                AND wmil.sku_code = #{skuCode}
+                            </if>
+                            <if test="warehouse != null and warehouse != ''">
+                                AND wmil.org_id = #{warehouse}
+                            </if>
+                        </where>
+                    ) inv
+               group by inv.owner_code, inv.owner_name, inv.sku_code, inv.sku_name, inv.status, inv.warehouse, inv.org_id
+             ) a
+        left join sys_office office on a.org_id = office.id
+        <where>
+            ${dataScope}
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY office.name, a.status, a.owner_code, a.sku_code
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findOmSkuInv" resultType="com.yunyou.modules.oms.inv.entity.OmSaleInventoryEntity">
+        SELECT will.owner_code                                                                                                              AS owner,
+               ec.ebcu_name_cn                                                                                                              AS ownerName,
+               will.sku_code                                                                                                                AS skuCode,
+               cws.sku_name                                                                                                                 AS skuName,
+               sum(will.qty)                                                                                                                AS qty,
+               sum(will.qty - will.qty_hold - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out)                                          AS qtyAvailable,
+               cws.print_uom                                                                                                                AS uom,
+               cwpr.cdpr_desc                                                                                                               AS uomDesc,
+               sum(will.qty / (CASE WHEN cwpr.cdpr_quantity = 0 THEN 1 WHEN cwpr.cdpr_quantity IS NULL THEN 1 ELSE cwpr.cdpr_quantity END)) AS qtyUom
+        FROM wm_inv_lot_loc will
+            LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+            LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+            LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+            LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = cws.print_uom AND cwpr.org_id = cwp.org_id
+        WHERE will.owner_code = #{ownerCode}
+          AND will.sku_code = #{skuCode}
+          AND will.org_id = #{orgId}
+        GROUP BY will.owner_code, ec.ebcu_name_cn, will.sku_code, cws.sku_name, cws.print_uom, cwpr.cdpr_desc
+    </select>
+
+</mapper>

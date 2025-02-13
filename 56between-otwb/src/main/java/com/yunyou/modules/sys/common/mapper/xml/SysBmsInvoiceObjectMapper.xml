@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysBmsInvoiceObjectMapper">
+    
+	<sql id="sysBmsInvoiceObjectColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.code AS "code",
+		a.name AS "name",
+		a.type AS "type",
+		a.principal AS "principal",
+		a.phone AS "phone",
+		a.address AS "address",
+		a.bank AS "bank",
+		a.bank_account AS "bankAccount",
+		a.data_set AS "dataSet",
+		scds.name AS "dataSetName"
+	</sql>
+	
+	<sql id="sysBmsInvoiceObjectJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysBmsInvoiceObject" >
+		SELECT 
+			<include refid="sysBmsInvoiceObjectColumns"/>
+		FROM sys_bms_invoice_object a
+		<include refid="sysBmsInvoiceObjectJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysBmsInvoiceObject" >
+		SELECT 
+			<include refid="sysBmsInvoiceObjectColumns"/>
+		FROM sys_bms_invoice_object a
+		<include refid="sysBmsInvoiceObjectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			and a.data_set = #{dataSet}
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysBmsInvoiceObject" >
+		SELECT 
+			<include refid="sysBmsInvoiceObjectColumns"/>
+		FROM sys_bms_invoice_object a
+		<include refid="sysBmsInvoiceObjectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert" parameterType="com.yunyou.modules.sys.common.entity.SysBmsInvoiceObject" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO sys_bms_invoice_object
+		(
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			code,
+			name,
+			type,
+			principal,
+			phone,
+			address,
+			data_set,
+			bank,
+			bank_account
+		)
+		VALUES
+		(
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{code},
+			#{name},
+			#{type},
+			#{principal},
+			#{phone},
+			#{address},
+			#{dataSet},
+			#{bank},
+			#{bankAccount}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_bms_invoice_object
+		SET update_by    = #{updateBy.id},
+			update_date  = #{updateDate},
+			remarks      = #{remarks},
+			code         = #{code},
+			name         = #{name},
+			type         = #{type},
+			principal    = #{principal},
+			phone        = #{phone},
+			address      = #{address},
+			data_set     = #{dataSet},
+			bank         = #{bank},
+			bank_account = #{bankAccount}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_bms_invoice_object WHERE id = #{id}
+	</delete>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_bms_invoice_object SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="com.yunyou.modules.sys.common.entity.SysBmsInvoiceObject" statementType="STATEMENT">
+		select * FROM sys_bms_invoice_object  where ${propertyName} = '${value}'
+	</select>
+	<!-- 根据供应商获取开票对象 -->
+	<select id="getInvoiceObjectBySupplier" resultType="com.yunyou.modules.sys.common.entity.SysBmsInvoiceObject">
+		SELECT a.code AS "code",
+			   a.name AS "name"
+		FROM sys_bms_invoice_object a
+			LEFT JOIN sys_bms_invoice_object_detail b on a.id = b.object_id
+		WHERE b.code = #{supplierCode}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.SysBmsInvoiceObject">
+		SELECT
+		<include refid="sysBmsInvoiceObjectColumns"/>
+		FROM sys_bms_invoice_object a
+		<include refid="sysBmsInvoiceObjectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				and a.data_set = #{dataSet}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code like concat('%', #{code},'%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name like concat('%', #{name},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.SysBmsInvoiceObject">
+		SELECT
+		<include refid="sysBmsInvoiceObjectColumns"/>
+		FROM sys_bms_invoice_object a
+		<include refid="sysBmsInvoiceObjectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				and a.data_set = #{dataSet}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code like concat('%', #{code},'%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name like concat('%', #{name},'%')
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.code like concat('%', #{codeAndName},'%') or a.name like concat('%', #{codeAndName},'%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="findSync" resultType="com.yunyou.modules.sys.common.entity.SysBmsInvoiceObject">
+		SELECT <include refid="sysBmsInvoiceObjectColumns"/>
+		FROM sys_bms_invoice_object a
+		<include refid="sysBmsInvoiceObjectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+	</select>
+
+</mapper>

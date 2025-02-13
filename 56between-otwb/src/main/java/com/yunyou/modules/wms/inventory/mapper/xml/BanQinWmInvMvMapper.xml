@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmInvMvMapper">
+
+    <select id="findPage" resultType="BanQinWmInvMvEntity">
+        SELECT
+			a.lot_num AS lotNum,
+			a.loc_code AS fmLoc,
+			a.trace_id AS fmTraceId,
+			a.owner_code AS ownerCode,
+			a.sku_code AS skuCode,
+			a.qty AS fmQty,
+			a.qty_hold AS qtyHold,
+			a.qty_alloc AS qtyAlloc,
+			a.qty_pk AS qtyPk,
+			a.qty_pa_out AS qtyPaOut,
+			a.qty_rp_out AS qtyRpOut,
+			a.qty_mv_out AS qtyMvOut,
+			a.qty_mv_in AS qtyMvIn,
+			a.create_by AS createBy,
+			a.create_date AS createDate,
+			a.update_by AS updateBy,
+			a.update_date AS updateDate,
+			a.org_id AS orgId,
+            (IFNULL(a.qty, 0) - IFNULL(a.qty_hold, 0) - IFNULL(a.qty_alloc, 0) - IFNULL(a.qty_pk, 0) - IFNULL(a.qty_pa_out, 0) - IFNULL(a.qty_rp_out, 0) - IFNULL(a.qty_mv_out, 0)) AS availableQty,
+            wila.lot_att01 AS lotAtt01,
+            wila.lot_att02 AS lotAtt02,
+            wila.lot_att03 AS lotAtt03,
+            wila.lot_att04 AS lotAtt04,
+            wila.lot_att05 AS lotAtt05,
+            wila.lot_att06 AS lotAtt06,
+            wila.lot_att07 AS lotAtt07,
+            wila.lot_att08 AS lotAtt08,
+            wila.lot_att09 AS lotAtt09,
+            wila.lot_att10 AS lotAtt10,
+            wila.lot_att11 AS lotAtt11,
+            wila.lot_att12 AS lotAtt12,
+            ebcu.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+            cws.pack_code AS packCode,
+            cwp.cdpa_format AS cdpaFormat,
+            cws.print_uom AS toUom,
+            cwpr.cdpr_desc AS toUomDesc,
+            cwpr.cdpr_quantity AS cdprQuantity,
+			'N' AS isAllowMv
+        FROM wm_inv_lot_loc a
+        LEFT JOIN wm_inv_lot_att wila ON a.lot_num = wila.lot_num AND a.org_id = wila.org_id
+        LEFT JOIN eb_customer ebcu ON a.owner_code = ebcu.ebcu_customer_no AND a.org_id = ebcu.org_id
+        LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sku_code = cws.sku_code AND a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cwp ON cws.pack_code = cwp.cdpa_code AND cws.org_id = cwp.org_id
+        LEFT JOIN cd_wh_package_relation cwpr ON cwp.pm_code = cwpr.cdpr_cdpa_pm_code AND cwp.org_id = cwpr.org_id AND cws.print_uom = cwpr.cdpr_unit_level
+        WHERE 1 = 1
+		AND a.org_id = #{orgId}
+		<if test="isAvailable == 'Y'.toString()">
+        	AND (IFNULL(a.QTY, 0) - IFNULL(a.QTY_HOLD, 0) - IFNULL(a.QTY_ALLOC, 0) - IFNULL(a.QTY_PK, 0) - IFNULL(a.QTY_PA_OUT, 0) - IFNULL(a.QTY_RP_OUT, 0) - IFNULL(a.QTY_MV_OUT, 0)) > 0
+		</if>
+		<if test="isHold == 'Y'.toString()">
+			AND a.qty = a.qty_hold
+		</if>
+        <if test="ownerCode != null and ownerCode != ''">
+            AND a.owner_code = #{ownerCode}
+        </if>
+        <if test="skuCode != null and skuCode != ''">
+            AND a.sku_code = #{skuCode}
+        </if>
+        <if test="lotNum != null and lotNum != ''">
+            AND a.lot_num = #{lotNum}
+        </if>
+        <if test="locCode != null and locCode != ''">
+            AND a.loc_code = #{locCode}
+        </if>
+        <if test="traceId != null and traceId != ''">
+            AND a.trace_id = #{traceId}
+        </if>
+    </select>
+
+</mapper>

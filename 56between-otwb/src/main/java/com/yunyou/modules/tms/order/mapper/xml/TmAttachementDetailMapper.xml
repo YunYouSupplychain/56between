@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmAttachementDetailMapper">
+    
+	<sql id="tmAttachementDetailColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.order_no AS "orderNo",
+		a.order_type AS "orderType",
+		a.upload_person AS "uploadPerson",
+		a.upload_time AS "uploadTime",
+		a.upload_path AS "uploadPath",
+		a.file_name AS "fileName",
+		a.file_url AS "fileUrl",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.label_no AS "labelNo"
+	</sql>
+	
+	<sql id="tmAttachementDetailJoins">
+		
+	</sql>
+	
+	<select id="get" resultType="TmAttachementDetail" >
+		SELECT 
+			<include refid="tmAttachementDetailColumns"/>
+		FROM tm_attachement_detail a
+		<include refid="tmAttachementDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmAttachementDetail" >
+		SELECT 
+			<include refid="tmAttachementDetailColumns"/>
+		FROM tm_attachement_detail a
+		<include refid="tmAttachementDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="fileName != null and fileName != ''">
+				AND a.file_name = #{fileName}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmAttachementDetail" >
+		SELECT 
+			<include refid="tmAttachementDetailColumns"/>
+		FROM tm_attachement_detail a
+		<include refid="tmAttachementDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_attachement_detail(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			order_no,
+			order_type,
+			upload_person,
+			upload_time,
+			upload_path,
+			file_name,
+			file_url,
+			org_id,
+			rec_ver,
+			label_no
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{orderNo},
+			#{orderType},
+			#{uploadPerson},
+			#{uploadTime},
+			#{uploadPath},
+			#{fileName},
+			#{fileUrl},
+			#{orgId},
+			#{recVer},
+			#{labelNo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_attachement_detail SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			order_no = #{orderNo},
+			order_type = #{orderType},
+			upload_person = #{uploadPerson},
+			upload_time = #{uploadTime},
+			upload_path = #{uploadPath},
+			file_name = #{fileName},
+			file_url = #{fileUrl},
+			org_id = #{orgId},
+			label_no = #{labelNo},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_attachement_detail
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_attachement_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+    <update id="deleteByOrderNo">
+        DELETE FROM tm_attachement_detail
+        WHERE order_no = #{orderNo}
+        AND order_type = #{orderType}
+        AND org_id = #{orgId}
+    </update>
+</mapper>

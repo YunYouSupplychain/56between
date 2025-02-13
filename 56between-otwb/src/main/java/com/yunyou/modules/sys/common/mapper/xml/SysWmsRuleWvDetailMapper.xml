@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysWmsRuleWvDetailMapper">
+    
+	<sql id="sysWmsRuleWvDetailColumns">
+		a.id AS "id",
+		a.rule_code AS "ruleCode",
+		a.line_no AS "lineNo",
+		a.main_code AS "mainCode",
+		a.desc AS "desc",
+		a.is_enable AS "isEnable",
+		a.sql AS "sql",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.data_set AS "dataSet",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="sysWmsRuleWvDetailJoins">
+		
+	</sql>
+	
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvDetail" >
+		SELECT 
+			<include refid="sysWmsRuleWvDetailColumns"/>
+		FROM sys_wms_rule_wv_detail a
+		<include refid="sysWmsRuleWvDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="getByHeaderId" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvDetail" >
+        SELECT
+        <include refid="sysWmsRuleWvDetailColumns"/>
+        FROM sys_wms_rule_wv_detail a
+        <include refid="sysWmsRuleWvDetailJoins"/>
+        WHERE a.header_id = #{headerId}
+    </select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvDetail" >
+		SELECT 
+			<include refid="sysWmsRuleWvDetailColumns"/>
+		FROM sys_wms_rule_wv_detail a
+		<include refid="sysWmsRuleWvDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.data_set = #{dataSet}
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+            <if test="ruleCode != null and ruleCode != ''">
+                AND a.rule_code = #{ruleCode}
+            </if>
+			<if test="isEnable != null and isEnable != ''">
+				AND a.is_enable = #{isEnable}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleWvDetail" >
+		SELECT 
+			<include refid="sysWmsRuleWvDetailColumns"/>
+		FROM sys_wms_rule_wv_detail a
+		<include refid="sysWmsRuleWvDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_wms_rule_wv_detail(
+			id,
+			rule_code,
+			line_no,
+			main_code,
+			`desc`,
+			is_enable,
+			`sql`,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			data_set,
+			header_id
+		) VALUES (
+			#{id},
+			#{ruleCode},
+			#{lineNo},
+			#{mainCode},
+			#{desc},
+			#{isEnable},
+			#{sql},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{dataSet},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_wms_rule_wv_detail
+		SET rule_code   = #{ruleCode},
+			line_no     = #{lineNo},
+			main_code   = #{mainCode},
+			`desc`      = #{desc},
+			is_enable   = #{isEnable},
+			`sql`       = #{sql},
+			rec_ver     = #{recVer} + 1,
+			update_by   = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_wms_rule_wv_detail SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_wms_rule_wv_detail WHERE id = #{id}
+	</delete>
+
+	<delete id="deleteByHeaderId">
+		DELETE FROM sys_wms_rule_wv_detail WHERE header_id = #{headerId}
+	</delete>
+
+</mapper>

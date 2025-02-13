@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.mapper.SysRuleGenNoMapper">
+
+    <sql id="ruleBillNoColumns">
+        a.id AS "id",
+		a.bill_type AS "billType",
+		a.prefix AS "prefix",
+		a.stamp AS "stamp",
+		a.clear_cycle AS "clearCycle",
+		a.serial_no_max_length AS "serialNoMaxLength",
+		a.current_serial_no AS "currentSerialNo",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.remarks AS "remarks"
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.sys.entity.SysRuleGenNo">
+        SELECT
+        <include refid="ruleBillNoColumns"/>
+        FROM sys_rule_gen_no a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.sys.entity.SysRuleGenNo">
+        SELECT
+        <include refid="ruleBillNoColumns"/>
+        FROM sys_rule_gen_no a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.sys.entity.SysRuleGenNo">
+        SELECT
+        <include refid="ruleBillNoColumns"/>
+        FROM sys_rule_gen_no a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sys_rule_gen_no (
+            bill_type,
+            prefix,
+            stamp,
+            clear_cycle,
+            serial_no_max_length,
+            current_serial_no,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag,
+            remarks
+        ) VALUES (
+			#{billType},
+			#{prefix},
+			#{stamp},
+			#{clearCycle},
+			#{serialNoMaxLength},
+			#{currentSerialNo},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{remarks}
+		)
+    </insert>
+
+    <update id="update">
+        UPDATE sys_rule_gen_no
+        SET update_by            = #{updateBy.id},
+            update_date          = #{updateDate},
+            bill_type            = #{billType},
+            prefix               = #{prefix},
+            stamp                = #{stamp},
+            clear_cycle          = #{clearCycle},
+            serial_no_max_length = #{serialNoMaxLength},
+            current_serial_no    = #{currentSerialNo},
+            remarks              = #{remarks}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateByType">
+        UPDATE sys_rule_gen_no
+        SET update_date       = NOW(),
+            current_serial_no = #{currentSerialNo}
+        WHERE bill_type = #{billType}
+    </update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE sys_rule_gen_no
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE
+        FROM sys_rule_gen_no
+        WHERE id = #{id}
+    </delete>
+
+    <select id="findPage" resultType="com.yunyou.modules.sys.entity.SysRuleGenNo">
+        SELECT
+        <include refid="ruleBillNoColumns"/>
+        FROM sys_rule_gen_no a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="billType != null and billType != ''">
+                AND a.bill_type LIKE concat('%', #{billType}, '%')
+            </if>
+            <if test="prefix != null and prefix != ''">
+                AND a.prefix LIKE concat('%', #{prefix}, '%')
+            </if>
+            <if test="remarks != null and remarks != ''">
+                AND a.remarks LIKE concat('%', #{remarks}, '%')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getByType" resultType="com.yunyou.modules.sys.entity.SysRuleGenNo">
+        SELECT
+        <include refid="ruleBillNoColumns"/>
+        FROM sys_rule_gen_no a
+        WHERE a.bill_type = #{billType}
+        FOR UPDATE
+    </select>
+
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.report.mapper.BanQinWmAllOrderMapper">
+
+	<select id="findPage" resultType="com.yunyou.modules.wms.report.entity.WmAllOrderEntity" >
+		SELECT
+		    wsh.so_no AS soNo,
+			wsh.so_type AS soType,
+			och.order_date AS orderTime,
+			owner.ebcu_name_cn AS ownerName,
+			och.shipper AS deliveryName,
+			och.shipper_tel AS deliveryTel,
+			och.shipper_address AS deliveryAddress,
+			och.shipper_address_area AS deliveryArea,
+			och.consignee AS consignee,
+			och.consignee_tel AS consigneeTel,
+			och.consignee_address AS consigneeAddress,
+			och.consignee_address_area AS consigneeArea,
+			och.business_no AS businessNo,
+			och.chain_no AS chainNo,
+			wsh.def3 AS taskNo,
+			och.customer_no AS customerOrderNo,
+			och.def1 AS externalNo,
+			ocd.sku_code AS skuCode,
+			ocd.sku_name AS skuName,
+			wsh.carrier_code AS carrierCode,
+			carrier.ebcu_name_cn AS carrierName,
+			wsa.alloc_id AS allocId,
+			wsa.wave_no AS waveNo,
+			wsa.loc_code AS locCode,
+			wsa.trace_id AS traceId,
+			IFNULL(wsa.qty_ea, IFNULL(wsd.qty_so_ea, ocd.qty)) AS qtyEa,
+			wsa.to_loc AS toLoc,
+			wsa.to_id AS toId,
+			wsa.pick_op AS pickOp,
+			wsa.pick_time AS pickTime,
+			wsa.check_op AS checkOp,
+			wsa.check_time AS checkTime,
+			wsa.pack_op AS packOp,
+			wsa.pack_time AS packTime,
+			wsa.ship_op AS shipOp,
+			wsa.ship_time AS shipTime,
+			wsa.tracking_no AS trackingNo,
+			wsa.pack_weight AS packWeight,
+			wsa.remarks AS remarks,
+			wsa.org_id AS orgId,
+			wsa.case_no AS caseNo
+		FROM om_chain_header och
+		LEFT JOIN om_chain_detail ocd ON och.id = ocd.header_id AND och.org_id = ocd.org_id
+		LEFT JOIN om_customer owner ON owner.ebcu_customer_no = och.owner AND owner.org_id = och.org_id
+		LEFT JOIN wm_so_header wsh ON och.chain_no = wsh.def2 AND och.warehouse = wsh.org_id
+		LEFT JOIN wm_so_detail wsd ON wsd.so_no = wsh.so_no AND wsd.org_id = wsh.org_id AND ocd.line_no = wsd.def8
+		LEFT JOIN wm_so_alloc wsa ON wsa.so_no = wsh.so_no AND wsa.org_id = wsh.org_id AND wsa.line_no = wsd.line_no
+		LEFT JOIN eb_customer carrier ON wsh.carrier_code = carrier.ebcu_customer_no AND wsh.org_id = carrier.org_id
+		<where>
+			${dataScope}
+			<if test="soNo != null and soNo != ''">
+				AND wsh.so_no = #{soNo}
+			</if>
+			<if test="soType != null and soType != ''">
+				AND wsh.so_type = #{soType}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND och.owner = #{ownerCode}
+			</if>
+			<if test="businessNo != null and businessNo != ''">
+				AND och.business_no = #{businessNo}
+			</if>
+			<if test="chainNo != null and chainNo != ''">
+				AND och.chain_no = #{chainNo}
+			</if>
+			<if test="taskNo != null and taskNo != ''">
+				AND wsh.def3 = #{taskNo}
+			</if>
+			<if test="customerOrderNo != null and customerOrderNo != ''">
+				AND och.customer_no = #{customerOrderNo}
+			</if>
+			<if test="externalNo != null and externalNo != ''">
+				AND och.def1 = #{externalNo}
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND wsa.wave_no = #{waveNo}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND ocd.sku_code = #{skuCode}
+			</if>
+			<if test="trackingNo != null and trackingNo != ''">
+				AND wsa.tracking_no = #{trackingNo}
+			</if>
+			<if test="orderTimeFm != null and orderTimeFm != ''">
+				<![CDATA[AND wsh.order_time >= #{orderTimeFm}]]>
+			</if>
+			<if test="orderTimeTo != null and orderTimeTo != ''">
+				<![CDATA[AND wsh.order_time <= #{orderTimeTo}]]>
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND wsh.carrier_code = #{carrierCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY och.order_date
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

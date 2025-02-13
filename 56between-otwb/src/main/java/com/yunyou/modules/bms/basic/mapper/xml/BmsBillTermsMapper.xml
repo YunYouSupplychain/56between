@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.basic.mapper.BmsBillTermsMapper">
+
+    <sql id="bmsBillTermsColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.bill_terms_code AS "billTermsCode",
+		a.bill_terms_desc AS "billTermsDesc",
+		a.bill_module AS "billModule",
+		a.output_objects AS "outputObjects",
+		a.occurrence_quantity AS "occurrenceQuantity",
+		a.method_name AS "methodName"
+    </sql>
+
+    <sql id="extraColumns">
+        c.name AS "createBy.name",
+        d.name AS "updateBy.name"
+    </sql>
+
+    <sql id="bmsBillTermsJoins">
+        LEFT JOIN sys_user c ON a.create_by = c.id
+        LEFT JOIN sys_user d ON a.update_by = d.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.basic.entity.BmsBillTerms">
+        SELECT
+        <include refid="bmsBillTermsColumns"/>
+        FROM bms_bill_terms a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.basic.entity.BmsBillTerms">
+        SELECT
+        <include refid="bmsBillTermsColumns"/>
+        FROM bms_bill_terms a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="billTermsCode != null and billTermsCode != ''">
+                AND a.bill_terms_code = #{billTermsCode}
+            </if>
+            <if test="billModule != null and billModule != ''">
+                AND a.bill_module = #{billModule}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.basic.entity.BmsBillTerms">
+        SELECT
+        <include refid="bmsBillTermsColumns"/>
+        FROM bms_bill_terms a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_bill_terms
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            bill_terms_code,
+            bill_terms_desc,
+            bill_module,
+            output_objects,
+            occurrence_quantity,
+            method_name
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{billTermsCode},
+            #{billTermsDesc},
+            #{billModule},
+            #{outputObjects},
+            #{occurrenceQuantity},
+            #{methodName}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_bill_terms
+        SET update_by           = #{updateBy.id},
+            update_date         = #{updateDate},
+            remarks             = #{remarks},
+            rec_ver             = rec_ver + 1,
+            bill_terms_code     = #{billTermsCode},
+            bill_terms_desc     = #{billTermsDesc},
+            bill_module         = #{billModule},
+            output_objects      = #{outputObjects},
+            occurrence_quantity = #{occurrenceQuantity},
+            method_name         = #{methodName}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_bill_terms
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_bill_terms WHERE id = #{id}
+    </delete>
+    <delete id="remove">
+        DELETE FROM bms_bill_terms WHERE bill_terms_code = #{code}
+    </delete>
+
+    <select id="getByCode" resultType="com.yunyou.modules.bms.basic.entity.BmsBillTerms">
+        SELECT
+        <include refid="bmsBillTermsColumns"/>
+        FROM bms_bill_terms a
+        WHERE a.bill_terms_code = #{code}
+    </select>
+
+    <select id="getEntity" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsBillTermsEntity">
+        SELECT
+        <include refid="bmsBillTermsColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_bill_terms a
+        <include refid="bmsBillTermsJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsBillTermsEntity">
+        SELECT
+        <include refid="bmsBillTermsColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_bill_terms a
+        <include refid="bmsBillTermsJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="billTermsCode != null and billTermsCode != ''">
+                AND a.bill_terms_code LIKE concat('%', #{billTermsCode},'%')
+            </if>
+            <if test="billTermsDesc != null and billTermsDesc != ''">
+                AND a.bill_terms_desc LIKE concat('%', #{billTermsDesc},'%')
+            </if>
+            <if test="billModule != null and billModule != ''">
+                AND a.bill_module = #{billModule}
+            </if>
+            <if test="codeAndName != null and codeAndName != ''">
+                AND (a.bill_terms_code LIKE concat('%', #{codeAndName},'%') or (a.bill_terms_desc LIKE concat('%', #{codeAndName},'%')))
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.bill_terms_code
+            </otherwise>
+        </choose>
+    </select>
+
+</mapper>

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.basic.mapper.BmsContractSkuPriceMapper">
+
+    <sql id="bmsContractSkuPriceColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.sys_contract_no AS "sysContractNo",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+		a.sku_class AS "skuClass",
+		a.price AS "price",
+		a.tax_price AS "taxPrice",
+		a.unit AS "unit",
+		a.org_id AS "orgId"
+    </sql>
+
+    <sql id="extraColumns">
+        bc.settle_object_code AS "settleObjectCode",
+        bso.settle_object_name AS "settleObjectName",
+        bsc.name AS "skuClassName",
+        so.name AS "orgName"
+    </sql>
+
+    <sql id="bmsContractSkuPriceJoins">
+        LEFT JOIN bms_contract bc ON a.sys_contract_no = bc.sys_contract_no AND a.org_id = bc.org_id
+        LEFT JOIN bms_settle_object bso ON bc.settle_object_code = bso.settle_object_code AND bc.org_id = bso.org_id
+        LEFT JOIN bms_sku_classification bsc ON a.sku_class = bsc.code AND a.org_id = bsc.org_id
+        LEFT JOIN sys_user su ON a.update_by = su.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.basic.entity.BmsContractSkuPrice">
+        SELECT
+        <include refid="bmsContractSkuPriceColumns"/>
+        FROM bms_contract_sku_price a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.basic.entity.BmsContractSkuPrice">
+        SELECT
+        <include refid="bmsContractSkuPriceColumns"/>
+        FROM bms_contract_sku_price a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.basic.entity.BmsContractSkuPrice">
+        SELECT
+        <include refid="bmsContractSkuPriceColumns"/>
+        FROM bms_contract_sku_price a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_contract_sku_price
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            sys_contract_no,
+            sku_code,
+            sku_name,
+            sku_class,
+            price,
+            tax_price,
+            unit,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{sysContractNo},
+            #{skuCode},
+            #{skuName},
+            #{skuClass},
+            #{price},
+            #{taxPrice},
+            #{unit},
+            #{orgId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_contract_sku_price
+        SET update_by       = #{updateBy.id},
+            update_date     = #{updateDate},
+            remarks         = #{remarks},
+            rec_ver         = rec_ver + 1,
+            sys_contract_no = #{sysContractNo},
+            sku_code        = #{skuCode},
+            sku_name        = #{skuName},
+            sku_class       = #{skuClass},
+            price           = #{price},
+            tax_price       = #{taxPrice},
+            unit            = #{unit},
+            org_id          = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_contract_sku_price
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_contract_sku_price WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByContract">
+        DELETE FROM bms_contract_sku_price WHERE sys_contract_no = #{sysContractNo} AND org_id = #{orgId}
+    </delete>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsContractSkuPriceEntity">
+        SELECT
+        <include refid="bmsContractSkuPriceColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_contract_sku_price a
+        <include refid="bmsContractSkuPriceJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="sysContractNo != null and sysContractNo != ''">
+                AND a.sys_contract_no LIKE concat('%', #{sysContractNo}, '%')
+            </if>
+            <if test="skuClass != null and skuClass != ''">
+                AND a.sku_class = #{skuClass}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code LIKE concat('%', #{skuCode}, '%')
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name LIKE concat('%', #{skuName}, '%')
+            </if>
+            <if test="settleObjectCode != null and settleObjectCode != ''">
+                AND bc.settle_object_code LIKE concat('%', #{settleObjectCode}, '%')
+            </if>
+            <if test="settleObjectName != null and settleObjectName != ''">
+                AND bso.settle_object_name LIKE concat('%', #{settleObjectName}, '%')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getEntity" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsContractSkuPriceEntity">
+        SELECT
+        <include refid="bmsContractSkuPriceColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_contract_sku_price a
+        <include refid="bmsContractSkuPriceJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findByContract" resultType="com.yunyou.modules.bms.basic.entity.BmsContractSkuPrice">
+        SELECT
+        <include refid="bmsContractSkuPriceColumns"/>
+        FROM bms_contract_sku_price a
+        WHERE a.sys_contract_no = #{sysContractNo}
+        AND a.org_id = #{orgId}
+        ORDER BY a.sku_code
+    </select>
+
+    <select id="getContractPrice1" resultType="com.yunyou.modules.bms.basic.entity.BmsContractSkuPrice">
+        SELECT
+        <include refid="bmsContractSkuPriceColumns"/>
+        FROM bms_contract_sku_price a
+        WHERE a.sys_contract_no = #{sysContractNo}
+        AND a.sku_code = #{skuCode}
+        AND a.org_id = #{orgId}
+        LIMIT 1
+    </select>
+
+    <select id="getContractPrice2" resultType="com.yunyou.modules.bms.basic.entity.BmsContractSkuPrice">
+        SELECT
+        <include refid="bmsContractSkuPriceColumns"/>
+        FROM bms_contract_sku_price a
+        WHERE (a.sku_code is null or a.sku_code = '')
+        AND a.sys_contract_no = #{sysContractNo}
+        AND a.sku_class = #{skuClass}
+        AND a.org_id = #{orgId}
+        LIMIT 1
+    </select>
+
+    <select id="getContractPrice3" resultType="com.yunyou.modules.bms.basic.entity.BmsContractSkuPrice">
+        SELECT
+        <include refid="bmsContractSkuPriceColumns"/>
+        FROM bms_contract_sku_price a
+        WHERE (a.sku_code is null or a.sku_code = '')
+        AND (a.sku_class is null or a.sku_class = '')
+        AND a.sys_contract_no = #{sysContractNo}
+        AND a.org_id = #{orgId}
+        LIMIT 1
+    </select>
+</mapper>

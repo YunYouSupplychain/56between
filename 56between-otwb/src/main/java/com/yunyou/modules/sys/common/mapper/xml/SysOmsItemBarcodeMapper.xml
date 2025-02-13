@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysOmsItemBarcodeMapper">
+    
+	<sql id="sysOmsItemBarcodeColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.line_no AS "lineNo",
+		a.barcode AS "barcode",
+		a.is_default AS "isDefault",
+		a.item_id AS "itemId",
+		a.data_set AS "dataSet"
+	</sql>
+	
+	<sql id="sysOmsItemBarcodeJoins">
+		LEFT JOIN sys_oms_item b ON b.id = a.item_id
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysOmsItemBarcode" >
+		SELECT 
+			<include refid="sysOmsItemBarcodeColumns"/>
+		FROM sys_oms_item_barcode a
+		<include refid="sysOmsItemBarcodeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysOmsItemBarcode" >
+		SELECT 
+			<include refid="sysOmsItemBarcodeColumns"/>
+		FROM sys_oms_item_barcode a
+		<include refid="sysOmsItemBarcodeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="itemId != null and itemId != ''">
+				AND a.item_id = #{itemId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysOmsItemBarcode" >
+		SELECT 
+			<include refid="sysOmsItemBarcodeColumns"/>
+		FROM sys_oms_item_barcode a
+		<include refid="sysOmsItemBarcodeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_oms_item_barcode(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			line_no,
+			barcode,
+			is_default,
+			item_id,
+			data_set
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{lineNo},
+			#{barcode},
+			#{isDefault},
+			#{itemId},
+			#{dataSet}
+		)
+	</insert>
+    <insert id="batchInsert">
+		INSERT INTO sys_oms_item_barcode
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			line_no,
+			barcode,
+			is_default,
+			item_id,
+			data_set
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.lineNo},
+			#{item.barcode},
+			#{item.isDefault},
+			#{item.itemId},
+			#{item.dataSet}
+		)
+		</foreach>
+	</insert>
+
+    <update id="update">
+		UPDATE sys_oms_item_barcode
+		SET update_by   = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks     = #{remarks},
+			line_no     = #{lineNo},
+			barcode     = #{barcode},
+			is_default  = #{isDefault},
+			item_id     = #{itemId},
+			data_set    = #{dataSet}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_oms_item_barcode
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE item_id = #{itemId}
+			</otherwise>
+		</choose>
+	</delete>
+    <delete id="remove">
+		DELETE soib
+		FROM sys_oms_item_barcode soib
+			INNER JOIN sys_oms_item soi ON soi.id = soib.item_id
+		WHERE soi.owner_code = #{ownerCode}
+		  and soi.sku_code = #{skuCode}
+		  and soi.data_set = #{dataSet}
+	</delete>
+    <!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_oms_item_barcode SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE item_id = #{itemId}
+			</otherwise>
+		</choose>
+	</update>
+
+</mapper>

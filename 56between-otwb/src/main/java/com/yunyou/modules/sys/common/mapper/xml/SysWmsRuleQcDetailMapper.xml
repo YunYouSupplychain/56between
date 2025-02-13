@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysWmsRuleQcDetailMapper">
+    
+	<sql id="sysWmsRuleQcDetailColumns">
+		a.id AS "id",
+		a.rule_code AS "ruleCode",
+		a.line_no AS "lineNo",
+		a.fm_rate AS "fmRate",
+		a.to_rate AS "toRate",
+		a.qc_suggest AS "qcSuggest",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.data_set AS "dataSet",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="sysWmsRuleQcDetailJoins">
+		
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleQcDetail" >
+		SELECT 
+			<include refid="sysWmsRuleQcDetailColumns"/>
+		FROM sys_wms_rule_qc_detail a
+		<include refid="sysWmsRuleQcDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleQcDetail" >
+		SELECT 
+			<include refid="sysWmsRuleQcDetailColumns"/>
+		FROM sys_wms_rule_qc_detail a
+		<include refid="sysWmsRuleQcDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+            <if test="ruleCode != null and ruleCode != ''">
+                AND a.rule_code = #{ruleCode}
+            </if>
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.line_no
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysWmsRuleQcDetail" >
+		SELECT 
+			<include refid="sysWmsRuleQcDetailColumns"/>
+		FROM sys_wms_rule_qc_detail a
+		<include refid="sysWmsRuleQcDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_wms_rule_qc_detail(
+			id,
+			rule_code,
+			line_no,
+			fm_rate,
+			to_rate,
+			qc_suggest,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			data_set,
+			header_id
+		) VALUES (
+			#{id},
+			#{ruleCode},
+			#{lineNo},
+			#{fmRate},
+			#{toRate},
+			#{qcSuggest},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{dataSet},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_wms_rule_qc_detail
+		SET update_by   = #{updateBy.id},
+			update_date = #{updateDate},
+			rec_ver     = rec_ver + 1,
+			remarks     = #{remarks},
+			rule_code   = #{ruleCode},
+			line_no     = #{lineNo},
+			fm_rate     = #{fmRate},
+			to_rate     = #{toRate},
+			qc_suggest  = #{qcSuggest},
+			header_id   = #{headerId}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_wms_rule_qc_detail SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_wms_rule_qc_detail WHERE id = #{id}
+	</delete>
+
+    <delete id="deleteByHeaderId">
+        DELETE FROM sys_wms_rule_qc_detail WHERE header_id = #{headerId}
+    </delete>
+
+</mapper>

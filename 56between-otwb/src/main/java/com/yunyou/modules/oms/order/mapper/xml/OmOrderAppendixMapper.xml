@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.order.mapper.OmOrderAppendixMapper">
+    
+	<sql id="omOrderAppendixColumns">
+		a.id AS "id",
+		a.order_no AS "orderNo",
+		a.org_id AS "orgId",
+		a.customer_no AS "customerNo",
+		a.type AS "type",
+		a.push_system AS "pushSystem",
+		a.push_org_id AS "pushOrgId",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10",
+		a.def11 AS "def11",
+		a.def12 AS "def12",
+		a.def13 AS "def13",
+		a.def14 AS "def14",
+		a.def15 AS "def15",
+		a.def16 AS "def16",
+		a.def17 AS "def17",
+		a.def18 AS "def18",
+		a.def19 AS "def19",
+		a.def20 AS "def20",
+		a.def21 AS "def21",
+		a.def22 AS "def22",
+		a.def23 AS "def23",
+		a.def24 AS "def24",
+		a.def25 AS "def25",
+		a.def26 AS "def26",
+		a.def27 AS "def27",
+		a.def28 AS "def28",
+		a.def29 AS "def29",
+		a.def30 AS "def30",
+		a.def_time1 AS "defTime1",
+		a.def_time2 AS "defTime2",
+		a.def_time3 AS "defTime3",
+		a.def_time4 AS "defTime4",
+		a.def_time5 AS "defTime5",
+		a.def_time6 AS "defTime6",
+		a.def_time7 AS "defTime7",
+		a.def_time8 AS "defTime8",
+		a.def_time9 AS "defTime9",
+		a.def_time10 AS "defTime10"
+	</sql>
+	
+	<sql id="omOrderAppendixJoins">
+		
+	</sql>
+
+	<select id="get" resultType="OmOrderAppendix" >
+		SELECT 
+			<include refid="omOrderAppendixColumns"/>
+		FROM om_order_appendix a
+		<include refid="omOrderAppendixJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OmOrderAppendix" >
+		SELECT 
+			<include refid="omOrderAppendixColumns"/>
+		FROM om_order_appendix a
+		<include refid="omOrderAppendixJoins"/>
+		<where>
+			1 = 1
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="OmOrderAppendix" >
+		SELECT 
+			<include refid="omOrderAppendixColumns"/>
+		FROM om_order_appendix a
+		<include refid="omOrderAppendixJoins"/>
+		<where>
+			1 = 1
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO om_order_appendix(
+			id,
+			order_no,
+			org_id,
+			customer_no,
+			type,
+			push_system,
+			push_org_id,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			def11,
+			def12,
+			def13,
+			def14,
+			def15,
+			def16,
+			def17,
+			def18,
+			def19,
+			def20,
+			def21,
+			def22,
+			def23,
+			def24,
+			def25,
+			def26,
+			def27,
+			def28,
+			def29,
+			def30,
+			def_time1,
+			def_time2,
+			def_time3,
+			def_time4,
+			def_time5,
+			def_time6,
+			def_time7,
+			def_time8,
+			def_time9,
+			def_time10
+		) VALUES (
+			#{id},
+			#{orderNo},
+			#{orgId},
+			#{customerNo},
+			#{type},
+		    #{pushSystem},
+			#{pushOrgId},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{def11},
+			#{def12},
+			#{def13},
+			#{def14},
+			#{def15},
+			#{def16},
+			#{def17},
+			#{def18},
+			#{def19},
+			#{def20},
+			#{def21},
+			#{def22},
+			#{def23},
+			#{def24},
+			#{def25},
+			#{def26},
+			#{def27},
+			#{def28},
+			#{def29},
+			#{def30},
+			#{defTime1},
+			#{defTime2},
+			#{defTime3},
+			#{defTime4},
+			#{defTime5},
+			#{defTime6},
+			#{defTime7},
+			#{defTime8},
+			#{defTime9},
+			#{defTime10}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE om_order_appendix SET
+			customer_no = #{customerNo},
+			type = #{type},
+			push_system = #{pushSystem},
+			push_org_id = #{pushOrgId},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			def6 = #{def6},
+			def7 = #{def7},
+			def8 = #{def8},
+			def9 = #{def9},
+			def10 = #{def10},
+			def11 = #{def11},
+			def12 = #{def12},
+			def13 = #{def13},
+			def14 = #{def14},
+			def15 = #{def15},
+			def16 = #{def16},
+			def17 = #{def17},
+			def18 = #{def18},
+			def19 = #{def19},
+			def20 = #{def20},
+			def21 = #{def21},
+			def22 = #{def22},
+			def23 = #{def23},
+			def24 = #{def24},
+			def25 = #{def25},
+			def26 = #{def26},
+			def27 = #{def27},
+			def28 = #{def28},
+			def29 = #{def29},
+			def30 = #{def30},
+			def_time1 = #{defTime1},
+			def_time2 = #{defTime2},
+			def_time3 = #{defTime3},
+			def_time4 = #{defTime4},
+			def_time5 = #{defTime5},
+			def_time6 = #{defTime6},
+			def_time7 = #{defTime7},
+			def_time8 = #{defTime8},
+			def_time9 = #{defTime9},
+			def_time10 = #{defTime10}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM om_order_appendix
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteByOrderNo">
+		DELETE FROM om_order_appendix
+		WHERE order_no = #{orderNo} AND org_id = #{orgId}
+	</update>
+</mapper>

@@ -1,0 +1,694 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmLdDetailMapper">
+
+    <sql id="banQinWmLdDetailColumns">
+        a.id AS "id",
+		a.ld_no AS "ldNo",
+		a.line_no AS "lineNo",
+		a.status AS "status",
+		a.alloc_id AS "allocId",
+		a.ld_op AS "ldOp",
+		a.ld_time AS "ldTime",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+    </sql>
+
+    <sql id="banQinWmLdDetailJoins">
+
+    </sql>
+
+    <select id="get" resultType="BanQinWmLdDetail" >
+        SELECT
+        <include refid="banQinWmLdDetailColumns"/>
+        FROM wm_ld_detail a
+        <include refid="banQinWmLdDetailJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="BanQinWmLdDetail" >
+        SELECT
+        <include refid="banQinWmLdDetailColumns"/>
+        FROM wm_ld_detail a
+        <include refid="banQinWmLdDetailJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="ldNo != null and ldNo != ''">
+                AND a.ld_no = #{ldNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="allocId != null and allocId != ''">
+                AND a.alloc_id = #{allocId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findEntity" resultType="BanQinWmLdDetailEntity">
+        SELECT <include refid="banQinWmLdDetailColumns"/>,
+        wsa.wave_no AS waveNo,
+        wsa.so_no AS soNo,
+        wsa.line_no AS soLineNo,
+        wsa.owner_code AS ownerCode,
+        wsa.sku_code AS skuCode,
+        wsa.lot_num AS lotNum,
+        wsa.loc_code AS locCode,
+        wsa.trace_id AS traceId,
+        wsa.consignee_code AS consigneeCode,
+        wsa.check_status AS checkStatus,
+        wsa.pack_code AS packCode,
+        wsa.uom AS uom,
+        wsa.qty_uom AS qtyUom,
+        wsa.qty_ea AS qtyEa,
+        (wsa.qty_ea * IFNULL(cws.gross_weight, 0)) AS wsaGrossWeight,
+        (wsa.qty_ea * IFNULL(cws.net_weight, 0)) AS wsaNetWeight,
+        (wsa.qty_ea * IFNULL(cws.cubic, 0)) AS wsaCubic,
+        wsa.qty_uom AS qtyPkUom,
+        wsa.qty_ea AS qtyPkEa,
+        wsa.to_loc AS toLoc,
+        wsa.to_id AS toId,
+        wsa.pick_op AS pickOp,
+        wsa.pick_time AS pickTime,
+        wsa.check_op AS checkOp,
+        wsa.check_time AS checTime,
+        wsa.pack_op AS packOp,
+        wsa.pack_time AS packTime,
+        wsa.ship_op AS shipOp,
+        wsa.ship_time AS shipTime,
+        wsa.print_num AS printUom,
+        wsa.pick_no AS pickOp,
+        wsa.remarks AS remarks,
+        wsa.status AS allocStatus,
+        wsa.tracking_no AS trackingNo,
+        ec.ebcu_name_cn AS ownerName,
+        cws.sku_name AS skuName,
+        cdpa.cdpa_format AS packDesc,
+        cdpr.cdpr_desc AS uomDesc,
+        cdpr.cdpr_quantity AS uomQty
+        from wm_ld_detail a
+        LEFT JOIN wm_so_alloc wsa ON a.org_id = wsa.org_id AND a.alloc_id = wsa.alloc_id
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = wsa.owner_code AND ec.org_id = wsa.org_id
+        LEFT JOIN cd_wh_sku cws ON wsa.sku_code = cws.sku_code AND wsa.owner_code = cws.owner_code AND wsa.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cdpa ON wsa.pack_code = cdpa.cdpa_code AND wsa.org_id = cdpa.org_id
+        LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND wsa.uom = cdpr.cdpr_unit_level
+        WHERE 1 = 1
+        AND a.org_id = #{orgId}
+        <if test="status != null and status != ''">
+            AND a.status = #{status}
+        </if>
+        <if test="ldNo != null and ldNo != ''">
+            AND a.ld_no = #{ldNo}
+        </if>
+        <if test="ldNos != null and ldNos.size > 0">
+            AND a.ld_no IN
+            <foreach collection="ldNos" item="lodNo" index="ldNo" open="(" separator="," close=")">
+                #{ldNo}
+            </foreach>
+        </if>
+        <if test="soNos != null and soNos.size > 0">
+            AND wsa.so_no IN
+            <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+                #{soNo}
+            </foreach>
+        </if>
+        <if test="allocIds != null and allocIds.size > 0">
+            AND wsa.alloc_id IN
+            <foreach collection="allocIds" item="allocId" index="allocId" open="(" separator="," close=")">
+                #{allocId}
+            </foreach>
+        </if>
+        <if test="toIds != null and toIds.size > 0">
+            AND wsa.to_id IN
+            <foreach collection="toIds" item="toId" index="toId" open="(" separator="," close=")">
+                #{toId}
+            </foreach>
+        </if>
+        ORDER BY a.line_no
+    </select>
+
+    <select id="getWmAllocByLdNo" resultType="BanQinWmLdDetailEntity" >
+        SELECT distinct wsa.so_no AS soNo,
+        wsa.line_no AS lineNo,
+        wsa.org_id AS orgId
+        FROM wm_ld_detail wld
+        LEFT JOIN wm_so_alloc wsa ON wld.org_id = wsa.org_id AND wld.alloc_id = wsa.alloc_id
+        WHERE 1 = 1
+        AND wld.org_id = #{orgId}
+        AND wld.ld_no = #{ldNo}
+        <if test="soNo != null and soNo != ''">
+            AND wsa.so_no = #{soNo}
+        </if>
+        <if test="toId != null and toId != ''">
+            AND wsa.to_id = #{toId}
+        </if>
+        <if test="allocIds != null and allocIds.size > 0">
+            AND wsa.alloc_id IN
+            <foreach collection="allocIds" item="allocId" index="allocId" open="(" separator="," close=")">
+                #{allocId}
+            </foreach>
+        </if>
+        <if test="soNos != null and soNos.size > 0">
+            AND wsa.so_no IN
+            <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+                #{soNo}
+            </foreach>
+        </if>
+        <if test="toIds != null and toIds.size > 0">
+            AND wsa.to_id IN
+            <foreach collection="toIds" item="toId" index="toId" open="(" separator="," close=")">
+                #{toId}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getWmAllocIdForLdDetail" resultType="java.lang.String" >
+        SELECT wsa.alloc_id AS allocId
+        FROM wm_so_alloc wsa
+        LEFT JOIN wm_ld_detail wld ON wsa.alloc_id = wld.alloc_id AND wsa.org_id = wld.org_id
+        WHERE 1=1
+        AND (wld.status IS NULL OR wld.status = '')
+        AND wsa.Check_Status IN ('90','99')
+        AND wsa.org_id = #{orgId}
+        AND wsa.status = #{status}
+        <if test="soNos != null and soNos.size > 0">
+            AND wsa.so_no IN
+            <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+                #{soNo}
+            </foreach>
+        </if>
+        <if test="toIds != null and toIds.size > 0">
+            AND wsa.to_id IN
+            <foreach collection="toIds" item="toId" index="toId" open="(" separator="," close=")">
+                #{toId}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="findAllList" resultType="BanQinWmLdDetail" >
+        SELECT
+        <include refid="banQinWmLdDetailColumns"/>
+        FROM wm_ld_detail a
+        <include refid="banQinWmLdDetailJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <select id="getWmLdForSoOrder" resultType="BanQinWmLdDetailEntity">
+        SELECT wsh.so_no AS soNo,
+               wsh.so_type AS soType,
+               wsh.logistic_no AS logisticNo,
+               wsh.fm_etd AS fmEtd,
+               wsh.to_etd AS toEtd,
+               wsh.line AS line,
+               wsh.consignee_code AS consigneeCode,
+               wsh.consignee_name AS consigneeName,
+               wsh.consignee_tel AS consigneeTel,
+               wsh.consignee_addr AS consigneeAddr,
+               wsh.carrier_code AS carrierCode,
+               ebcu.ebcu_name_cn AS carrierName,
+               wsh.ld_status AS ldStatus
+        FROM wm_ld_detail wld
+                 LEFT JOIN wm_so_alloc wsa ON wld.alloc_id = wsa.alloc_id AND wld.org_id = wsa.org_id
+                 LEFT JOIN wm_so_header wsh ON wsa.so_no = wsh.so_no AND wsa.org_id = wsh.org_id
+                 LEFT JOIN eb_customer ebcu ON wsh.carrier_code = ebcu.ebcu_customer_no AND wsh.org_id = ebcu.org_id
+        WHERE 1 = 1
+          AND wld.ld_no = #{ldNo}
+          AND wld.org_id = #{orgId}
+        GROUP BY
+            wsh.so_no,
+            wsh.logistic_no,
+            wsh.so_type,
+            wsh.fm_etd,
+            wsh.to_etd,
+            wsh.line,
+            wsh.consignee_code,
+            wsh.consignee_name,
+            wsh.consignee_tel,
+            wsh.consignee_addr,
+            wsh.carrier_code,
+            ebcu.ebcu_name_cn,
+            wsh.ld_status
+    </select>
+
+    <select id="getWmLdForSoTraceId" resultType="BanQinWmLdDetailEntity">
+        SELECT wsa.to_id AS toId,
+               wsa.tracking_no AS trackingNo,
+               GROUP_CONCAT(DISTINCT wsa.so_no) AS soNo,
+               SUM(wsa.qty_ea) AS wsa_qty_ea,
+               SUM(wsa.qty_ea * IFNULL(cws.gross_weight, 0)) AS wsaGrossWeight,
+               SUM(wsa.qty_ea * IFNULL(cws.net_weight, 0)) AS wsaNetWeight,
+               SUM(wsa.qty_ea * IFNULL(cws.cubic, 0)) AS wsaCubic,
+               GROUP_CONCAT(DISTINCT wsh.logistic_no) AS logistic_no,
+               GROUP_CONCAT(DISTINCT wsh.consignee_code) as consigneeCode,
+               GROUP_CONCAT(DISTINCT wsh.consignee_name) as consigneeName,
+               GROUP_CONCAT(DISTINCT wsh.consignee_tel) AS consignee_tel,
+               GROUP_CONCAT(DISTINCT wsh.consignee_addr) AS consignee_addr,
+               GROUP_CONCAT(DISTINCT wsh.contact_name) AS contact_name,
+               GROUP_CONCAT(DISTINCT wsh.contact_tel) AS contact_tel,
+               GROUP_CONCAT(DISTINCT wsh.contact_addr) AS contact_addr
+        FROM wm_ld_detail wld
+                 LEFT JOIN wm_so_alloc wsa ON wld.alloc_id = wsa.alloc_id AND wld.org_id = wsa.org_id
+                 LEFT JOIN wm_so_header wsh ON wsa.so_no = wsh.so_no AND wsa.org_id = wsh.org_id
+                 LEFT JOIN cd_wh_sku cws ON wsa.owner_code = cws.owner_code AND wsa.sku_code = cws.sku_code AND wsa.org_id = cws.org_id
+        WHERE 1 = 1
+          AND wld.ld_no = #{ldNo}
+          AND wld.org_id = #{orgId}
+        GROUP BY wsa.to_id, wsa.tracking_no
+    </select>
+
+    <select id="getWmSoAllocByLdNo" resultType="BanQinWmLdDetailEntity">
+        SELECT wsa.alloc_id AS allocId,
+        wsa.wave_no AS waveNo,
+        wsa.so_no AS soNo,
+        wsa.line_no AS lineNo,
+        wsa.owner_code AS ownerCode,
+        wsa.sku_code AS skuCode,
+        wsa.lot_num AS lotNum,
+        wsa.pack_code AS packCode,
+        wsa.uom AS uom,
+        wsa.qty_uom AS qtyUom,
+        wsa.qty_ea AS qtyEa,
+        wsa.to_loc AS toLoc,
+        wsa.to_id AS toId,
+        wsa.check_status AS checkStatus,
+        wsa.status AS status,
+        cws.is_qc AS isQc,
+        cws.is_serial AS isSerial
+        FROM wm_ld_detail wld
+        LEFT JOIN wm_so_alloc wsa ON wld.org_id = wsa.org_id AND wld.alloc_id = wsa.alloc_id
+        LEFT JOIN cd_wh_sku cws ON cws.org_id = wsa.org_id AND cws.sku_code = wsa.sku_code AND cws.owner_code = wsa.owner_code
+        WHERE 1 = 1
+        AND wld.org_id = #{orgId}
+        AND wld.ld_no = #{ldNo}
+        <if test="status != null and status != ''">
+            AND wld.status = #{status}
+        </if>
+    </select>
+
+    <select id="isGeneratorLd" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM wm_ld_detail wld
+        LEFT JOIN wm_so_alloc wsa ON wld.alloc_id = wsa.alloc_id AND wld.org_id = wsa.org_id
+        WHERE 1 = 1
+        AND wld.org_id = #{orgId}
+        <if test="toId != null and toId !=''">
+            AND wsa.to_id = #{toId}
+        </if>
+        <if test="allocId != null and allocId !=''">
+            AND wsa.alloc_id = #{allocId}
+        </if>
+        <if test="soNo != null and soNo !=''">
+            AND wsa.so_no = #{soNo}
+        </if>
+        <if test="isFullDelivery != null and isFullDelivery !=''">
+            AND wld.status != '60' AND 'Y'= #{isFullDelivery}
+        </if>
+        <if test="asnNo != null and asnNo !=''">
+            AND wsa.asn_no = #{asnNo}
+        </if>
+        <if test="rcvLineNo != null and rcvLineNo !=''">
+            AND wsa.rcv_line_no= #{rcvLineNo}
+        </if>
+        LIMIT 1
+    </select>
+
+    <select id="checkIsGenLdBySoNos" resultType="java.lang.String">
+        SELECT DISTINCT wsa.so_no FROM wm_ld_detail wld
+        LEFT JOIN wm_so_alloc wsa ON wld.alloc_id = wsa.alloc_id AND wld.org_id = wsa.org_id
+        LEFT JOIN wm_so_detail wsd ON wsd.so_no = wsa.so_no AND wsd.line_no = wsa.line_no AND wsd.org_id = wsa.org_id
+        LEFT JOIN wm_so_header wsh ON wsh.so_no = wsd.so_no AND wsh.org_id = wsd.org_id
+        LEFT JOIN wm_wv_detail wwd ON wwd.so_no = wsh.so_no AND wwd.org_id = wsh.org_id
+        WHERE 1 = 1
+        AND wld.org_id = #{orgId}
+        <if test="status != null and status !=''">
+            AND wld.status = #{status}
+        </if>
+        <if test="soNos != null and soNos.size > 0">
+            AND wsa.so_no IN
+            <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+                #{soNo}
+            </foreach>
+        </if>
+        <if test="allocIds != null and allocIds.size > 0">
+            AND wsa.alloc_id IN
+            <foreach collection="allocIds" item="allocId" index="allocId" open="(" separator="," close=")">
+                #{allocId}
+            </foreach>
+        </if>
+        <if test="waveNos != null and waveNos.size > 0">
+            AND wsa.wave_no IN
+            <foreach collection="waveNos" item="waveNo" index="waveNo" open="(" separator="," close=")">
+                #{waveNo}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="checkIsGenLdByToIds" resultType="java.lang.String">
+        SELECT DISTINCT wsa.to_id FROM wm_ld_detail wld
+        LEFT JOIN wm_so_alloc wsa ON wld.alloc_id = wsa.alloc_id AND wld.org_id = wsa.org_id
+        WHERE 1 = 1
+        AND wld.org_id = #{orgId}
+        <if test="status != null and status != ''">
+            AND wld.status = #{status}
+        </if>
+        <if test="status != null and status != ''">
+            AND wld.ld_no = #{ldNo}
+        </if>
+        <if test="toIds != null and toIds.size > 0">
+            AND wsa.to_id IN
+            <foreach collection="toIds" item="toId" index="toId" open="(" separator="," close=")">
+                #{toId}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="checkIsGenLdByAllocIds" resultType="java.lang.String">
+        SELECT DISTINCT wsa.alloc_id FROM wm_ld_detail wld
+        LEFT JOIN wm_so_alloc wsa ON wld.alloc_id = wsa.alloc_id AND wld.org_id = wsa.org_id
+        WHERE 1 = 1
+        AND wld.org_id = #{orgId}
+        <if test="status != null and status != ''">
+            AND wld.status = #{status}
+        </if>
+        <if test="allocIds != null and allocIds.size > 0">
+            AND wsa.alloc_id IN
+            <foreach collection="allocIds" item="allocId" index="allocId" open="(" separator="," close=")">
+                #{allocId}
+            </foreach>
+        </if>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO wm_ld_detail(
+            id,
+            ld_no,
+            line_no,
+            status,
+            alloc_id,
+            ld_op,
+            ld_time,
+            rec_ver,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag,
+            org_id
+        ) VALUES (
+                     #{id},
+                     #{ldNo},
+                     #{lineNo},
+                     #{status},
+                     #{allocId},
+                     #{ldOp},
+                     #{ldTime},
+                     #{recVer},
+                     #{createBy.id},
+                     #{createDate},
+                     #{updateBy.id},
+                     #{updateDate},
+                     #{delFlag},
+                     #{orgId}
+                 )
+    </insert>
+
+    <update id="update">
+        UPDATE wm_ld_detail SET
+                                ld_no = #{ldNo},
+                                line_no = #{lineNo},
+                                status = #{status},
+                                alloc_id = #{allocId},
+                                ld_op = #{ldOp},
+                                ld_time = #{ldTime},
+                                rec_ver = #{recVer} + 1,
+                                update_by = #{updateBy.id},
+                                update_date = #{updateDate},
+                                org_id = #{orgId}
+        WHERE id = #{id} AND rec_ver = #{recVer}
+    </update>
+
+    <!--物理删除-->
+    <update id="delete">
+        DELETE FROM wm_ld_detail
+        WHERE id = #{id}
+    </update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE wm_ld_detail SET
+            del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+    <select id="wmSoAllocToSoOrderQuery" resultType="com.yunyou.modules.wms.outbound.entity.BanQinWmSoAllocToSoOrderQueryEntity">
+        select
+        wsa.so_no AS soNo,
+        wsa.owner_code AS ownerCode,
+        ebcu2.ebcu_name_cn AS ownerName,
+        wsh.so_type AS soType,
+        wsh.status AS status,
+        wsh.logistic_no AS logisticNo,
+        wsh.fm_etd AS fmEtd,
+        wsh.to_etd AS toEtd,
+        wsh.order_time AS orderTime,
+        wsh.consignee_code AS consigneeCode,
+        wsh.consignee_name AS consigneeName,
+        wsh.consignee_tel AS consigneeTel,
+        wsh.consignee_addr AS consigneeAddr,
+        wsh.contact_name AS contactName,
+        wsh.contact_tel AS contactTel,
+        wsh.contact_addr AS contactAddr,
+        wsh.carrier_code AS carrierCode,
+        ebcu.ebcu_name_cn AS carrierName,
+        wsh.line AS line
+        FROM wm_so_alloc wsa
+        LEFT JOIN cd_wh_sku cws ON wsa.sku_code = cws.sku_code AND wsa.owner_code = cws.owner_code AND wsa.org_id = cws.org_id
+        LEFT JOIN wm_inv_lot_att wila ON wsa.lot_num = wila.lot_num AND wsa.org_id = wila.org_id
+        LEFT JOIN wm_so_header wsh ON wsa.so_no = wsh.so_no AND wsa.org_id = wsh.org_id
+        LEFT JOIN eb_customer ebcu ON wsh.carrier_code = ebcu.ebcu_customer_no AND wsh.org_id = ebcu.org_id
+        LEFT JOIN eb_customer ebcu2 ON cws.owner_code = ebcu2.ebcu_customer_no AND cws.org_id = ebcu2.org_id
+        LEFT JOIN wm_ld_detail wld ON wsa.alloc_id = wld.alloc_id AND wsa.org_id = wld.org_id
+        WHERE 1 = 1
+        AND wld.status IS NULL
+        AND wsa.check_status IN ('90','99')
+        AND wsh.status NOT IN ('99')
+        AND wsa.org_id = #{orgId}
+        <if test="carrierCodes != null and carrierCodes.length > 0">
+            AND wsh.carrier_code IN
+            <foreach collection="carrierCodes" item="carrierCode" index="carrierCode" open="(" separator="," close=")">
+                #{carrierCode}
+            </foreach>
+        </if>
+        <if test="consigneeCode != null and consigneeCode != ''">
+            AND wsh.consignee_code = #{consigneeCode}
+        </if>
+        <if test="consigneeName != null and consigneeName != ''">
+            AND wsh.consignee_name = #{consigneeName}
+        </if>
+        <if test="consigneeTel != null and consigneeTel != ''">
+            AND wsh.consignee_tel = #{consigneeTel}
+        </if>
+        <if test="consigneeAddr != null and consigneeAddr != ''">
+            AND wsh.consignee_addr = #{consigneeAddr}
+        </if>
+        <if test="contactName != null and contactName != ''">
+            AND wsh.contact_name = #{contactName}
+        </if>
+        <if test="contactTel != null and contactTel != ''">
+            AND wsh.contact_tel = #{contactTel}
+        </if>
+        <if test="contactAddr != null and contactAddr != ''">
+            AND wsh.contact_addr = #{contactAddr}
+        </if>
+        <if test="line != null and line != ''">
+            AND wsh.line = #{line}
+        </if>
+        <if test="logisticNo != null and logisticNo != ''">
+            AND wsh.logistic_no LIKE CONCAT(#{logisticNo}, '%')
+        </if>
+        <if test="soNo != null and soNo != ''">
+            AND wsh.so_no LIKE CONCAT(#{soNo}, '%')
+        </if>
+        <if test="ownerCodes != null and ownerCodes.length > 0">
+            AND wsh.owner_code IN
+            <foreach collection="ownerCodes" item="ownerCode" index="ownerCode" open="(" separator="," close=")">
+                #{ownerCode}
+            </foreach>
+        </if>
+        <if test="soTypes != null and soTypes.length > 0">
+            AND wsh.so_type IN
+            <foreach collection="soTypes" item="soType" index="soType" open="(" separator="," close=")">
+                #{soType}
+            </foreach>
+        </if>
+        <if test="statuss != null and statuss.length > 0">
+            AND wsa.status IN
+            <foreach collection="statuss" item="status" index="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+        <if test="fmEtd != null and fmEtd != ''">
+            AND wsh.fm_etd &gt;= #{fmEtd}
+        </if>
+        <if test="toEtd != null and toEtd != ''">
+            AND wsh.to_etd &lt;= #{toEtd}
+        </if>
+        <if test="fmOrderDate != null and fmOrderDate != ''">
+            AND wsh.order_time &gt;= #{fmOrderDate}
+        </if>
+        <if test="toOrderDate != null and toOrderDate != ''">
+            AND wsh.order_time &lt;= #{toOrderDate}
+        </if>
+        GROUP BY
+        wsa.so_no,
+        wsa.owner_code,
+        ebcu2.ebcu_name_cn,
+        wsh.so_type,
+        wsh.status,
+        wsh.logistic_no,
+        wsh.fm_etd,
+        wsh.to_etd,
+        wsh.order_time,
+        wsh.consignee_code,
+        wsh.consignee_name,
+        wsh.consignee_tel,
+        wsh.consignee_addr,
+        wsh.contact_name,
+        wsh.contact_tel,
+        wsh.contact_addr,
+        wsh.carrier_code,
+        ebcu.ebcu_name_cn,
+        wsh.line
+    </select>
+
+    <select id ="wmSoAllocToLdDetailQuery" resultType="BanQinWmLdDetailEntity">
+        SELECT wsa.so_no AS soNo,
+        wsa.status AS status,
+        wsa.alloc_id AS allocId,
+        wsa.sku_code AS skuCode,
+        cws.sku_name AS skuName,
+        wsa.owner_code AS ownerCode,
+        ebcu2.ebcu_name_cn AS ownerName,
+        wsa.trace_id AS traceId,
+        wsa.to_id AS toId,
+        wsa.qty_ea AS qtyEa,
+        wsa.qty_uom AS qtyUom,
+        cdpa.cdpa_format AS packDesc,
+        cdpr.cdpr_desc AS uomDesc,
+        cdpr.cdpr_quantity AS uomQty,
+        wsa.pack_code AS packCode,
+        wsa.loc_code AS locCode,
+        wsa.to_loc AS toLoc,
+        wsa.lot_num AS lotNum,
+        wsh.so_type AS soType,
+        wsh.logistic_no AS logisticNo,
+        wsh.fm_etd AS fmEtd,
+        wsh.to_etd AS toEtd,
+        wsh.order_time AS orderTime,
+        wsh.consignee_code AS consigneeCode,
+        wsh.consignee_name AS consigneeName,
+        wsh.consignee_tel AS consigneeTel,
+        wsh.consignee_addr AS consigneeAddr,
+        wsh.contact_name AS contactName,
+        wsh.contact_tel AS contactTel,
+        wsh.contact_addr AS contactAddr,
+        wsh.carrier_code AS carrierCode,
+        ebcu.ebcu_name_cn AS carrierName,
+        wsh.line AS line,
+        wila.lot_att01 AS lotAtt01,
+        wila.lot_att02 AS lotAtt02,
+        wila.lot_att03 AS lotAtt03,
+        wila.lot_att04 AS lotAtt04,
+        wila.lot_att05 AS lotAtt05,
+        wila.lot_att06 AS lotAtt06,
+        wila.lot_att07 AS lotAtt07,
+        wila.lot_att08 AS lotAtt08,
+        wila.lot_att09 AS lotAtt09,
+        wila.lot_att10 AS lotAtt10,
+        wila.lot_att11 AS lotAtt11,
+        wila.lot_att12 AS lotAtt12
+        FROM wm_so_alloc wsa
+        LEFT JOIN cd_wh_sku cws ON wsa.sku_code = cws.sku_code AND wsa.owner_code = cws.owner_code AND wsa.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cdpa ON wsa.pack_code = cdpa.cdpa_code AND wsa.org_id = cdpa.org_id
+        LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND wsa.uom = cdpr.cdpr_unit_level
+        LEFT JOIN wm_inv_lot_att wila ON wsa.lot_num = wila.lot_num AND wsa.org_id = wila.org_id
+        LEFT JOIN wm_so_header wsh ON wsa.so_no = wsh.so_no AND wsa.org_id = wsh.org_id
+        LEFT JOIN eb_customer ebcu ON wsh.carrier_code = ebcu.ebcu_customer_no AND wsh.org_id = ebcu.org_id
+        LEFT JOIN eb_customer ebcu2 ON wsa.owner_code = ebcu2.ebcu_customer_no AND wsa.org_id = ebcu2.org_id
+        LEFT JOIN wm_ld_detail wld ON wsa.alloc_id = wld.alloc_id AND wsa.org_id = wld.org_id
+        WHERE 1 = 1
+        AND wld.status IS NULL
+        AND wsa.Check_Status IN ('90','99')
+        AND wsh.status NOT IN ('99')
+        AND wsa.org_id = #{orgId}
+        <if test="skuCode != null and skuCode != ''">
+            AND wsa.sku_code = #{skuCode}
+        </if>
+        <if test="carrierCode != null and carrierCode != ''">
+            AND wsh.carrier_code = #{carrierCode}
+        </if>
+        <if test="consigneeCode != null and consigneeCode != ''">
+            AND wsh.consignee_code = #{consigneeCode}
+        </if>
+        <if test="consigneeName != null and consigneeName != ''">
+            AND wsh.consignee_name = #{consigneeName}
+        </if>
+        <if test="consigneeTel != null and consigneeTel != ''">
+            AND wsh.consignee_tel = #{consigneeTel}
+        </if>
+        <if test="consigneeAddr != null and consigneeAddr != ''">
+            AND wsh.consignee_addr = #{consigneeAddr}
+        </if>
+        <if test="contactName != null and contactName != ''">
+            AND wsh.contact_name = #{contactName}
+        </if>
+        <if test="contactTel != null and contactTel != ''">
+            AND wsh.contact_tel = #{contactTel}
+        </if>
+        <if test="contactAddr != null and contactAddr != ''">
+            AND wsh.contact_addr = #{contactAddr}
+        </if>
+        <if test="line != null and line != ''">
+            AND wsh.line = #{line}
+        </if>
+        <if test="logisticNo != null and logisticNo != ''">
+            AND wsh.logistic_no = #{logisticNo}
+        </if>
+        <if test="soNo != null and soNo != ''">
+            AND wsh.so_no LIKE CONCAT(#{soNo}, '%')
+        </if>
+        <if test="ownerCode != null and ownerCode != ''">
+            AND wsh.owner_code = #{ownerCode}
+        </if>
+        <if test="soType != null and soType != ''">
+            AND wsh.so_type = #{soType}
+        </if>
+        <if test="status != null and status != ''">
+            AND wsa.status = #{status}
+        </if>
+        <if test="fmEtd != null and fmEtd != ''">
+            <![CDATA[ AND wsh.fm_etd >= #{fmEtd} ]]>
+        </if>
+        <if test="toEtd != null and toEtd != ''">
+            <![CDATA[ AND wsh.to_etd <= #{toEtd} ]]>
+        </if>
+        <if test="fmOrderDate != null and fmOrderDate != ''">
+            AND wsh.order_time &gt;= #{fmOrderDate}
+        </if>
+        <if test="toOrderDate != null and toOrderDate != ''">
+            AND wsh.order_time &lt;= #{toOrderDate}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.manager.mapper.TmExceptionHandleBillEntityMapper">
+
+	<sql id="tmExceptionHandleBillColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.bill_no AS "billNo",
+		a.dispatch_no AS "dispatchNo",
+		a.transport_no AS "transportNo",
+		a.customer_no AS "customerNo",
+		a.label_no AS "labelNo",
+		a.outlet_code AS "outletCode",
+		a.bill_status AS "billStatus",
+		a.car_no AS "carNo",
+		a.driver AS "driver",
+		a.consignee_code AS "consigneeCode",
+		a.consignee_name AS "consigneeName",
+		a.consignee_phone AS "consigneePhone",
+		a.exception_type AS "exceptionType",
+		a.exception_reason AS "exceptionReason",
+		a.register_person AS "registerPerson",
+		a.register_time AS "registerTime",
+		a.happen_time AS "happenTime",
+		a.happen_sys_area_id AS "happenSysAreaId",
+		a.happen_sys_area_code AS "happenSysAreaCode",
+		a.happen_sys_area_name AS "happenSysAreaName",
+		a.responsibility AS "responsibility",
+		a.liability_person AS "liabilityPerson",
+		a.liability_person_code AS "liabilityPersonCode",
+		a.rp_flag AS "rpFlag",
+		a.un_code AS "unCode",
+		a.amount AS "amount",
+		a.receipt_amount AS "receiptAmount",
+		a.pay_amount AS "payAmount",
+		a.process_no AS "processNo",
+		a.fee_process_no AS "feeProcessNo",
+		a.customer_code AS "customerCode",
+		a.org_id AS "orgId",
+		a.base_org_id AS "baseOrgId",
+		a.rec_ver AS "recVer"
+	</sql>
+
+	<sql id="tmExceptionHandleBillDetailColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.bill_no AS "billNo",
+		a.handle_user AS "handleUser",
+		a.handle_time AS "handleTime",
+		a.handle_description AS "handleDescription",
+		a.org_id AS "orgId",
+		a.base_org_id AS "baseOrgId",
+		a.rec_ver AS "recVer"
+	</sql>
+
+	<sql id="tmExceptionHandleBillFeeColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.bill_no AS "billNo",
+		a.rp_flag AS "rpFlag",
+		a.charge_name AS "chargeName",
+		a.amount AS "amount",
+		a.liability_sys_user_code AS "liabilitySysUserCode",
+		a.liability_sys_user_name AS "liabilitySysUserName",
+		a.org_id AS "orgId",
+		a.base_org_id AS "baseOrgId",
+		a.rec_ver AS "recVer"
+	</sql>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmExceptionHandleBillEntity" >
+		SELECT
+			b.transport_obj_name AS "customerName",
+			c.transport_obj_name AS "outletName",
+			<include refid="tmExceptionHandleBillColumns"/>
+		FROM tm_exception_handle_bill a
+		LEFT JOIN tm_transport_obj b ON a.customer_code = b.transport_obj_code AND a.base_org_id = b.org_id
+		LEFT JOIN tm_transport_obj c ON a.outlet_code = c.transport_obj_code AND a.base_org_id = c.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		  ${dataScope}
+		<if test="billNo != null and billNo != ''">
+			AND a.bill_no = #{billNo}
+		</if>
+		<if test="dispatchNo != null and dispatchNo != ''">
+			AND a.dispatch_no = #{dispatchNo}
+		</if>
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no = #{transportNo}
+		</if>
+		<if test="customerNo != null and customerNo != ''">
+			AND a.customer_no = #{customerNo}
+		</if>
+		<if test="labelNo != null and labelNo != ''">
+			AND a.label_no = #{labelNo}
+		</if>
+		<if test="outletCode != null and outletCode != ''">
+			AND a.outlet_code = #{outletCode}
+		</if>
+		<if test="billStatus != null and billStatus != ''">
+			AND a.bill_status = #{billStatus}
+		</if>
+		<if test="carNo != null and carNo != ''">
+			AND a.car_no = #{carNo}
+		</if>
+		<if test="exceptionType != null and exceptionType != ''">
+			AND a.exception_type = #{exceptionType}
+		</if>
+		<if test="registerTimeFrom != null and registerTimeFrom != ''">
+			AND a.register_time &gt;= #{registerTimeFrom}
+		</if>
+		<if test="registerTimeTo != null and registerTimeTo != ''">
+			AND a.register_time &lt;= #{registerTimeTo}
+		</if>
+		<if test="happenTimeFrom != null and happenTimeFrom != ''">
+			AND a.happen_time &gt;= #{happenTimeFrom}
+		</if>
+		<if test="happenTimeTo != null and happenTimeTo != ''">
+			AND a.happen_time &lt;= #{happenTimeTo}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findHeaderList" resultType="com.yunyou.modules.tms.order.entity.extend.TmExceptionHandleBillEntity" >
+		SELECT
+			b.transport_obj_name AS "customerName",
+			c.transport_obj_name AS "outletName",
+			<include refid="tmExceptionHandleBillColumns"/>
+		FROM tm_exception_handle_bill a
+		LEFT JOIN tm_transport_obj b ON a.customer_code = b.transport_obj_code AND a.base_org_id = b.org_id
+		LEFT JOIN tm_transport_obj c ON a.outlet_code = c.transport_obj_code AND a.base_org_id = c.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		${dataScope}
+		<if test="billNo != null and billNo != ''">
+			AND a.bill_no = #{billNo}
+		</if>
+		<if test="dispatchNo != null and dispatchNo != ''">
+			AND a.dispatch_no = #{dispatchNo}
+		</if>
+		<if test="transportNo != null and transportNo != ''">
+			AND a.transport_no = #{transportNo}
+		</if>
+		<if test="customerNo != null and customerNo != ''">
+			AND a.customer_no = #{customerNo}
+		</if>
+		<if test="labelNo != null and labelNo != ''">
+			AND a.label_no = #{labelNo}
+		</if>
+		<if test="outletCode != null and outletCode != ''">
+			AND a.outlet_code = #{outletCode}
+		</if>
+		<if test="billStatus != null and billStatus != ''">
+			AND a.bill_status = #{billStatus}
+		</if>
+		<if test="carNo != null and carNo != ''">
+			AND a.car_no = #{carNo}
+		</if>
+		<if test="exceptionType != null and exceptionType != ''">
+			AND a.exception_type = #{exceptionType}
+		</if>
+		<if test="registerTimeFrom != null and registerTimeFrom != ''">
+			AND a.register_time &gt;= #{registerTimeFrom}
+		</if>
+		<if test="registerTimeTo != null and registerTimeTo != ''">
+			AND a.register_time &lt;= #{registerTimeTo}
+		</if>
+		<if test="happenTimeFrom != null and happenTimeFrom != ''">
+			AND a.happen_time &gt;= #{happenTimeFrom}
+		</if>
+		<if test="happenTimeTo != null and happenTimeTo != ''">
+			AND a.happen_time &lt;= #{happenTimeTo}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.tms.order.entity.extend.TmExceptionHandleBillEntity">
+		SELECT
+		b.transport_obj_name AS "customerName",
+		c.transport_obj_name AS "outletName",
+		<include refid="tmExceptionHandleBillColumns"/>
+		FROM tm_exception_handle_bill a
+		LEFT JOIN tm_transport_obj b ON a.customer_code = b.transport_obj_code AND a.base_org_id = b.org_id
+		LEFT JOIN tm_transport_obj c ON a.outlet_code = c.transport_obj_code AND a.base_org_id = c.org_id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findDetailList" resultType="com.yunyou.modules.tms.order.entity.extend.TmExceptionHandleBillDetailEntity" >
+		SELECT
+			<include refid="tmExceptionHandleBillDetailColumns"/>
+		FROM tm_exception_handle_bill_detail a
+		WHERE 1 = 1
+		<if test="billNo != null and billNo != ''">
+			AND a.bill_no = #{billNo}
+		</if>
+		<if test="handleUser != null and handleUser != ''">
+			AND a.handle_user = #{handleUser}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		order by a.handle_time
+	</select>
+
+	<select id="findFeeList" resultType="com.yunyou.modules.tms.order.entity.extend.TmExceptionHandleBillFeeEntity" >
+		SELECT
+		<include refid="tmExceptionHandleBillFeeColumns"/>
+		FROM tm_exception_handle_bill_fee a
+		WHERE 1 = 1
+		<if test="billNo != null and billNo != ''">
+			AND a.bill_no = #{billNo}
+		</if>
+		<if test="liabilitySysUserCode != null and liabilitySysUserCode != ''">
+			AND a.liability_sys_user_code = #{liabilitySysUserCode}
+		</if>
+		<if test="rpFlag != null and rpFlag != ''">
+			AND a.rp_flag = #{rpFlag}
+		</if>
+		<if test="chargeName != null and chargeName != ''">
+			AND a.charge_name = #{chargeName}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		order by a.update_date
+	</select>
+</mapper>

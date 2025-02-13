@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysCommonRegionMapper">
+    
+	<sql id="sysCommonRegionColumns">
+		a.id           AS "id",
+		a.create_by    AS "createBy.id",
+		a.create_date  AS "createDate",
+		a.update_by    AS "updateBy.id",
+		a.update_date  AS "updateDate",
+		a.remarks      AS "remarks",
+		a.del_flag     AS "delFlag",
+		a.rec_ver      AS "recVer",
+		a.code         AS "code",
+		a.name         AS "name",
+		a.data_set     AS "dataSet"
+	</sql>
+
+	<sql id="extraColumns">
+		scds.name 	   AS "dataSetName"
+	</sql>
+
+	<sql id="sysCommonRegionJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysCommonRegion" >
+		SELECT <include refid="sysCommonRegionColumns"/>
+		FROM sys_common_region a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysCommonRegion" >
+		SELECT <include refid="sysCommonRegionColumns"/>
+		FROM sys_common_region a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysCommonRegion" >
+		SELECT <include refid="sysCommonRegionColumns"/>
+		FROM sys_common_region a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_common_region(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			code,
+			name,
+			data_set
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{code},
+			#{name},
+			#{dataSet}
+		)
+	</insert>
+
+	<insert id="insertArea">
+		INSERT INTO sys_common_region_place(code, place_id, data_set)
+		<foreach collection="areaList" item="area" separator=" union all ">
+			SELECT #{code}, #{area.id}, #{dataSet} ${dual}
+		</foreach>
+	</insert>
+
+	<update id="update">
+		UPDATE sys_common_region
+		SET update_by   = #{updateBy.id},
+			update_date = #{updateDate},
+			rec_ver     = rec_ver + 1,
+			remarks     = #{remarks},
+			code        = #{code},
+			name        = #{name},
+			data_set    = #{dataSet}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_common_region SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_common_region WHERE id = #{id}
+	</delete>
+	<delete id="deleteArea">
+		DELETE scrp
+		FROM sys_common_region_place scrp
+			INNER JOIN sys_common_region scr ON scrp.code = scr.code AND scrp.data_set = scr.data_set
+		WHERE scr.id = #{id}
+	</delete>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.extend.SysCommonRegionEntity">
+		SELECT <include refid="sysCommonRegionColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_common_region a
+		<include refid="sysCommonRegionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code like concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name like concat('%', #{name}, '%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.SysCommonRegion">
+		SELECT <include refid="sysCommonRegionColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_common_region a
+		<include refid="sysCommonRegionJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code like concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name like concat('%', #{name}, '%')
+			</if>
+			<if test="codeAndName != null and codeAndName!= ''">
+				AND (a.code like concat('%', #{codeAndName}, '%') or a.name like concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.sys.common.entity.extend.SysCommonRegionEntity">
+		SELECT <include refid="sysCommonRegionColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_common_region a
+		<include refid="sysCommonRegionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getByCode" resultType="com.yunyou.modules.sys.common.entity.SysCommonRegion">
+		SELECT <include refid="sysCommonRegionColumns"/>
+		FROM sys_common_region a
+		<include refid="sysCommonRegionJoins"/>
+		WHERE a.code = #{code}
+		  AND a.data_set = #{dataSet}
+	</select>
+
+	<select id="findPlace" resultType="com.yunyou.modules.sys.entity.Area">
+		SELECT a.place_id AS "id"
+		FROM sys_common_region_place a
+			INNER JOIN sys_common_region scr ON scr.code = a.code AND scr.data_set = a.data_set
+		WHERE scr.id = #{id}
+	</select>
+
+</mapper>

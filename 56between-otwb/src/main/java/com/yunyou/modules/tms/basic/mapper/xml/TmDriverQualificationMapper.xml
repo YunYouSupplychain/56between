@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.basic.mapper.TmDriverQualificationMapper">
+    
+	<sql id="tmDriverQualificationColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.driver_code AS "driverCode",
+		a.qualification_code AS "qualificationCode",
+		a.qualification_name_cn AS "qualificationNameCn",
+		a.qualification_name_en AS "qualificationNameEn",
+		a.qualification_short_name AS "qualificationShortName",
+		a.expire_date AS "expireDate",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer"
+	</sql>
+	
+	<sql id="tmDriverQualificationJoins">
+		
+	</sql>
+
+	<select id="get" resultType="TmDriverQualification" >
+		SELECT 
+			<include refid="tmDriverQualificationColumns"/>
+		FROM tm_driver_qualification a
+		<include refid="tmDriverQualificationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmDriverQualification" >
+		SELECT 
+			<include refid="tmDriverQualificationColumns"/>
+		FROM tm_driver_qualification a
+		<include refid="tmDriverQualificationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.driver_code = #{driverCode}
+			AND a.org_id = #{orgId}
+			<if test="qualificationCode != null and qualificationCode != ''">
+				AND a.qualification_code = #{qualificationCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmDriverQualification" >
+		SELECT 
+			<include refid="tmDriverQualificationColumns"/>
+		FROM tm_driver_qualification a
+		<include refid="tmDriverQualificationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_driver_qualification(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			driver_code,
+			qualification_code,
+			qualification_name_cn,
+			qualification_name_en,
+			qualification_short_name,
+			expire_date,
+			org_id,
+			rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{driverCode},
+			#{qualificationCode},
+			#{qualificationNameCn},
+			#{qualificationNameEn},
+			#{qualificationShortName},
+			#{expireDate},
+			#{orgId},
+			#{recVer}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_driver_qualification
+		SET update_by                = #{updateBy.id},
+			update_date              = #{updateDate},
+			remarks                  = #{remarks},
+			driver_code              = #{driverCode},
+			qualification_code       = #{qualificationCode},
+			qualification_name_cn    = #{qualificationNameCn},
+			qualification_name_en    = #{qualificationNameEn},
+			qualification_short_name = #{qualificationShortName},
+			expire_date              = #{expireDate},
+			org_id                   = #{orgId},
+			rec_ver                  = rec_ver + 1
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_driver_qualification SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_driver_qualification WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM tm_driver_qualification WHERE driver_code = #{driverCode} AND org_id = #{orgId}
+	</delete>
+
+</mapper>

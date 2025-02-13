@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmTransportOrderLabelMapper">
+    
+	<sql id="tmTransportOrderLabelColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_no AS "transportNo",
+		a.customer_no AS "customerNo",
+		a.label_no AS "labelNo",
+		a.status AS "status",
+		a.weight AS "weight",
+		a.cubic AS "cubic",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.sign_by AS "signBy",
+		a.sign_time AS "signTime",
+		a.sign_remarks AS "signRemarks",
+		a.receipt_by AS "receiptBy",
+		a.receipt_time AS "receiptTime",
+		a.receipt_remarks AS "receiptRemarks",
+		a.owner_code AS "ownerCode",
+		a.line_no AS "lineNo",
+		a.sku_code AS "skuCode",
+		a.qty AS "qty",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10"
+	</sql>
+	
+	<sql id="tmTransportOrderLabelJoins">
+		
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderLabel" >
+		SELECT 
+			<include refid="tmTransportOrderLabelColumns"/>
+		FROM tm_transport_order_label a
+		<include refid="tmTransportOrderLabelJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderLabel" >
+		SELECT 
+			<include refid="tmTransportOrderLabelColumns"/>
+		FROM tm_transport_order_label a
+		<include refid="tmTransportOrderLabelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.transport_no = #{transportNo}
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="labelNo != null and labelNo != ''">
+				AND a.label_no = #{labelNo}
+			</if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderLabel" >
+		SELECT 
+			<include refid="tmTransportOrderLabelColumns"/>
+		FROM tm_transport_order_label a
+		<include refid="tmTransportOrderLabelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_transport_order_label(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			transport_no,
+			customer_no,
+			label_no,
+			status,
+			weight,
+			cubic,
+			org_id,
+			rec_ver,
+			base_org_id,
+			sign_by,
+			sign_time,
+			sign_remarks,
+			receipt_by,
+			receipt_time,
+			receipt_remarks,
+			owner_code,
+			line_no,
+			sku_code,
+            qty,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{transportNo},
+			#{customerNo},
+			#{labelNo},
+			#{status},
+			#{weight},
+			#{cubic},
+			#{orgId},
+			#{recVer},
+			#{baseOrgId},
+			#{signBy},
+			#{signTime},
+			#{signRemarks},
+			#{receiptBy},
+			#{receiptTime},
+			#{receiptRemarks},
+			#{ownerCode},
+			#{lineNo},
+			#{skuCode},
+            #{qty},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_transport_order_label SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			transport_no = #{transportNo},
+			customer_no = #{customerNo},
+			label_no = #{labelNo},
+			status = #{status},
+			weight = #{weight},
+			cubic = #{cubic},
+			org_id = #{orgId},
+			base_org_id = #{baseOrgId},
+			sign_by = #{signBy},
+			sign_time = #{signTime},
+			sign_remarks = #{signRemarks},
+			receipt_by = #{receiptBy},
+			receipt_time = #{receiptTime},
+			receipt_remarks = #{receiptRemarks},
+			owner_code = #{ownerCode},
+			line_no = #{lineNo},
+			sku_code = #{skuCode},
+            qty = #{qty},
+			def1  = #{def1},
+			def2  = #{def2},
+			def3  = #{def3},
+			def4  = #{def4},
+			def5  = #{def5},
+			def6  = #{def6},
+			def7  = #{def7},
+			def8  = #{def8},
+			def9  = #{def9},
+			def10  = #{def10},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_transport_order_label WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_transport_order_label SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getMaxNo" resultType="java.lang.String">
+		SELECT Max(a.label_no) FROM tm_transport_order_label a WHERE a.transport_no = #{transportNo} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getByTransportNoAndLabelNo" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderLabel" >
+		SELECT <include refid="tmTransportOrderLabelColumns"/>
+		FROM tm_transport_order_label a
+		WHERE a.transport_no = #{transportNo} AND a.label_no = #{labelNo} AND a.org_id = #{orgId}
+	</select>
+</mapper>

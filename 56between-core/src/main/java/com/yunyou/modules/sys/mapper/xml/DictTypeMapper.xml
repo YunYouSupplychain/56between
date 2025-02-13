@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.mapper.DictTypeMapper">
+
+    <sql id="dictTypeColumns">
+        a.id AS "id",
+		a.type AS "type",
+		a.description AS "description",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.sys.entity.DictType">
+        SELECT
+        <include refid="dictTypeColumns"/>
+        FROM sys_dict_type a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.sys.entity.DictType">
+        SELECT
+        <include refid="dictTypeColumns"/>
+        FROM sys_dict_type a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="type != null and type != ''">
+                AND a.type LIKE concat('%',#{type},'%')
+            </if>
+            <if test="description != null and description != ''">
+                AND a.description LIKE concat('%',#{description},'%')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.sys.entity.DictType">
+        SELECT
+        <include refid="dictTypeColumns"/>
+        FROM sys_dict_type a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sys_dict_type (
+			id,
+			type,
+			description,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{type},
+			#{description},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+    </insert>
+
+    <update id="update">
+        UPDATE sys_dict_type
+        SET type        = #{type},
+            description = #{description},
+            update_by   = #{updateBy.id},
+            update_date = #{updateDate}
+        WHERE id = #{id}
+    </update>
+
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE
+        FROM sys_dict_type
+        WHERE id = #{id}
+    </delete>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE sys_dict_type
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

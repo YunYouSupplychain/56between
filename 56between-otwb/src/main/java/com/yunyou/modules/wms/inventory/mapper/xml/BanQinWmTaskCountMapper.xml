@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmTaskCountMapper">
+    
+	<sql id="banQinWmTaskCountColumns">
+		a.id AS "id",
+		a.count_id AS "countId",
+		a.count_no AS "countNo",
+		a.status AS "status",
+		a.count_method AS "countMethod",
+		a.count_mode AS "countMode",
+		a.area_code AS "areaCode",
+		a.zone_code AS "zoneCode",
+		a.count_op AS "countOp",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.lot_num AS "lotNum",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.qty AS "qty",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_count_uom AS "qtyCountUom",
+		a.qty_count_ea AS "qtyCountEa",
+		a.qty_diff AS "qtyDiff",
+		a.lot_att01 AS "lotAtt01",
+		a.lot_att02 AS "lotAtt02",
+		a.lot_att03 AS "lotAtt03",
+		a.lot_att04 AS "lotAtt04",
+		a.lot_att05 AS "lotAtt05",
+		a.lot_att06 AS "lotAtt06",
+		a.lot_att07 AS "lotAtt07",
+		a.lot_att08 AS "lotAtt08",
+		a.lot_att09 AS "lotAtt09",
+		a.lot_att10 AS "lotAtt10",
+		a.lot_att11 AS "lotAtt11",
+		a.lot_att12 AS "lotAtt12",
+		a.data_source AS "dataSource",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+        a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinWmTaskCountJoins">
+		
+	</sql>
+	
+	<select id="get" resultType="BanQinWmTaskCount" >
+		SELECT 
+			<include refid="banQinWmTaskCountColumns"/>
+		FROM wm_task_count a
+		<include refid="banQinWmTaskCountJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntity" resultType="BanQinWmTaskCountEntity" >
+		SELECT
+			<include refid="banQinWmTaskCountColumns"/>
+		FROM wm_task_count a
+		<include refid="banQinWmTaskCountJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="BanQinWmTaskCount" >
+		SELECT 
+			<include refid="banQinWmTaskCountColumns"/>
+		FROM wm_task_count a
+		<include refid="banQinWmTaskCountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+			<if test="countNo != null and countNo != ''">
+				AND a.count_no = #{countNo}
+			</if>
+			<if test="countId != null and countId != ''">
+				AND a.count_id = #{countId}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num = #{lotNum}
+			</if>
+			<if test="locCode != null and locCode != ''">
+				AND a.loc_code = #{locCode}
+			</if>
+			<if test="traceId != null and traceId != ''">
+				AND a.trace_id = #{traceId}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmTaskCountEntity" >
+		SELECT
+			<include refid="banQinWmTaskCountColumns"/>,
+			ebcu.ebcu_name_cn AS ownerName,
+			cws.sku_name AS skuName ,
+			cwz.zone_name AS zoneName,
+			cwa.area_name AS areaName,
+			cwp.cdpa_format AS packDesc,
+			cwpr.cdpr_desc AS uomDesc,
+			cwpr.cdpr_quantity AS uomQuantity
+		FROM wm_task_count a
+		LEFT JOIN eb_customer ebcu ON a.owner_code = ebcu.ebcu_customer_no AND a.org_id = ebcu.org_id
+		LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sku_code = cws.sku_code AND a.org_id = cws.org_id
+		LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = a.zone_code AND cwz.org_id = a.org_id
+		LEFT JOIN cd_wh_area cwa ON cwa.area_code = a.area_code AND cwa.org_id = a.org_id
+		LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = a.pack_code AND cwp.org_id = a.org_id
+		LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = a.uom AND cwpr.org_id = a.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND a.org_id = #{orgId}
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+			<if test="countNo != null and countNo != ''">
+				AND a.count_no = #{countNo}
+			</if>
+			<if test="countId != null and countId != ''">
+				AND a.count_id = #{countId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmTaskCount" >
+		SELECT 
+			<include refid="banQinWmTaskCountColumns"/>
+		FROM wm_task_count a
+		<include refid="banQinWmTaskCountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+    <select id="getByHeaderId" resultType="BanQinWmTaskCount" >
+        SELECT
+        <include refid="banQinWmTaskCountColumns"/>
+        FROM wm_task_count a
+        <include refid="banQinWmTaskCountJoins"/>
+        <where>
+            AND a.org_id = #{orgId}
+            AND a.header_id = #{headerId}
+        </where>
+    </select>
+
+    <select id="getInvCountTask" resultType="BanQinWmTaskCount">
+        SELECT
+            wmil.owner_code AS ownerCode,
+            ec.ebcu_name_cn AS ownerName,
+            wmil.sku_code AS skuCode,
+            cdsk.sku_name AS skuName,
+            wmil.lot_num AS lotNum,
+            wmil.loc_code AS locCode,
+            wmil.trace_id AS traceId,
+            wmil.qty AS qty,
+            wmla.lot_att01 AS lotAtt01,
+            wmla.lot_att02 AS lotAtt02,
+            wmla.lot_att03 AS lotAtt03,
+            wmla.lot_att04 AS lotAtt04,
+            wmla.lot_att05 AS lotAtt05,
+            wmla.lot_att06 AS lotAtt06,
+            wmla.lot_att07 AS lotAtt07,
+            wmla.lot_att08 AS lotAtt08,
+            wmla.lot_att09 AS lotAtt09,
+            wmla.lot_att10 AS lotAtt10,
+            wmla.lot_att11 AS lotAtt11,
+            wmla.lot_att12 AS lotAtt12,
+            cdwp.cdpa_code AS packCode
+        FROM wm_inv_lot_loc wmil
+        LEFT JOIN cd_wh_sku cdsk ON cdsk.sku_code = wmil.sku_code AND cdsk.owner_code = wmil.owner_code AND cdsk.org_id = wmil.org_id
+		LEFT JOIN eb_customer ec ON wmil.owner_code = ec.ebcu_customer_no AND wmil.org_id = ec.org_id
+        LEFT JOIN cd_wh_package cdwp ON cdwp.cdpa_code = cdsk.pack_code AND cdwp.org_id = cdsk.org_id
+        LEFT JOIN wm_inv_lot_att wmla ON wmla.lot_num = wmil.lot_num AND wmla.org_id = wmil.org_id
+        LEFT JOIN cd_wh_loc cdwl ON cdwl.loc_code = wmil.loc_code AND cdwl.org_id = wmil.org_id
+        LEFT JOIN cd_wh_zone cdwz ON cdwz.zone_code= cdwl.zone_code AND cdwz.org_id= cdwl.org_id
+        WHERE 1 = 1
+        <![CDATA[ AND wmil.qty > 0 ]]>
+        AND wmil.org_id= #{orgId}
+        <if test="ownerCode != null and ownerCode != ''">
+            AND wmil.owner_code = #{ownerCode}
+        </if>
+        <if test="skuCode != null and skuCode != ''">
+            AND wmil.sku_code = #{skuCode}
+        </if>
+        <if test="lotNum != null and lotNum != ''">
+            AND wmil.lot_num = #{lotNum}
+        </if>
+        <if test="zoneCode != null and zoneCode != ''">
+            AND cdwl.zone_code = #{zoneCode}
+        </if>
+        <if test="fmLoc != null and fmLoc != ''">
+            AND wmil.loc_code &gt;= #{fmLoc}
+        </if>
+        <if test="toLoc != null and toLoc != ''">
+            AND wmil.loc_code &lt;= #{toLoc}
+        </if>
+        <if test="traceId != null and traceId != ''">
+            AND wmil.trace_id = #{traceId}
+        </if>
+        <if test="lotAtt01 != null and lotAtt01 != ''">
+            AND wmla.lot_att01 = #{lotAtt01}
+        </if>
+        <if test="lotAtt02 != null and lotAtt02 != ''">
+            AND wmla.lot_att02 = #{lotAtt02}
+        </if>
+        <if test="lotAtt03 != null and lotAtt03 != ''">
+            AND wmla.lot_att03 = #{lotAtt03}
+        </if>
+        <if test="lotAtt04 != null and lotAtt04 != ''">
+            AND wmla.lot_att04 = #{lotAtt04}
+        </if>
+        <if test="lotAtt05 != null and lotAtt05 != ''">
+            AND wmla.lot_att05 = #{lotAtt05}
+        </if>
+        <if test="lotAtt06 != null and lotAtt06 != ''">
+            AND wmla.lot_att06 = #{lotAtt06}
+        </if>
+        <if test="lotAtt07 != null and lotAtt07 != ''">
+            AND wmla.lot_att07 = #{lotAtt07}
+        </if>
+        <if test="lotAtt08 != null and lotAtt08 != ''">
+            AND wmla.lot_att08 = #{lotAtt08}
+        </if>
+        <if test="lotAtt09 != null and lotAtt09 != ''">
+            AND wmla.lot_att09 = #{lotAtt09}
+        </if>
+        <if test="lotAtt10 != null and lotAtt10 != ''">
+            AND wmla.lot_att10 = #{lotAtt10}
+        </if>
+        <if test="lotAtt11 != null and lotAtt11 != ''">
+            AND wmla.lot_att11 = #{lotAtt11}
+        </if>
+        <if test="lotAtt12 != null and lotAtt12 != ''">
+            AND wmla.lot_att12 = #{lotAtt12}
+        </if>
+        <if test="isSerial != null and isSerial != ''">
+            AND cdsk.is_serial = #{isSerial}
+        </if>
+		<if test="ownerCodes != null and ownerCodes.length > 0">
+			AND wmil.owner_code IN
+			<foreach collection="ownerCodes" index="item" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="skuCodes != null and skuCodes.length > 0">
+			AND wmil.sku_code IN
+			<foreach collection="skuCodes" index="item" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="areaCodes != null and areaCodes.length > 0">
+			AND cdwz.area_code IN
+			<foreach collection="areaCodes" index="item" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="zoneCodes != null and zoneCodes.length > 0">
+			AND cdwl.zone_code IN
+			<foreach collection="zoneCodes" index="item" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+        <!--动碰盘点时过滤出库位有进出库存操作的库存记录-->
+        <if test="countRange == '3'.toString()">
+            and exists(
+                select 1 from wm_act_tran wmat
+                where 1=1
+                and wmat.fm_owner = wmil.owner_code
+                and wmat.fm_sku = wmil.sku_code
+                and wmat.fm_loc = wmil.loc_code
+                and wmat.org_id = wmil.org_id
+                <if test="takeStartTime != null and takeStartTime != ''">
+					<![CDATA[ and wmat.create_date >= #{takeStartTime} ]]>
+                </if>
+                <if test="takeEndTime != null and takeEndTime != ''">
+					<![CDATA[ and wmat.create_date <= #{takeEndTime} ]]>
+                </if>
+                union
+                select 1 from wm_act_tran wmat
+                where 1=1
+                and wmat.to_owner = wmil.owner_code
+                and wmat.to_sku = wmil.sku_code
+                and wmat.to_loc = wmil.loc_code
+                and wmat.org_id = wmil.org_id
+                <if test="takeStartTime != null and takeStartTime != ''">
+                    <![CDATA[ and wmat.create_date >= #{takeStartTime} ]]>
+                </if>
+                <if test="takeEndTime != null and takeEndTime != ''">
+                    <![CDATA[ and wmat.create_date <= #{takeEndTime} ]]>
+                </if>
+            )
+        </if>
+        <!--抽盘时,将满足条件的随机排序-->
+        <if test="countRange == '2'.toString()">
+            order by UUID()
+        </if>
+        <!--循环盘点时，查找出满足循环周期的商品-->
+        <if test="countRange == '4'.toString()">
+			and exists
+				(select 1
+				from cd_wh_sku cdsk
+				left join cd_wh_cycle cdcy on cdcy.cycle_code = cdsk.cycle_code and cdcy.org_id = cdcy.org_id
+				where cdsk.sku_code = wmil.sku_code
+				and cdsk.owner_code = wmil.owner_code
+				and cdsk.cycle_code is not null
+				and cdsk.cycle_code != ''
+				<![CDATA[ and cdsk.last_count_time + cdcy.cycle_life <= now() ]]>
+				and cdsk.org_id = wmil.org_id
+				)
+        </if>
+    </select>
+
+    <select id="getReCreateCount" resultType="BanQinWmTaskCount">
+        SELECT
+			<include refid="banQinWmTaskCountColumns"/>
+        FROM wm_task_count a
+        LEFT JOIN cd_wh_sku cws ON cws.owner_code = a.owner_code AND cws.sku_code = a.sku_code AND cws.org_id = a.org_id
+        WHERE 1 = 1
+        AND <![CDATA[ a.qty_diff <> 0 ]]>
+        AND a.org_id = #{orgId}
+        <if test="isSerial != null and isSerial != ''">
+            AND cws.is_serial = #{isSerial}
+        </if>
+        <if test="countNo != null and countNo != ''">
+            AND a.count_no = #{countNo}
+        </if>
+    </select>
+
+    <select id="getByIds" resultType="BanQinWmTaskCount" >
+        SELECT <include refid="banQinWmTaskCountColumns"/>
+        FROM wm_task_count a
+        <where>
+            1 = 1
+            AND a.id IN
+            <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+    
+	<insert id="insert">
+		INSERT INTO wm_task_count(
+			id,
+			count_id,
+			count_no,
+			status,
+			count_method,
+			count_mode,
+			area_code,
+			zone_code,
+			count_op,
+			owner_code,
+			sku_code,
+			lot_num,
+			loc_code,
+			trace_id,
+			qty,
+			pack_code,
+			uom,
+			qty_count_uom,
+			qty_count_ea,
+			qty_diff,
+			lot_att01,
+			lot_att02,
+			lot_att03,
+			lot_att04,
+			lot_att05,
+			lot_att06,
+			lot_att07,
+			lot_att08,
+			lot_att09,
+			lot_att10,
+			lot_att11,
+			lot_att12,
+			data_source,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+            header_id
+		) VALUES (
+			#{id},
+			#{countId},
+			#{countNo},
+			#{status},
+			#{countMethod},
+			#{countMode},
+			#{areaCode},
+			#{zoneCode},
+			#{countOp},
+			#{ownerCode},
+			#{skuCode},
+			#{lotNum},
+			#{locCode},
+			#{traceId},
+			#{qty},
+			#{packCode},
+			#{uom},
+			#{qtyCountUom},
+			#{qtyCountEa},
+			#{qtyDiff},
+			#{lotAtt01},
+			#{lotAtt02},
+			#{lotAtt03},
+			#{lotAtt04},
+			#{lotAtt05},
+			#{lotAtt06},
+			#{lotAtt07},
+			#{lotAtt08},
+			#{lotAtt09},
+			#{lotAtt10},
+			#{lotAtt11},
+			#{lotAtt12},
+			#{dataSource},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+            #{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_task_count SET 	
+			count_id = #{countId},
+			count_no = #{countNo},
+			status = #{status},
+			count_method = #{countMethod},
+			count_mode = #{countMode},
+			area_code = #{areaCode},
+			zone_code = #{zoneCode},
+			count_op = #{countOp},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			lot_num = #{lotNum},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			qty = #{qty},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_count_uom = #{qtyCountUom},
+			qty_count_ea = #{qtyCountEa},
+			qty_diff = #{qtyDiff},
+			lot_att01 = #{lotAtt01},
+			lot_att02 = #{lotAtt02},
+			lot_att03 = #{lotAtt03},
+			lot_att04 = #{lotAtt04},
+			lot_att05 = #{lotAtt05},
+			lot_att06 = #{lotAtt06},
+			lot_att07 = #{lotAtt07},
+			lot_att08 = #{lotAtt08},
+			lot_att09 = #{lotAtt09},
+			lot_att10 = #{lotAtt10},
+			lot_att11 = #{lotAtt11},
+			lot_att12 = #{lotAtt12},
+			data_source = #{dataSource},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_task_count
+		WHERE id = #{id}
+	</update>
+
+	<!--物理删除-->
+	<update id="deleteByHeaderId">
+		DELETE FROM wm_task_count
+		WHERE header_id = #{headerId}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_task_count SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="rfTCGetTaskCountDetailQuery" resultType="BanQinWmTaskCountEntity">
+		SELECT
+			wmtc.id AS id,
+			wmtc.header_id AS headerId,
+			wmtc.count_id AS countId,
+			wmtc.count_no AS countNo,
+			wmtc.status AS status,
+			wmch.count_method AS countMethod,
+			wmch.count_mode AS countMode,
+			wmtc.area_code AS areaCode,
+			wmtc.zone_code AS zoneCode,
+			wmtc.count_op AS countOp,
+			wmch.parent_count_no AS parentCountNo,
+			wmtc1.count_op as preCountOp,
+			wmtc1.qty_count_ea AS preQtyCountEa,
+			wmtc.owner_code AS ownerCode,
+			ebcs.ebcu_name_cn as ownerName,
+			wmtc.sku_code AS skuCode,
+			cdws.sku_name as skuName,
+			cdws.is_serial AS isSerial,
+			wmtc.lot_num AS lotNum,
+			wmtc.loc_code AS locCode,
+			wmtc.trace_id AS traceId,
+			wmtc.qty AS qty,
+			wmtc.pack_code AS packCode,
+			cdpa.cdpa_format AS packDesc,
+			wmtc.uom AS uom,
+			wmtc.qty_count_uom AS qtyCountUom,
+			wmtc.qty_count_ea AS qtyCountEa,
+			wmtc.qty_diff AS qtyDiff,
+			wmtc.lot_att01 AS lotAtt01,
+			wmtc.lot_att02 AS lotAtt02,
+			wmtc.lot_att03 AS lotAtt03,
+			wmtc.lot_att04 AS lotAtt04,
+			wmtc.lot_att05 AS lotAtt05,
+			wmtc.lot_att06 AS lotAtt06,
+			wmtc.lot_att07 AS lotAtt07,
+			wmtc.lot_att08 AS lotAtt08,
+			wmtc.lot_att09 AS lotAtt09,
+			wmtc.lot_att10 AS lotAtt10,
+			wmtc.lot_att11 AS lotAtt11,
+			wmtc.lot_att12 AS lotAtt12,
+			wmtc.org_id AS orgId
+		FROM wm_task_count wmtc
+		LEFT JOIN wm_count_header wmch ON wmch.count_no = wmtc.count_no AND wmch.org_id = wmtc.org_id
+		LEFT JOIN wm_task_count wmtc1 ON wmtc1.count_no = wmch.parent_count_no AND wmtc1.org_id = wmch.org_id AND wmtc1.owner_code = wmtc.owner_code AND wmtc1.sku_code = wmtc.sku_code AND wmtc1.lot_num = wmtc.lot_num AND wmtc1.loc_code = wmtc.loc_code AND wmtc1.trace_id = wmtc.trace_id
+		LEFT JOIN cd_wh_sku cdws ON cdws.sku_code = wmtc.sku_code AND cdws.owner_code = wmtc.owner_code AND cdws.org_id = wmtc.org_id
+		LEFT JOIN eb_customer ebcs ON ebcs.ebcu_customer_no = wmtc.owner_code AND ebcs.org_id = wmtc.org_id
+		LEFT JOIN cd_wh_loc cdwl ON cdwl.loc_code = wmtc.loc_code AND cdwl.org_id = wmtc.org_id
+		LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = wmtc.pack_code AND cdpa.org_id = wmtc.org_id
+		WHERE 1 = 1
+		AND wmtc.status = '00'
+		AND wmch.status &gt; '00'
+		AND wmch.status &lt; '80'
+		AND wmtc.org_id = #{orgId}
+		AND wmtc.count_no = #{countNo}
+		<if test="zoneCode != null and zoneCode != ''">
+			AND cdwl.zone_code = #{zoneCode}
+		</if>
+		<if test="lane != null and lane != ''">
+			AND cdwl.lane = #{lane}
+		</if>
+		<if test="locCode != null and locCode != ''">
+			AND wmtc.loc_code = #{locCode}
+		</if>
+		ORDER BY wmtc.count_no, wmtc.count_id asc, cdwl.pk_seq
+	</select>
+	
+</mapper>

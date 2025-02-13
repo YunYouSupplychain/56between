@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysOmsPackageRelationMapper">
+    
+	<sql id="sysOmsPackageRelationColumns">
+		a.id                AS "id",
+		a.cdpr_unit         AS "cdprUnit",
+		a.cdpr_unit_rate    AS "cdprUnitRate",
+		a.cdpr_is_main      AS "cdprIsMain",
+		a.cdpr_sequences_no AS "cdprSequencesNo",
+		a.cdpr_unit_level   AS "cdprUnitLevel",
+		a.cdpr_quantity     AS "cdprQuantity",
+		a.cdpr_desc         AS "cdprDesc",
+		a.cdpr_material     AS "cdprMaterial",
+		a.cdpr_is_pack_box  AS "cdprIsPackBox",
+		a.cdpr_is_lable_in  AS "cdprIsLableIn",
+		a.cdpr_is_lable_out AS "cdprIsLableOut",
+		a.cdpr_length       AS "cdprLength",
+		a.cdpr_width        AS "cdprWidth",
+		a.cdpr_highth       AS "cdprHighth",
+		a.cdpr_volume       AS "cdprVolume",
+		a.cdpr_weight       AS "cdprWeight",
+		a.cdpr_wh_code      AS "cdprWhCode",
+		a.rec_ver           AS "recVer",
+		a.create_by         AS "createBy.id",
+		a.create_date       AS "createDate",
+		a.update_by         AS "updateBy.id",
+		a.update_date       AS "updateDate",
+		a.del_flag          AS "delFlag",
+		a.time_zone         AS "timeZone",
+		a.data_set          AS "dataSet",
+		a.cdpr_ti           AS "cdprTi",
+		a.cdpr_hi           AS "cdprHi",
+		a.pm_code           AS "pmCode",
+		a.cdpr_cdpa_pm_code AS "cdprCdpaPmCode",
+		a.cdpr_pa_id        AS "cdprPaId",
+		a.cdpr_is_default   AS "cdprIsDefault",
+		a.cdpr_is_review    AS "cdprIsReview"
+	</sql>
+	
+	<insert id="insert">
+		INSERT INTO sys_oms_package_relation
+		(
+			id,
+			cdpr_unit,
+			cdpr_unit_rate,
+			cdpr_is_main,
+			cdpr_sequences_no,
+			cdpr_unit_level,
+			cdpr_quantity,
+			cdpr_desc,
+			cdpr_material,
+			cdpr_is_pack_box,
+			cdpr_is_lable_in,
+			cdpr_is_lable_out,
+			cdpr_length,
+			cdpr_width,
+			cdpr_highth,
+			cdpr_volume,
+			cdpr_weight,
+			cdpr_wh_code,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			time_zone,
+			data_set,
+			cdpr_ti,
+			cdpr_hi,
+			pm_code,
+			cdpr_cdpa_pm_code,
+			cdpr_pa_id,
+            cdpr_is_default,
+            cdpr_is_review
+		) VALUES (
+			#{id},
+			#{cdprUnit},
+			#{cdprUnitRate},
+			#{cdprIsMain},
+			#{cdprSequencesNo},
+			#{cdprUnitLevel},
+			#{cdprQuantity},
+			#{cdprDesc},
+			#{cdprMaterial},
+			#{cdprIsPackBox},
+			#{cdprIsLableIn},
+			#{cdprIsLableOut},
+			#{cdprLength},
+			#{cdprWidth},
+			#{cdprHighth},
+			#{cdprVolume},
+			#{cdprWeight},
+			#{cdprWhCode},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{timeZone},
+			#{dataSet},
+			#{cdprTi},
+			#{cdprHi},
+			#{pmCode},
+			#{cdprCdpaPmCode},
+			#{cdprPaId},
+            #{cdprIsDefault},
+            #{cdprIsReview}
+		)
+	</insert>
+    <insert id="batchInsert">
+		INSERT INTO sys_oms_package_relation
+		(
+			id,
+			cdpr_unit,
+			cdpr_unit_rate,
+			cdpr_is_main,
+			cdpr_sequences_no,
+			cdpr_unit_level,
+			cdpr_quantity,
+			cdpr_desc,
+			cdpr_material,
+			cdpr_is_pack_box,
+			cdpr_is_lable_in,
+			cdpr_is_lable_out,
+			cdpr_length,
+			cdpr_width,
+			cdpr_highth,
+			cdpr_volume,
+			cdpr_weight,
+			cdpr_wh_code,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			time_zone,
+			data_set,
+			cdpr_ti,
+			cdpr_hi,
+			pm_code,
+			cdpr_cdpa_pm_code,
+			cdpr_pa_id,
+			cdpr_is_default,
+			cdpr_is_review
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.cdprUnit},
+			#{item.cdprUnitRate},
+			#{item.cdprIsMain},
+			#{item.cdprSequencesNo},
+			#{item.cdprUnitLevel},
+			#{item.cdprQuantity},
+			#{item.cdprDesc},
+			#{item.cdprMaterial},
+			#{item.cdprIsPackBox},
+			#{item.cdprIsLableIn},
+			#{item.cdprIsLableOut},
+			#{item.cdprLength},
+			#{item.cdprWidth},
+			#{item.cdprHighth},
+			#{item.cdprVolume},
+			#{item.cdprWeight},
+			#{item.cdprWhCode},
+			#{item.recVer},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.delFlag},
+			#{item.timeZone},
+			#{item.dataSet},
+			#{item.cdprTi},
+			#{item.cdprHi},
+			#{item.pmCode},
+			#{item.cdprCdpaPmCode},
+			#{item.cdprPaId},
+			#{item.cdprIsDefault},
+			#{item.cdprIsReview}
+		)
+		</foreach>
+	</insert>
+
+    <update id="update">
+		UPDATE sys_oms_package_relation
+		SET cdpr_unit         = #{cdprUnit},
+			cdpr_unit_rate    = #{cdprUnitRate},
+			cdpr_is_main      = #{cdprIsMain},
+			cdpr_sequences_no = #{cdprSequencesNo},
+			cdpr_unit_level   = #{cdprUnitLevel},
+			cdpr_quantity     = #{cdprQuantity},
+			cdpr_desc         = #{cdprDesc},
+			cdpr_material     = #{cdprMaterial},
+			cdpr_is_pack_box  = #{cdprIsPackBox},
+			cdpr_is_lable_in  = #{cdprIsLableIn},
+			cdpr_is_lable_out = #{cdprIsLableOut},
+			cdpr_length       = #{cdprLength},
+			cdpr_width        = #{cdprWidth},
+			cdpr_highth       = #{cdprHighth},
+			cdpr_volume       = #{cdprVolume},
+			cdpr_weight       = #{cdprWeight},
+			cdpr_wh_code      = #{cdprWhCode},
+			rec_ver           = rec_ver + 1,
+			update_by         = #{updateBy.id},
+			update_date       = #{updateDate},
+			time_zone         = #{timeZone},
+			cdpr_ti           = #{cdprTi},
+			cdpr_hi           = #{cdprHi},
+			pm_code           = #{pmCode},
+			cdpr_cdpa_pm_code = #{cdprCdpaPmCode},
+			cdpr_pa_id        = #{cdprPaId},
+			cdpr_is_default   = #{cdprIsDefault},
+			cdpr_is_review    = #{cdprIsReview}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_oms_package_relation SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_oms_package_relation
+		WHERE id = #{id}
+	</delete>
+	
+    <delete id="deleteByPmCode">
+        DELETE FROM sys_oms_package_relation
+        WHERE cdpr_cdpa_pm_code = #{cdpaPmCode}
+    </delete>
+    <delete id="remove">
+		DELETE sopr
+		FROM sys_oms_package_relation sopr
+			INNER JOIN sys_oms_package sop ON sop.pm_code = sopr.cdpr_cdpa_pm_code AND sop.data_set = sopr.data_set
+		WHERE sop.cdpa_code = #{packageCode}
+		  and sop.data_set = #{dataSet}
+	</delete>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysOmsPackageRelation" >
+		SELECT
+		<include refid="sysOmsPackageRelationColumns"/>
+		FROM sys_oms_package_relation a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysOmsPackageRelation" >
+		SELECT
+		<include refid="sysOmsPackageRelationColumns"/>
+		FROM sys_oms_package_relation a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+			<if test="cdprCdpaPmCode != null and cdprCdpaPmCode != ''">
+				AND a.cdpr_cdpa_pm_code = #{cdprCdpaPmCode}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysOmsPackageRelation" >
+		SELECT
+		<include refid="sysOmsPackageRelationColumns"/>
+		FROM sys_oms_package_relation a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.SysOmsPackageRelation" >
+		SELECT
+		<include refid="sysOmsPackageRelationColumns"/>
+		FROM sys_oms_package_relation a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="cdprCdpaPmCode != null and cdprCdpaPmCode != ''">
+				AND a.cdpr_cdpa_pm_code = #{cdprCdpaPmCode}
+			</if>
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.cdpr_sequences_no
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findByPackageUom" resultType="com.yunyou.modules.sys.common.entity.SysOmsPackageRelation">
+		SELECT <include refid="sysOmsPackageRelationColumns"/>
+		FROM sys_oms_package_relation a
+			LEFT JOIN sys_oms_package cdpa ON cdpa.del_flag = '0' AND a.cdpr_cdpa_pm_code = cdpa.pm_code AND a.data_set = cdpa.data_set
+		WHERE a.del_flag = '0'
+		  AND a.cdpr_unit_level = #{uom}
+		  AND cdpa.cdpa_code = #{packageCode}
+		  AND cdpa.data_set = #{dataSet}
+    </select>
+</mapper>

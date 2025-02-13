@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.weigh.mapper.BanQinWeighMachineInfoMapper">
+    
+	<sql id="banQinWeighMachineInfoColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.machine_no AS "machineNo",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWeighMachineInfoJoins">
+		LEFT JOIN sys_office so ON a.org_id = so.id
+	</sql>
+
+	<select id="get" resultType="BanQinWeighMachineInfo" >
+		SELECT 
+			<include refid="banQinWeighMachineInfoColumns"/>
+		FROM cd_weigh_machine_info a
+		<include refid="banQinWeighMachineInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntity" resultType="BanQinWeighMachineInfoEntity" >
+		SELECT
+			so.name AS "orgName",
+		<include refid="banQinWeighMachineInfoColumns"/>
+		FROM cd_weigh_machine_info a
+		<include refid="banQinWeighMachineInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="BanQinWeighMachineInfo" >
+		SELECT 
+			<include refid="banQinWeighMachineInfoColumns"/>
+		FROM cd_weigh_machine_info a
+		<include refid="banQinWeighMachineInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="machineNo != null and machineNo != ''">
+				AND a.machine_no = #{machineNo}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWeighMachineInfoEntity" >
+		SELECT
+			so.name AS "orgName",
+			<include refid="banQinWeighMachineInfoColumns"/>
+		FROM cd_weigh_machine_info a
+		<include refid="banQinWeighMachineInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="machineNo != null and machineNo != ''">
+				AND a.machine_no = #{machineNo}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWeighMachineInfo" >
+		SELECT 
+			<include refid="banQinWeighMachineInfoColumns"/>
+		FROM cd_weigh_machine_info a
+		<include refid="banQinWeighMachineInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_weigh_machine_info(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			machine_no,
+			org_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{machineNo},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cd_weigh_machine_info SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			machine_no = #{machineNo},
+			org_id = #{orgId}
+		WHERE id = #{id}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM cd_weigh_machine_info
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_weigh_machine_info SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<delete id="remove">
+		DELETE FROM cd_weigh_machine_info WHERE code = #{code} AND org_id = #{orgId}
+	</delete>
+
+	<select id="getBySN" resultType="BanQinWeighMachineInfoEntity" >
+		SELECT
+			so.name AS "orgName",
+			<include refid="banQinWeighMachineInfoColumns"/>
+		FROM cd_weigh_machine_info a
+		<include refid="banQinWeighMachineInfoJoins"/>
+		WHERE a.machine_no = #{machineNo}
+	</select>
+	
+</mapper>

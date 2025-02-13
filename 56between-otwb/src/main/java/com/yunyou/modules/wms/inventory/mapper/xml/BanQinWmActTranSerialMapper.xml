@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmActTranSerialMapper">
+    
+	<sql id="banQinWmActTranSerialColumns">
+		a.id AS "id",
+		a.serial_tran_id AS "serialTranId",
+		a.serial_tran_type AS "serialTranType",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.serial_no AS "serialNo",
+		a.order_type AS "orderType",
+		a.order_no AS "orderNo",
+		a.line_no AS "lineNo",
+		a.lot_num AS "lotNum",
+		a.tran_id AS "tranId",
+		a.tran_op AS "tranOp",
+		a.tran_time AS "tranTime",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmActTranSerialJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+	
+	<select id="get" resultType="BanQinWmActTranSerial" >
+		SELECT 
+			<include refid="banQinWmActTranSerialColumns"/>
+		FROM wm_act_tran_serial a
+		<include refid="banQinWmActTranSerialJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmActTranSerial" >
+		SELECT 
+			<include refid="banQinWmActTranSerialColumns"/>
+		FROM wm_act_tran_serial a
+		<include refid="banQinWmActTranSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmActTranSerialEntity" >
+		SELECT
+			<include refid="banQinWmActTranSerialColumns"/>,
+			ec.ebcu_name_cn AS ownerName,
+			cws.sku_name AS skuName,
+			wila.lot_att01 AS lotAtt01,
+			wila.lot_att02 AS lotAtt02,
+			wila.lot_att03 AS lotAtt03,
+			wila.lot_att04 AS lotAtt04,
+			wila.lot_att05 AS lotAtt05,
+			wila.lot_att06 AS lotAtt06,
+			wila.lot_att07 AS lotAtt07,
+			wila.lot_att08 AS lotAtt08,
+			wila.lot_att09 AS lotAtt09,
+			wila.lot_att10 AS lotAtt10,
+			wila.lot_att11 AS lotAtt11,
+			wila.lot_att12 AS lotAtt12,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName
+		from wm_act_tran_serial a
+		LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = a.lot_num AND wila.org_id = a.org_id
+		LEFT JOIN cd_wh_sku cws ON cws.owner_code = a.owner_code AND cws.sku_code = a.sku_code AND cws.org_id = a.org_id
+		LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = a.owner_code AND ec.org_id = a.org_id AND ec.ebcu_type like '%OWNER,%'
+		<include refid="banQinWmActTranSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="serialTranId != null and serialTranId != ''">
+				AND a.serial_tran_id like concat(#{serialTranId}, '%');
+			</if>
+			<if test="serialTranType != null and serialTranType != ''">
+				AND a.serial_tran_type = #{serialTranType}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lotNum like concat(#{lotNum}, '%')
+			</if>
+			<if test="serialNo != null and serialNo != ''">
+				AND a.serial_no like concat(#{serialNo}, '%');
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no like concat(#{orderNo}, '%')
+			</if>
+			<if test="tranTimeFrom != null and tranTimeFrom != ''">
+				<![CDATA[AND a.tran_time >= #{tranTimeFrom}]]>
+			</if>
+			<if test="tranTimeTo != null and tranTimeTo != ''">
+				<![CDATA[AND a.tran_time <= #{tranTimeTo}]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="BanQinWmActTranSerial" >
+		SELECT 
+			<include refid="banQinWmActTranSerialColumns"/>
+		FROM wm_act_tran_serial a
+		<include refid="banQinWmActTranSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_act_tran_serial(
+			id,
+			serial_tran_id,
+			serial_tran_type,
+			owner_code,
+			sku_code,
+			serial_no,
+			order_type,
+			order_no,
+			line_no,
+			lot_num,
+			tran_id,
+			tran_op,
+			tran_time,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{serialTranId},
+			#{serialTranType},
+			#{ownerCode},
+			#{skuCode},
+			#{serialNo},
+			#{orderType},
+			#{orderNo},
+			#{lineNo},
+			#{lotNum},
+			#{tranId},
+			#{tranOp},
+			#{tranTime},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_act_tran_serial SET 	
+			serial_tran_id = #{serialTranId},
+			serial_tran_type = #{serialTranType},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			serial_no = #{serialNo},
+			order_type = #{orderType},
+			order_no = #{orderNo},
+			line_no = #{lineNo},
+			lot_num = #{lotNum},
+			tran_id = #{tranId},
+			tran_op = #{tranOp},
+			tran_time = #{tranTime},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_act_tran_serial
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_act_tran_serial SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

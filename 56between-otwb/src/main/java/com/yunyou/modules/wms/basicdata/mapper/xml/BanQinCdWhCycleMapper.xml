@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdWhCycleMapper">
+    
+	<sql id="banQinCdWhCycleColumns">
+		a.id AS "id",
+		a.cycle_code AS "cycleCode",
+		a.cycle_name AS "cycleName",
+		a.cycle_life AS "cycleLife",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinCdWhCycleJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinCdWhCycle" >
+		SELECT 
+			<include refid="banQinCdWhCycleColumns"/>
+		FROM cd_wh_cycle a
+		<include refid="banQinCdWhCycleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinCdWhCycle" >
+		SELECT 
+			<include refid="banQinCdWhCycleColumns"/>
+		FROM cd_wh_cycle a
+		<include refid="banQinCdWhCycleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="cycleCode != null and cycleCode != ''">
+				AND a.cycle_code = #{cycleCode}
+			</if>
+			<if test="cycleName != null and cycleName != ''">
+				AND a.cycle_name = #{cycleName}
+			</if>
+			<if test="cycleLife != null and cycleLife != ''">
+				AND a.cycle_life = #{cycleLife}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinCdWhCycle" >
+		SELECT
+			<include refid="banQinCdWhCycleColumns"/>
+		FROM cd_wh_cycle a
+		<include refid="banQinCdWhCycleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="cycleCode != null and cycleCode != ''">
+				AND a.cycle_code like concat('%', #{cycleCode}, '%')
+			</if>
+			<if test="cycleName != null and cycleName != ''">
+				AND a.cycle_name like concat('%', #{cycleName}, '%')
+			</if>
+			<if test="cycleLife != null and cycleLife != ''">
+				AND a.cycle_life = #{cycleLife}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.cycle_code like concat('%', #{codeAndName}, '%') OR a.cycle_name like concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinCdWhCycle" >
+		SELECT 
+			<include refid="banQinCdWhCycleColumns"/>
+		FROM cd_wh_cycle a
+		<include refid="banQinCdWhCycleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_wh_cycle(
+			id,
+			cycle_code,
+			cycle_name,
+			cycle_life,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{cycleCode},
+			#{cycleName},
+			#{cycleLife},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cd_wh_cycle SET 	
+			cycle_code = #{cycleCode},
+			cycle_name = #{cycleName},
+			cycle_life = #{cycleLife},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_wh_cycle SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM cd_wh_cycle WHERE id = #{id}
+	</update>
+	<delete id="remove">
+		DELETE FROM cd_wh_cycle WHERE cycle_code = #{cycleCode} AND org_id = #{orgId}
+	</delete>
+
+    <select id="getByCode" resultType="com.yunyou.modules.wms.basicdata.entity.BanQinCdWhCycle">
+		SELECT
+		<include refid="banQinCdWhCycleColumns"/>
+		FROM cd_wh_cycle a
+		<include refid="banQinCdWhCycleJoins"/>
+		WHERE a.cycle_code = #{cycleCode} and a.org_id = #{orgId}
+	</select>
+
+</mapper>

@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.manager.mapper.TmHandoverOrderMapper">
+
+	<sql id="tmHandoverOrderHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.handover_no AS "handoverNo",
+		a.dispatch_no AS "dispatchNo",
+		a.dispatch_time AS "dispatchTime",
+		a.status AS "status",
+		a.dispatch_outlet_code AS "dispatchOutletCode",
+		a.delivery_outlet_code AS "deliveryOutletCode",
+		a.carrier_code AS "carrierCode",
+		a.car_no AS "carNo",
+		a.driver AS "driver",
+		a.driver_tel AS "driverTel",
+		a.receivable_qty AS "receivableQty",
+		a.actual_qty AS "actualQty",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.handover_person AS "handoverPerson",
+		a.trip AS "trip"
+	</sql>
+
+	<sql id="tmHandoverOrderLabelColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.handover_no AS "handoverNo",
+		a.label_no AS "labelNo",
+		a.transport_no AS "transportNo",
+		a.customer_no AS "customerNo",
+		a.status AS "status",
+		a.receive_ship AS "receiveShip",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId"
+	</sql>
+
+    <sql id="tmHandoverOrderSkuColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.handover_no AS "handoverNo",
+        a.transport_no AS "transportNo",
+        a.customer_no AS "customerNo",
+        a.owner_code AS "ownerCode",
+        a.sku_code AS "skuCode",
+        a.order_qty	AS "orderQty",
+        a.actual_qty AS "actualQty",
+        a.unloading_time AS "unloadingTime",
+        a.receive_ship AS "receiveShip",
+        a.org_id AS "orgId",
+        a.rec_ver AS "recVer",
+        a.base_org_id AS "baseOrgId"
+    </sql>
+
+	<select id="getEntity" resultType="com.yunyou.modules.tms.order.entity.extend.TmHandoverOrderEntity">
+		SELECT
+          p.transport_obj_name AS "dispatchOutletName",
+          d.transport_obj_name AS "deliveryOutletName",
+          ca.transport_obj_name AS "carrierName",
+          td.name AS "driverName",
+          <include refid="tmHandoverOrderHeaderColumns"/>
+		FROM tm_handover_order_header a
+		LEFT JOIN tm_transport_obj p on a.dispatch_outlet_code = p.transport_obj_code AND a.base_org_id = p.org_id
+		LEFT JOIN tm_transport_obj d on a.delivery_outlet_code = d.transport_obj_code AND a.base_org_id = d.org_id
+		LEFT JOIN tm_transport_obj ca on a.carrier_code = ca.transport_obj_code AND a.base_org_id = ca.org_id
+		LEFT JOIN tm_driver td on a.driver = td.code AND a.base_org_id = td.org_id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmHandoverOrderEntity" >
+		SELECT
+          p.transport_obj_name AS "dispatchOutletName",
+          d.transport_obj_name AS "deliveryOutletName",
+          ca.transport_obj_name AS "carrierName",
+          td.name AS "driverName",
+          <include refid="tmHandoverOrderHeaderColumns"/>
+		FROM tm_handover_order_header a
+		LEFT JOIN tm_transport_obj p on a.dispatch_outlet_code = p.transport_obj_code AND a.base_org_id = p.org_id
+		LEFT JOIN tm_transport_obj d on a.delivery_outlet_code = d.transport_obj_code AND a.base_org_id = d.org_id
+		LEFT JOIN tm_transport_obj ca on a.carrier_code = ca.transport_obj_code AND a.base_org_id = ca.org_id
+		LEFT JOIN tm_driver td on a.driver = td.code AND a.base_org_id = td.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="handoverNo != null and handoverNo != ''">
+				AND a.handover_no LIKE concat('%', #{handoverNo}, '%')
+			</if>
+			<if test="dispatchNo != null and dispatchNo != ''">
+				AND a.dispatch_no LIKE concat('%', #{dispatchNo}, '%')
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="dispatchTimeFm != null and dispatchTimeFm != ''">
+				AND a.dispatch_time &gt;= #{dispatchTimeFm}
+			</if>
+			<if test="dispatchTimeTo != null and dispatchTimeTo != ''">
+				AND a.dispatch_time &lt;= #{dispatchTimeTo}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="carNo != null and carNo != ''">
+				AND a.car_no LIKE concat('%', #{carNo}, '%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findEntityList" resultType="com.yunyou.modules.tms.order.entity.extend.TmHandoverOrderEntity" >
+		SELECT
+          p.transport_obj_name AS "dispatchOutletName",
+          d.transport_obj_name AS "deliveryOutletName",
+          ca.transport_obj_name AS "carrierName",
+          td.name AS "driverName",
+          <include refid="tmHandoverOrderHeaderColumns"/>
+		FROM tm_handover_order_header a
+		LEFT JOIN tm_transport_obj p on a.dispatch_outlet_code = p.transport_obj_code AND a.base_org_id = p.org_id
+		LEFT JOIN tm_transport_obj d on a.delivery_outlet_code = d.transport_obj_code AND a.base_org_id = d.org_id
+		LEFT JOIN tm_transport_obj ca on a.carrier_code = ca.transport_obj_code AND a.base_org_id = ca.org_id
+		LEFT JOIN tm_driver td on a.driver = td.code AND a.base_org_id = td.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="handoverNo != null and handoverNo != ''">
+				AND a.handover_no = #{handoverNo}
+			</if>
+			<if test="dispatchNo != null and dispatchNo != ''">
+				AND a.dispatch_no = #{dispatchNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="dispatchOutletCode != null and dispatchOutletCode != ''">
+				AND a.dispatch_outlet_code = #{dispatchOutletCode}
+			</if>
+			<if test="deliveryOutletCode != null and deliveryOutletCode != ''">
+				AND a.delivery_outlet_code = #{deliveryOutletCode}
+			</if>
+			<if test="dispatchTimeFm != null and dispatchTimeFm != ''">
+				AND a.dispatch_time &gt;= #{dispatchTimeFm}
+			</if>
+			<if test="dispatchTimeTo != null and dispatchTimeTo != ''">
+				AND a.dispatch_time &lt;= #{dispatchTimeTo}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="carNo != null and carNo != ''">
+				AND a.car_no = #{carNo}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="baseOrgId != null and baseOrgId != ''">
+				AND a.base_org_id = #{baseOrgId}
+			</if>
+		</where>
+		  	ORDER BY a.update_date DESC
+	</select>
+
+	<select id="findLabelList" resultType="com.yunyou.modules.tms.order.entity.extend.TmHandoverOrderLabelEntity" >
+		SELECT
+		  <include refid="tmHandoverOrderLabelColumns"/>
+		FROM tm_handover_order_label a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="handoverNo != null and handoverNo != ''">
+				AND a.handover_no = #{handoverNo}
+			</if>
+			<if test="labelNo != null and labelNo != ''">
+				AND a.label_no = #{labelNo}
+			</if>
+			<if test="transportNo != null and transportNo != ''">
+				AND a.transport_no = #{transportNo}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="receiveShip != null and receiveShip != ''">
+				AND a.receive_ship = #{receiveShip}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="findSkuList" resultType="com.yunyou.modules.tms.order.entity.extend.TmHandoverOrderSkuEntity" >
+        SELECT
+        o.transport_obj_name AS "ownerName",
+        ti.sku_name as "skuName",
+        <include refid="tmHandoverOrderSkuColumns"/>
+        FROM tm_handover_order_sku a
+        LEFT JOIN tm_transport_obj o on a.owner_code = o.transport_obj_code AND a.base_org_id = o.org_id
+        LEFT JOIN tm_item ti ON a.owner_code = ti.owner_code AND a.sku_code = ti.sku_code AND a.base_org_id = ti.org_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="handoverNo != null and handoverNo != ''">
+                AND a.handover_no = #{handoverNo}
+            </if>
+            <if test="transportNo != null and transportNo != ''">
+                AND a.transport_no = #{transportNo}
+            </if>
+            <if test="customerNo != null and customerNo != ''">
+                AND a.customer_no = #{customerNo}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="receiveShip != null and receiveShip != ''">
+                AND a.receive_ship = #{receiveShip}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+	<select id="getOrderByNo" resultType="com.yunyou.modules.tms.order.entity.TmHandoverOrderHeader">
+		SELECT
+		  <include refid="tmHandoverOrderHeaderColumns"/>
+		FROM tm_handover_order_header a
+		WHERE a.handover_no = #{handoverNo}
+		and a.org_id = #{orgId}
+	</select>
+
+	<select id="getLabelByLabelNo" resultType="com.yunyou.modules.tms.order.entity.TmHandoverOrderLabel" >
+		SELECT
+		  <include refid="tmHandoverOrderLabelColumns"/>
+		FROM tm_handover_order_label a
+		where a.handover_no = #{handoverNo}
+		  AND a.label_no = #{labelNo}
+		  AND a.org_id = #{orgId}
+	</select>
+
+	<update id="deleteLabelByHandoverNo">
+		DELETE FROM tm_handover_order_label WHERE handover_no = #{handoverNo} AND org_id = #{orgId}
+	</update>
+
+    <update id="deleteSkuByHandoverNo">
+        DELETE FROM tm_handover_order_sku WHERE handover_no = #{handoverNo} AND org_id = #{orgId}
+    </update>
+</mapper>

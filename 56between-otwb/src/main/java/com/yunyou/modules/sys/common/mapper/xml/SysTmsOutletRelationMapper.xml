@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysTmsOutletRelationMapper">
+
+	<resultMap id="sysTmsOutletRelationResult" type="com.yunyou.modules.sys.common.entity.SysTmsOutletRelation">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="sort" column="sort"/>
+		<result property="parentIds" column="parentIds"/>
+		<result property="code" column="code"/>
+		<result property="dataSet" column="dataSet"/>
+		<result property="recVer" column="recVer"/>
+		<result property="dataSetName" column="dataSetName"/>
+		<result property="parentIds" column="oldParentIds"/>
+		<result property="code" column="oldCode"/>
+		<association property="hasChildren" column="id" select="hasChildren"/>
+	</resultMap>
+
+	<sql id="sysTmsOutletRelationColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds",
+		a.code AS "code",
+		a.name AS "name",
+		a.data_set AS "dataSet",
+		a.sort AS "sort",
+		a.rec_ver AS "recVer",
+        scds.name AS "dataSetName",
+        a.parent_ids AS "oldParentIds",
+        a.code AS "oldCode"
+	</sql>
+
+	<sql id="sysTmsOutletRelationJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysTmsOutletRelation">
+		SELECT <include refid="sysTmsOutletRelationColumns"/>
+		FROM sys_tms_outlet_relation a
+		<include refid="sysTmsOutletRelationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysTmsOutletRelation">
+		SELECT <include refid="sysTmsOutletRelationColumns"/>
+		FROM sys_tms_outlet_relation a
+		<include refid="sysTmsOutletRelationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="parent != null and parent.id != null and parent.id != ''">
+				AND a.parent_id = #{parent.id}
+			</if>
+			<if test="parentIds != null and parentIds != ''">
+				AND a.parent_ids LIKE
+				<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+				<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+		ORDER BY a.sort ASC
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysTmsOutletRelation">
+		SELECT <include refid="sysTmsOutletRelationColumns"/>
+		FROM sys_tms_outlet_relation a
+		<include refid="sysTmsOutletRelationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		ORDER BY a.sort ASC
+	</select>
+
+	<select id="getChildren" parameterType="String" resultMap="sysTmsOutletRelationResult">
+		select *
+		from sys_tms_outlet_relation
+		where parent_id = #{id}
+		ORDER BY sort
+	</select>
+
+	<select id="hasChildren" parameterType="String" resultType="Boolean">
+		select case when exists(select 1 from sys_tms_outlet_relation where parent_id = #{id}) then 1 else 0 end ${dual}
+	</select>
+
+	<select id="findByParentIdsLike" resultType="com.yunyou.modules.sys.common.entity.SysTmsOutletRelation">
+		SELECT a.id,
+			   a.parent_id AS "parent.id",
+			   a.parent_ids
+		FROM sys_tms_outlet_relation a
+		<include refid="sysTmsOutletRelationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.parent_ids LIKE #{parentIds}
+		</where>
+		ORDER BY a.sort ASC
+	</select>
+
+	<insert id="insert">
+		INSERT INTO sys_tms_outlet_relation
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			parent_id,
+			parent_ids,
+			code,
+			name,
+			data_set,
+			sort,
+			rec_ver
+		)
+		VALUES
+		(
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{parent.id},
+			#{parentIds},
+			#{code},
+			#{name},
+			#{dataSet},
+			#{sort},
+			#{recVer}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE sys_tms_outlet_relation
+		SET update_by   = #{updateBy.id},
+			update_date = #{updateDate},
+			del_flag    = #{delFlag},
+			remarks     = #{remarks},
+			parent_id   = #{parent.id},
+			parent_ids  = #{parentIds},
+			code        = #{code},
+			name        = #{name},
+			data_set    = #{dataSet},
+			sort        = #{sort},
+			rec_ver     = rec_ver + 1
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+
+	<update id="updateParentIds">
+		UPDATE sys_tms_outlet_relation
+		SET parent_id  = #{parent.id},
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM sys_tms_outlet_relation
+		WHERE id = #{id} OR parent_ids LIKE
+		<if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+		<if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
+		<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+	</update>
+
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_tms_outlet_relation SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id} OR parent_ids LIKE
+		<if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+		<if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
+		<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+	</update>
+
+	<select id="findChildren" parameterType="String" resultMap="sysTmsOutletRelationResult">
+		select <include refid="sysTmsOutletRelationColumns"/>
+		from sys_tms_outlet_relation a
+		<include refid="sysTmsOutletRelationJoins"/>
+		where a.parent_id = #{parentId}
+		  AND a.data_set = #{dataSet}
+		ORDER BY sort
+	</select>
+
+    <select id="findRoute" resultType="com.yunyou.modules.sys.common.entity.extend.SysTmsOutletRelationEntity">
+        SELECT <include refid="sysTmsOutletRelationColumns"/>
+        FROM sys_tms_outlet_relation a
+		<include refid="sysTmsOutletRelationJoins"/>
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        AND a.parent_id = '0'
+        <if test="dataSet != null and dataSet != ''">
+            AND a.data_set = #{dataSet}
+        </if>
+        ORDER BY sort
+    </select>
+
+    <select id="findSync" resultType="com.yunyou.modules.sys.common.entity.SysTmsOutletRelation">
+		SELECT <include refid="sysTmsOutletRelationColumns"/>
+		FROM sys_tms_outlet_relation a
+		<include refid="sysTmsOutletRelationJoins"/>
+		WHERE a.data_set = #{dataSet}
+	</select>
+</mapper>

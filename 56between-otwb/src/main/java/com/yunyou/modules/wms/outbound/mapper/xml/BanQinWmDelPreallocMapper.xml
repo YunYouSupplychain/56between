@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmDelPreallocMapper">
+    
+	<sql id="banQinWmDelPreallocColumns">
+		a.id AS "id",
+		a.prealloc_id AS "preallocId",
+		a.prealloc_seq AS "preallocSeq",
+		a.wave_no AS "waveNo",
+		a.so_no AS "soNo",
+		a.line_no AS "lineNo",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.lot_num AS "lotNum",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_prealloc_uom AS "qtyPreallocUom",
+		a.qty_prealloc_ea AS "qtyPreallocEa",
+		a.op AS "op",
+		a.op_time AS "opTime",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmDelPreallocJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmDelPrealloc" >
+		SELECT 
+			<include refid="banQinWmDelPreallocColumns"/>
+		FROM wm_del_prealloc a
+		<include refid="banQinWmDelPreallocJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmDelPrealloc" >
+		SELECT 
+			<include refid="banQinWmDelPreallocColumns"/>
+		FROM wm_del_prealloc a
+		<include refid="banQinWmDelPreallocJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="preallocId != null and preallocId != ''">
+				AND a.prealloc_id = #{preallocId}
+			</if>
+			<if test="preallocSeq != null and preallocSeq != ''">
+				AND a.prealloc_seq = #{preallocSeq}
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no = #{soNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmDelPrealloc" >
+		SELECT 
+			<include refid="banQinWmDelPreallocColumns"/>
+		FROM wm_del_prealloc a
+		<include refid="banQinWmDelPreallocJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_del_prealloc(
+			id,
+			prealloc_id,
+			prealloc_seq,
+			wave_no,
+			so_no,
+			line_no,
+			owner_code,
+			sku_code,
+			lot_num,
+			pack_code,
+			uom,
+			qty_prealloc_uom,
+			qty_prealloc_ea,
+			op,
+			op_time,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{preallocId},
+			#{preallocSeq},
+			#{waveNo},
+			#{soNo},
+			#{lineNo},
+			#{ownerCode},
+			#{skuCode},
+			#{lotNum},
+			#{packCode},
+			#{uom},
+			#{qtyPreallocUom},
+			#{qtyPreallocEa},
+			#{op},
+			#{opTime},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_del_prealloc SET 	
+			prealloc_id = #{preallocId},
+			prealloc_seq = #{preallocSeq},
+			wave_no = #{waveNo},
+			so_no = #{soNo},
+			line_no = #{lineNo},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			lot_num = #{lotNum},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_prealloc_uom = #{qtyPreallocUom},
+			qty_prealloc_ea = #{qtyPreallocEa},
+			op = #{op},
+			op_time = #{opTime},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_del_prealloc
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_del_prealloc SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

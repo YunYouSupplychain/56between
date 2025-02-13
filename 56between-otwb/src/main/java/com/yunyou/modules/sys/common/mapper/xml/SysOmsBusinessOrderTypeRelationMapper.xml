@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysOmsBusinessOrderTypeRelationMapper">
+    
+	<sql id="sysOmsBusinessOrderTypeRelationColumns">
+		a.id                  AS "id",
+		a.create_by           AS "createBy.id",
+		a.create_date         AS "createDate",
+		a.update_by           AS "updateBy.id",
+		a.update_date         AS "updateDate",
+		a.remarks             AS "remarks",
+		a.del_flag            AS "delFlag",
+		a.rec_ver             AS "recVer",
+		a.business_order_type AS "businessOrderType",
+		a.order_type          AS "orderType",
+		a.push_system         AS "pushSystem",
+		a.push_order_type     AS "pushOrderType",
+		a.data_set            AS "dataSet",
+        scds.name             AS "dataSetName",
+		a.business_order_type AS "oldBusinessOrderType",
+		a.order_type          AS "oldOrderType",
+		a.push_system         AS "oldPushSystem"
+	</sql>
+
+	<sql id="sysOmsBusinessOrderTypeRelationJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+	</sql>
+	
+	<insert id="insert">
+		INSERT INTO sys_oms_business_order_type_relation (
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			business_order_type,
+			order_type,
+			push_system,
+			push_order_type,
+			data_set
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{businessOrderType},
+			#{orderType},
+			#{pushSystem},
+			#{pushOrderType},
+			#{dataSet}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_oms_business_order_type_relation
+		SET update_by           = #{updateBy.id},
+			update_date         = #{updateDate},
+			remarks             = #{remarks},
+			rec_ver             = rec_ver + 1,
+			business_order_type = #{businessOrderType},
+			order_type          = #{orderType},
+			push_system         = #{pushSystem},
+			push_order_type     = #{pushOrderType},
+			data_set            = #{dataSet}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_oms_business_order_type_relation SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_oms_business_order_type_relation WHERE id = #{id}
+	</delete>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysOmsBusinessOrderTypeRelation" >
+		SELECT <include refid="sysOmsBusinessOrderTypeRelationColumns"/>
+		FROM sys_oms_business_order_type_relation a
+		<include refid="sysOmsBusinessOrderTypeRelationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysOmsBusinessOrderTypeRelation" >
+		SELECT <include refid="sysOmsBusinessOrderTypeRelationColumns"/>
+		FROM sys_oms_business_order_type_relation a
+		<include refid="sysOmsBusinessOrderTypeRelationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+			<if test="businessOrderType != null and businessOrderType != ''">
+				AND a.business_order_type = #{businessOrderType}
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="pushSystem != null and pushSystem != ''">
+				AND a.push_system = #{pushSystem}
+			</if>
+			<if test="pushOrderType != null and pushOrderType != ''">
+				AND a.push_order_type = #{pushOrderType}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysOmsBusinessOrderTypeRelation" >
+		SELECT <include refid="sysOmsBusinessOrderTypeRelationColumns"/>
+		FROM sys_oms_business_order_type_relation a
+		<include refid="sysOmsBusinessOrderTypeRelationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+</mapper>

@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.business.mapper.BmsWaybillDataMapper">
+
+    <sql id="bmsWaybillDataColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.order_no AS "orderNo",
+        a.order_date AS "orderDate",
+        a.transport_method AS "transportMethod",
+        a.carrier_code AS "carrierCode",
+        a.carrier_name AS "carrierName",
+        a.car_type AS "carType",
+        a.principal_code AS "principalCode",
+        a.principal_name AS "principalName",
+        a.ship_code AS "shipCode",
+        a.ship_name AS "shipName",
+        a.ship_city_id AS "shipCityId",
+        a.ship_city_name AS "shipCityName",
+        a.origin AS "origin",
+        a.consignee_code AS "consigneeCode",
+        a.consignee_name AS "consigneeName",
+        a.consignee_city_id AS "consigneeCityId",
+        a.consignee_city_name AS "consigneeCityName",
+        a.destination AS "destination",
+        a.owner_code AS "ownerCode",
+        a.owner_name AS "ownerName",
+        a.supplier_code AS "supplierCode",
+        a.supplier_name AS "supplierName",
+        a.sku_code AS "skuCode",
+        a.sku_name AS "skuName",
+        a.sku_class AS "skuClass",
+        a.qty AS "qty",
+        a.qty_cs AS "qtyCs",
+        a.qty_pl AS "qtyPl",
+        a.weight AS "weight",
+        a.volume AS "volume",
+        a.org_id AS "orgId",
+        a.data_sources AS "dataSources",
+        a.is_fee AS "isFee"
+    </sql>
+
+    <sql id="extraColumns">
+        bsc.name AS "skuClassName",
+        b.name AS "orgName"
+    </sql>
+
+    <sql id="bmsWaybillDataJoins">
+        LEFT JOIN bms_sku_classification bsc ON a.sku_class = bsc.code AND a.org_id = bsc.id
+        LEFT JOIN sys_office b ON a.org_id = b.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.business.entity.BmsWaybillData">
+        SELECT
+        <include refid="bmsWaybillDataColumns"/>
+        FROM bms_waybill_data a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.business.entity.BmsWaybillData">
+        SELECT
+        <include refid="bmsWaybillDataColumns"/>
+        FROM bms_waybill_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.business.entity.BmsWaybillData">
+        SELECT
+        <include refid="bmsWaybillDataColumns"/>
+        FROM bms_waybill_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_waybill_data
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            order_no,
+            order_date,
+            transport_method,
+            carrier_code,
+            carrier_name,
+            car_type,
+            principal_code,
+            principal_name,
+            ship_code,
+            ship_name,
+            ship_city_id,
+            ship_city_name,
+            origin,
+            consignee_code,
+            consignee_name,
+            consignee_city_id,
+            consignee_city_name,
+            destination,
+            owner_code,
+            owner_name,
+            supplier_code,
+            supplier_name,
+            sku_code,
+            sku_name,
+            sku_class,
+            qty,
+            qty_cs,
+            qty_pl,
+            weight,
+            volume,
+            org_id,
+            data_sources,
+            is_fee
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{orderNo},
+            #{orderDate},
+            #{transportMethod},
+            #{carrierCode},
+            #{carrierName},
+            #{carType},
+            #{principalCode},
+            #{principalName},
+            #{shipCode},
+            #{shipName},
+            #{shipCityId},
+            #{shipCityName},
+            #{origin},
+            #{consigneeCode},
+            #{consigneeName},
+            #{consigneeCityId},
+            #{consigneeCityName},
+            #{destination},
+            #{ownerCode},
+            #{ownerName},
+            #{supplierCode},
+            #{supplierName},
+            #{skuCode},
+            #{skuName},
+            #{skuClass},
+            #{qty},
+            #{qtyCs},
+            #{qtyPl},
+            #{weight},
+            #{volume},
+            #{orgId},
+            #{dataSources},
+            #{isFee}
+        )
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO bms_waybill_data(
+        id,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        remarks,
+        del_flag,
+        order_no,
+        order_date,
+        transport_method,
+        carrier_code,
+        carrier_name,
+        car_type,
+        principal_code,
+        principal_name,
+        ship_code,
+        ship_name,
+        ship_city_id,
+        ship_city_name,
+        origin,
+        consignee_code,
+        consignee_name,
+        consignee_city_id,
+        consignee_city_name,
+        destination,
+        owner_code,
+        owner_name,
+        supplier_code,
+        supplier_name,
+        sku_code,
+        sku_name,
+        sku_class,
+        qty,
+        qty_cs,
+        qty_pl,
+        weight,
+        volume,
+        org_id,
+        data_sources,
+        is_fee
+        ) VALUES
+        <foreach collection="items" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.createBy.id},
+            #{item.createDate},
+            #{item.updateBy.id},
+            #{item.updateDate},
+            #{item.remarks},
+            #{item.delFlag},
+            #{item.orderNo},
+            #{item.orderDate},
+            #{item.transportMethod},
+            #{item.carrierCode},
+            #{item.carrierName},
+            #{item.carType},
+            #{item.principalCode},
+            #{item.principalName},
+            #{item.shipCode},
+            #{item.shipName},
+            #{item.shipCityId},
+            #{item.shipCityName},
+            #{item.origin},
+            #{item.consigneeCode},
+            #{item.consigneeName},
+            #{item.consigneeCityId},
+            #{item.consigneeCityName},
+            #{item.destination},
+            #{item.ownerCode},
+            #{item.ownerName},
+            #{item.supplierCode},
+            #{item.supplierName},
+            #{item.skuCode},
+            #{item.skuName},
+            #{item.skuClass},
+            #{item.qty},
+            #{item.qtyCs},
+            #{item.qtyPl},
+            #{item.weight},
+            #{item.volume},
+            #{item.orgId},
+            #{item.dataSources},
+            #{item.isFee}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE bms_waybill_data
+        SET update_by = #{updateBy.id},
+            update_date = #{updateDate},
+            remarks = #{remarks},
+            order_no = #{orderNo},
+            order_date = #{orderDate},
+            transport_method = #{transportMethod},
+            carrier_code = #{carrierCode},
+            carrier_name = #{carrierName},
+            car_type = #{carType},
+            principal_code = #{principalCode},
+            principal_name = #{principalName},
+            ship_code = #{shipCode},
+            ship_name = #{shipName},
+            ship_city_id = #{shipCityId},
+            ship_city_name = #{shipCityName},
+            origin = #{origin},
+            consignee_code = #{consigneeCode},
+            consignee_name = #{consigneeName},
+            consignee_city_id = #{consigneeCityId},
+            consignee_city_name = #{consigneeCityName},
+            destination = #{destination},
+            owner_code = #{ownerCode},
+            owner_name = #{ownerName},
+            supplier_code = #{supplierCode},
+            supplier_name = #{supplierName},
+            sku_code = #{skuCode},
+            sku_name = #{skuName},
+            sku_class = #{skuClass},
+            qty = #{qty},
+            qty_cs = #{qtyCs},
+            qty_pl = #{qtyPl},
+            weight = #{weight},
+            volume = #{volume},
+            org_id = #{orgId},
+            data_sources = #{dataSources},
+            is_fee = #{isFee}
+        WHERE id = #{id}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_waybill_data
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_waybill_data WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByCondition">
+        DELETE FROM bms_waybill_data WHERE
+        <![CDATA[order_date >= #{fmDate}]]>
+        <![CDATA[AND order_date <= #{toDate}]]>
+        <if test="dataSources != null and dataSources != ''">
+            AND data_sources = #{dataSources}
+        </if>
+        <if test="orgId != null and orgId != ''">
+            AND org_id = #{orgId}
+        </if>
+    </delete>
+    <!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+    <select id="findUniqueByProperty" resultType="com.yunyou.modules.bms.business.entity.BmsWaybillData" statementType="STATEMENT">
+        select * FROM bms_waybill_data where ${propertyName} = '${value}'
+    </select>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.business.entity.extend.BmsWaybillDataEntity">
+        SELECT
+        <include refid="bmsWaybillDataColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_waybill_data a
+        <include refid="bmsWaybillDataJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="orderDateFm != null">
+                AND a.order_date &gt;= #{orderDateFm}
+            </if>
+            <if test="orderDateTo != null">
+                AND a.order_date &lt;= #{orderDateTo}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no LIKE concat('%', #{orderNo}, '%')
+            </if>
+            <if test="transportMethod != null and transportMethod != ''">
+                AND a.transport_method = #{transportMethod}
+            </if>
+            <if test="principalCode != null and principalCode != ''">
+                AND a.principal_code LIKE concat('%', #{principalCode}, '%')
+            </if>
+            <if test="principalName != null and principalName != ''">
+                AND a.principal_name LIKE concat('%', #{principalName}, '%')
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code LIKE concat('%', #{supplierCode}, '%')
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                AND a.supplier_name LIKE concat('%', #{supplierName}, '%')
+            </if>
+            <if test="shipCode != null and shipCode != ''">
+                AND a.ship_code LIKE concat('%', #{shipCode}, '%')
+            </if>
+            <if test="shipName != null and shipName != ''">
+                AND a.ship_name LIKE concat('%', #{shipName}, '%')
+            </if>
+            <if test="consigneeCode != null and consigneeCode != ''">
+                AND a.consignee_code LIKE concat('%', #{consigneeCode}, '%')
+            </if>
+            <if test="consigneeName != null and consigneeName != ''">
+                AND a.consignee_name LIKE concat('%', #{consigneeName}, '%')
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code LIKE concat('%', #{ownerCode}, '%')
+            </if>
+            <if test="ownerName != null and ownerName != ''">
+                AND a.owner_name LIKE concat('%', #{ownerName}, '%')
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code LIKE concat('%', #{skuCode}, '%')
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name LIKE concat('%', #{skuName}, '%')
+            </if>
+            <if test="carrierCode != null and carrierCode != ''">
+                AND a.carrier_code LIKE concat('%', #{carrierCode}, '%')
+            </if>
+            <if test="carrierName != null and carrierName != ''">
+                AND a.carrier_name LIKE concat('%', #{carrierName}, '%')
+            </if>
+            <if test="carType != null and carType != ''">
+                AND a.car_type = #{carType}
+            </if>
+            <if test="skuClass != null and skuClass != ''">
+                AND a.sku_class = #{skuClass}
+            </if>
+            <if test="isFee != null and isFee != ''">
+                AND a.is_fee = #{isFee}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+    <select id="findCalcData" resultType="com.yunyou.modules.bms.business.entity.BmsWaybillData">
+        select * from bms_waybill_data <where>${sql}</where>
+    </select>
+</mapper>

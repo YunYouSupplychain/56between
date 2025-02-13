@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inbound.mapper.BanQinWmAsnSerialMapper">
+    
+	<sql id="banQinWmAsnSerialColumns">
+		a.id AS "id",
+		a.asn_no AS "asnNo",
+		a.sku_code AS "skuCode",
+		a.serial_no AS "serialNo",
+		a.status AS "status",
+		a.rcv_line_no AS "rcvLineNo",
+		a.owner_code AS "ownerCode",
+		a.lot_num AS "lotNum",
+		a.data_source AS "dataSource",
+		a.scan_op AS "scanOp",
+		a.scan_time AS "scanTime",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.head_id AS "headId"
+	</sql>
+	
+	<sql id="banQinWmAsnSerialJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmAsnSerial" >
+		SELECT 
+			<include refid="banQinWmAsnSerialColumns"/>
+		FROM wm_asn_serial a
+		<include refid="banQinWmAsnSerialJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmAsnSerial" >
+		SELECT 
+			<include refid="banQinWmAsnSerialColumns"/>
+		FROM wm_asn_serial a
+		<include refid="banQinWmAsnSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="asnNo != null and asnNo != ''">
+				AND a.asn_no = #{asnNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="serialNo != null and serialNo != ''">
+				AND a.serial_no = #{serialNo}
+			</if>
+			<if test="rcvLineNo != null and rcvLineNo != ''">
+				AND a.rcv_line_no = #{rcvLineNo}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num = #{lotNum}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmAsnSerialEntity" >
+		SELECT
+			<include refid="banQinWmAsnSerialColumns"/>,
+			ebcu.ebcu_name_cn AS ownerName,
+		    cws.sku_name AS skuName
+		FROM wm_asn_serial a
+		LEFT JOIN eb_customer ebcu ON ebcu.ebcu_customer_no = a.owner_code AND ebcu.org_id = a.org_id AND ebcu.ebcu_type LIKE '%OWNER,%'
+		LEFT JOIN cd_wh_sku cws ON cws.sku_code = a.sku_code AND cws.owner_code = a.owner_code AND cws.org_id = a.org_id
+		<include refid="banQinWmAsnSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="asnNo != null and asnNo != ''">
+				AND a.asn_no = #{asnNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="serialNo != null and serialNo != ''">
+				AND a.serial_no = #{serialNo}
+			</if>
+			<if test="headId != null and headId != ''">
+				AND a.head_id = #{headId}
+			</if>
+			<if test="rcvLineNo != null and rcvLineNo != ''">
+				AND a.rcv_line_no = #{rcvLineNo}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num = #{lotNum}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND (1 = 2
+					OR a.rcv_line_no = #{lineNo}
+					OR a.rcv_line_no is null
+		    		OR a.rcv_line_no = ''
+				)
+			</if>
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="BanQinWmAsnSerial" >
+		SELECT 
+			<include refid="banQinWmAsnSerialColumns"/>
+		FROM wm_asn_serial a
+		<include refid="banQinWmAsnSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_asn_serial(
+			id,
+			asn_no,
+			sku_code,
+			serial_no,
+			status,
+			rcv_line_no,
+			owner_code,
+			lot_num,
+			data_source,
+			scan_op,
+			scan_time,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			head_id
+		) VALUES (
+			#{id},
+			#{asnNo},
+			#{skuCode},
+			#{serialNo},
+			#{status},
+			#{rcvLineNo},
+			#{ownerCode},
+			#{lotNum},
+			#{dataSource},
+			#{scanOp},
+			#{scanTime},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_asn_serial SET 	
+			asn_no = #{asnNo},
+			sku_code = #{skuCode},
+			serial_no = #{serialNo},
+			status = #{status},
+			rcv_line_no = #{rcvLineNo},
+			owner_code = #{ownerCode},
+			lot_num = #{lotNum},
+			data_source = #{dataSource},
+			scan_op = #{scanOp},
+			scan_time = #{scanTime},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			head_id = #{headId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_asn_serial WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_asn_serial SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="BanQinWmAsnSerial" statementType="STATEMENT">
+		SELECT * FROM wm_asn_serial WHERE ${propertyName} = '${value}'
+	</select>
+
+    <update id="updateSerialForCancelRcv">
+        UPDATE wm_asn_serial SET STATUS = '30', RCV_LINE_NO = ''
+        WHERE 1 = 1
+		AND status = '40'
+		AND asn_no = #{asnNo}
+		AND rcv_line_no = #{lineNo}
+		AND org_id = #{orgId}
+    </update>
+
+	<delete id="removeByAsnNo">
+        DELETE FROM wm_asn_serial WHERE asn_no = #{asnNo} AND org_id = #{orgId}
+	</delete>
+    
+	<delete id="removeByAsnNoAndRcvLineNo">
+        DELETE FROM wm_asn_serial WHERE STATUS = '10' AND ASN_NO = #{asnNo} AND RCV_LINE_NO = #{lineNo} AND org_id = #{orgId}
+    </delete>
+
+	<select id="checkAsnSerialQuery" resultType="BanQinWmAsnSerial">
+		SELECT DISTINCT asn_no, sku_code, serial_no
+		FROM wm_asn_serial
+		WHERE asn_no = #{asnNo}
+		  AND org_id = #{orgId}
+		  AND (serial_no, sku_code) IN (${serialNoAndSkuCode})
+	</select>
+</mapper>

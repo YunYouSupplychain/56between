@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.report.mapper.TmsRoutingNodeExceptionMapper">
+
+    <sql id="tmsRoutingNodeExceptionColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+        a.order_no AS "orderNo",
+        a.tracking_no AS "trackingNo",
+        a.message AS "message",
+        a.type AS "type",
+        a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5"
+    </sql>
+
+    <select id="get" resultType="TmsRoutingNodeException" >
+        SELECT <include refid="tmsRoutingNodeExceptionColumns"/>
+        FROM tm_routing_node_exception a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="TmsRoutingNodeException" >
+        SELECT <include refid="tmsRoutingNodeExceptionColumns"/>
+        FROM tm_routing_node_exception a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="trackingNo != null and trackingNo != ''">
+                AND a.tracking_no = #{trackingNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="findPage" resultType="TmsRoutingNodeException" >
+        SELECT <include refid="tmsRoutingNodeExceptionColumns"/>
+        FROM tm_routing_node_exception a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="trackingNo != null and trackingNo != ''">
+                AND a.tracking_no = #{trackingNo}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no = #{orderNo}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="TmsRoutingNodeException" >
+        SELECT <include refid="tmsRoutingNodeExceptionColumns"/>
+        FROM tm_routing_node_exception a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO tm_routing_node_exception(
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag,
+            remarks,
+            order_no,
+            tracking_no,
+            type,
+            message,
+            rec_ver,
+            def1,
+            def2,
+            def3,
+            def4,
+            def5
+        ) VALUES (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{delFlag},
+            #{remarks},
+            #{orderNo},
+            #{trackingNo},
+            #{type},
+            #{message},
+            #{recVer},
+            #{def1},
+            #{def2},
+            #{def3},
+            #{def4},
+            #{def5}
+         )
+    </insert>
+
+    <update id="update">
+        UPDATE tm_routing_node_exception SET
+            update_by = #{updateBy.id},
+            update_date = #{updateDate},
+            remarks = #{remarks},
+            order_no = #{orderNo},
+            tracking_no = #{trackingNo},
+            type = #{type},
+            message = #{message},
+            rec_ver = #{recVer},
+            def1 = #{def1},
+            def2 = #{def2},
+            def3 = #{def3},
+            def4 = #{def4},
+            def5 = #{def5}
+        WHERE id = #{id}
+    </update>
+
+    <!--物理删除-->
+    <update id="delete">
+        DELETE FROM tm_car
+        WHERE id = #{id}
+    </update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE tm_routing_node_exception SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+    </update>
+
+</mapper>

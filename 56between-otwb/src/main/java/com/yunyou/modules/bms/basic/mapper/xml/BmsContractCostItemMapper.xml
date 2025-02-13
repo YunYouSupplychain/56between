@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.basic.mapper.BmsContractCostItemMapper">
+
+    <sql id="bmsContractCostItemColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.sys_contract_no AS "sysContractNo",
+		a.bill_module AS "billModule",
+		a.bill_subject_code AS "billSubjectCode",
+		a.bill_terms_code AS "billTermsCode",
+		a.receivable_payable AS "receivablePayable",
+		a.transport_group_code AS "transportGroupCode",
+		a.formula_code AS "formulaCode",
+		a.tax_rate AS "taxRate",
+		a.coefficient AS "coefficient",
+		a.max_amount AS "maxAmount",
+		a.min_amount AS "minAmount",
+		a.org_id AS "orgId"
+    </sql>
+
+    <sql id="extraColumns">
+        bc.settle_object_code AS "settleObjectCode",
+        a.bill_subject_code AS "originalBillSubjectCode",
+        bbs.bill_subject_name AS "billSubjectName",
+        bbt.bill_terms_desc AS "billTermsDesc",
+        btg.transport_group_name AS "transportGroupName",
+        bbf.formula_name AS "formulaName",
+        so.name AS "orgName"
+    </sql>
+
+    <sql id="bmsContractCostItemJoins">
+        LEFT JOIN bms_contract bc ON a.sys_contract_no = bc.sys_contract_no AND a.org_id = bc.org_id
+        LEFT JOIN bms_bill_subject bbs ON a.bill_subject_code = bbs.bill_subject_code AND a.org_id = bbs.org_id
+        LEFT JOIN bms_bill_terms bbt ON a.bill_terms_code = bbt.bill_terms_code
+        LEFT JOIN bms_transport_group btg ON a.transport_group_code = btg.transport_group_code AND a.org_id = btg.org_id
+        LEFT JOIN bms_bill_formula bbf ON a.formula_code = bbf.formula_code
+        LEFT JOIN sys_office so ON a.org_id = so.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.basic.entity.BmsContractCostItem">
+        SELECT
+        <include refid="bmsContractCostItemColumns"/>
+        FROM bms_contract_cost_item a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.basic.entity.BmsContractCostItem">
+        SELECT
+        <include refid="bmsContractCostItemColumns"/>
+        FROM bms_contract_cost_item a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="sysContractNo != null and sysContractNo != ''">
+                AND a.sys_contract_no = #{sysContractNo}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.basic.entity.BmsContractCostItem">
+        SELECT
+        <include refid="bmsContractCostItemColumns"/>
+        FROM bms_contract_cost_item a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_contract_cost_item
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            sys_contract_no,
+            bill_module,
+            bill_subject_code,
+            bill_terms_code,
+            receivable_payable,
+            formula_code,
+            transport_group_code,
+            tax_rate,
+            coefficient,
+            max_amount,
+            min_amount,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{sysContractNo},
+            #{billModule},
+            #{billSubjectCode},
+            #{billTermsCode},
+            #{receivablePayable},
+            #{formulaCode},
+            #{transportGroupCode},
+            #{taxRate},
+            #{coefficient},
+            #{maxAmount},
+            #{minAmount},
+            #{orgId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_contract_cost_item
+        SET update_by            = #{updateBy.id},
+            update_date          = #{updateDate},
+            remarks              = #{remarks},
+            rec_ver              = rec_ver + 1,
+            sys_contract_no      = #{sysContractNo},
+            bill_module          = #{billModule},
+            bill_subject_code    = #{billSubjectCode},
+            bill_terms_code      = #{billTermsCode},
+            receivable_payable   = #{receivablePayable},
+            formula_code         = #{formulaCode},
+            transport_group_code = #{transportGroupCode},
+            tax_rate             = #{taxRate},
+            coefficient          = #{coefficient},
+            max_amount           = #{maxAmount},
+            min_amount           = #{minAmount},
+            org_id               = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_contract_cost_item
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_contract_cost_item WHERE id = #{id}
+    </delete>
+    <delete id="deleteByContract">
+        DELETE FROM bms_contract_cost_item WHERE sys_contract_no = #{sysContractNo} AND org_id = #{orgId}
+    </delete>
+
+    <select id="getEntity" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsContractCostItemEntity">
+        SELECT
+        <include refid="bmsContractCostItemColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_contract_cost_item a
+        <include refid="bmsContractCostItemJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findByContract" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsContractCostItemEntity">
+        SELECT
+        <include refid="bmsContractCostItemColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_contract_cost_item a
+        <include refid="bmsContractCostItemJoins"/>
+        WHERE a.del_flag = '0'
+        AND a.sys_contract_no =#{sysContractNo}
+        AND a.org_id = #{orgId}
+    </select>
+
+    <select id="getOnly" resultType="com.yunyou.modules.bms.basic.entity.BmsContractCostItem">
+        SELECT
+        <include refid="bmsContractCostItemColumns"/>
+        FROM bms_contract_cost_item a
+        WHERE a.del_flag = '0'
+        AND a.sys_contract_no = #{sysContractNo}
+        AND a.bill_subject_code = #{billSubjectCode}
+        AND a.bill_terms_code = #{billTermsCode}
+        AND a.org_id = #{orgId}
+    </select>
+
+    <select id="isCited" resultType="java.lang.Integer">
+        select count(a.id)
+        from bms_settle_model_detail a
+        where a.contract_cost_item_id = #{id}
+          and a.org_id = #{orgId}
+    </select>
+
+</mapper>

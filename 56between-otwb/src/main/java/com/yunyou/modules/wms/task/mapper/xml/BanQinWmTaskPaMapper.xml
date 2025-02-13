@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.task.mapper.BanQinWmTaskPaMapper">
+    
+	<sql id="banQinWmTaskPaColumns">
+		a.id AS "id",
+		a.pa_id AS "paId",
+		a.line_no AS "lineNo",
+		a.status AS "status",
+		a.order_no AS "orderNo",
+		a.order_type AS "orderType",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.lot_num AS "lotNum",
+		a.fm_loc AS "fmLoc",
+		a.fm_id AS "fmId",
+		a.to_loc AS "toLoc",
+		a.to_id AS "toId",
+		a.reserve_code AS "reserveCode",
+		a.pa_rule AS "paRule",
+		a.suggest_loc AS "suggestLoc",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_pa_uom AS "qtyPaUom",
+		a.qty_pa_ea AS "qtyPaEa",
+		a.pa_op AS "paOp",
+		a.pa_time AS "paTime",
+		a.print_num AS "printNum",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.trace_id AS "traceId"
+	</sql>
+	
+	<sql id="banQinWmTaskPaJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+
+	<select id="get" resultType="BanQinWmTaskPa" >
+		SELECT 
+			<include refid="banQinWmTaskPaColumns"/>
+		FROM wm_task_pa a
+		<include refid="banQinWmTaskPaJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="getEntity" resultType="BanQinWmTaskPaEntity" >
+        SELECT
+            <include refid="banQinWmTaskPaColumns"/>,
+            ebcu.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+			crph.rule_name AS paRuleName,
+            cdpa.cdpa_format AS packDesc,
+            cdpr.cdpr_desc AS uomDesc,
+            wmad.lot_att07 AS realCaseId,
+			a.qty_pa_ea AS currentPaQtyEa
+        FROM wm_task_pa a
+        LEFT JOIN eb_customer ebcu ON ebcu.ebcu_customer_no = a.owner_code AND ebcu.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON cws.sku_code = a.sku_code AND cws.owner_code = a.owner_code AND cws.org_id = a.org_id
+        LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = a.pack_code AND cdpa.org_id = a.org_id
+        LEFT JOIN cd_wh_package_relation cdpr ON cdpr.cdpr_unit_level = a.uom AND cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpr.org_id = a.org_id AND cdpr.org_id = cdpa.org_id
+        LEFT JOIN wm_asn_detail_receive wmad ON wmad.pa_id = a.pa_id AND wmad.org_id = a.org_id
+		LEFT JOIN cd_rule_pa_header crph ON crph.rule_code = a.pa_rule AND crph.org_id = a.org_id
+        WHERE a.id = #{id}
+    </select>
+	
+	<select id="findList" resultType="BanQinWmTaskPa" >
+		SELECT 
+			<include refid="banQinWmTaskPaColumns"/>
+		FROM wm_task_pa a
+		<include refid="banQinWmTaskPaJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no =  #{orderNo}
+            </if>
+            <if test="orderType != null and orderType != ''">
+                AND a.order_type =  #{orderType}
+            </if>
+            <if test="paId != null and paId != ''">
+                AND a.pa_id =  #{paId}
+            </if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no =  #{lineNo}
+			</if>
+            <if test="status != null and status != ''">
+                AND a.status =  #{status}
+            </if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code =  #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code =  #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num =  #{lotNum}
+			</if>
+			<if test="fmLoc != null and fmLoc != ''">
+				AND a.fm_loc =  #{fmLoc}
+			</if>
+			<if test="fmId != null and fmId != ''">
+				AND a.fm_id =  #{fmId}
+			</if>
+		</where>
+	</select>
+
+    <select id="findPage" resultType="BanQinWmTaskPaEntity" >
+        SELECT
+            <include refid="banQinWmTaskPaColumns"/>,
+            ebcu.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+            cdpa.cdpa_format AS packDesc,
+            cdpr.cdpr_desc AS uomDesc,
+            crph.rule_name AS paRuleName,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName,
+            cdpr.cdpr_quantity AS uomQty
+        FROM wm_task_pa a
+        LEFT JOIN eb_customer ebcu ON ebcu.ebcu_customer_no = a.owner_code AND ebcu.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cws ON cws.sku_code = a.sku_code AND cws.owner_code = a.owner_code AND cws.org_id = a.org_id
+        LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = a.pack_code AND cdpa.org_id = a.org_id
+        LEFT JOIN cd_wh_package_relation cdpr ON cdpr.cdpr_unit_level = a.uom AND cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpr.org_id = a.org_id AND cdpr.org_id = cdpa.org_id
+        LEFT JOIN cd_rule_pa_header crph ON crph.rule_code = a.pa_rule AND crph.org_id = a.org_id
+		<include refid="banQinWmTaskPaJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code =  #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code =  #{skuCode}
+            </if>
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num =  #{lotNum}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no =  #{orderNo}
+            </if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no =  #{lineNo}
+			</if>
+            <if test="orderType != null and orderType != ''">
+                AND a.order_type =  #{orderType}
+            </if>
+            <if test="paId != null and paId != ''">
+                AND a.pa_id =  #{paId}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status =  #{status}
+            </if>
+            <if test="fmLoc != null and fmLoc != ''">
+				AND a.fm_loc = #{fmLoc}
+			</if>
+			<if test="fmId != null and fmId != ''">
+				AND a.fm_id = #{fmId}
+			</if>
+			<if test="suggestLoc != null and suggestLoc != ''">
+				AND a.suggest_loc = #{suggestLoc}
+			</if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date desc
+            </otherwise>
+        </choose>
+    </select>
+
+	<select id="findGrid" resultType="BanQinWmTaskPaEntity" >
+		SELECT
+			<include refid="banQinWmTaskPaColumns"/>,
+			ebcu.ebcu_name_cn AS ownerName,
+			cws.sku_name AS skuName,
+			cdpa.cdpa_format AS packDesc,
+			cdpr.cdpr_desc AS uomDesc,
+			crph.rule_name AS paRuleName,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName,
+			cdpr.cdpr_quantity AS uomQty
+		FROM wm_task_pa a
+		LEFT JOIN eb_customer ebcu ON ebcu.ebcu_customer_no = a.owner_code AND ebcu.org_id = a.org_id
+		LEFT JOIN cd_wh_sku cws ON cws.sku_code = a.sku_code AND cws.owner_code = a.owner_code AND cws.org_id = a.org_id
+		LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = a.pack_code AND cdpa.org_id = a.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpr.cdpr_unit_level = a.uom AND cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpr.org_id = a.org_id AND cdpr.org_id = cdpa.org_id
+		LEFT JOIN cd_rule_pa_header crph ON crph.rule_code = a.pa_rule AND crph.org_id = a.org_id
+		<include refid="banQinWmTaskPaJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		    AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code =  #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code =  #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num =  #{lotNum}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no =  #{orderNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no =  #{lineNo}
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type =  #{orderType}
+			</if>
+			<if test="paId != null and paId != ''">
+				AND a.pa_id =  #{paId}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status =  #{status}
+			</if>
+			<if test="fmLoc != null and fmLoc != ''">
+				AND a.fm_loc = #{fmLoc}
+			</if>
+			<if test="fmId != null and fmId != ''">
+				AND a.fm_id = #{fmId}
+			</if>
+			<if test="suggestLoc != null and suggestLoc != ''">
+				AND a.suggest_loc = #{suggestLoc}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmTaskPa" >
+		SELECT 
+			<include refid="banQinWmTaskPaColumns"/>
+		FROM wm_task_pa a
+		<include refid="banQinWmTaskPaJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_task_pa(
+			id,
+			pa_id,
+			line_no,
+			status,
+			order_no,
+			order_type,
+			owner_code,
+			sku_code,
+			lot_num,
+			fm_loc,
+			fm_id,
+			to_loc,
+			to_id,
+			reserve_code,
+			pa_rule,
+			suggest_loc,
+			pack_code,
+			uom,
+			qty_pa_uom,
+			qty_pa_ea,
+			pa_op,
+			pa_time,
+			print_num,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			trace_id
+		) VALUES (
+			#{id},
+			#{paId},
+			#{lineNo},
+			#{status},
+			#{orderNo},
+			#{orderType},
+			#{ownerCode},
+			#{skuCode},
+			#{lotNum},
+			#{fmLoc},
+			#{fmId},
+			#{toLoc},
+			#{toId},
+			#{reserveCode},
+			#{paRule},
+			#{suggestLoc},
+			#{packCode},
+			#{uom},
+			#{qtyPaUom},
+			#{qtyPaEa},
+			#{paOp},
+			#{paTime},
+			#{printNum},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{traceId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_task_pa
+		SET pa_id        = #{paId},
+			line_no      = #{lineNo},
+			status       = #{status},
+			order_no     = #{orderNo},
+			order_type   = #{orderType},
+			owner_code   = #{ownerCode},
+			sku_code     = #{skuCode},
+			lot_num      = #{lotNum},
+			fm_loc       = #{fmLoc},
+			fm_id        = #{fmId},
+			to_loc       = #{toLoc},
+			to_id        = #{toId},
+			reserve_code = #{reserveCode},
+			pa_rule      = #{paRule},
+			suggest_loc  = #{suggestLoc},
+			pack_code    = #{packCode},
+			uom          = #{uom},
+			qty_pa_uom   = #{qtyPaUom},
+			qty_pa_ea    = #{qtyPaEa},
+			pa_op        = #{paOp},
+			pa_time      = #{paTime},
+			print_num    = #{printNum},
+			remarks      = #{remarks},
+			rec_ver      = #{recVer} + 1,
+			update_by    = #{updateBy.id},
+			update_date  = #{updateDate},
+			trace_id     = #{traceId}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_task_pa
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_task_pa SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getMaxLineNo" resultType="java.lang.Integer">
+        SELECT MAX(CAST(line_No AS SIGNED)) FROM wm_task_pa WHERE pa_id = #{paId} AND org_id = #{orgId}
+    </select>
+	
+	<select id="getPaTaskReport" resultType="com.yunyou.modules.wms.report.entity.PutawayTaskLabel">
+		SELECT
+			wtp.pa_id AS paId,
+			wtp.fm_loc AS fmLoc,
+			wtp.fm_id AS fmId,
+			cwl.zone_code AS zoneCode,
+			wtp.to_loc AS toLoc,
+			wtp.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cdpa.cdpa_format AS packCode,
+			# wtp.qty_pa_uom AS qtyPaUom,
+			wtp.qty_pa_ea DIV IFNULL(cdpr.cdpr_quantity, 1) as "qtyPaUom",
+			wtp.qty_pa_ea AS qtyPaEa,
+			wmla.lot_att01 AS lotAtt01
+		FROM wm_task_pa wtp
+		LEFT JOIN cd_wh_sku cws ON wtp.sku_code = cws.sku_code AND wtp.owner_code = cws.owner_code AND wtp.org_id = cws.org_id
+		LEFT JOIN cd_wh_loc cwl ON wtp.to_loc = cwl.loc_code AND wtp.org_id = cwl.org_id
+		LEFT JOIN cd_wh_package cdpa ON cdpa.org_id = wtp.org_id AND cdpa.cdpa_code = wtp.pack_code
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpr.cdpr_unit_level = 'CS' AND cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpr.org_id = cdpa.org_id
+		LEFT JOIN wm_inv_lot_att wmla ON wtp.lot_num = wmla.lot_num AND wtp.org_id = wmla.org_id
+		WHERE wtp.id IN
+		<foreach collection="list" index="id" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		order by cwl.zone_code, wtp.to_loc, wtp.sku_code
+	</select>
+	
+	<select id="rfPaGetPATaskByTaskNoQuery" resultType="BanQinWmTaskPaEntity">
+		SELECT
+			wmtp.id AS id,
+			wmtp.pa_id AS paId,
+			wmtp.line_no AS lineNo,
+			wmtp.status AS status,
+			wmtp.order_no AS orderNo,
+			wmtp.order_type AS orderType,
+			wmtp.owner_code AS ownerCode,
+			ebcs.ebcu_name_cn as ownerName,
+			wmtp.sku_code AS skuCode,
+			cdws.sku_name as skuName,
+			wmtp.lot_num AS lotNum,
+			wmtp.fm_loc As fmLoc,
+			wmtp.fm_id AS fmId,
+			wmtp.to_loc AS toLoc,
+			wmtp.to_id AS toId,
+			wmtp.suggest_loc AS suggestLoc,
+			wmtp.pack_code AS packCode,
+			cdpa.cdpa_format AS packDesc,
+			wmtp.uom AS uom,
+		    cdpr.cdpr_desc AS uomDesc,
+			wmtp.qty_pa_ea AS qtyPaEa,
+			wmtp.qty_pa_uom AS qtyPaUom,
+			wmtp.pa_op AS paOp,
+			wmtp.pa_time AS paTime,
+			wmtp.org_id AS orgId
+		FROM wm_task_pa wmtp
+		LEFT JOIN cd_wh_sku cdws ON cdws.sku_code = wmtp.sku_code AND cdws.owner_code = wmtp.owner_code AND cdws.org_id = wmtp.org_id
+		LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = wmtp.pack_code AND cdpa.org_id = wmtp.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND wmtp.uom = cdpr.cdpr_unit
+		LEFT JOIN eb_customer ebcs ON ebcs.ebcu_customer_no = wmtp.owner_code AND ebcs.org_id= wmtp.org_id
+		LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = wmtp.suggest_loc AND cwl.org_id= wmtp.org_id
+		WHERE wmtp.status = '00'
+		AND wmtp.org_id = #{orgId}
+		<if test="paId != null and paId != ''">
+			AND wmtp.pa_id = #{paId}
+		</if>
+		<if test="orderNo != null and orderNo != ''">
+			AND wmtp.order_no = #{orderNo}
+		</if>
+		<if test="zoneCode != null and zoneCode != ''">
+			AND cwl.zone_code = #{zoneCode}
+		</if>
+		ORDER BY wmtp.sku_code, suggest_loc
+	</select>
+
+	<update id="updatePaIdByKitRemoveTaskPa">
+		UPDATE wm_kit_result_detail wkrd SET wkrd.pa_id = ''
+		WHERE NOT EXISTS (SELECT 1 from wm_task_pa wtp WHERE wtp.pa_id = wkrd.pa_id AND wtp.org_id = wkrd.org_id)
+		  AND wkrd.pa_id = #{paId}
+		  AND wkrd.org_id = #{orgId}
+	</update>
+
+	<select id="paCountQuery" resultType="BanQinWmTaskPaEntity" >
+		SELECT <include refid="banQinWmTaskPaColumns"/>
+		FROM wm_task_pa a
+		LEFT JOIN wm_asn_header b ON a.order_no = b.asn_no AND a.org_id = b.org_id
+		<include refid="banQinWmTaskPaJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND a.org_id = #{orgId}
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no =  #{orderNo}
+			</if>
+			<if test="beginOrderTime != null and endOrderTime != null and beginOrderTime != '' and endOrderTime != ''">
+				AND b.order_time BETWEEN #{beginOrderTime} AND #{endOrderTime}
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type =  #{orderType}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status =  #{status}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no =  #{lineNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code =  #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code =  #{skuCode}
+			</if>
+		</where>
+	</select>
+</mapper>

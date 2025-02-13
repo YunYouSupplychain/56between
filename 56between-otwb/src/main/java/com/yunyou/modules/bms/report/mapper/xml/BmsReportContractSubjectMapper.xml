@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.report.mapper.BmsReportContractSubjectMapper">
+
+	<sql id="where">
+		<if test="settleCode != null and settleCode != ''">
+			AND bc.settle_object_code = #{settleCode}
+		</if>
+		<if test="sysContractNo != null and sysContractNo != ''">
+			AND bc.sys_contract_no LIKE concat('%', #{sysContractNo}, '%')
+		</if>
+		<if test="contractNo != null and contractNo != ''">
+			AND bc.contract_no LIKE concat('%', #{contractNo}, '%')
+		</if>
+		<if test="effectiveDateFm != null">
+			AND bc.effective_date_fm &gt;= #{effectiveDateFm}
+		</if>
+		<if test="effectiveDateTo != null">
+			AND bc.effective_date_to &lt;= #{effectiveDateTo}
+		</if>
+		<if test="billSubjectCode != null and billSubjectCode != ''">
+			AND bcci.bill_subject_code LIKE concat('%', #{billSubjectCode}, '%')
+		</if>
+		<if test="operator != null and operator != ''">
+			AND sc.name LIKE concat('%', #{operator}, '%')
+		</if>
+	</sql>
+
+	<select id="findList" resultType="com.yunyou.modules.bms.report.entity.BmsReportContractSubjectEntity">
+		SELECT bc.sys_contract_no                                    AS "sysContractNo",
+			   bc.contract_no                                        AS "contractNo",
+			   bc.settle_object_code                                 AS "settleCode",
+			   bso.settle_object_name                                AS "settleName",
+			   bc.org_id                                             AS "orgId",
+			   so.name                                               AS "orgName",
+		       bcci.bill_module                                      AS "billModule",
+			   bcci.bill_subject_code                                AS "billSubjectCode",
+			   bbs.bill_subject_name                                 AS "billSubjectName",
+			   bcci.bill_terms_code                                  AS "billTermsCode",
+			   bbt.bill_terms_desc                                   AS "billTermsDesc",
+			   bbf.formula_name                                      AS "methodName",
+			   sc.name                                               AS "operator",
+			   bcci.update_date                                      AS "operateTime",
+			   bcssp.fm                                              AS "fm",
+			   bcssp.`to`                                            AS "to",
+			   IF(bcsup.is_use_step = 'Y', bcssp.price, bcsup.price) AS "price",
+			   bcsup.logistics_points                                AS "logisticsPoints",
+			   bcci.tax_rate                                         AS "taxRate",
+			   bc.effective_date_fm                                  AS "effectiveDateFm",
+			   bc.effective_date_to                                  AS "effectiveDateTo",
+			   bc.remarks                                            AS "remarks"
+		FROM bms_contract bc
+			INNER JOIN bms_contract_cost_item bcci ON bc.sys_contract_no = bcci.sys_contract_no AND bc.org_id = bcci.org_id
+			LEFT JOIN bms_contract_storage_price bcsup ON bcci.id = bcsup.fk_id AND bc.org_id = bcsup.org_id
+			LEFT JOIN bms_contract_storage_stepped_price bcssp ON bcsup.id = bcssp.fk_id AND bcsup.org_id = bcssp.org_id
+			LEFT JOIN bms_settle_object bso ON bc.settle_object_code = bso.settle_object_code AND bc.org_id = bso.org_id
+			LEFT JOIN bms_bill_subject bbs ON bcci.bill_subject_code = bbs.bill_subject_code AND bcci.org_id = bbs.org_id
+			LEFT JOIN bms_bill_terms bbt ON bcci.bill_terms_code = bbt.bill_terms_code
+			LEFT JOIN bms_bill_formula bbf ON bcci.formula_code = bbf.formula_code
+		    LEFT JOIN sys_user sc ON bcci.update_by = sc.id
+		    LEFT JOIN sys_office so ON bc.org_id = so.id
+		<where>
+			${dataScope}
+			<include refid="where"/>
+		</where>
+	</select>
+    
+	<select id="findPage" resultType="com.yunyou.modules.bms.report.entity.BmsReportContractSubjectEntity">
+		SELECT bc.sys_contract_no                                    AS "sysContractNo",
+			   bc.contract_no                                        AS "contractNo",
+			   bc.settle_object_code                                 AS "settleCode",
+			   bso.settle_object_name                                AS "settleName",
+			   bc.org_id                                             AS "orgId",
+			   so.name                                               AS "orgName",
+		       bcci.bill_module                                      AS "billModule",
+			   bcci.bill_subject_code                                AS "billSubjectCode",
+			   bbs.bill_subject_name                                 AS "billSubjectName",
+			   bcci.bill_terms_code                                  AS "billTermsCode",
+			   bbt.bill_terms_desc                                   AS "billTermsDesc",
+			   bbf.formula_name                                      AS "methodName",
+			   sc.name                                               AS "operator",
+			   bcci.update_date                                      AS "operateTime",
+			   bcssp.fm                                              AS "fm",
+			   bcssp.`to`                                            AS "to",
+			   IF(bcsup.is_use_step = 'Y', bcssp.price, bcsup.price) AS "price",
+			   bcsup.logistics_points                                AS "logisticsPoints",
+			   bcci.tax_rate                                         AS "taxRate",
+			   bc.effective_date_fm                                  AS "effectiveDateFm",
+			   bc.effective_date_to                                  AS "effectiveDateTo",
+			   bc.remarks                                            AS "remarks"
+		FROM bms_contract bc
+			INNER JOIN bms_contract_cost_item bcci ON bc.sys_contract_no = bcci.sys_contract_no AND bc.org_id = bcci.org_id
+			LEFT JOIN bms_contract_storage_price bcsup ON bcci.id = bcsup.fk_id AND bc.org_id = bcsup.org_id
+			LEFT JOIN bms_contract_storage_stepped_price bcssp ON bcsup.id = bcssp.fk_id AND bcsup.org_id = bcssp.org_id
+			LEFT JOIN bms_settle_object bso ON bc.settle_object_code = bso.settle_object_code AND bc.org_id = bso.org_id
+			LEFT JOIN bms_bill_subject bbs ON bcci.bill_subject_code = bbs.bill_subject_code AND bcci.org_id = bbs.org_id
+			LEFT JOIN bms_bill_terms bbt ON bcci.bill_terms_code = bbt.bill_terms_code
+			LEFT JOIN bms_bill_formula bbf ON bcci.formula_code = bbf.formula_code
+			LEFT JOIN sys_user sc ON bcci.update_by = sc.id
+			LEFT JOIN sys_office so ON bc.org_id = so.id
+		<where>
+			${dataScope}
+			<include refid="where"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY bc.org_id, bc.settle_object_code, bc.sys_contract_no DESC, bcci.bill_subject_code, bcci.bill_terms_code
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

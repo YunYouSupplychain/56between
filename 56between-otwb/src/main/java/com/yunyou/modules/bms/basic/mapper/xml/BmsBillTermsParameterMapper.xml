@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.basic.mapper.BmsBillTermsParameterMapper">
+
+    <sql id="bmsBillTermsParameterColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.bill_terms_code AS "billTermsCode",
+		a.seq_no AS "seqNo",
+		a.field AS "field",
+		a.title AS "title",
+		a.type AS "type",
+		a.field_option AS "fieldOption",
+		a.default_value AS "defaultValue",
+		a.is_enable AS "isEnable",
+		a.is_show AS "isShow",
+		a.is_settle_date AS "isSettleDate"
+    </sql>
+
+    <sql id="bmsBillTermsParameterJoins">
+
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.basic.entity.BmsBillTermsParameter">
+        SELECT
+        <include refid="bmsBillTermsParameterColumns"/>
+        FROM bms_bill_terms_parameter a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.basic.entity.BmsBillTermsParameter">
+        SELECT
+        <include refid="bmsBillTermsParameterColumns"/>
+        FROM bms_bill_terms_parameter a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="billTermsCode != null and billTermsCode != ''">
+                AND a.bill_terms_code = #{billTermsCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.basic.entity.BmsBillTermsParameter">
+        SELECT
+        <include refid="bmsBillTermsParameterColumns"/>
+        FROM bms_bill_terms_parameter a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_bill_terms_parameter
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            bill_terms_code,
+            seq_no,
+            field,
+            title,
+            type,
+            field_option,
+            default_value,
+            is_enable,
+            is_show,
+            is_settle_date
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{billTermsCode},
+            #{seqNo},
+            #{field},
+            #{title},
+            #{type},
+            #{fieldOption},
+            #{defaultValue},
+            #{isEnable},
+            #{isShow},
+            #{isSettleDate}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_bill_terms_parameter
+        SET update_by       = #{updateBy.id},
+            update_date     = #{updateDate},
+            remarks         = #{remarks},
+            rec_ver         = rec_ver + 1,
+            bill_terms_code = #{billTermsCode},
+            seq_no          = #{seqNo},
+            field           = #{field},
+            title           = #{title},
+            type            = #{type},
+            field_option    = #{fieldOption},
+            default_value   = #{defaultValue},
+            is_enable       = #{isEnable},
+            is_show         = #{isShow},
+            is_settle_date  = #{isSettleDate}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_bill_terms_parameter
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_bill_terms_parameter WHERE id = #{id}
+    </delete>
+    <delete id="remove">
+        DELETE FROM bms_bill_terms_parameter WHERE bill_terms_code = #{billTermsCode}
+    </delete>
+
+    <select id="findByBillTermsCode" resultType="com.yunyou.modules.bms.basic.entity.BmsBillTermsParameter">
+        SELECT
+        <include refid="bmsBillTermsParameterColumns"/>
+        FROM bms_bill_terms_parameter a
+        WHERE a.bill_terms_code = #{billTermsCode}
+        ORDER BY a.seq_no
+    </select>
+    <select id="getTermsParams" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsContractDetailTermsParamsEntity">
+        SELECT a.seq_no         AS "seqNo",
+               a.field          AS "field",
+               a.title          AS "title",
+               a.type           AS "type",
+               a.field_option   AS "fieldOption",
+               a.default_value  AS "fieldValue",
+               a.is_enable      AS "isEnable",
+               a.is_show        AS "isShow",
+               a.is_settle_date AS "isSettleDate",
+               bbt.method_name  AS "methodName"
+        FROM bms_bill_terms_parameter a
+        INNER JOIN bms_bill_terms bbt ON a.bill_terms_code = bbt.bill_terms_code
+        WHERE a.bill_terms_code = #{billTermsCode}
+        ORDER BY a.seq_no
+    </select>
+
+</mapper>

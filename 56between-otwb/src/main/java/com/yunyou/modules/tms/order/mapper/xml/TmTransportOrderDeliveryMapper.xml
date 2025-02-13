@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmTransportOrderDeliveryMapper">
+    
+	<sql id="tmTransportOrderDeliveryColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_no AS "transportNo",
+		a.carrier_code AS "carrierCode",
+		a.car_type AS "carType",
+		a.total_ea_qty AS "totalEaQty",
+		a.total_pl_qty AS "totalPlQty",
+		a.total_weight AS "totalWeight",
+		a.total_cubic AS "totalCubic",
+		a.paid_amount AS "paidAmount",
+		a.actual_ship_weight AS "actualShipWeight",
+		a.virtual_billing_status AS "virtualBillingStatus",
+		a.plan_arrive_time AS "planArriveTime",
+        a.is_exception AS "isException",
+		a.sign_status AS "signStatus",
+		a.sign_time AS "signTime",
+		a.sign_by AS "signBy",
+		a.sign_remarks AS "signRemarks",
+		a.receipt_status AS "receiptStatus",
+		a.receipt_time AS "receiptTime",
+		a.receipt_by AS "receiptBy",
+		a.receipt_remarks AS "receiptRemarks",
+		a.receipt_count AS "receiptCount",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId"
+	</sql>
+	
+	<sql id="tmTransportOrderDeliveryJoins">
+		
+	</sql>
+
+	<select id="get" resultType="TmTransportOrderDelivery" >
+		SELECT 
+			<include refid="tmTransportOrderDeliveryColumns"/>
+		FROM tm_transport_order_delivery a
+		<include refid="tmTransportOrderDeliveryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmTransportOrderDelivery" >
+		SELECT 
+			<include refid="tmTransportOrderDeliveryColumns"/>
+		FROM tm_transport_order_delivery a
+		<include refid="tmTransportOrderDeliveryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="transportNo != null and transportNo != ''">
+				AND a.transport_no = #{transportNo}
+			</if>
+			<if test="signStatus != null and signStatus != ''">
+				AND a.sign_status = #{signStatus}
+			</if>
+			<if test="receiptStatus != null and receiptStatus != ''">
+				AND a.receipt_status = #{receiptStatus}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmTransportOrderDelivery" >
+		SELECT 
+			<include refid="tmTransportOrderDeliveryColumns"/>
+		FROM tm_transport_order_delivery a
+		<include refid="tmTransportOrderDeliveryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_transport_order_delivery(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			transport_no,
+			carrier_code,
+			car_type,
+			total_ea_qty,
+			total_pl_qty,
+			total_weight,
+			total_cubic,
+			paid_amount,
+			actual_ship_weight,
+			virtual_billing_status,
+			plan_arrive_time,
+			sign_status,
+			sign_time,
+			sign_by,
+			sign_remarks,
+			receipt_status,
+			receipt_time,
+			receipt_by,
+			receipt_remarks,
+            receipt_count,
+			org_id,
+			rec_ver,
+			base_org_id,
+            is_exception
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{transportNo},
+			#{carrierCode},
+			#{carType},
+			#{totalEaQty},
+			#{totalPlQty},
+			#{totalWeight},
+			#{totalCubic},
+			#{paidAmount},
+			#{actualShipWeight},
+			#{virtualBillingStatus},
+			#{planArriveTime},
+			#{signStatus},
+			#{signTime},
+			#{signBy},
+			#{signRemarks},
+			#{receiptStatus},
+			#{receiptTime},
+			#{receiptBy},
+			#{receiptRemarks},
+            #{receiptCount},
+			#{orgId},
+			#{recVer},
+			#{baseOrgId},
+            #{isException}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_transport_order_delivery
+		SET update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			transport_no = #{transportNo},
+			carrier_code = #{carrierCode},
+			car_type = #{carType},
+			total_ea_qty = #{totalEaQty},
+			total_pl_qty = #{totalPlQty},
+			total_weight = #{totalWeight},
+			total_cubic = #{totalCubic},
+			paid_amount = #{paidAmount},
+			actual_ship_weight = #{actualShipWeight},
+			virtual_billing_status = #{virtualBillingStatus},
+			plan_arrive_time = #{planArriveTime},
+			sign_status = #{signStatus},
+			sign_time = #{signTime},
+			sign_by = #{signBy},
+			sign_remarks = #{signRemarks},
+			receipt_status = #{receiptStatus},
+			receipt_time = #{receiptTime},
+			receipt_by = #{receiptBy},
+			receipt_remarks = #{receiptRemarks},
+			receipt_count = #{receiptCount},
+			org_id = #{orgId},
+			base_org_id = #{baseOrgId},
+			is_exception = #{isException},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_transport_order_delivery SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_transport_order_delivery WHERE id = #{id}
+	</delete>
+
+	<select id="getByNo" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderDelivery">
+		SELECT <include refid="tmTransportOrderDeliveryColumns"/>
+		FROM tm_transport_order_delivery a
+		WHERE a.transport_no = #{transportNo} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getEntityByNo" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderDeliveryEntity">
+		SELECT <include refid="tmTransportOrderDeliveryColumns"/>
+		FROM tm_transport_order_delivery a
+		WHERE a.transport_no = #{transportNo} AND a.org_id = #{orgId}
+	</select>
+	
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmRepairOrderHeaderMapper">
+
+    <sql id="tmRepairOrderHeaderColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.repair_no AS "repairNo",
+		a.order_time AS "orderTime",
+		a.status AS "status",
+		a.owner_code AS "ownerCode",
+		a.car_no AS "carNo",
+		a.driver AS "driver",
+		a.need_repair_item AS "needRepairItem",
+		a.repairman AS "repairman",
+		a.repair_suggestion AS "repairSuggestion",
+		a.amount AS "amount",
+		a.work_hour AS "workHour",
+		a.work_hour_cost AS "workHourCost",
+		a.total_amount AS "totalAmount",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId"
+    </sql>
+	
+	<sql id="tmRepairOrderHeaderJoins">
+		
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.tms.order.entity.TmRepairOrderHeader" >
+		SELECT 
+			<include refid="tmRepairOrderHeaderColumns"/>
+		FROM tm_repair_order_header a
+		<include refid="tmRepairOrderHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.tms.order.entity.TmRepairOrderHeader" >
+		SELECT 
+			<include refid="tmRepairOrderHeaderColumns"/>
+		FROM tm_repair_order_header a
+		<include refid="tmRepairOrderHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="repairNo != null and repairNo != ''">
+				AND a.repair_no = #{repairNo}
+			</if>
+			<if test="orderTime != null and orderTime != ''">
+				AND a.order_time = #{orderTime}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.tms.order.entity.TmRepairOrderHeader" >
+		SELECT 
+			<include refid="tmRepairOrderHeaderColumns"/>
+		FROM tm_repair_order_header a
+		<include refid="tmRepairOrderHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_repair_order_header(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			repair_no,
+			order_time,
+			status,
+			owner_code,
+			car_no,
+			driver,
+			need_repair_item,
+			repairman,
+			repair_suggestion,
+			org_id,
+			rec_ver,
+			base_org_id,
+            amount,
+            work_hour,
+            work_hour_cost,
+            total_amount
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{repairNo},
+			#{orderTime},
+			#{status},
+			#{ownerCode},
+			#{carNo},
+			#{driver},
+			#{needRepairItem},
+			#{repairman},
+			#{repairSuggestion},
+			#{orgId},
+			#{recVer},
+			#{baseOrgId},
+            #{amount},
+            #{workHour},
+            #{workHourCost},
+            #{totalAmount}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_repair_order_header SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			repair_no = #{repairNo},
+			order_time = #{orderTime},
+			status = #{status},
+            owner_code = #{ownerCode},
+            car_no = #{carNo},
+            driver = #{driver},
+            need_repair_item = #{needRepairItem},
+            repairman = #{repairman},
+            repair_suggestion = #{repairSuggestion},
+			org_id = #{orgId},
+			base_org_id = #{baseOrgId},
+            amount = #{amount},
+            work_hour = #{workHour},
+            work_hour_cost = #{workHourCost},
+            total_amount = #{totalAmount},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_repair_order_header WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_repair_order_header SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+    <select id="getByNo" resultType="com.yunyou.modules.tms.order.entity.TmRepairOrderHeader">
+        select <include refid="tmRepairOrderHeaderColumns"/> FROM tm_repair_order_header a where a.repair_no = #{repairNo}
+    </select>
+
+</mapper>

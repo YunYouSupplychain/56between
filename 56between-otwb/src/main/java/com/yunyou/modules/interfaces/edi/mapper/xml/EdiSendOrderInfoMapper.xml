@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.interfaces.edi.mapper.EdiSendOrderInfoMapper">
+	
+	<resultMap id="ediSendOrderInfoMap" type="com.yunyou.modules.interfaces.edi.entity.EdiSendOrderInfo">
+		<id column="id" property="id"/>
+		<result column="edi_type" property="ediType"/>
+		<result column="is_send" property="isSend"/>
+		<result column="source_id" property="sourceId"/>
+		<result column="org_id" property="orgId"/>
+        <result column="warehouse" property="warehouse"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="order_date" property="orderDate"/>
+		<result column="owner_code" property="ownerCode"/>
+		<result column="owner_name" property="ownerName"/>
+		<result column="consignee_code" property="consigneeCode"/>
+		<result column="consignee_name" property="consigneeName"/>
+		<result column="supplier_code" property="supplierCode"/>
+		<result column="supplier_name" property="supplierName"/>
+		<result column="line_no" property="lineNo"/>
+		<result column="sku_code" property="skuCode"/>
+		<result column="sku_name" property="skuName"/>
+		<result column="sku_spec" property="skuSpec"/>
+		<result column="qty_unit" property="qtyUnit"/>
+		<result column="qty_ea" property="qtyEa"/>
+		<result column="qty_box" property="qtyBox"/>
+		<result column="loc_code" property="locCode"/>
+		<result column="lot_num" property="lotNum"/>
+		<result column="lot_att01" property="lotAtt01"/>
+		<result column="lot_att02" property="lotAtt02"/>
+		<result column="lot_att03" property="lotAtt03"/>
+		<result column="lot_att04" property="lotAtt04"/>
+		<result column="lot_att05" property="lotAtt05"/>
+		<result column="lot_att06" property="lotAtt06"/>
+		<result column="lot_att07" property="lotAtt07"/>
+		<result column="lot_att08" property="lotAtt08"/>
+		<result column="lot_att09" property="lotAtt09"/>
+		<result column="lot_att10" property="lotAtt10"/>
+        <result column="lot_att11" property="lotAtt11"/>
+        <result column="lot_att12" property="lotAtt12"/>
+        <result column="remarks" property="remarks"/>
+		<result column="def1" property="def1"/>
+		<result column="def2" property="def2"/>
+		<result column="def3" property="def3"/>
+		<result column="def4" property="def4"/>
+		<result column="def5" property="def5"/>
+        <result column="def6" property="def6"/>
+        <result column="def7" property="def7"/>
+        <result column="def8" property="def8"/>
+        <result column="def9" property="def9"/>
+        <result column="def10" property="def10"/>
+        <result column="create_by" property="createBy.id"/>
+        <result column="create_date" property="createDate"/>
+	</resultMap>
+
+	<select id="findList" resultMap="ediSendOrderInfoMap">
+		SELECT a.*
+		FROM edi_send_order_info a
+		<where>
+			1 = 1
+			<if test="ediType != null and ediType != ''">
+				AND a.edi_type = #{ediType}
+			</if>
+			<if test="isSend != null and isSend != ''">
+				AND a.is_send = #{isSend}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="save">
+		INSERT INTO edi_send_order_info(
+            id,
+            edi_type,
+            is_send,
+            source_id,
+            org_id,
+            warehouse,
+            order_no,
+            order_date,
+            owner_code,
+            owner_name,
+            consignee_code,
+            consignee_name,
+            supplier_code,
+            supplier_name,
+            line_no,
+            sku_code,
+            sku_name,
+            sku_spec,
+            qty_unit,
+            qty_ea,
+            qty_box,
+            loc_code,
+            lot_num,
+            lot_att01,
+            lot_att02,
+            lot_att03,
+            lot_att04,
+            lot_att05,
+            lot_att06,
+            lot_att07,
+            lot_att08,
+            lot_att09,
+            lot_att10,
+            lot_att11,
+            lot_att12,
+            remarks,
+            def1,
+            def2,
+            def3,
+            def4,
+            def5,
+            def6,
+            def7,
+            def8,
+            def9,
+            def10,
+            create_by,
+            create_date
+        ) VALUES (
+            #{id},
+            #{ediType},
+            #{isSend},
+            #{sourceId},
+            #{orgId},
+            #{warehouse},
+            #{orderNo},
+            #{orderDate},
+            #{ownerCode},
+            #{ownerName},
+            #{consigneeCode},
+            #{consigneeName},
+            #{supplierCode},
+            #{supplierName},
+            #{lineNo},
+            #{skuCode},
+            #{skuName},
+            #{skuSpec},
+            #{qtyUnit},
+            #{qtyEa},
+            #{qtyBox},
+            #{locCode},
+            #{lotNum},
+            #{lotAtt01},
+            #{lotAtt02},
+            #{lotAtt03},
+            #{lotAtt04},
+            #{lotAtt05},
+            #{lotAtt06},
+            #{lotAtt07},
+            #{lotAtt08},
+            #{lotAtt09},
+            #{lotAtt10},
+            #{lotAtt11},
+            #{lotAtt12},
+            #{remarks},
+            #{def1},
+            #{def2},
+            #{def3},
+            #{def4},
+            #{def5},
+            #{def6},
+            #{def7},
+            #{def8},
+            #{def9},
+            #{def10},
+            #{createBy.id},
+            #{createDate}
+		)
+	</insert>
+
+    <select id="findUnSendDataByType" resultMap="ediSendOrderInfoMap">
+        SELECT a.*
+        FROM edi_send_order_info a
+        WHERE a.is_send = 'N'
+          AND a.edi_type = #{ediType}
+        ORDER BY a.create_date
+    </select>
+
+    <select id="findUnSendDataByDo" resultType="com.yunyou.modules.interfaces.edi.entity.EdiDispatchOrderInfo">
+        select tdoh.dispatch_no                 as dispatchNo,
+               ttoh.outlet_code                 as consigneeCode,
+               ttoc.transport_obj_name          as consigneeName,
+               ttos.address                     as startAddress,
+               ttoc.address                     as endAddress,
+               tdoh.carrier_code                as carrierCode,
+               tcc.transport_obj_name           as carrierName,
+               tdoh.car_no                      as vehicleNo,
+               tv.transport_equipment_type_code as gpsNo,
+               td.name                          as driver,
+               tdoh.driver_tel                  as driverTel,
+               tdoh.dispatch_time               as departureTime,
+               thoh.update_date                 as arrivalTime,
+               tcrr.mileage                     as mileage,
+               tdoh.org_id                      as orgId
+        from tm_dispatch_order_header tdoh
+             inner join tm_dispatch_order_label tdol on tdoh.dispatch_no = tdol.dispatch_no and tdol.receive_ship = 'S' and tdoh.org_id = tdol.org_id
+             inner join tm_transport_order_header ttoh on tdol.transport_no = ttoh.transport_no and tdol.org_id = ttoh.org_id
+             left join tm_handover_order_header thoh on tdoh.dispatch_no = thoh.dispatch_no and tdol.dispatch_site_outlet_code = thoh.delivery_outlet_code and tdoh.org_id = thoh.org_id and thoh.status = '20'
+             left join tm_transport_obj tcc on tdoh.carrier_code = tcc.transport_obj_code and tdoh.base_org_id = tcc.org_id
+             left join tm_transport_obj ttos on ttoh.receive_outlet_code = ttos.transport_obj_code and ttoh.base_org_id = ttos.org_id
+             left join tm_transport_obj ttoc on ttoh.outlet_code = ttoc.transport_obj_code and ttoh.base_org_id = ttoc.org_id
+             left join tm_carrier_route_relation tcrr on tdoh.carrier_code = tcrr.carrier_code and ttos.area_id = tcrr.origin_id and ttoc.area_id = tcrr.destination_id and tdoh.base_org_id = tcrr.org_id
+             left join tm_vehicle tv on tdoh.car_no = tv.car_no and tdoh.base_org_id = tv.org_id
+             left join tm_transport_equipment_type ttet on tv.transport_equipment_type_code = ttet.transport_equipment_type_code and tv.org_id = ttet.org_id
+             left join tm_driver td on tdoh.driver = td.code and tdoh.base_org_id = td.org_id
+        where tdoh.dispatch_status &gt;= '20'
+          and ttet.transport_equipment_type_code is not null
+          and (thoh.id is null or (thoh.id is not null and TIMESTAMPDIFF(HOUR, thoh.update_date, NOW()) &lt;= 1))
+          and tdoh.base_org_id = #{baseOrgId}
+        group by tdoh.dispatch_no, ttos.address, ttoc.address, ttoh.outlet_code, tdoh.org_id
+    </select>
+
+    <update id="deleteByIds">
+        DELETE FROM edi_send_order_info
+        WHERE id in
+        <foreach collection="ids" item="id" index="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

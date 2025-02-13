@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmDispatchPlanConfigMapper">
+    
+	<sql id="tmDispatchPlanConfigColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.plan_no AS "planNo",
+		a.vehicle_no AS "vehicleNo",
+		a.trip AS "trip",
+		a.pick_up_point AS "pickUpPoint",
+		a.delivery_point AS "deliveryPoint",
+		a.sku_code AS "skuCode",
+		a.qty AS "qty",
+		a.ware_room AS "wareRoom",
+		a.driver AS "driver",
+		a.escort AS "escort",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.transport_no AS "transportNo",
+		a.dispatch_no AS "dispatchNo"
+	</sql>
+	
+	<select id="get" resultType="TmDispatchPlanConfig">
+		SELECT <include refid="tmDispatchPlanConfigColumns"/>
+		FROM tm_dispatch_plan_config a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmDispatchPlanConfig">
+		SELECT 
+			<include refid="tmDispatchPlanConfigColumns"/>
+		FROM tm_dispatch_plan_config a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="planNo != null and planNo != ''">
+				AND a.plan_no = #{planNo}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmDispatchPlanConfig">
+		SELECT 
+			<include refid="tmDispatchPlanConfigColumns"/>
+		FROM tm_dispatch_plan_config a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_dispatch_plan_config(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			plan_no,
+			vehicle_no,
+			trip,
+			pick_up_point,
+			delivery_point,
+			sku_code,
+			qty,
+			ware_room,
+			driver,
+			escort,
+			org_id,
+			rec_ver,
+			base_org_id,
+			transport_no,
+			dispatch_no
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{planNo},
+		    #{vehicleNo},
+			#{trip},
+			#{pickUpPoint},
+			#{deliveryPoint},
+			#{skuCode},
+			#{qty},
+			#{wareRoom},
+			#{driver},
+			#{escort},
+			#{orgId},
+			#{recVer},
+			#{baseOrgId},
+		    #{transportNo},
+		    #{dispatchNo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_dispatch_plan_config SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			plan_no = #{planNo},
+			vehicle_no = #{vehicleNo},
+			trip = #{trip},
+			pick_up_point = #{pickUpPoint},
+			delivery_point = #{deliveryPoint},
+			sku_code = #{skuCode},
+			qty = #{qty},
+			ware_room = #{wareRoom},
+			driver = #{driver},
+			escort = #{escort},
+			org_id = #{orgId},
+			rec_ver = rec_ver + 1,
+			base_org_id = #{baseOrgId},
+			transport_no = #{transportNo},
+			dispatch_no = #{dispatchNo}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_dispatch_plan_config
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_dispatch_plan_config SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

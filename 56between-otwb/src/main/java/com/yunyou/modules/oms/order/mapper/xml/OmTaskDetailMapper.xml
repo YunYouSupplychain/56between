@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.order.mapper.OmTaskDetailMapper">
+    
+	<sql id="omTaskDetailColumns">
+		a.id                        as "id",
+		a.create_by                 as "createBy.id",
+		a.create_date               as "createDate",
+		a.update_by                 as "updateBy.id",
+		a.update_date               as "updateDate",
+		a.remarks                   as "remarks",
+		a.del_flag                  as "delFlag",
+		a.rec_ver                   as "recVer",
+		a.header_id                 as "headerId",
+		a.sku_code                  as "skuCode",
+		a.sku_name                  as "skuName",
+		a.spec                      as "spec",
+		a.unit                      as "unit",
+		a.qty                       as "qty",
+		a.price                     as "price",
+		a.amount                    as "amount",
+		a.alloc_status              as "allocStatus",
+		a.chain_no                  as "chainNo",
+		a.line_no                   as "lineNo",
+		a.customer_no               as "customerNo",
+		a.data_source               as "dataSource",
+		a.org_id                    as "orgId",
+		a.auxiliary_unit            as "auxiliaryUnit",
+		a.auxiliary_qty             as "auxiliaryQty",
+		a.tax_rate                  as "taxRate",
+		a.tax_price                 as "taxPrice",
+		a.tax_money                 as "taxMoney",
+		a.tax_amount                as "taxAmount",
+		a.discount                  as "discount",
+		a.turnover                  as "turnover",
+		a.transaction_tax           as "transactionTax",
+		a.sum_transaction_price_tax as "sumTransactionPriceTax",
+		a.item_price_id             as "itemPriceId",
+		a.rice_num                  as "riceNum",
+		a.def1                      as "def1",
+		a.def2                      as "def2",
+		a.def3                      as "def3",
+		a.def4                      as "def4",
+		a.def5                      as "def5",
+		a.def6                     as "def6",
+		a.def7                     as "def7",
+		a.def8                     as "def8",
+		a.def9                     as "def9",
+		a.def10                    as "def10"
+	</sql>
+
+	<sql id="omTaskDetailJoins">
+		LEFT JOIN om_task_header b ON b.id = a.header_id
+	</sql>
+	
+	<insert id="insert">
+		INSERT INTO om_task_detail
+		(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			header_id,
+			sku_code,
+			sku_name,
+			spec,
+			unit,
+			qty,
+			price,
+			amount,
+			alloc_status,
+			chain_no,
+			line_no,
+			customer_no,
+			data_source,
+			org_id,
+			auxiliary_unit,
+			auxiliary_qty,
+			tax_rate,
+			tax_price,
+			tax_money,
+			tax_amount,
+			discount,
+			turnover,
+			transaction_tax,
+			sum_transaction_price_tax,
+			item_price_id,
+			rice_num,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10
+		)
+		VALUES
+		(
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{headerId},
+			#{skuCode},
+			#{skuName},
+			#{spec},
+			#{unit},
+			#{qty},
+			#{price},
+			#{amount},
+			#{allocStatus},
+			#{chainNo},
+			#{lineNo},
+			#{customerNo},
+			#{dataSource},
+			#{orgId},
+			#{auxiliaryUnit},
+			#{auxiliaryQty},
+			#{taxRate},
+			#{taxPrice},
+			#{taxMoney},
+			#{taxAmount},
+			#{discount},
+			#{turnover},
+			#{transactionTax},
+			#{sumTransactionPriceTax},
+			#{itemPriceId},
+			#{riceNum},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE om_task_detail
+		SET update_by                 = #{updateBy.id},
+			update_date               = #{updateDate},
+			remarks                   = #{remarks},
+			rec_ver                   = rec_ver + 1,
+			header_id                 = #{headerId},
+			sku_code                  = #{skuCode},
+			sku_name                  = #{skuName},
+			spec                      = #{spec},
+			unit                      = #{unit},
+			qty                       = #{qty},
+			price                     = #{price},
+			amount                    = #{amount},
+			alloc_status              = #{allocStatus},
+			chain_no                  = #{chainNo},
+			line_no                   = #{lineNo},
+			customer_no               = #{customerNo},
+			data_source               = #{dataSource},
+			org_id                    = #{orgId},
+			auxiliary_unit            = #{auxiliaryUnit},
+			auxiliary_qty             = #{auxiliaryQty},
+			tax_rate                  = #{taxRate},
+			tax_price                 = #{taxPrice},
+			tax_money                 = #{taxMoney},
+			tax_amount                = #{taxAmount},
+			discount                  = #{discount},
+			turnover                  = #{turnover},
+			transaction_tax           = #{transactionTax},
+			sum_transaction_price_tax = #{sumTransactionPriceTax},
+			item_price_id             = #{itemPriceId},
+			rice_num                  = #{riceNum},
+			def1                      = #{def1},
+			def2                      = #{def2},
+			def3                      = #{def3},
+			def4                      = #{def4},
+			def5                      = #{def5},
+			def6                     = #{def6},
+			def7                     = #{def7},
+			def8                     = #{def8},
+			def9                     = #{def9},
+			def10                    = #{def10}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE om_task_detail SET
+		del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id != null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE header_id = #{headerId}
+			</otherwise>
+		</choose>
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM om_task_detail
+		<choose>
+			<when test="id != null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE header_id = #{headerId}
+			</otherwise>
+		</choose>
+	</delete>
+
+	<select id="get" resultType="OmTaskDetail" >
+		SELECT
+		<include refid="omTaskDetailColumns"/>
+		FROM om_task_detail a
+		<include refid="omTaskDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="OmTaskDetail" >
+		SELECT
+		<include refid="omTaskDetailColumns"/>
+		FROM om_task_detail a
+		<include refid="omTaskDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+			<if test="allocStatus != null and allocStatus != ''">
+				AND a.alloc_status = #{allocStatus}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="OmTaskDetail" >
+		SELECT
+		<include refid="omTaskDetailColumns"/>
+		FROM om_task_detail a
+		<include refid="omTaskDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+</mapper>

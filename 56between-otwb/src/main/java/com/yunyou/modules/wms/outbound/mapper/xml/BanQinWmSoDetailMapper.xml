@@ -1,0 +1,1057 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmSoDetailMapper">
+    
+	<sql id="banQinWmSoDetailColumns">
+		a.id AS "id",
+		a.so_no AS "soNo",
+		a.line_no AS "lineNo",
+		a.logistic_no AS "logisticNo",
+		a.logistic_line_no AS "logisticLineNo",
+		a.status AS "status",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_so_ea AS "qtySoEa",
+		a.qty_prealloc_ea AS "qtyPreallocEa",
+		a.qty_alloc_ea AS "qtyAllocEa",
+		a.qty_pk_ea AS "qtyPkEa",
+		a.qty_ship_ea AS "qtyShipEa",
+		a.rotation_rule AS "rotationRule",
+		a.prealloc_rule AS "preallocRule",
+		a.alloc_rule AS "allocRule",
+		a.price AS "price",
+		a.area_code AS "areaCode",
+		a.zone_code AS "zoneCode",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.ld_status AS "ldStatus",
+		a.sale_no AS "saleNo",
+		a.sale_line_no AS "saleLineNo",
+		a.cd_type AS "cdType",
+		a.old_line_no AS "oldLineNo",
+		a.lot_att01 AS "lotAtt01",
+		a.lot_att02 AS "lotAtt02",
+		a.lot_att03 AS "lotAtt03",
+		a.lot_att04 AS "lotAtt04",
+		a.lot_att05 AS "lotAtt05",
+		a.lot_att06 AS "lotAtt06",
+		a.lot_att07 AS "lotAtt07",
+		a.lot_att08 AS "lotAtt08",
+		a.lot_att09 AS "lotAtt09",
+		a.lot_att10 AS "lotAtt10",
+		a.lot_att11 AS "lotAtt11",
+		a.lot_att12 AS "lotAtt12",
+		a.edi_send_time AS "ediSendTime",
+		a.is_edi_send AS "isEdiSend",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+        a.head_id AS "headId",
+		a.outbound_time AS "outboundTime"
+	</sql>
+	
+	<sql id="banQinWmSoDetailJoins">
+		
+	</sql>
+    
+	<select id="get" resultType="BanQinWmSoDetail" >
+		SELECT 
+			<include refid="banQinWmSoDetailColumns"/>
+		FROM wm_so_detail a
+		<include refid="banQinWmSoDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="BanQinWmSoDetail" >
+		SELECT 
+			<include refid="banQinWmSoDetailColumns"/>
+		FROM wm_so_detail a
+		<include refid="banQinWmSoDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="headId != null and headId != ''">
+                AND a.head_id = #{headId}
+            </if>
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no = #{soNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="logisticNo != null and logisticNo != ''">
+				AND a.logistic_no = #{logisticNo}
+			</if>
+			<if test="logisticLineNo != null and logisticLineNo != ''">
+				AND a.logistic_line_no = #{logisticLineNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="ldStatus != null and ldStatus != ''">
+				AND a.ld_status = #{ldStatus}
+			</if>
+		</where>
+	</select>
+
+    <select id="findPage" resultType="BanQinWmSoDetailEntity" >
+        SELECT
+            <include refid="banQinWmSoDetailColumns"/>,
+            wwd.wave_no AS waveNo,
+            ec.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName ,
+            cdpa.cdpa_format AS packDesc,
+            cdpr.cdpr_desc AS uomDesc,
+            cdpr.cdpr_quantity AS uomQty,
+            crph.rule_name AS preallocRuleName,
+            crah.rule_name AS allocRuleName,
+            crrh.rule_name AS rotationRuleName,
+            cwz.zone_name AS zoneName,
+            cwa.area_name AS areaName
+        FROM wm_so_detail a
+        LEFT JOIN wm_wv_detail wwd ON a.so_no = wwd.so_no AND a.org_id = wwd.org_id
+        LEFT JOIN eb_customer ec on a.owner_code = ec.ebcu_customer_no and a.org_id = ec.org_id
+        LEFT JOIN cd_wh_sku cws on a.owner_code = cws.owner_code and a.sku_code = cws.sku_code and a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cdpa on a.pack_code = cdpa.cdpa_code and a.org_id = cdpa.org_id
+        LEFT JOIN cd_wh_package_relation cdpr on cdpa.pm_code = cdpr.cdpr_cdpa_pm_code and cdpa.org_id = cdpr.org_id and a.uom = cdpr.cdpr_unit_level
+        LEFT JOIN cd_rule_prealloc_header crph on a.prealloc_rule = crph.rule_code and a.org_id = crph.org_id
+        LEFT JOIN cd_rule_alloc_header crah on a.alloc_rule = crah.rule_code and a.org_id = crah.org_id
+        LEFT JOIN cd_rule_rotation_header crrh on a.rotation_rule = crrh.rule_code and a.org_id = crrh.org_id
+        LEFT JOIN cd_wh_zone cwz on a.zone_code = cwz.zone_code and a.org_id = cwz.org_id
+        LEFT JOIN cd_wh_area cwa on a.area_code = cwa.area_code and a.org_id = cwa.org_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            ${dataScope}
+            <if test="headId != null and headId != ''">
+                AND a.head_id = #{headId}
+            </if>
+            <if test="soNo != null and soNo != ''">
+                AND a.so_no = #{soNo}
+            </if>
+			<if test="waveNo != null and waveNo != ''">
+				AND wwd.wave_no = #{waveNo}
+			</if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.so_no, a.line_no
+            </otherwise>
+        </choose>
+    </select>
+    
+    <select id="checkSoExistCd" resultType="java.lang.String">
+        SELECT DISTINCT wsd.so_no
+        FROM wm_so_detail wsd
+        WHERE 1 = 1
+        AND wsd.cd_type IS NOT NULL
+        AND wsd.cd_type != ''
+        AND wsd.org_id = #{orgId}
+        AND wsd.so_no IN
+        <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+            #{soNo}
+        </foreach>
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmSoDetail" >
+		SELECT 
+			<include refid="banQinWmSoDetailColumns"/>
+		FROM wm_so_detail a
+		<include refid="banQinWmSoDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_so_detail(
+			id,
+			so_no,
+			line_no,
+			logistic_no,
+			logistic_line_no,
+			status,
+			owner_code,
+			sku_code,
+			pack_code,
+			uom,
+			qty_so_ea,
+			qty_prealloc_ea,
+			qty_alloc_ea,
+			qty_pk_ea,
+			qty_ship_ea,
+			rotation_rule,
+			prealloc_rule,
+			alloc_rule,
+			price,
+			area_code,
+			zone_code,
+			loc_code,
+			trace_id,
+			ld_status,
+			sale_no,
+			sale_line_no,
+			cd_type,
+			old_line_no,
+			lot_att01,
+			lot_att02,
+			lot_att03,
+			lot_att04,
+			lot_att05,
+			lot_att06,
+			lot_att07,
+			lot_att08,
+			lot_att09,
+			lot_att10,
+			lot_att11,
+			lot_att12,
+			edi_send_time,
+			is_edi_send,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+            head_id,
+			outbound_time
+		) VALUES (
+			#{id},
+			#{soNo},
+			#{lineNo},
+			#{logisticNo},
+			#{logisticLineNo},
+			#{status},
+			#{ownerCode},
+			#{skuCode},
+			#{packCode},
+			#{uom},
+			#{qtySoEa},
+			#{qtyPreallocEa},
+			#{qtyAllocEa},
+			#{qtyPkEa},
+			#{qtyShipEa},
+			#{rotationRule},
+			#{preallocRule},
+			#{allocRule},
+			#{price},
+			#{areaCode},
+			#{zoneCode},
+			#{locCode},
+			#{traceId},
+			#{ldStatus},
+			#{saleNo},
+			#{saleLineNo},
+			#{cdType},
+			#{oldLineNo},
+			#{lotAtt01},
+			#{lotAtt02},
+			#{lotAtt03},
+			#{lotAtt04},
+			#{lotAtt05},
+			#{lotAtt06},
+			#{lotAtt07},
+			#{lotAtt08},
+			#{lotAtt09},
+			#{lotAtt10},
+			#{lotAtt11},
+			#{lotAtt12},
+			#{ediSendTime},
+			#{isEdiSend},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+            #{headId},
+		    #{outboundTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_so_detail SET 	
+			so_no = #{soNo},
+			line_no = #{lineNo},
+			logistic_no = #{logisticNo},
+			logistic_line_no = #{logisticLineNo},
+			status = #{status},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_so_ea = #{qtySoEa},
+			qty_prealloc_ea = #{qtyPreallocEa},
+			qty_alloc_ea = #{qtyAllocEa},
+			qty_pk_ea = #{qtyPkEa},
+			qty_ship_ea = #{qtyShipEa},
+			rotation_rule = #{rotationRule},
+			prealloc_rule = #{preallocRule},
+			alloc_rule = #{allocRule},
+			price = #{price},
+			area_code = #{areaCode},
+			zone_code = #{zoneCode},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			ld_status = #{ldStatus},
+			sale_no = #{saleNo},
+			sale_line_no = #{saleLineNo},
+			cd_type = #{cdType},
+			old_line_no = #{oldLineNo},
+			lot_att01 = #{lotAtt01},
+			lot_att02 = #{lotAtt02},
+			lot_att03 = #{lotAtt03},
+			lot_att04 = #{lotAtt04},
+			lot_att05 = #{lotAtt05},
+			lot_att06 = #{lotAtt06},
+			lot_att07 = #{lotAtt07},
+			lot_att08 = #{lotAtt08},
+			lot_att09 = #{lotAtt09},
+			lot_att10 = #{lotAtt10},
+			lot_att11 = #{lotAtt11},
+			lot_att12 = #{lotAtt12},
+			edi_send_time = #{ediSendTime},
+			is_edi_send = #{isEdiSend},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			def6 = #{def6},
+			def7 = #{def7},
+			def8 = #{def8},
+			def9 = #{def9},
+			def10 = #{def10},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+		    outbound_time = #{outboundTime}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_so_detail
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_so_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+    <!--***********************************SELECT区**************************************************-->
+    <select id="findEntityByNos" resultType="BanQinWmSoDetailEntity">
+        SELECT DISTINCT
+            <include refid="banQinWmSoDetailColumns"/>,
+			wwd.wave_no AS waveNo
+        FROM wm_so_detail a
+        LEFT JOIN wm_so_header wsh ON wsh.so_no = a.so_no AND wsh.org_id = a.org_id
+        LEFT JOIN wm_wv_detail wwd ON a.so_no = wwd.so_no AND a.org_id = wwd.org_id
+        <where>
+            a.del_flag = '0'
+            AND wsh.status != '99'
+            AND wsh.status != '90'
+            AND a.status != '90'
+            AND a.org_id = #{orgId}
+            <if test='isIntercept == "Y".toString()'>
+                AND (wsh.intercept_status = '00' OR wsh.intercept_status = '90')
+            </if>
+            <if test="holdStatus != null and holdStatus != ''">
+                AND wsh.hold_status = #{holdStatus}
+            </if>
+            <if test='isAudit == "Y".toString()'>
+                AND (wsh.audit_status = '99' OR wsh.audit_status = '90')
+            </if>
+            <if test="soNos != null and soNos.size > 0">
+                AND a.so_no IN
+                <foreach collection="soNos" item="soNo" open="(" separator="," close=")">
+                    #{soNo}
+                </foreach>
+            </if>
+            <if test="soLineNos != null and soLineNos.size > 0">
+                AND (a.so_no, a.line_no) IN
+                <foreach collection="soLineNos" item="soLineNo" open="(" separator="," close=")">
+                    ${soLineNo}
+                </foreach>
+            </if>
+            <if test="waveNos != null and waveNos.size > 0">
+                AND wwd.wave_no IN
+                <foreach collection="waveNos" item="waveNo" open="(" separator="," close=")">
+                    #{waveNo}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY a.so_no, a.line_no
+    </select>
+
+    <select id="findInterceptBySoNo" resultType="BanQinWmSoDetail">
+        SELECT <include refid="banQinWmSoDetailColumns"/>
+        FROM wm_so_detail a
+        LEFT JOIN wm_so_header wsh ON wsh.so_no = a.so_no AND wsh.org_id = a.org_id
+        <where>
+            a.del_flag = '0'
+            AND (wsh.intercept_status = '10' OR wsh.intercept_status = '20')
+            AND a.status != '00'
+            AND a.status != '90'
+            AND a.org_id = #{orgId}
+            AND a.so_no IN
+            <foreach collection="soNos" item="soNo" open="(" separator="," close=")">
+                #{soNo}
+            </foreach>
+        </where>
+        ORDER BY a.line_no
+    </select>
+
+    <select id="findByWaveNo" resultType="BanQinWmSoDetail">
+        SELECT
+            <include refid="banQinWmSoDetailColumns"/>
+        FROM wm_so_detail a
+        LEFT JOIN wm_wv_detail wwd ON a.so_no = wwd.so_no AND a.org_id = wwd.org_id
+        <where>
+            a.del_flag = '0'
+            AND a.org_id = #{orgId}
+            <if test="waveNo != null and waveNo != ''">
+                AND wwd.wave_no = #{waveNo}
+            </if>
+        </where>
+        ORDER BY a.line_no
+    </select>
+
+    <select id="findLdStatusBySoNoAndLineNo" resultType="java.lang.String">
+        SELECT wld.status
+        FROM wm_so_detail wsd
+        LEFT JOIN wm_so_alloc wsa ON wsd.so_no = wsa.so_no AND wsd.line_no = wsa.line_no AND wsd.org_id = wsa.org_id
+        LEFT JOIN wm_ld_detail wld ON wsa.alloc_id = wld.alloc_id AND wsa.org_id = wld.org_id
+        <where>
+            wsd.del_flag = '0'
+            AND wsd.so_no = #{soNo}
+            AND wsd.line_no = #{lineNo}
+            AND wsd.org_id = #{orgId}
+        </where>
+    </select>
+	
+	<select id="getEntityByCdAndSku" resultType="com.yunyou.modules.wms.outbound.entity.BanQinWmSoDetailByCdQuery">
+		SELECT wsd.id AS id,
+			wsd.so_no AS soNo,
+			wwd.wave_no AS waveNo,
+			wsd.logistic_no AS logisticNo,
+			wsd.owner_code AS ownerCode,
+			wsd.edi_send_time AS isSendTime,
+			wsd.is_edi_send AS isEdiSend,
+			wsd.ld_status AS ldStatus,
+			wsd.def1 AS def1,
+			wsd.def2 AS def2,
+			wsd.def3 AS def3,
+			wsd.def4 AS def4,
+			wsd.def5 AS def5,
+			wsd.def6 AS def6,
+			wsd.def7 AS def7,
+			wsd.def8 AS def8,
+			wsd.def9 AS def9,
+			wsd.def10 AS def10,
+			wsd.remarks AS remarks,
+			wsd.rec_ver AS recVer,
+			wsd.org_id AS orgId,
+			wsd.line_no AS lineNo,
+			wsd.logistic_line_no AS logisticLineNo,
+			wsd.sku_code AS skuCode,
+			wsd.pack_code AS packCode,
+			wsd.uom AS uom,
+			wsd.qty_so_ea AS qtySoEa,
+			wsd.qty_prealloc_ea AS qtyPreallocEa,
+			wsd.qty_alloc_ea AS qtyAllocEa,
+			wsd.qty_pk_ea AS qtyPKEa,
+			wsd.qty_ship_ea AS qtyShipEa,
+			wsd.rotation_rule AS rotationRule,
+			wsd.prealloc_rule As preallocRule,
+			wsd.alloc_rule AS allocRule,
+			wsd.price AS price,
+			wsd.area_code AS areaCode,
+			wsd.zone_code AS zoneCode,
+			wsd.loc_code AS locCode,
+			wsd.trace_id AS traceId,
+			wsd.lot_att01 AS lotAtt01,
+			wsd.lot_att02 AS lotAtt02,
+			wsd.lot_att03 AS lotAtt03,
+			wsd.lot_att04 AS lotAtt04,
+			wsd.lot_att05 AS lotAtt05,
+			wsd.lot_att06 AS lotAtt06,
+			wsd.lot_att07 AS lotAtt07,
+			wsd.lot_att08 AS lotAtt08,
+			wsd.lot_att09 AS lotAtt09,
+			wsd.lot_att10 AS lotAtt10,
+			wsd.lot_att11 AS lotAtt11,
+			wsd.lot_att12 AS lotAtt12,
+			wsd.status AS status,
+			wsd.sale_no AS saleNo,
+			wsd.sale_line_no AS saleLineNo,
+			wsd.cd_type AS cdType,
+			wsd.old_line_no AS oldLineNO,
+			ec.ebcu_name_cn AS ownerName,
+			cws.sku_name AS skuName,
+			cws.quick_code AS skuQuickCode,
+			cdpa.cdpa_format AS packDesc,
+			cdpr.cdpr_desc AS uomDesc,
+			cdpr.cdpr_quantity AS uomQty,
+			crph.rule_name AS preallocRuleName,
+			crah.rule_name AS allocRuleName,
+			crrh.rule_name AS rotationRuleName,
+			cwz.zone_name AS zoneName,
+			cwa.area_name AS areaName,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, wsd.qty_so_ea / cdpr.cdpr_quantity)) AS qtySoUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, wsd.qty_prealloc_ea / cdpr.cdpr_quantity)) qtyPreallocUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, wsd.qty_alloc_ea / cdpr.cdpr_quantity)) AS qtyAllocUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, wsd.qty_pk_ea / cdpr.cdpr_quantity)) AS qtyPkUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, wsd.qty_ship_ea / cdpr.cdpr_quantity)) AS qtyShipUom,
+			wsh.so_type AS soType,
+		    wsd.head_id AS headId
+		FROM wm_so_detail wsd
+		LEFT JOIN wm_so_header wsh ON wsd.so_no = wsh.so_no AND wsd.org_id = wsh.org_id
+		LEFT JOIN wm_wv_detail wwd ON wsd.so_no = wwd.so_no AND wsd.org_id = wwd.org_id
+		LEFT JOIN eb_customer ec ON wsd.owner_code = ec.ebcu_customer_no AND wsd.org_id = ec.org_id
+		LEFT JOIN cd_wh_sku cws ON wsd.owner_code = cws.owner_code AND wsd.sku_code = cws.sku_code AND wsd.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cdpa ON wsd.pack_code = cdpa.cdpa_code AND wsd.org_id = cdpa.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND wsd.uom = cdpr.cdpr_unit_level
+		LEFT JOIN cd_rule_prealloc_header crph ON wsd.prealloc_rule = crph.rule_code AND wsd.org_id = crph.org_id
+		LEFT JOIN cd_rule_alloc_header crah ON wsd.alloc_rule = crah.rule_code AND wsd.org_id = crah.org_id
+		LEFT JOIN cd_rule_rotation_header crrh ON wsd.rotation_rule = crrh.rule_code AND wsd.org_id = crrh.org_id
+		LEFT JOIN cd_wh_zone cwz ON wsd.zone_code = cwz.zone_code AND wsd.org_id = cwz.org_id
+		LEFT JOIN cd_wh_area cwa ON wsd.area_code = cwa.area_code AND wsd.org_id = cwa.org_id
+		LEFT JOIN (SELECT COUNT(1) AS so_line_count,
+					SUM(wsd1.qty_so_ea) qty_so_ea_all,
+					wsd1.owner_code,
+					wsd1.sku_code,
+					wsd1.org_id
+				FROM wm_so_detail wsd1
+				LEFT JOIN wm_so_header wsh1 ON wsd1.so_no = wsh1.so_no AND wsd1.org_id = wsh1.org_id
+				WHERE wsd1.status = '00'
+				AND wsh1.status != '90'
+				AND wsh1.status != '99'
+				AND wsh1.audit_status != '00'
+				AND wsh1.hold_status != '99'
+				AND (wsh1.intercept_status = '00' OR wsh1.intercept_status = '90')
+				AND (wsd1.cd_type IS NULL OR wsd1.cd_type = '')
+				<if test="soNo != null and soNo != ''">
+					AND wsd1.so_no LIKE CONCAT(#{soNo}, '%')
+				</if>
+				<if test="soTypes != null and soTypes.length > 0">
+					AND wsh1.so_type IN
+					<foreach collection="soTypes" item="soType" index="soType" open="(" separator="," close=")">
+						#{soType}
+					</foreach>
+				</if>
+				<if test="fmEtdFm != null and fmEtdFm != ''">
+					<![CDATA[ AND wsh1.fm_etd >= #{fmEtdFm} ]]>
+				</if>
+				<if test="fmEtdTo != null and fmEtdTo != ''">
+					<![CDATA[ AND wsh1.fm_etd <= #{fmEtdTo} ]]>
+				</if>
+				<if test="toEtdFm != null and toEtdFm != ''">
+					<![CDATA[ AND wsh1.to_etd >= #{toEtdFm} ]]>
+				</if>
+				<if test="toEtdTo != null and toEtdTo != ''">
+					<![CDATA[ AND wsh1.to_etd <= #{toEtdTo} ]]>
+				</if>
+				GROUP BY wsd1.owner_code, wsd1.sku_code, wsd1.org_id) wsd2 ON wsd2.owner_code = wsd.owner_code AND wsd2.sku_code = wsd.sku_code AND wsd2.org_id = wsd.org_id
+		WHERE 1 = 1
+		<![CDATA[ AND wsd.qty_so_ea - wsd.qty_prealloc_ea - wsd.qty_alloc_ea - wsd.qty_pk_ea - wsd.qty_ship_ea > 0 ]]>
+		AND wsh.status != '90'
+		AND wsh.status != '99'
+		AND wsh.audit_status != '00'
+		AND wsh.hold_status != '99'
+		AND (wsh.intercept_status = '00' OR wsh.intercept_status = '90')
+		AND cws.is_serial = 'N'
+		AND wsd.org_id = #{orgId}
+		<if test="soTypes != null and soTypes.length > 0">
+			AND wsh.so_type IN
+			<foreach collection="soTypes" item="soType" index="soType" open="(" separator="," close=")">
+				#{soType}
+			</foreach>
+		</if>
+		<if test="fmEtdFm != null and fmEtdFm != ''">
+			<![CDATA[ AND wsh.fm_etd >= #{fmEtdFm} ]]>
+		</if>
+		<if test="fmEtdTo != null and fmEtdTo != ''">
+			<![CDATA[ AND wsh.fm_etd <= #{fmEtdTo} ]]>
+		</if>
+		<if test="toEtdFm != null and toEtdFm != ''">
+			<![CDATA[ AND wsh.to_etd >= #{toEtdFm} ]]>
+		</if>
+		<if test="toEtdTo != null and toEtdTo != ''">
+			<![CDATA[ AND wsh.to_etd <= #{toEtdTo} ]]>
+		</if>
+		<if test="soLineNum != null and soLineNum != ''">
+			<![CDATA[ AND wsd2.so_line_count >= #{soLineNum} ]]>
+		</if>
+		<if test="qtySoEa != null and qtySoEa != ''">
+			<![CDATA[ AND wsd2.qty_so_ea_all >= #{qtySoEa} ]]>
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND wsd.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND wsd.sku_code = #{skuCode}
+		</if>
+		<if test="isCd != null and isCd != ''">
+			AND (wsd.cd_type IS NULL OR wsd.cd_type = '') AND 'Y' = #{isCd}
+		</if>
+		<if test="status != null and status != ''">
+			AND wsd.status = #{status}
+		</if>
+		<if test="waveNo != null and waveNo != ''">
+			AND wwd.wave_no = #{waveNo}
+		</if>
+		<if test="soNo != null and soNo != ''">
+			AND wsd.so_no = #{soNo}
+		</if>
+		<if test="lineNo != null and lineNo != ''">
+			AND wsd.line_no = #{lineNo}
+		</if>
+		<if test="soAndLineNos != null and soAndLineNos != ''">
+			AND (wsd.so_no, wsd.line_no) IN (${soAndLineNos})
+		</if>
+		<if test="cdTypes != null and cdTypes.length > 0">
+			AND wsd.cd_type IN
+			<foreach collection="cdTypes" item="cdType" index="cdType" open="(" separator="," close=")">
+				#{cdType}
+			</foreach>
+		</if>
+		ORDER BY wsh.to_etd is null, wsh.to_etd, wsh.priority is null || wsh.priority = '',  wsh.priority, wsh.order_time is null, wsh.order_time, wsd.qty_so_ea DESC, wsd.so_no, wsd.line_no
+	</select>
+	
+	<select id="getCrossDockSoDetail2Query" resultType="com.yunyou.modules.wms.crossDock.entity.BanQinGetCrossDockSoDetail2QueryEntity">
+		SELECT wsd.id AS id,
+			wsd.so_no AS soNo,
+			wsd.logistic_no AS logisticNo,
+			wsd.owner_code AS ownerCode,
+			wsd.ld_status AS ldStatus,
+			wsd.def1 AS def1,
+			wsd.def2 AS def2,
+			wsd.def3 AS def3,
+			wsd.def4 AS def4,
+			wsd.def5 AS def5,
+			wsd.def6 AS def6,
+			wsd.def7 AS def7,
+			wsd.def8 AS def8,
+			wsd.def9 AS def9,
+			wsd.def10 AS def10,
+			wsd.remarks AS remarks,
+			wsd.rec_ver AS recVer,
+			wsd.org_id AS orgId,
+			wsd.line_no AS lineNO,
+			wsd.logistic_line_no AS logisticLineNo,
+			wsd.sku_code AS skuCode,
+			wsd.pack_code AS packCode,
+			wsd.uom AS uom,
+			wsd.qty_so_ea AS qtySoEa,
+			wsd.qty_prealloc_ea As qtyPreallocEa,
+			wsd.qty_alloc_ea As QtyAllocEa,
+			wsd.qty_pk_ea AS qtyPkEa,
+			wsd.qty_ship_ea AS qtyShipEa,
+			wsd.rotation_rule AS rotationRule,
+			wsd.prealloc_rule AS preallocRule,
+			wsd.alloc_rule AS allocRule,
+			wsd.price AS price,
+			wsd.area_code AS areaCode,
+			wsd.zone_code AS zoneCode,
+			wsd.loc_code AS locCode,
+			wsd.trace_id AS traceId,
+			wsd.lot_att01 AS lotAtt01,
+			wsd.lot_att02 AS lotAtt02,
+			wsd.lot_att03 AS lotAtt03,
+			wsd.lot_att04 AS lotAtt04,
+			wsd.lot_att05 AS lotAtt05,
+			wsd.lot_att06 AS lotAtt06,
+			wsd.lot_att07 AS lotAtt07,
+			wsd.lot_att08 AS lotAtt08,
+			wsd.lot_att09 AS lotAtt09,
+			wsd.lot_att10 AS lotAtt10,
+			wsd.lot_att11 AS lotAtt11,
+			wsd.lot_att12 AS lotAtt12,
+			wsd.status AS status,
+			wsd.sale_no AS saleNo,
+			wsd.sale_line_no AS saleLineNo,
+			wsd.cd_type AS cdType,
+			wsd.old_line_no AS oldLineNo,
+			cws.sku_name AS skuName,
+			cws.quick_code AS skuQuickCode,
+			cdpa.cdpa_format AS packDesc,
+			cdpr.cdpr_desc AS uomDesc,
+			cdpr.cdpr_quantity AS uomQty,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, (wsd.qty_so_ea / cdpr.cdpr_quantity))) AS qtySoUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, (wsd.qty_prealloc_ea / cdpr.cdpr_quantity))) AS qtyPreallocUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, (wsd.qty_alloc_ea / cdpr.cdpr_quantity))) AS qtyAllocUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, (wsd.qty_pk_ea /cdpr.cdpr_quantity))) AS qtyPkUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, (wsd.qty_ship_ea / cdpr.cdpr_quantity))) AS qtyShipUom,
+			wsh.so_type AS soType,
+		    wsd.head_id AS headId
+		FROM wm_so_detail wsd
+		LEFT JOIN wm_so_header wsh ON wsd.so_no = wsh.so_no AND wsd.org_id = wsh.org_id
+		LEFT JOIN cd_wh_sku cws ON wsd.owner_code = cws.owner_code AND wsd.sku_code = cws.sku_code AND wsd.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cdpa ON wsd.pack_code = cdpa.cdpa_code AND wsd.org_id = cdpa.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND wsd.uom = cdpr.cdpr_unit_level
+		RIGHT JOIN wm_so_alloc wsa ON wsa.so_no = wsd.so_no AND wsa.line_no = wsd.line_no AND wsa.org_id = wsd.org_id
+		WHERE 1 = 1
+		AND wsd.org_id = #{orgId}
+		<if test="asnNo != null and asnNo != ''">
+			AND wsa.asn_no = #{asnNo}
+		</if>
+		<if test="rcvLineNo != null and rcvLineNo != ''">
+			AND wsa.rcv_line_no = #{rcvLineNo}
+		</if>
+		<if test="isCd != null and isCd != ''">
+			AND wsd.cd_type is not null AND wsd.cd_type != '' AND 'Y' = #{isCd}
+		</if>
+		ORDER BY wsh.to_etd is null, wsh.to_etd, wsh.priority is null || wsh.priority = '',  wsh.priority, wsh.order_time is null, wsh.order_time, wsd.qty_so_ea DESC, wsd.so_no, wsd.line_no
+	</select>
+
+	<select id="getCrossDockSoDetail1Query" resultType="com.yunyou.modules.wms.crossDock.entity.BanQinGetCrossDockSoDetail1QueryEntity">
+		select wsd.id AS id,
+			wsd.so_no AS soNo,
+			wsd.logistic_no AS logisticNo,
+			wsd.owner_code AS ownerCode,
+			wsd.ld_status AS ldStatus,
+			wsd.def1 AS def1,
+			wsd.def2 AS def2,
+			wsd.def3 AS def3,
+			wsd.def4 AS def4,
+			wsd.def5 AS def5,
+			wsd.def6 AS def6,
+			wsd.def7 AS def7,
+			wsd.def8 AS def8,
+			wsd.def9 AS def9,
+			wsd.def10 AS def10,
+			wsd.remarks AS remarks,
+			wsd.rec_ver AS recVer,
+			wsd.org_id AS orgId,
+			wsd.line_no AS lineNo,
+			wsd.logistic_line_no AS logisticLineNo,
+			wsd.sku_code AS skuCode,
+			wsd.pack_code AS packCode,
+			wsd.uom AS uom,
+			wsd.qty_so_ea AS qtySoEa,
+			wsd.qty_prealloc_ea AS qtyPreallocEa,
+			wsd.qty_alloc_ea AS qtyAllocEa,
+			wsd.qty_pk_ea AS qtyPkEa,
+			wsd.qty_ship_ea AS qtyShipEa,
+			wsd.rotation_rule AS rotationRule,
+			wsd.prealloc_rule AS preallocRule,
+			wsd.alloc_rule AS allocRule,
+			wsd.price AS price,
+			wsd.area_code AS areaCode,
+			wsd.zone_code AS zoneCode,
+			wsd.loc_code AS locCode,
+			wsd.trace_id AS traceId,
+			wsd.lot_att01 AS lotAtt01,
+			wsd.lot_att02 AS lotAtt02,
+			wsd.lot_att03 AS lotAtt03,
+			wsd.lot_att04 AS lotAtt04,
+			wsd.lot_att05 AS lotAtt05,
+			wsd.lot_att06 AS lotAtt06,
+			wsd.lot_att07 AS lotAtt07,
+			wsd.lot_att08 AS lotAtt08,
+			wsd.lot_att09 AS lotAtt09,
+			wsd.lot_att10 AS lotAtt10,
+			wsd.lot_att11 AS lotAtt11,
+			wsd.lot_att12 AS lotAtt12,
+			wsd.status AS status,
+			wsd.sale_no AS saleNo,
+			wsd.sale_line_no AS saleLineNo,
+			wsd.cd_type AS cdType,
+			wsd.old_line_no AS oldLineNo,
+			cws.sku_name AS skuName,
+			cws.quick_code AS skuQuickCode,
+			cdpa.cdpa_format AS packDesc,
+			cdpr.cdpr_desc AS uomDesc,
+			cdpr.cdpr_quantity AS uomQty,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, (wsd.qty_so_ea / cdpr.cdpr_quantity))) AS qtySoUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, (wsd.qty_prealloc_ea / cdpr.cdpr_quantity))) AS qtyPreallocUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, (wsd.qty_alloc_ea / cdpr.cdpr_quantity))) AS qtyAllocUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, (wsd.qty_pk_ea / cdpr.cdpr_quantity))) AS qtyPkUom,
+			(IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, (wsd.qty_ship_ea / cdpr.cdpr_quantity))) AS qtyShipUom,
+			wsh.so_type AS soType,
+		    wsd.head_id AS headId
+		FROM wm_so_detail wsd
+		LEFT JOIN wm_so_header wsh ON wsd.so_no = wsh.so_no AND wsd.org_id = wsh.org_id
+		LEFT JOIN cd_wh_sku cws ON wsd.owner_code = cws.owner_code AND wsd.sku_code = cws.sku_code AND wsd.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cdpa ON wsd.pack_code = cdpa.cdpa_code AND wsd.org_id = cdpa.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND wsd.uom = cdpr.cdpr_unit_level
+		WHERE 1 = 1
+		AND wsd.org_id = #{orgId}
+		<if test="soType != null and soType != ''">
+			AND wsh.so_type = #{soType}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND wsd.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND wsd.sku_code = #{skuCode}
+		</if>
+		<if test="isCd != null and isCd != ''">
+			AND wsd.cd_type IS NOT NULL AND wsd.cd_Type != '' AND 'Y' = #{isCd}
+		</if>
+		<if test="status != null and status != ''">
+			AND wsd.status = #{status}
+		</if>
+		<if test="soNo != null and soNo != ''">
+			AND wsd.so_no = #{soNo}
+		</if>
+		<if test="lineNo != null and lineNo != ''">
+			AND wsd.line_no = #{lineNo}
+		</if>
+		<if test="cdType != null and cdType != ''">
+			AND wsd.cd_type = #{cdType}
+		</if>
+		<if test="isUseable != null and isUseable != ''">
+			AND (wsd.qty_so_ea - wsd.qty_alloc_ea - wsd.qty_pk_ea - wsd.qty_ship_ea) > 0 AND 'Y' = #{isUseable}
+		</if>
+		ORDER BY wsh.to_etd is null, wsh.to_etd, wsh.priority is null || wsh.priority = '',  wsh.priority, wsh.order_time is null, wsh.order_time, wsd.qty_so_ea DESC, wsd.so_no, wsd.line_no
+	</select>
+	
+	<select id="findEntityList" resultType="com.yunyou.modules.wms.outbound.entity.BanQinWmSoDetailEntity">
+		SELECT wsd.id AS id,
+			wsd.so_no AS soNo,
+			wwd.wave_no AS waveNo,
+			wsd.logistic_no AS logisticNo,
+			wsd.owner_code AS ownerCode,
+			wsd.edi_send_time AS ediSendTime,
+			wsd.is_edi_send AS isEdiSend,
+			wsd.ld_status AS ldStatus,
+			wsd.def1 AS def1,
+			wsd.def2 AS def2,
+			wsd.def3 AS def3,
+			wsd.def4 AS def4,
+			wsd.def5 AS def5,
+			wsd.def6 AS def6,
+			wsd.def7 AS def7,
+			wsd.def8 AS def8,
+			wsd.def9 As def9,
+			wsd.def10 AS def10,
+			wsd.remarks AS remarks,
+			wsd.rec_ver AS recVer,
+			wsd.org_id AS orgId,
+			wsd.line_no AS lineNo,
+			wsd.logistic_line_no AS logisticLineNo,
+			wsd.sku_code AS skuCode,
+			wsd.pack_code AS packCode,
+			wsd.uom AS uom,
+			wsd.qty_so_ea AS qtySoEa,
+			wsd.qty_prealloc_ea AS qtyPreallocEa,
+			wsd.qty_alloc_ea AS qtyAllocEa,
+			wsd.qty_pk_ea AS qtyPkEa,
+			wsd.qty_ship_ea AS qtyShipEa,
+			wsd.rotation_rule AS rotationRule,
+			wsd.prealloc_rule AS preallocRule,
+			wsd.alloc_rule AS allocRule,
+			wsd.price AS price,
+			wsd.area_code AS areaCode,
+			wsd.zone_code AS zoneCode,
+			wsd.loc_code AS locCode,
+			wsd.trace_id AS traceId,
+			wsd.lot_att01 AS lotAtt01,
+			wsd.lot_att02 AS lotAtt02,
+			wsd.lot_att03 AS lotAtt03,
+			wsd.lot_att04 AS lotAtt04,
+			wsd.lot_att05 AS lotAtt05,
+			wsd.lot_att06 AS lotAtt06,
+			wsd.lot_att07 AS lotAtt07,
+			wsd.lot_att08 AS lotAtt08,
+			wsd.lot_att09 AS lotAtt09,
+			wsd.lot_att10 AS lotAtt10,
+			wsd.lot_att11 AS lotAtt11,
+			wsd.lot_att12 AS lotAtt12,
+			wsd.status AS status,
+			wsd.sale_no AS saleNo,
+			wsd.sale_line_no AS saleLineNo,
+			wsd.cd_type AS cdType,
+			wsd.old_line_no AS oldLineNo,
+		    wsd.head_id AS headId,
+			ec.ebcu_name_cn AS ownerName,
+			cws.sku_name AS skuName,
+			cws.quick_code AS skuQuickCode,
+			cdpa.cdpa_format AS packDesc,
+			cdpr.cdpr_desc AS uomDesc,
+			cdpr.cdpr_quantity AS uomQty,
+			crph.rule_name AS preallocRuleName,
+			crah.rule_name AS allocRuleName,
+			crrh.rule_name AS rotationRuleName,
+			cwz.zone_name AS zoneName,
+			cwa.area_name AS areaName,
+			IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, wsd.qty_so_ea / cdpr.cdpr_quantity) AS qtySoUom,
+			IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, wsd.qty_prealloc_ea / cdpr.cdpr_quantity) AS qtyPreallocUom,
+			IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, wsd.qty_alloc_ea / cdpr.cdpr_quantity) AS qtyAllocUom,
+			IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, wsd.qty_pk_ea / cdpr.cdpr_quantity) AS qtyPkUom,
+			IF(IFNULL(cdpr.cdpr_quantity, 0) = 0, 0, wsd.qty_ship_ea / cdpr.cdpr_quantity) AS qtyShipUom
+		FROM wm_so_detail wsd
+		LEFT JOIN wm_wv_detail wwd ON wsd.so_no = wwd.so_no AND wsd.org_id = wwd.org_id
+		LEFT JOIN eb_customer ec ON wsd.owner_code = ec.ebcu_customer_no AND wsd.org_id = ec.org_id
+		LEFT JOIN cd_wh_sku cws ON wsd.owner_code = cws.owner_code AND wsd.sku_code = cws.sku_code AND wsd.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cdpa ON wsd.pack_code = cdpa.cdpa_code AND wsd.org_id = cdpa.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND wsd.uom = cdpr.cdpr_unit_level
+		LEFT JOIN cd_rule_prealloc_header crph ON wsd.prealloc_rule = crph.rule_code AND wsd.org_id = crph.org_id
+		LEFT JOIN cd_rule_alloc_header crah ON wsd.alloc_rule = crah.rule_code AND wsd.org_id = crah.org_id
+		LEFT JOIN cd_rule_rotation_header crrh ON wsd.rotation_rule = crrh.rule_code AND wsd.org_id = crrh.org_id
+		LEFT JOIN cd_wh_zone cwz ON wsd.zone_code = cwz.zone_code AND wsd.org_id = cwz.org_id
+		LEFT JOIN cd_wh_area cwa ON wsd.area_code = cwa.area_code AND wsd.org_id = cwa.org_id
+		WHERE 1 = 1
+		AND wsd.org_id = #{orgId}
+		<if test="status != null and status != ''">
+			AND wsd.status = #{status}
+		</if>
+		<if test="waveNo != null and waveNo != ''">
+			AND wwd.wave_no = #{waveNo}
+		</if>
+		<if test="soNo != null and soNo != ''">
+			AND wsd.so_no = #{soNo}
+		</if>
+		<if test="lineNo != null and lineNo != ''">
+			AND wsd.line_no = #{lineNo}
+		</if>
+		<if test="status != null and status != ''">
+			AND wsd.status = #{status}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND wsd.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND wsd.sku_code = #{skuCode}
+		</if>
+		ORDER BY wsd.line_no
+	</select>
+
+    <select id="findOrderCheckPage" resultType="BanQinWmSoDetailEntity" >
+        SELECT
+        <include refid="banQinWmSoDetailColumns"/>,
+        wwd.wave_no AS waveNo,
+        ec.ebcu_name_cn AS ownerName,
+        cws.sku_name AS skuName ,
+        cdpa.cdpa_format AS packDesc,
+        cdpr.cdpr_desc AS uomDesc,
+        cdpr.cdpr_quantity AS uomQty,
+        crph.rule_name AS preallocRuleName,
+        crah.rule_name AS allocRuleName,
+        crrh.rule_name AS rotationRuleName,
+        cwz.zone_name AS zoneName,
+        cwa.area_name AS areaName,
+        wsh.consignee_code AS consigneeCode,
+        wsh.consignee_name AS consigneeName,
+		wsh.def5 AS customerOrderNo
+        FROM wm_so_detail a
+        INNER JOIN wm_wv_detail wwd ON a.so_no = wwd.so_no AND a.org_id = wwd.org_id
+        LEFT JOIN wm_so_header wsh ON a.so_no = wsh.so_no AND a.org_id = wsh.org_id
+        LEFT JOIN eb_customer ec on a.owner_code = ec.ebcu_customer_no and a.org_id = ec.org_id
+        LEFT JOIN cd_wh_sku cws on a.owner_code = cws.owner_code and a.sku_code = cws.sku_code and a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cdpa on a.pack_code = cdpa.cdpa_code and a.org_id = cdpa.org_id
+        LEFT JOIN cd_wh_package_relation cdpr on cdpa.pm_code = cdpr.cdpr_cdpa_pm_code and cdpa.org_id = cdpr.org_id and a.uom = cdpr.cdpr_unit_level
+        LEFT JOIN cd_rule_prealloc_header crph on a.prealloc_rule = crph.rule_code and a.org_id = crph.org_id
+        LEFT JOIN cd_rule_alloc_header crah on a.alloc_rule = crah.rule_code and a.org_id = crah.org_id
+        LEFT JOIN cd_rule_rotation_header crrh on a.rotation_rule = crrh.rule_code and a.org_id = crrh.org_id
+        LEFT JOIN cd_wh_zone cwz on a.zone_code = cwz.zone_code and a.org_id = cwz.org_id
+        LEFT JOIN cd_wh_area cwa on a.area_code = cwa.area_code and a.org_id = cwa.org_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="headId != null and headId != ''">
+                AND a.head_id = #{headId}
+            </if>
+            <if test="soNo != null and soNo != ''">
+                AND a.so_no = #{soNo}
+            </if>
+            <if test="waveNo != null and waveNo != ''">
+                AND wwd.wave_no = #{waveNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="consigneeCode != null and consigneeCode != ''">
+				AND wsh.consignee_code = #{consigneeCode}
+			</if>
+			<if test="beginOrderTime != null and beginOrderTime !=''">
+				<![CDATA[ AND wsh.order_time >= #{beginOrderTime} ]]>
+			</if>
+			<if test="endOrderTime != null and endOrderTime !=''">
+				<![CDATA[ AND wsh.order_time <= #{endOrderTime} ]]>
+			</if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.so_no, a.line_no
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

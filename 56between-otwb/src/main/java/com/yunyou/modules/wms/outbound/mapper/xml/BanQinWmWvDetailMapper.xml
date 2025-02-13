@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmWvDetailMapper">
+    
+	<sql id="banQinWmWvDetailColumns">
+		a.id AS "id",
+		a.so_no AS "soNo",
+		a.wave_no AS "waveNo",
+		a.status AS "status",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5"
+	</sql>
+	
+	<sql id="banQinWmWvDetailJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmWvDetail" >
+		SELECT 
+			<include refid="banQinWmWvDetailColumns"/>
+		FROM wm_wv_detail a
+		<include refid="banQinWmWvDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmWvDetail" >
+		SELECT 
+			<include refid="banQinWmWvDetailColumns"/>
+		FROM wm_wv_detail a
+		<include refid="banQinWmWvDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no = #{soNo}
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+    
+    <select id="checkSoCreateWaveOrder" resultType="java.lang.String">
+        SELECT a.so_no
+          FROM wm_wv_detail a
+         WHERE 1=1
+           AND a.org_id = #{orgId}
+           AND a.so_no in
+           <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+               #{soNo}
+           </foreach> 
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmWvDetail" >
+		SELECT 
+			<include refid="banQinWmWvDetailColumns"/>
+		FROM wm_wv_detail a
+		<include refid="banQinWmWvDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_wv_detail(
+			id,
+			so_no,
+			wave_no,
+			status,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+		    def1,
+		    def2,
+		    def3,
+		    def4,
+		    def5
+		) VALUES (
+			#{id},
+			#{soNo},
+			#{waveNo},
+			#{status},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+		    #{def1},
+		    #{def2},
+		    #{def3},
+		    #{def4},
+		    #{def5}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_wv_detail SET 	
+			so_no = #{soNo},
+			wave_no = #{waveNo},
+			status = #{status},
+			rec_ver = #{recVer} + 1,
+			create_by = #{createBy.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_wv_detail
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_wv_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+    <update id="updateWvDetailStatusByWave">
+        UPDATE wm_wv_detail wwd
+		SET wwd.status = (SELECT status FROM wm_so_header wsh WHERE wwd.so_no = wsh.so_no AND wwd.org_id = wwd.org_id),
+			wwd.update_by = #{userId},
+			wwd.update_date = now()
+        WHERE 1=1
+        AND wwd.org_id = #{orgId}
+        AND wwd.wave_no IN
+        <foreach collection="waveNos" item="waveNo" index="waveNo" open="(" separator="," close=")">
+            #{waveNo}
+        </foreach>
+    </update>
+	
+    <update id="updateWvDetailStatusBySo">
+        UPDATE wm_wv_detail wwd
+		SET wwd.status = (SELECT status FROM wm_so_header wsh WHERE wwd.so_no = wsh.so_no AND wwd.org_id = wwd.org_id),
+			wwd.update_by = #{userId},
+			wwd.update_date = now()
+        WHERE 1 = 1
+        AND wwd.org_id = #{orgId}
+        AND wwd.so_no IN
+        <foreach collection="soNos" item="soNo" index="soNo" open="(" separator="," close=")">
+            #{soNo}
+        </foreach> 
+    </update>
+    
+</mapper>

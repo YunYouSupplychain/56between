@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.interactive.mapper.BmsPullFromTmsMapper">
+
+    <select id="pullWaybillData" resultType="com.yunyou.modules.bms.business.entity.BmsWaybillData">
+        select ttoh.transport_no                             AS "orderNo",
+               ttoh.order_time                               AS "orderDate",
+               ttoh.transport_method                         AS "transportMethod",
+               ttod.carrier_code                             AS "carrierCode",
+               ttoc.transport_obj_name                       AS "carrierName",
+               ttod.car_type                                 AS "carType",
+               ttoh.principal_code                           AS "principalCode",
+               ttop.transport_obj_name                       AS "principalName",
+               ttoh.ship_code                                AS "shipCode",
+               ttoss.transport_obj_name                      AS "shipName",
+               IFNULL(ttoh.ship_city_id, ttosr.area_id)      AS "shipCityId",
+               ttoh.ship_city_name                           AS "shipCityName",
+               ttoh.ship_address                             AS "origin",
+               ttoh.consignee_code                           AS "consigneeCode",
+               ttosc.transport_obj_name                      AS "consigneeName",
+               IFNULL(ttoh.consignee_city_id, ttoso.area_id) AS "consigneeCityId",
+               ttoh.consignee_city_name                      AS "consigneeCityName",
+               ttoh.consignee_address                        AS "destination",
+               ttos.owner_code                               AS "ownerCode",
+               ttoo.transport_obj_name                       AS "ownerName",
+               ttoh.supplier_code                            AS "supplierCode",
+               ttosu.transport_obj_name                      AS "supplierName",
+               ttos.sku_code                                 AS "skuCode",
+               ti.sku_name                                   AS "skuName",
+               ti.sku_class                                  AS "skuClass",
+               ttos.qty                                      AS "qty",
+               ceil(ttos.qty / IFNULL(ttos.cs_quantity, 0))  AS "qtyCs",
+               ceil(ttos.qty / IFNULL(ttos.pl_quantity, 0))  AS "qtyPl",
+               ttos.weight                                   AS "weight",
+               ttos.cubic                                    AS "volume",
+               ttoh.org_id                                   AS "orgId",
+               ttoh.data_source                              AS "dataSources",
+               'Y'                                           AS "isFee"
+        from tm_transport_order_header ttoh
+            left join tm_transport_order_delivery ttod on ttoh.transport_no = ttod.transport_no and ttoh.org_id = ttod.org_id
+            left join tm_transport_order_sku ttos on ttoh.transport_no = ttos.transport_no and ttoh.org_id = ttos.org_id
+            left join tm_transport_obj ttoc on ttod.carrier_code = ttoc.transport_obj_code and ttod.base_org_id = ttoc.org_id
+            left join tm_transport_obj ttop on ttoh.principal_code = ttop.transport_obj_code and ttoh.base_org_id = ttop.org_id
+            left join tm_transport_obj ttoss on ttoh.ship_code = ttoss.transport_obj_code and ttoh.base_org_id = ttoss.org_id
+            left join tm_transport_obj ttosc on ttoh.consignee_code = ttosc.transport_obj_code and ttoh.base_org_id = ttosc.org_id
+            left join tm_transport_obj ttoo on ttos.owner_code = ttoo.transport_obj_code and ttoh.base_org_id = ttoo.org_id
+            left join tm_transport_obj ttosu on ttoh.supplier_code = ttosu.transport_obj_code and ttoh.base_org_id = ttosu.org_id
+            left join tm_transport_obj ttosr on ttoh.receive_outlet_code = ttosr.transport_obj_code and ttoh.base_org_id = ttosr.org_id
+            left join tm_transport_obj ttoso on ttoh.outlet_code = ttoso.transport_obj_code and ttoh.base_org_id = ttoso.org_id
+            left join tm_item ti on ttos.owner_code = ti.owner_code and ttos.sku_code = ti.sku_code and ttos.base_org_id = ti.org_id
+        <where>
+            <![CDATA[ttoh.order_status >= '30']]>
+            <![CDATA[AND ttoh.order_time >= #{fmDate}]]>
+            <![CDATA[AND ttoh.order_time <= #{toDate}]]>
+            <if test="orgId != null and orgId != ''">
+                AND ttoh.org_id = #{orgId}
+            </if>
+        </where>
+    </select>
+
+    <select id="pullDispatchOrderData" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchOrderData">
+        SELECT a.dispatch_no         AS "orderNo",
+               a.dispatch_type       AS "orderType",
+               a.dispatch_time       AS "orderDate",
+               a.dispatch_time       AS "dispatchTime",
+               a.carrier_code        AS "carrierCode",
+               ca.transport_obj_name AS "carrierName",
+               tv.car_type           AS "carType",
+               a.car_no              AS "vehicleNo",
+               a.driver              AS "driverCode",
+               td.name               AS "driverName",
+               a.dispatcher          AS "dispatcher",
+               a.transport_type      AS "tranType",
+               a.total_sku_qty       AS "totalQtyEa",
+               a.total_qty           AS "totalQtyFrame",
+               a.org_id              AS "orgId",
+               'TMS'                 AS "dataSources",
+               'Y'                   AS "isFee"
+        FROM tm_dispatch_order_header a
+            LEFT JOIN tm_vehicle tv ON a.car_no = tv.car_no AND a.base_org_id = tv.org_id
+            LEFT JOIN tm_driver td ON a.driver = td.code AND a.base_org_id = td.org_id
+            LEFT JOIN tm_transport_obj ca on a.carrier_code = ca.transport_obj_code and a.base_org_id = ca.org_id
+        <where>
+            <![CDATA[a.dispatch_time >= #{fmDate}]]>
+            <![CDATA[AND a.dispatch_time <= #{toDate}]]>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+        </where>
+    </select>
+
+    <select id="pullDispatchOrderStoreData" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchOrderSiteData">
+        SELECT
+            a.dispatch_no         AS "orderNo",
+            b.dispatch_seq        AS "dispatchSeq",
+            b.outlet_code         AS "outletCode",
+            tc.transport_obj_name AS "outletName",
+            tc.area_id            AS "areaId",
+            tc.address            AS "address",
+            b.org_id              AS "orgId"
+        FROM tm_dispatch_order_header a
+            INNER JOIN tm_dispatch_order_site b ON a.dispatch_no = b.dispatch_no AND a.org_id = b.org_id
+            LEFT JOIN tm_transport_obj tc ON b.outlet_code = tc.transport_obj_code AND b.base_org_id = tc.org_id
+        WHERE a.dispatch_no = #{dispatchNo}
+          AND a.org_id = #{orgId}
+        UNION ALL
+        SELECT a.dispatch_no          AS "orderNo",
+               0                      AS "dispatchSeq",
+               a.dispatch_outlet_code AS "outletCode",
+               tc.transport_obj_name  AS "outletName",
+               tc.area_id             AS "areaId",
+               tc.address             AS "address",
+               a.org_id               AS "orgId"
+        FROM tm_dispatch_order_header a
+            LEFT JOIN tm_transport_obj tc ON a.dispatch_outlet_code = tc.transport_obj_code AND a.base_org_id = tc.org_id
+        WHERE a.dispatch_no = #{dispatchNo}
+          AND a.org_id = #{orgId}
+          AND EXISTS(SELECT 1 FROM tm_dispatch_order_label b WHERE a.dispatch_no = b.dispatch_no AND a.dispatch_outlet_code = b.dispatch_site_outlet_code AND a.org_id = b.org_id AND b.receive_ship = 'R')
+    </select>
+
+    <select id="pullDispatchData" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchData">
+        SELECT a.dispatch_no                                 AS orderNo,
+               a.dispatch_time                               AS orderDate,
+               a.dispatch_time                               AS dispatchTime,
+               a.transport_type                              AS transportMethod,
+               a.carrier_code                                AS carrierCode,
+               ttoc.transport_obj_name                       AS carrierName,
+               tv.car_type                                   AS carType,
+               a.car_no                                      AS vehicleNo,
+               ttoh.principal_code                           AS principalCode,
+               ttop.transport_obj_name                       AS principalName,
+               ttoh.ship_code                                AS shipCode,
+               ttos.transport_obj_name                       AS shipName,
+               ttoh.ship_city_id                             AS shipCityId,
+               ttoh.ship_city_name                           AS shipCityName,
+               ttoh.ship_address                             AS origin,
+               ttoh.consignee_code                           AS consigneeCode,
+               ttocc.transport_obj_name                      AS consigneeName,
+               ttoh.consignee_city_id                        AS consigneeCityId,
+               ttoh.consignee_city_name                      AS consigneeCityName,
+               ttoh.consignee_address                        AS destination,
+               thoss.owner_code                              AS ownerCode,
+               ttoo.transport_obj_name                       AS ownerName,
+               ttoh.supplier_code                            AS supplierCode,
+               ttoss.transport_obj_name                      AS supplierName,
+               thoss.sku_code                                AS skuCode,
+               ti.sku_name                                   AS skuName,
+               ti.sku_class                                  AS skuClass,
+               thoss.actual_qty                              AS qty,
+               null                                          AS qtyCs,
+               null                                          AS qtyPl,
+               thoss.actual_qty * IFNULL(ti.gross_weight, 0) AS weight,
+               thoss.actual_qty * IFNULL(ti.cubic, 0)        AS volume,
+               a.org_id                                      AS orgId,
+               'TMS'                                         AS dataSources,
+               'Y'                                           AS isFee,
+               ttoh.transport_no                             AS orderNoA,
+               ttoh.customer_no                              AS orderNoB
+        FROM tm_dispatch_order_header a
+             INNER JOIN tm_handover_order_header thohs ON a.dispatch_no = thohs.dispatch_no AND a.org_id = thohs.org_id
+             INNER JOIN tm_handover_order_sku thoss ON thohs.handover_no = thoss.handover_no AND thohs.org_id = thoss.org_id AND thoss.receive_ship = 'S'
+             LEFT JOIN tm_transport_order_header ttoh ON thoss.transport_no = ttoh.transport_no AND thoss.base_org_id = ttoh.base_org_id
+             LEFT JOIN tm_handover_order_sku thosr ON thoss.transport_no = thosr.transport_no AND thoss.owner_code = thosr.owner_code AND thoss.sku_code = thosr.sku_code AND thoss.org_id = thosr.org_id AND thosr.receive_ship = 'R'
+             LEFT JOIN tm_handover_order_header thohr ON a.dispatch_no = thohr.dispatch_no AND thosr.handover_no = thohr.handover_no AND thosr.org_id = thohr.org_id
+             LEFT JOIN tm_transport_obj ttoc ON a.carrier_code = ttoc.transport_obj_code AND a.base_org_id = ttoc.org_id
+             LEFT JOIN tm_transport_obj ttop ON ttoh.principal_code = ttop.transport_obj_code AND ttoh.base_org_id = ttop.org_id
+             LEFT JOIN tm_transport_obj ttos ON ttoh.ship_code = ttos.transport_obj_code AND ttoh.base_org_id = ttos.org_id
+             LEFT JOIN tm_transport_obj ttocc ON ttoh.consignee_code = ttocc.transport_obj_code AND ttoh.base_org_id = ttocc.org_id
+             LEFT JOIN tm_transport_obj ttoo ON thoss.owner_code = ttoo.transport_obj_code AND thoss.base_org_id = ttoo.org_id
+             LEFT JOIN tm_transport_obj ttoss ON ttoh.supplier_code = ttoss.transport_obj_code AND ttoh.base_org_id = ttoss.org_id
+             LEFT JOIN tm_item ti ON thoss.owner_code = ti.owner_code AND thoss.sku_code = ti.sku_code AND thoss.base_org_id = ti.org_id
+             LEFT JOIN tm_vehicle tv ON a.car_no = tv.car_no AND a.base_org_id = tv.org_id
+        <where>
+            <![CDATA[AND thohs.update_date >= #{fmDate}]]>
+            <![CDATA[AND thohs.update_date <= #{toDate}]]>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+        </where>
+    </select>
+</mapper>

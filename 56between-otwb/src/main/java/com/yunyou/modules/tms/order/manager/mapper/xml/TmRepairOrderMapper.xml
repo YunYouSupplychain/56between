@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.manager.mapper.TmRepairOrderMapper">
+
+    <sql id="tmRepairOrderHeaderColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.repair_no AS "repairNo",
+		a.order_time AS "orderTime",
+		a.status AS "status",
+		a.owner_code AS "ownerCode",
+		a.car_no AS "carNo",
+		a.driver AS "driver",
+		a.need_repair_item AS "needRepairItem",
+		a.repairman AS "repairman",
+		a.repair_suggestion AS "repairSuggestion",
+		a.amount AS "amount",
+		a.work_hour AS "workHour",
+		a.work_hour_cost AS "workHourCost",
+		a.total_amount AS "totalAmount",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId"
+    </sql>
+
+    <sql id="tmRepairOrderDetailColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.repair_no AS "repairNo",
+		a.repair_code AS "repairCode",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.sku_model AS "skuModel",
+		a.qty AS "qty",
+		a.price AS "price",
+		a.amount AS "amount",
+		a.work_hour AS "workHour",
+		a.work_hour_cost AS "workHourCost",
+		a.total_amount AS "totalAmount",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId"
+    </sql>
+
+    <sql id="tmRepairOrderInboundInfoColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.repair_no AS "repairNo",
+        a.line_no AS "lineNo",
+        a.fitting_code AS "fittingCode",
+        a.barcode AS "barcode",
+        a.operate_time AS "operateTime",
+        a.operator AS "operator",
+        a.supplier_code AS "supplierCode",
+        a.price AS "price",
+        a.org_id AS "orgId",
+        a.rec_ver AS "recVer",
+        a.base_org_id AS "baseOrgId"
+    </sql>
+
+    <sql id="tmRepairOrderOutboundInfoColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.repair_no AS "repairNo",
+        a.line_no AS "lineNo",
+        a.fitting_code AS "fittingCode",
+        a.barcode AS "barcode",
+        a.operate_time AS "operateTime",
+        a.operator AS "operator",
+        a.supplier_code AS "supplierCode",
+        a.price AS "price",
+        a.org_id AS "orgId",
+        a.rec_ver AS "recVer",
+        a.base_org_id AS "baseOrgId"
+    </sql>
+
+    <select id="getEntity" resultType="com.yunyou.modules.tms.order.entity.extend.TmRepairOrderEntity">
+        SELECT <include refid="tmRepairOrderHeaderColumns"/>,
+               ttoo.transport_obj_name AS "ownerName",
+               td.name AS "driverName"
+        FROM tm_repair_order_header a
+          LEFT JOIN tm_transport_obj ttoo ON a.owner_code = ttoo.transport_obj_code AND a.base_org_id = ttoo.org_id
+          LEFT JOIN tm_driver td ON a.driver = td.code AND a.base_org_id = td.org_id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findEntityList" resultType="com.yunyou.modules.tms.order.entity.extend.TmRepairOrderEntity">
+        SELECT <include refid="tmRepairOrderHeaderColumns"/>,
+        ttoo.transport_obj_name AS "ownerName",
+        td.name AS "driverName"
+        FROM tm_repair_order_header a
+        LEFT JOIN tm_transport_obj ttoo ON a.owner_code = ttoo.transport_obj_code AND a.base_org_id = ttoo.org_id
+        LEFT JOIN tm_driver td ON a.driver = td.code AND a.base_org_id = td.org_id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        ${dataScope}
+        <if test="repairNo != null and repairNo != ''">
+            AND a.repair_no = #{repairNo}
+        </if>
+        <if test="ownerCode != null and ownerCode != ''">
+            AND a.owner_code = #{ownerCode}
+        </if>
+        <if test="carNo != null and carNo != ''">
+            AND a.car_no = #{carNo}
+        </if>
+        <if test="driver != null and driver != ''">
+            AND a.driver = #{driver}
+        </if>
+        <if test="orgId != null and orgId != ''">
+            AND a.org_id = #{orgId}
+        </if>
+    </select>
+
+    <select id="findPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmRepairOrderEntity">
+        SELECT <include refid="tmRepairOrderHeaderColumns"/>,
+               ttoo.transport_obj_name AS "ownerName",
+               td.name AS "driverName"
+        FROM tm_repair_order_header a
+          LEFT JOIN tm_transport_obj ttoo ON a.owner_code = ttoo.transport_obj_code AND a.base_org_id = ttoo.org_id
+          LEFT JOIN tm_driver td ON a.driver = td.code AND a.base_org_id = td.org_id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+          ${dataScope}
+        <if test="repairNo != null and repairNo != ''">
+            AND a.repair_no = #{repairNo}
+        </if>
+        <if test="ownerCode != null and ownerCode != ''">
+            AND a.owner_code = #{ownerCode}
+        </if>
+        <if test="carNo != null and carNo != ''">
+            AND a.car_no = #{carNo}
+        </if>
+        <if test="driver != null and driver != ''">
+            AND a.driver = #{driver}
+        </if>
+    </select>
+
+    <select id="findDetailList" resultType="com.yunyou.modules.tms.order.entity.extend.TmRepairOrderDetailEntity">
+        SELECT <include refid="tmRepairOrderDetailColumns"/>,
+               ttor.transport_obj_name AS "repairName",
+               ttor.repair_price AS "pepairPrice",
+               ti.fitting_name AS "skuName"
+        FROM tm_repair_order_detail a
+          LEFT JOIN tm_transport_obj ttor ON a.repair_code = ttor.transport_obj_code AND a.base_org_id = ttor.org_id
+          LEFT JOIN tm_fitting ti ON a.sku_code = ti.fitting_code AND a.base_org_id = ti.org_id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+          AND a.repair_no = #{repairNo}
+           AND a.org_id = #{orgId}
+        <if test="ownerCode != null and ownerCode != ''">
+            AND a.owner_code = #{ownerCode}
+        </if>
+    </select>
+
+    <select id="getByNo" resultType="com.yunyou.modules.tms.order.entity.extend.TmRepairOrderEntity">
+        SELECT <include refid="tmRepairOrderHeaderColumns"/>,
+        ttoo.transport_obj_name AS "ownerName",
+        td.name AS "driverName"
+        FROM tm_repair_order_header a
+        LEFT JOIN tm_transport_obj ttoo ON a.owner_code = ttoo.transport_obj_code AND a.base_org_id = ttoo.org_id
+        LEFT JOIN tm_driver td ON a.driver = td.code AND a.base_org_id = td.org_id
+        WHERE a.repair_no = #{repairNo} AND a.org_id = #{orgId}
+    </select>
+
+    <select id="findInboundInfoList" resultType="com.yunyou.modules.tms.order.entity.extend.TmRepairOrderInboundInfoEntity" >
+        SELECT
+        <include refid="tmRepairOrderInboundInfoColumns"/>,
+        ttos.transport_obj_name AS "supplierName",
+        ti.fitting_name AS "fittingName",
+        ti.fitting_model AS "fittingModel"
+        FROM tm_repair_order_outbound_info a
+        LEFT JOIN tm_transport_obj ttos ON a.supplier_code = ttos.transport_obj_code AND a.base_org_id = ttos.org_id
+        LEFT JOIN tm_fitting ti ON a.fitting_code = ti.fitting_code AND a.base_org_id = ti.org_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="repairNo != null and repairNo != ''">
+                AND a.repair_no = #{repairNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="fittingCode != null and fittingCode != ''">
+                AND a.fitting_code = #{fittingCode}
+            </if>
+            <if test="barcode != null and barcode != ''">
+                AND a.barcode = #{barcode}
+            </if>
+            <if test="operator != null and operator != ''">
+                AND a.operator = #{operator}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code = #{supplierCode}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="baseOrgId != null and baseOrgId != ''">
+                AND a.base_org_id = #{baseOrgId}
+            </if>
+        </where>
+            ORDER BY a.update_date DESC
+    </select>
+
+    <select id="findOutboundInfoList" resultType="com.yunyou.modules.tms.order.entity.extend.TmRepairOrderOutboundInfoEntity" >
+        SELECT
+        <include refid="tmRepairOrderInboundInfoColumns"/>,
+        ttos.transport_obj_name AS "supplierName",
+        ti.fitting_name AS "fittingName",
+        ti.fitting_model AS "fittingModel"
+        FROM tm_repair_order_outbound_info a
+        LEFT JOIN tm_transport_obj ttos ON a.supplier_code = ttos.transport_obj_code AND a.base_org_id = ttos.org_id
+        LEFT JOIN tm_fitting ti ON a.fitting_code = ti.fitting_code AND a.base_org_id = ti.org_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="repairNo != null and repairNo != ''">
+                AND a.repair_no = #{repairNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="fittingCode != null and fittingCode != ''">
+                AND a.fitting_code = #{fittingCode}
+            </if>
+            <if test="barcode != null and barcode != ''">
+                AND a.barcode = #{barcode}
+            </if>
+            <if test="operator != null and operator != ''">
+                AND a.operator = #{operator}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code = #{supplierCode}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="baseOrgId != null and baseOrgId != ''">
+                AND a.base_org_id = #{baseOrgId}
+            </if>
+        </where>
+        ORDER BY a.update_date DESC
+    </select>
+</mapper>

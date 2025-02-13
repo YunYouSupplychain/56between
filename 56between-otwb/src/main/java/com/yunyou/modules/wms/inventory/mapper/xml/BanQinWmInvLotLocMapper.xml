@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmInvLotLocMapper">
+
+	<sql id="banQinWmInvLotLocColumns">
+		a.id AS "id",
+		a.lot_num AS "lotNum",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.qty AS "qty",
+		a.qty_hold AS "qtyHold",
+		a.qty_alloc AS "qtyAlloc",
+		a.qty_pk AS "qtyPk",
+		a.qty_pa_out AS "qtyPaOut",
+		a.qty_pa_in AS "qtyPaIn",
+		a.qty_rp_out AS "qtyRpOut",
+		a.qty_rp_in AS "qtyRpIn",
+		a.qty_mv_out AS "qtyMvOut",
+		a.qty_mv_in AS "qtyMvIn",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmInvLotLocJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmInvLotLoc" >
+		SELECT 
+			<include refid="banQinWmInvLotLocColumns"/>
+		FROM wm_inv_lot_loc a
+		<include refid="banQinWmInvLotLocJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmInvLotLoc" >
+		SELECT 
+			<include refid="banQinWmInvLotLocColumns"/>
+		FROM wm_inv_lot_loc a
+		<include refid="banQinWmInvLotLocJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="lotNum != null and lotNum != ''">
+                AND a.lot_num = #{lotNum}
+            </if>
+            <if test="locCode != null and locCode != ''">
+                AND a.loc_code = #{locCode}
+            </if>
+            <if test="traceId != null and traceId != ''">
+                AND a.trace_id = #{traceId}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+		</where>
+	</select>
+    
+    <select id="findPage" resultType="BanQinWmInvLotLocEntity">
+        SELECT
+			<include refid="banQinWmInvLotLocColumns"/>,
+            (IFNULL(a.qty, 0) - IFNULL(a.qty_hold, 0) - IFNULL(a.qty_alloc, 0) - IFNULL(a.qty_pk, 0) - IFNULL(a.qty_pa_out, 0) - IFNULL(a.qty_rp_out, 0) - IFNULL(a.qty_mv_out, 0)) AS qtyAvailable,
+            wila.lot_att01 AS lotAtt01,
+            wila.lot_att02 AS lotAtt02,
+            wila.lot_att03 AS lotAtt03,
+            wila.lot_att04 AS lotAtt04,
+            wila.lot_att05 AS lotAtt05,
+            wila.lot_att06 AS lotAtt06,
+            wila.lot_att07 AS lotAtt07,
+            wila.lot_att08 AS lotAtt08,
+            wila.lot_att09 AS lotAtt09,
+            wila.lot_att10 AS lotAtt10,
+            wila.lot_att11 AS lotAtt11,
+            wila.lot_att12 AS lotAtt12,
+            ebcu.ebcu_name_cn AS ownerName,
+            cws.sku_name AS skuName,
+            cws.pack_code AS packCode,
+            cwp.cdpa_format AS packDesc,
+            cws.print_uom AS printUom,
+            cwpr.cdpr_desc AS uomDesc,
+            cwpr.cdpr_quantity AS uomQty,
+            cwpr.cdpr_is_pack_box AS cdprIsPackBox,
+            cws.is_serial AS isSerial,
+            cws.gross_weight AS grossWeight
+        FROM wm_inv_lot_loc a
+        LEFT JOIN wm_inv_lot_att wila ON a.lot_num = wila.lot_num AND a.org_id = wila.org_id
+        LEFT JOIN eb_customer ebcu ON a.owner_code = ebcu.ebcu_customer_no AND a.org_id = ebcu.org_id
+        LEFT JOIN cd_wh_sku cws ON a.owner_code = cws.owner_code AND a.sku_code = cws.sku_code AND a.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cwp ON cws.pack_code = cwp.cdpa_code AND cws.org_id = cwp.org_id
+        LEFT JOIN cd_wh_package_relation cwpr ON cwp.pm_code = cwpr.cdpr_cdpa_pm_code AND cwp.org_id = cwpr.org_id AND cws.print_uom = cwpr.cdpr_unit_level
+        WHERE (IFNULL(a.QTY, 0) - IFNULL(a.QTY_HOLD, 0) - IFNULL(a.QTY_ALLOC, 0) - IFNULL(a.QTY_PK, 0) - IFNULL(a.QTY_PA_OUT, 0) - IFNULL(a.QTY_RP_OUT, 0) - IFNULL(a.QTY_MV_OUT, 0)) > 0
+        AND a.org_id = #{orgId}
+        <if test="ownerCode != null and ownerCode != ''">
+            AND a.owner_code = #{ownerCode}
+        </if>
+        <if test="skuCode != null and skuCode != ''">
+            AND a.sku_code = #{skuCode}
+        </if>
+        <if test="lotNum != null and lotNum != ''">
+            AND a.lot_num = #{lotNum}
+        </if>
+        <if test="locCode != null and locCode != ''">
+            AND a.loc_code = #{locCode}
+        </if>
+        <if test="traceId != null and traceId != ''">
+            AND a.trace_id = #{traceId}
+        </if>
+		<if test="lotAtt01 != null and lotAtt01 != ''">
+			AND wila.lot_att01 = #{lotAtt01}
+		</if>
+		<if test="lotAtt02 != null and lotAtt02 != ''">
+			AND wila.lot_att02 = #{lotAtt02}
+		</if>
+		<if test="lotAtt03 != null and lotAtt03 != ''">
+			AND wila.lot_att03 = #{lotAtt03}
+		</if>
+		<if test="lotAtt04 != null and lotAtt04 != ''">
+			AND wila.lot_att04 = #{lotAtt04}
+		</if>
+		<if test="lotAtt05 != null and lotAtt05 != ''">
+			AND wila.lot_att05 = #{lotAtt05}
+		</if>
+		<if test="lotAtt06 != null and lotAtt06 != ''">
+			AND wila.lot_att06 = #{lotAtt06}
+		</if>
+		<if test="lotAtt07 != null and lotAtt07 != ''">
+			AND wila.lot_att07 = #{lotAtt07}
+		</if>
+		<if test="lotAtt08 != null and lotAtt08 != ''">
+			AND wila.lot_att08 = #{lotAtt08}
+		</if>
+		<if test="lotAtt09 != null and lotAtt09 != ''">
+			AND wila.lot_att09 = #{lotAtt09}
+		</if>
+		<if test="lotAtt10 != null and lotAtt10 != ''">
+			AND wila.lot_att10 = #{lotAtt10}
+		</if>
+		<if test="lotAtt11 != null and lotAtt11 != ''">
+			AND wila.lot_att11 = #{lotAtt11}
+		</if>
+		<if test="lotAtt12 != null and lotAtt12 != ''">
+			AND wila.lot_att12 = #{lotAtt12}
+		</if>
+		<if test="codeAndName != null and codeAndName != ''">
+			AND (a.sku_code LIKE concat('%', #{codeAndName}, '%')
+				OR a.lot_num LIKE concat('%', #{codeAndName}, '%')
+				OR a.loc_code LIKE concat('%', #{codeAndName}, '%')
+				OR a.trace_id LIKE concat('%', #{codeAndName}, '%')
+			)
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date desc
+			</otherwise>
+		</choose>
+    </select>
+
+    <select id="notAvailableHoldQuery" resultType="BanQinWmInvLotLoc" >
+        SELECT will.owner_code AS ownerCode,
+               will.sku_code AS skUCode,
+               will.lot_num AS lotNum,
+               will.loc_code AS locCode
+          FROM wm_inv_lot_loc will
+         WHERE (will.qty_alloc != 0 OR will.qty_pk != 0 OR will.qty_pa_out != 0 OR will.qty_rp_out != 0 OR will.qty_mv_out != 0)
+         <if test="ownerCode != null and ownerCode != ''">
+             and will.owner_code= #{ownerCode}
+         </if>
+         <if test="skuCode != null and skuCode != ''">
+             and will.sku_code= #{skuCode}
+         </if>
+         <if test="lotNum != null and lotNum != ''">
+             and will.lot_num= #{lotNum}
+         </if>
+         <if test="locCode != null and locCode != ''">
+             and will.loc_code= #{lotNum}
+         </if>
+         <if test="traceId != null and traceId != ''">
+             and will.trace_id= #{traceId}
+         </if>
+         ANd WILL.org_id = #{orgId}
+    </select>
+
+    <select id="getPalletQty1ByLocCode" resultType="BanQinWmInvLotAtt" >
+        SELECT
+            a.id AS "id",
+            a.lot_num AS "lotNum",
+            a.owner_code AS "ownerCode",
+            a.sku_code AS "skuCode",
+            will.lot_att01 AS "lotAtt01",
+            will.lot_att02 AS "lotAtt02",
+            will.lot_att03 AS "lotAtt03",
+            will.lot_att04 AS "lotAtt04",
+            will.lot_att05 AS "lotAtt05",
+            will.lot_att06 AS "lotAtt06",
+            will.lot_att07 AS "lotAtt07",
+            will.lot_att08 AS "lotAtt08",
+            will.lot_att09 AS "lotAtt09",
+            will.lot_att10 AS "lotAtt10",
+            will.lot_att11 AS "lotAtt11",
+            will.lot_att12 AS "lotAtt12",
+            a.rec_ver AS "recVer",
+            a.create_by AS "createBy.id",
+            a.create_date AS "createDate",
+            a.update_by AS "updateBy.id",
+            a.update_date AS "updateDate",
+            a.del_flag AS "delFlag",
+            a.org_id AS "orgId"
+        FROM wm_inv_lot_loc a
+        INNER JOIN wm_inv_lot_att will ON a.lot_num = will.lot_num AND a.org_id = will.org_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            AND a.org_id = #{orgId}
+			AND a.loc_code = #{locCode}
+        </where>
+    </select>
+
+    <select id="getWmInvCubic" resultType="java.lang.Double">
+        SELECT
+            SUM((IFNULL(will.qty, 0) + IFNULL(will.qty_pa_in, 0) + IFNULL(will.qty_rp_in, 0) + IFNULL(will.qty_mv_in, 0)) * IFNULL(cws.cubic, 0)) AS cubic
+        FROM wm_inv_lot_loc will
+        LEFT JOIN cd_wh_sku cws ON will.owner_code = cws.owner_code AND will.sku_code = cws.sku_code AND will.org_id = cws.org_id
+        WHERE will.loc_code = #{locCode}
+        AND will.org_id = #{orgId}
+    </select>
+    
+    <select id="getWmInvGrossWeight" resultType="java.lang.Double">
+		SELECT SUM((IFNULL(will.qty, 0) + IFNULL(will.qty_pa_in, 0) + IFNULL(will.qty_rp_in, 0) + IFNULL(will.qty_mv_in, 0)) * IFNULL(cws.gross_weight, 0)) AS gross_weight
+		FROM wm_inv_lot_loc will
+			LEFT JOIN cd_wh_sku cws ON will.owner_code = cws.owner_code AND will.sku_code = cws.sku_code AND will.org_id = cws.org_id
+		WHERE will.loc_code = #{locCode}
+		  AND will.org_id = #{orgId}
+    </select>
+    
+	<select id="findAllList" resultType="BanQinWmInvLotLoc" >
+		SELECT 
+			<include refid="banQinWmInvLotLocColumns"/>
+		FROM wm_inv_lot_loc a
+		<include refid="banQinWmInvLotLocJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_inv_lot_loc(
+			id,
+			lot_num,
+			loc_code,
+			trace_id,
+			owner_code,
+			sku_code,
+			qty,
+			qty_hold,
+			qty_alloc,
+			qty_pk,
+			qty_pa_out,
+			qty_pa_in,
+			qty_rp_out,
+			qty_rp_in,
+			qty_mv_out,
+			qty_mv_in,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{lotNum},
+			#{locCode},
+			#{traceId},
+			#{ownerCode},
+			#{skuCode},
+			#{qty},
+			#{qtyHold},
+			#{qtyAlloc},
+			#{qtyPk},
+			#{qtyPaOut},
+			#{qtyPaIn},
+			#{qtyRpOut},
+			#{qtyRpIn},
+			#{qtyMvOut},
+			#{qtyMvIn},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_inv_lot_loc SET 	
+			lot_num = #{lotNum},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			qty = #{qty},
+			qty_hold = #{qtyHold},
+			qty_alloc = #{qtyAlloc},
+			qty_pk = #{qtyPk},
+			qty_pa_out = #{qtyPaOut},
+			qty_pa_in = #{qtyPaIn},
+			qty_rp_out = #{qtyRpOut},
+			qty_rp_in = #{qtyRpIn},
+			qty_mv_out = #{qtyMvOut},
+			qty_mv_in = #{qtyMvIn},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_inv_lot_loc
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_inv_lot_loc SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="rfMVGetMovementDetailQuery" resultType="BanQinWmInvLotLocEntity">
+		SELECT will.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cws.pack_code AS packCode,
+			cws.print_uom AS printUom,
+			will.owner_code AS ownerCode,
+			cwp.cdpa_format AS packDesc,
+			cwpr.cdpr_desc AS uomDesc,
+			cwpr.cdpr_quantity AS uomQty,
+			cwpr.cdpr_is_pack_box AS cdprIsPackBox,
+			ec.ebcu_name_cn as ownerName,
+			will.lot_num AS lotNum,
+			will.loc_code AS locCode,
+			will.trace_id AS traceId,
+			will.qty AS qty,
+			IFNULL(will.qty, 0) - IFNULL(will.qty_alloc, 0) - IFNULL(will.qty_pk, 0) - IFNULL(will.qty_pa_out, 0) - IFNULL(will.qty_rp_out, 0) - IFNULL(will.qty_mv_out, 0) AS qtyAvailable,
+			will.qty_hold AS qtyHold,
+			will.qty_alloc AS qtyAlloc,
+			will.qty_pk AS qtyPk,
+			will.qty_pa_out AS qtyPaOut,
+			will.qty_pa_in AS qtyPaIn,
+			will.qty_rp_out AS qtyRpOut,
+			will.qty_rp_in AS qtyRpIn,
+			will.qty_mv_out AS qtyMvOut,
+			will.qty_mv_in AS qtyMvIn,
+			wila.lot_att01 AS lotAtt01,
+			wila.lot_att02 AS lotAtt02,
+			wila.lot_att03 AS lotAtt03,
+			wila.lot_att04 AS lotAtt04,
+			wila.lot_att05 AS lotAtt05,
+			wila.lot_att06 AS lotAtt06,
+			wila.lot_att07 AS lotAtt07,
+			wila.lot_att08 AS lotAtt08,
+			wila.lot_att09 AS lotAtt09,
+			wila.lot_att10 AS lotAtt10,
+			wila.lot_att11 AS lotAtt11,
+			wila.lot_att12 AS lotAtt12
+		FROM wm_inv_lot_loc will
+		LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+		LEFT JOIN cd_wh_sku_barcode cwsb ON cws.owner_code = cwsb.owner_code AND cws.sku_code = cwsb.sku_code AND cws.org_id = cwsb.org_id
+		LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = will.lot_num AND wila.org_id = will.org_id
+		LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+		LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id=cws.org_id
+		LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code= cwp.pm_code AND cwpr.cdpr_unit_level = cws.print_uom AND cwpr.org_id = cws.org_id
+		WHERE 1 = 1
+		AND will.qty_hold &gt; 0
+		AND NOT EXISTS(
+			SELECT 1 FROM wm_hold wh
+			 WHERE wh.hold_type = '1'
+			   AND wh.owner_code = will.owner_code
+			   AND wh.is_allow_mv = 'N'
+			   AND wh.org_id = will.org_id
+		)
+		AND NOT EXISTS(
+			SELECT 1 FROM wm_hold wh
+			 WHERE wh.hold_type = '2'
+			   AND wh.owner_code = will.owner_code
+			   AND wh.sku_code = will.sku_code
+			   AND wh.org_id = will.org_id
+		       AND wh.is_allow_mv = 'N'
+		)
+		AND NOT EXISTS(
+			SELECT 1 FROM wm_hold wh
+			 WHERE wh.hold_type = '3'
+			   AND wh.lot_num = will.lot_num
+			   AND wh.is_allow_mv = 'N'
+			   AND wh.org_id = will.org_id
+		)
+		AND NOT EXISTS(
+			SELECT 1 FROM wm_hold wh
+			 WHERE wh.hold_type = '4'
+			   AND wh.loc_code = will.loc_code
+			   AND wh.is_allow_mv = 'N'
+			   AND wh.org_id = will.org_id
+		)
+		AND NOT EXISTS(
+			SELECT 1 FROM wm_hold wh
+			 WHERE wh.hold_type = '5'
+			   AND wh.trace_id = will.trace_id
+			   AND wh.is_allow_mv = 'N'
+			   AND wh.org_id = will.org_id
+		)
+		<if test="skuCode != null and skuCode != ''">
+		    AND cwsb.barcode = #{skuCode}
+		</if>
+		<if test="lotNum != null and lotNum != ''">
+			AND will.lot_num = #{lotNum}
+		</if>
+		<if test="locCode != null and locCode != ''">
+			AND will.loc_code = #{locCode}
+		</if>
+		<if test="traceId != null and traceId != ''">
+			AND will.trace_id = #{traceId}
+		</if>
+		AND will.org_id = #{orgId}
+
+		UNION ALL
+
+		SELECT will.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cws.pack_code AS packCode,
+			cws.print_uom AS printUom,
+			will.owner_code As ownerCode,
+			cwp.cdpa_format packDesc,
+			cwpr.cdpr_desc AS uomDesc,
+			cwpr.cdpr_quantity AS uomQty,
+			cwpr.cdpr_is_pack_box AS cdprIsPackBox,
+			ec.ebcu_name_cn as ownerName,
+			will.lot_num As lotNum,
+			will.loc_code AS locCode,
+			will.trace_id AS traceId,
+			will.qty As qty,
+			IFNULL(will.qty, 0) - IFNULL(will.qty_alloc, 0) - IFNULL(will.qty_pk, 0) - IFNULL(will.qty_pa_out, 0) - IFNULL(will.qty_rp_out, 0) - IFNULL(will.qty_mv_out, 0) AS qtyAvailable,
+			will.qty_hold AS qtyHold,
+			will.qty_alloc AS qtyAlloc,
+			will.qty_pk As qtyPk,
+			will.qty_pa_out AS qtyPaOut,
+			will.qty_pa_in AS qtyPaIn,
+			will.qty_rp_out AS qtyRpOut,
+			will.qty_rp_in AS qtyRpIn,
+			will.qty_mv_out AS qtyMvOut,
+			will.qty_mv_in AS qtyMvIn,
+			wila.lot_att01 AS lotAtt01,
+			wila.lot_att02 AS lotAtt02,
+			wila.lot_att03 AS lotAtt03,
+			wila.lot_att04 AS lotAtt04,
+			wila.lot_att05 AS lotAtt05,
+			wila.lot_att06 AS lotAtt06,
+			wila.lot_att07 AS lotAtt07,
+			wila.lot_att08 AS lotAtt08,
+			wila.lot_att09 AS lotAtt09,
+			wila.lot_att10 AS lotAtt10,
+			wila.lot_att11 AS lotAtt11,
+			wila.lot_att12 AS lotAtt12
+		FROM wm_inv_lot_loc will
+		LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+		LEFT JOIN cd_wh_sku_barcode cwsb ON cws.owner_code = cwsb.owner_code AND cws.sku_code = cwsb.sku_code AND cws.org_id = cwsb.org_id
+		LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = will.lot_num AND wila.org_id = will.org_id
+		LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+		LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+		LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code= cwp.pm_code AND cwpr.cdpr_unit_level = cws.print_uom AND cwpr.org_id = cws.org_id
+		WHERE 1 = 1
+		AND will.qty_hold = 0
+		AND (IFNULL(will.qty, 0) - IFNULL(will.qty_alloc, 0) - IFNULL(will.qty_pk, 0) - IFNULL(will.qty_pa_out, 0) - IFNULL(will.qty_rp_out, 0) - IFNULL(will.qty_mv_out, 0)) > 0
+		AND will.org_id = #{orgId}
+		<if test="skuCode != null and skuCode != ''">
+			AND cwsb.barcode = #{skuCode}
+		</if>
+		<if test="lotNum != null and lotNum != ''">
+			AND will.lot_num = #{lotNum}
+		</if>
+		<if test="locCode != null and locCode != ''">
+			AND will.loc_code = #{locCode}
+		</if>
+		<if test="traceId != null and traceId != ''">
+			AND will.trace_id = #{traceId}
+		</if>
+	</select>
+	
+	<select id="rfInvGetSkuDetailQuery" resultType="BanQinWmInvLotLocEntity">
+		SELECT
+			will.owner_code AS ownerCode,
+			ec.ebcu_name_cn AS ownerName,
+			will.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cws.print_uom AS printUom,
+			cwpr.cdpr_desc AS uomDesc,
+			will.lot_num AS lotNum,
+			will.loc_code AS locCode,
+			will.trace_id AS traceId,
+			cws.pack_code AS packCode,
+			cwpr.cdpr_quantity AS uomQty,
+			will.qty AS qty,
+			will.qty - will.qty_hold -will.qty_alloc - will.qty_pk - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out AS qtyAvailable,
+			wil.qty_prealloc AS qtyPrealloc,
+			will.qty_alloc AS qtyAlloc,
+			will.qty_hold AS qty_hold,
+			will.qty_pk AS qtyPk,
+			will.qty_pa_out AS qtyPaOut,
+			will.qty_rp_out AS qtyRpOut,
+			will.qty_mv_out AS qtyMvOut,
+			will.qty_pa_in AS qtyPaIn,
+			will.qty_rp_in AS qtyRpIn,
+			will.qty_mv_in AS qtyMvIn,
+			wila.lot_att01 AS lotAtt01,
+			wila.lot_att02 AS lotAtt02,
+			wila.lot_att03 AS lotAtt03,
+			wila.lot_att04 AS lotAtt04,
+			wila.lot_att05 AS lotAtt05,
+			wila.lot_att06 AS lotAtt06,
+			wila.lot_att07 AS lotAtt07,
+			wila.lot_att08 AS lotAtt08,
+			wila.lot_att09 AS lotAtt09,
+			wila.lot_att10 AS lotAtt10,
+			wila.lot_att11 AS lotAtt11,
+			wila.lot_att12 AS lotAtt12,
+			will.org_id AS orgId
+		FROM wm_inv_lot_loc will
+		LEFT JOIN wm_inv_lot wil ON wil.lot_num = will.lot_num AND wil.org_id = will.org_id
+		LEFT JOIN eb_customer ec on ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+		LEFT JOIN cd_wh_sku cws on cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+		LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+		LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = cws.print_uom AND cwpr.org_id = cwp.org_id
+		LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = will.loc_code AND cwl.org_id = will.org_id
+		LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = cwl.zone_code AND cwz.org_id = cwl.org_id
+		LEFT JOIN cd_wh_area cwa ON cwa.area_code = cwz.area_code AND cwa.org_id = cwz.org_id
+		LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = will.lot_num AND wila.org_id = will.org_id
+		WHERE will.org_id = #{orgId}
+		<if test="skuCode != null and skuCode != ''">
+		    AND (wil.sku_code = #{skuCode}
+		           OR EXISTS(select 1 from cd_wh_sku_barcode cwsb where cws.owner_code = cwsb.owner_code AND cws.sku_code = cwsb.sku_code AND cws.org_id = cwsb.org_id AND cwsb.barcode = #{skuCode}))
+		</if>
+		<if test="locCode != null and locCode != ''">
+			AND will.loc_code = #{locCode}
+		</if>
+		<if test="lotNum != null and lotNum != ''">
+			AND will.lot_num = #{lotNum}
+		</if>
+		<if test="traceId != null and traceId != ''">
+			AND will.trace_id = #{traceId}
+		</if>
+		ORDER BY will.loc_code, will.trace_id
+	</select>
+	
+</mapper>

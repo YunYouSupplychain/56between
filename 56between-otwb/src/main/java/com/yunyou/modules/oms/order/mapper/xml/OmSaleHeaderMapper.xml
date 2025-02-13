@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.order.mapper.OmSaleHeaderMapper">
+    
+	<sql id="omSaleHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.sale_no AS "saleNo",
+		a.order_date AS "orderDate",
+		a.status AS "status",
+		a.sale_type AS "saleType",
+		a.out_warhouse AS "outWarhouse",
+		a.customer AS "customer",
+		a.shop AS "shop",
+		a.principal AS "principal",
+		a.invoice AS "invoice",
+		a.tax_no AS "taxNo",
+		a.project AS "project",
+		a.contract_no AS "contractNo",
+		a.sale_by AS "saleBy",
+		a.consignee AS "consignee",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_area AS "consigneeArea",
+		a.consignee_address AS "consigneeAddress",
+		a.shipper AS "shipper",
+		a.shipper_tel AS "shipperTel",
+		a.shipper_area AS "shipperArea",
+		a.shipper_address AS "shipperAddress",
+		a.channel AS "channel",
+		a.customer_no AS "customerNo",
+		a.total_tax AS "totalTax",
+		a.total_amount AS "totalAmount",
+		a.total_tax_in_amount AS "totalTaxInAmount",
+		a.transport_mode AS "transportMode",
+		a.carrier AS "carrier",
+		a.logistics_no AS "logisticsNo",
+		a.vehicle_no AS "vehicleNo",
+		a.driver AS "driver",
+		a.contact_tel AS "contactTel",
+		a.organization AS "organization",
+		a.department AS "department",
+		a.business_by AS "businessBy",
+		a.prepared_by AS "preparedBy",
+		a.audit_by AS "auditBy",
+		a.prepaid_amount AS "prepaidAmount",
+		a.settlement AS "settlement",
+		a.settle_mode AS "settleMode",
+		a.currency AS "currency",
+		a.exchange_rate AS "exchangeRate",
+        a.org_id AS "orgId",
+        a.invoice_type AS "invoiceType",
+        a.company_name AS "companyName",
+        a.taxpayer_identity_number AS "taxpayerIdentityNumber",
+        a.deposit_bank AS "depositBank",
+        a.deposit_bank_account AS "depositBankAccount",
+        a.registered_area AS "registeredArea",
+        a.registered_telephone AS "registeredTelephone",
+        a.ticket_collector_phone AS "ticketCollectorPhone",
+        a.ticket_collector_address AS "ticketCollectorAddress",
+        a.owner AS "owner",
+        a.is_available_stock AS "isAvailableStock",
+        a.freight_charge AS "freightCharge",
+        a.coupon_amount AS "couponAmount",
+        a.consignee_address_area AS "consigneeAddressArea",
+        a.shipper_address_area AS "shipperAddressArea",
+        a.vip_status AS "vipStatus",
+        a.sale_method AS "saleMethod",
+        a.clerk_code AS "clerkCode",
+        a.ticket_collector_name AS "ticketCollectorName",
+        a.app_audit_by AS "appAuditBy",
+        a.app_audit_date AS "appAuditDate",
+        a.app_annex AS "appAnnex",
+        a.audit_org_id AS "auditOrgId",
+        a.audit_dpartment AS "auditDepartment",
+        a.audit_date AS "auditDate",
+        a.annex AS "annex",
+        a.audit_remarks AS "auditRemarks",
+        a.update_org_id AS "updateOrgId",
+        a.update_department AS "updateDepartment",
+        a.update_content AS "updateContent",
+        a.pay_way AS "payWay",
+        a.pay_status AS "payStatus",
+        a.vip_no AS "vipNo",
+        a.send_order_no AS "sendOrderNo",
+        a.app_audit_status AS "appAuditStatus",
+        a.pay_date AS "payDate",
+        a.prepared_remarks AS "preparedRemarks",
+        a.discount_rate AS "discountRate",
+        a.receipt_account AS "receiptAccount",
+        a.receipt_no AS "receiptNo",
+        a.actual_received_amount AS "actualReceivedAmount",
+        a.cashier_remarks AS "cashierRemarks",
+        a.po_no AS "poNo",
+        a.order_settle_amount AS "orderSettleAmount",
+		a.receipt_flag AS "receiptFlag",
+		a.sku_settle_amount AS "skuSettleAmount",
+		a.data_source AS "dataSource"
+	</sql>
+	
+	<sql id="omSaleHeaderJoins">
+		
+	</sql>
+
+	<select id="get" resultType="OmSaleHeader" >
+		SELECT 
+			<include refid="omSaleHeaderColumns"/>
+		FROM om_sale_header a
+		<include refid="omSaleHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OmSaleHeader" >
+		SELECT 
+			<include refid="omSaleHeaderColumns"/>
+		FROM om_sale_header a
+		<include refid="omSaleHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="saleNo != null and saleNo != ''">
+				AND a.sale_no = #{saleNo}
+			</if>
+			<if test="orderDate != null and orderDate != ''">
+				AND a.order_date = #{orderDate}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="saleType != null and saleType != ''">
+				AND a.sale_type = #{saleType}
+			</if>
+			<if test="outWarhouse != null and outWarhouse != ''">
+				AND a.out_warhouse = #{outWarhouse}
+			</if>
+			<if test="customer != null and customer != ''">
+				AND a.customer = #{customer}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="OmSaleHeader" >
+		SELECT 
+			<include refid="omSaleHeaderColumns"/>
+		FROM om_sale_header a
+		<include refid="omSaleHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO om_sale_header
+		(id,
+		 create_by,
+		 create_date,
+		 update_by,
+		 update_date,
+		 remarks,
+		 del_flag,
+		 sale_no,
+		 order_date,
+		 status,
+		 sale_type,
+		 out_warhouse,
+		 customer,
+		 shop,
+		 principal,
+		 invoice,
+		 tax_no,
+		 project,
+		 contract_no,
+		 sale_by,
+		 consignee,
+		 consignee_tel,
+		 consignee_area,
+		 consignee_address,
+		 shipper,
+		 shipper_tel,
+		 shipper_area,
+		 shipper_address,
+		 channel,
+		 customer_no,
+		 total_tax,
+		 total_amount,
+		 total_tax_in_amount,
+		 transport_mode,
+		 carrier,
+		 logistics_no,
+		 vehicle_no,
+		 driver,
+		 contact_tel,
+		 organization,
+		 department,
+		 business_by,
+		 prepared_by,
+		 audit_by,
+		 prepaid_amount,
+		 settlement,
+		 settle_mode,
+		 currency,
+		 exchange_rate,
+		 org_id,
+		 invoice_type,
+		 company_name,
+		 taxpayer_identity_number,
+		 deposit_bank,
+		 deposit_bank_account,
+		 registered_area,
+		 registered_telephone,
+		 ticket_collector_phone,
+		 ticket_collector_address,
+		 owner,
+		 is_available_stock,
+		 freight_charge,
+		 coupon_amount,
+		 consignee_address_area,
+		 shipper_address_area,
+		 vip_status,
+		 sale_method,
+		 clerk_code,
+		 ticket_collector_name,
+		 app_audit_by,
+		 app_audit_date,
+		 app_annex,
+		 audit_org_id,
+		 audit_dpartment,
+		 audit_date,
+		 annex,
+		 audit_remarks,
+		 update_org_id,
+		 update_department,
+		 update_content,
+		 pay_way,
+		 pay_status,
+		 vip_no,
+		 send_order_no,
+		 app_audit_status,
+		 pay_date,
+		 prepared_remarks,
+		 discount_rate,
+		 receipt_account,
+		 receipt_no,
+		 actual_received_amount,
+		 cashier_remarks,
+		 po_no,
+		 order_settle_amount,
+		 receipt_flag,
+		 sku_settle_amount,
+		 data_source)
+		VALUES (#{id},
+				#{createBy.id},
+				#{createDate},
+				#{updateBy.id},
+				#{updateDate},
+				#{remarks},
+				#{delFlag},
+				#{saleNo},
+				#{orderDate},
+				#{status},
+				#{saleType},
+				#{outWarhouse},
+				#{customer},
+				#{shop},
+				#{principal},
+				#{invoice},
+				#{taxNo},
+				#{project},
+				#{contractNo},
+				#{saleBy},
+				#{consignee},
+				#{consigneeTel},
+				#{consigneeArea},
+				#{consigneeAddress},
+				#{shipper},
+				#{shipperTel},
+				#{shipperArea},
+				#{shipperAddress},
+				#{channel},
+				#{customerNo},
+				#{totalTax},
+				#{totalAmount},
+				#{totalTaxInAmount},
+				#{transportMode},
+				#{carrier},
+				#{logisticsNo},
+				#{vehicleNo},
+				#{driver},
+				#{contactTel},
+				#{organization},
+				#{department},
+				#{businessBy},
+				#{preparedBy},
+				#{auditBy},
+				#{prepaidAmount},
+				#{settlement},
+				#{settleMode},
+				#{currency},
+				#{exchangeRate},
+				#{orgId},
+				#{invoiceType},
+				#{companyName},
+				#{taxpayerIdentityNumber},
+				#{depositBank},
+				#{depositBankAccount},
+				#{registeredArea},
+				#{registeredTelephone},
+				#{ticketCollectorPhone},
+				#{ticketCollectorAddress},
+				#{owner},
+				#{isAvailableStock},
+				#{freightCharge},
+				#{couponAmount},
+				#{consigneeAddressArea},
+				#{shipperAddressArea},
+				#{vipStatus},
+				#{saleMethod},
+				#{clerkCode},
+				#{ticketCollectorName},
+				#{appAuditBy},
+				#{appAuditDate},
+				#{appAnnex},
+				#{auditOrgId},
+				#{auditDepartment},
+				#{auditDate},
+				#{annex},
+				#{auditRemarks},
+				#{updateOrgId},
+				#{updateDepartment},
+				#{updateContent},
+				#{payWay},
+				#{payStatus},
+				#{vipNo},
+				#{sendOrderNo},
+				#{appAuditStatus},
+				#{payDate},
+				#{preparedRemarks},
+				#{discountRate},
+				#{receiptAccount},
+				#{receiptNo},
+				#{actualReceivedAmount},
+				#{cashierRemarks},
+				#{poNo},
+				#{orderSettleAmount},
+				#{receiptFlag},
+				#{skuSettleAmount},
+		        #{dataSource})
+	</insert>
+	
+	<update id="update">
+		UPDATE om_sale_header
+		SET update_by                = #{updateBy.id},
+			update_date              = #{updateDate},
+			remarks                  = #{remarks},
+			sale_no                  = #{saleNo},
+			order_date               = #{orderDate},
+			status                   = #{status},
+			sale_type                = #{saleType},
+			out_warhouse             = #{outWarhouse},
+			customer                 = #{customer},
+			shop                     = #{shop},
+			principal                = #{principal},
+			invoice                  = #{invoice},
+			tax_no                   = #{taxNo},
+			project                  = #{project},
+			contract_no              = #{contractNo},
+			sale_by                  = #{saleBy},
+			consignee                = #{consignee},
+			consignee_tel            = #{consigneeTel},
+			consignee_area           = #{consigneeArea},
+			consignee_address        = #{consigneeAddress},
+			shipper                  = #{shipper},
+			shipper_tel              = #{shipperTel},
+			shipper_area             = #{shipperArea},
+			shipper_address          = #{shipperAddress},
+			channel                  = #{channel},
+			customer_no              = #{customerNo},
+			total_tax                = #{totalTax},
+			total_amount             = #{totalAmount},
+			total_tax_in_amount      = #{totalTaxInAmount},
+			transport_mode           = #{transportMode},
+			carrier                  = #{carrier},
+			logistics_no             = #{logisticsNo},
+			vehicle_no               = #{vehicleNo},
+			driver                   = #{driver},
+			contact_tel              = #{contactTel},
+			organization             = #{organization},
+			department               = #{department},
+			business_by              = #{businessBy},
+			prepared_by              = #{preparedBy},
+			audit_by                 = #{auditBy},
+			prepaid_amount           = #{prepaidAmount},
+			settlement               = #{settlement},
+			settle_mode              = #{settleMode},
+			currency                 = #{currency},
+			exchange_rate            = #{exchangeRate},
+			org_id                   = #{orgId},
+			invoice_type             = #{invoiceType},
+			company_name             = #{companyName},
+			taxpayer_identity_number = #{taxpayerIdentityNumber},
+			deposit_bank             = #{depositBank},
+			deposit_bank_account     = #{depositBankAccount},
+			registered_area          = #{registeredArea},
+			registered_telephone     = #{registeredTelephone},
+			ticket_collector_phone   = #{ticketCollectorPhone},
+			ticket_collector_address = #{ticketCollectorAddress},
+			owner                    = #{owner},
+			is_available_stock       = #{isAvailableStock},
+			freight_charge           = #{freightCharge},
+			coupon_amount            = #{couponAmount},
+			consignee_address_area   = #{consigneeAddressArea},
+			shipper_address_area     = #{shipperAddressArea},
+			vip_status               = #{vipStatus},
+			sale_method              = #{saleMethod},
+			clerk_code               = #{clerkCode},
+			ticket_collector_name    = #{ticketCollectorName},
+			app_audit_by             = #{appAuditBy},
+			app_audit_date           = #{appAuditDate},
+			app_annex                = #{appAnnex},
+			audit_org_id             = #{auditOrgId},
+			audit_dpartment          = #{auditDepartment},
+			audit_date               = #{auditDate},
+			annex                    = #{annex},
+			audit_remarks            = #{auditRemarks},
+			update_org_id            = #{updateOrgId},
+			update_department        = #{updateDepartment},
+			update_content           = #{updateContent},
+			pay_way                  = #{payWay},
+			pay_status               = #{payStatus},
+			vip_no                   = #{vipNo},
+			send_order_no            = #{sendOrderNo},
+			app_audit_status         = #{appAuditStatus},
+			pay_date                 = #{payDate},
+			prepared_remarks         = #{preparedRemarks},
+			discount_rate            = #{discountRate},
+			receipt_account          = #{receiptAccount},
+			receipt_no               = #{receiptNo},
+			actual_received_amount   = #{actualReceivedAmount},
+			cashier_remarks          = #{cashierRemarks},
+			po_no                    = #{poNo},
+			order_settle_amount      = #{orderSettleAmount},
+			sku_settle_amount        = #{skuSettleAmount},
+			data_source              = #{dataSource}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM om_sale_header
+		WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE om_sale_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findPage" resultType="OmSaleHeaderEntity" >
+		SELECT
+		c1.ebcu_name_cn AS "customerName",
+		c2.ebcu_name_cn AS "principalName",
+		c3.ebcu_name_cn AS "settlementName",
+		c4.ebcu_name_cn AS "carrierName",
+		c5.ebcu_name_cn AS "ownerName",
+		c5.ebcu_tax_rate AS "taxRate",
+		so1.name AS "orgName",
+		so2.name AS "departName",
+		so3.name AS "outWarhouseName",
+		so4.name AS "auditOrgName",
+		so5.name AS "auditDepartName",
+		so6.name AS "updateOrgName",
+		so7.name AS "updateDepartName",
+		sa1.name AS "consigneeAreaName",
+		sa2.name AS "shipperAreaName",
+		oc.clerk_name AS "clerkName",
+		<include refid="omSaleHeaderColumns"/>
+		FROM om_sale_header a
+		LEFT JOIN om_customer c1 ON a.customer = c1.ebcu_customer_no AND c1.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c1.org_id
+		LEFT JOIN om_customer c2 ON a.principal = c2.ebcu_customer_no AND c2.ebcu_type LIKE '%CUSTOMER%' AND a.org_id = c2.org_id
+		LEFT JOIN om_customer c3 ON a.settlement = c3.ebcu_customer_no AND c3.ebcu_type LIKE '%SETTLEMENT%' AND a.org_id = c3.org_id
+		LEFT JOIN om_customer c4 ON a.carrier = c4.ebcu_customer_no AND c4.ebcu_type LIKE '%CARRIER%' AND a.org_id = c4.org_id
+		LEFT JOIN om_customer c5 ON a.owner = c5.ebcu_customer_no AND c5.ebcu_type LIKE '%OWNER%' AND a.org_id = c5.org_id
+		LEFT JOIN sys_office so1 ON so1.id = a.org_id
+		LEFT JOIN sys_office so2 ON so2.id = a.department
+		LEFT JOIN sys_office so3 ON so3.id = a.out_warhouse
+		LEFT JOIN sys_office so4 ON so4.id = a.audit_org_id
+		LEFT JOIN sys_office so5 ON so5.id = a.audit_dpartment
+		LEFT JOIN sys_office so6 ON so6.id = a.update_org_id
+		LEFT JOIN sys_office so7 ON so7.id = a.update_department
+		LEFT JOIN sys_area sa1 ON sa1.id = a.consignee_area
+		LEFT JOIN sys_area sa2 ON sa2.id = a.shipper_area
+		LEFT JOIN om_clerk oc ON a.clerk_code = oc.clerk_code AND a.org_id = oc.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="saleNo != null and saleNo != ''">
+				AND a.sale_no = #{saleNo}
+			</if>
+			<if test="orderDateFm != null">
+				AND a.order_date &gt;= #{orderDateFm}
+			</if>
+			<if test="orderDateTo != null">
+				AND a.order_date &lt;= #{orderDateTo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="saleType != null and saleType != ''">
+				AND a.sale_type = #{saleType}
+			</if>
+			<if test="outWarhouse != null and outWarhouse != ''">
+				AND a.out_warhouse = #{outWarhouse}
+			</if>
+			<if test="customer != null and customer != ''">
+				AND a.customer = #{customer}
+			</if>
+			<if test="owner != null and owner != ''">
+				AND a.owner = #{owner}
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel = #{channel}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="saleMethod != null and saleMethod != ''">
+				AND a.sale_method = #{saleMethod}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.sale_no DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="OmSaleHeaderEntity" >
+		SELECT
+		c1.ebcu_name_cn AS "customerName",
+		c2.ebcu_name_cn AS "principalName",
+		c3.ebcu_name_cn AS "settlementName",
+		c4.ebcu_name_cn AS "carrierName",
+		c5.ebcu_name_cn AS "ownerName",
+		c5.ebcu_tax_rate AS "taxRate",
+		so1.name AS "orgName",
+		so2.name AS "departName",
+		so3.name AS "outWarhouseName",
+		so4.name AS "auditOrgName",
+		so5.name AS "auditDepartName",
+		so6.name AS "updateOrgName",
+		so7.name AS "updateDepartName",
+		sa1.name AS "consigneeAreaName",
+		sa2.name AS "shipperAreaName",
+		su1.name AS "createBy.name",
+		su2.name AS "updateBy.name",
+		oc.clerk_name AS "clerkName",
+		<include refid="omSaleHeaderColumns"/>
+		FROM om_sale_header a
+		LEFT JOIN om_customer c1 ON a.customer = c1.ebcu_customer_no AND c1.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c1.org_id
+		LEFT JOIN om_customer c2 ON a.principal = c2.ebcu_customer_no AND c2.ebcu_type LIKE '%CUSTOMER%' AND a.org_id = c2.org_id
+		LEFT JOIN om_customer c3 ON a.settlement = c3.ebcu_customer_no AND c3.ebcu_type LIKE '%SETTLEMENT%' AND a.org_id = c3.org_id
+		LEFT JOIN om_customer c4 ON a.carrier = c4.ebcu_customer_no AND c4.ebcu_type LIKE '%CARRIER%' AND a.org_id = c4.org_id
+		LEFT JOIN om_customer c5 ON a.owner = c5.ebcu_customer_no AND c5.ebcu_type LIKE '%OWNER%' AND a.org_id = c5.org_id
+		LEFT JOIN sys_office so1 ON so1.id = a.org_id
+		LEFT JOIN sys_office so2 ON so2.id = a.department
+		LEFT JOIN sys_office so3 ON so3.id = a.out_warhouse
+		LEFT JOIN sys_office so4 ON so4.id = a.audit_org_id
+		LEFT JOIN sys_office so5 ON so5.id = a.audit_dpartment
+		LEFT JOIN sys_office so6 ON so6.id = a.update_org_id
+		LEFT JOIN sys_office so7 ON so7.id = a.update_department
+		LEFT JOIN sys_area sa1 ON sa1.id = a.consignee_area
+		LEFT JOIN sys_area sa2 ON sa2.id = a.shipper_area
+		LEFT JOIN sys_user su1 ON su1.id = a.create_by
+		LEFT JOIN sys_user su2 ON su2.id = a.update_by
+		LEFT JOIN om_clerk oc ON a.clerk_code = oc.clerk_code AND a.org_id = oc.org_id
+		WHERE a.id = #{id}
+	</select>
+
+	<update id="updateAmount">
+		UPDATE om_sale_header SET
+								  total_tax = #{totalTax},
+								  total_amount = #{totalAmount},
+								  total_tax_in_amount = #{totalTaxInAmount},
+								  order_settle_amount = #{orderSettleAmount},
+								  sku_settle_amount = #{skuSettleAmount}
+		WHERE sale_no = #{saleNo} AND org_id = #{orgId}
+	</update>
+
+	<update id="updateStatus">
+		UPDATE om_sale_header SET
+								  status = #{status},
+								  update_by = #{updateBy.id},
+								  update_date = #{updateDate},
+								  update_org_id = #{updateOrgId},
+								  update_department = #{updateDepartment}
+		WHERE sale_no = #{saleNo} AND org_id = #{orgId}
+	</update>
+
+	<update id="updateAuditStatus">
+		UPDATE om_sale_header SET
+								  status = #{status},
+								  audit_org_id = #{auditOrgId},
+								  audit_dpartment = #{auditDepartment},
+								  audit_by = #{auditBy},
+								  audit_date = #{auditDate},
+								  update_by = #{updateBy.id},
+								  update_date = #{updateDate},
+								  update_org_id = #{updateOrgId},
+								  update_department = #{updateDepartment}
+		WHERE sale_no = #{saleNo} AND org_id = #{orgId}
+	</update>
+
+	<update id="updateStatusById">
+		UPDATE om_sale_header SET
+		    status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			update_org_id = #{updateOrgId},
+			update_department = #{updateDepartment}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getUnAssociatedPoData" resultType="OmSaleHeaderEntity">
+		SELECT
+			c1.ebcu_name_cn AS "customerName",
+			c2.ebcu_name_cn AS "principalName",
+			c3.ebcu_name_cn AS "settlementName",
+			c4.ebcu_name_cn AS "carrierName",
+			c5.ebcu_name_cn AS "ownerName",
+			c5.ebcu_tax_rate AS "taxRate",
+			so1.name AS "orgName",
+			so2.name AS "departName",
+			so3.name AS "outWarhouseName",
+			so4.name AS "auditOrgName",
+			so5.name AS "auditDepartName",
+			so6.name AS "updateOrgName",
+			so7.name AS "updateDepartName",
+			sa1.name AS "consigneeAreaName",
+			sa2.name AS "shipperAreaName",
+			oc.clerk_name AS "clerkName",
+			<include refid="omSaleHeaderColumns"/>
+		FROM om_sale_header a
+        LEFT JOIN om_customer c1 ON a.customer = c1.ebcu_customer_no AND c1.ebcu_type LIKE '%CONSIGNEE%' AND a.org_id = c1.org_id
+        LEFT JOIN om_customer c2 ON a.principal = c2.ebcu_customer_no AND c2.ebcu_type LIKE '%CUSTOMER%' AND a.org_id = c2.org_id
+        LEFT JOIN om_customer c3 ON a.settlement = c3.ebcu_customer_no AND c3.ebcu_type LIKE '%SETTLEMENT%' AND a.org_id = c3.org_id
+		LEFT JOIN om_customer c4 ON a.carrier = c4.ebcu_customer_no AND c4.ebcu_type LIKE '%CARRIER%' AND a.org_id = c4.org_id
+		LEFT JOIN om_customer c5 ON a.owner = c5.ebcu_customer_no AND c5.ebcu_type LIKE '%OWNER%' AND a.org_id = c5.org_id
+        LEFT JOIN sys_office so1 ON so1.id = a.org_id
+        LEFT JOIN sys_office so2 ON so2.id = a.department
+        LEFT JOIN sys_office so3 ON so3.id = a.out_warhouse
+		LEFT JOIN sys_office so4 ON so4.id = a.audit_org_id
+		LEFT JOIN sys_office so5 ON so5.id = a.audit_dpartment
+		LEFT JOIN sys_office so6 ON so6.id = a.update_org_id
+		LEFT JOIN sys_office so7 ON so7.id = a.update_department
+        LEFT JOIN sys_area sa1 ON sa1.id = a.consignee_area
+        LEFT JOIN sys_area sa2 ON sa2.id = a.shipper_area
+		LEFT JOIN om_clerk oc ON a.clerk_code = oc.clerk_code AND a.org_id = oc.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.po_no IS  NULL
+			<if test="saleNo != null and saleNo != ''">
+				AND a.sale_no LIKE concat('%', #{saleNo}, '%')
+			</if>
+			<if test="owner != null and owner != ''">
+				AND a.owner = #{owner}
+			</if>
+			<if test="customerName != null and customerName != ''">
+				AND c1.ebcu_name_cn LIKE concat('%', #{customerName}, '%')
+			</if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+			<if test="saleOrderNos != null and saleOrderNos != ''">
+				AND locate(a.sale_no, #{saleOrderNos}) = 0
+			</if>
+		</where>
+	</select>
+
+	<update id="updateAppAnnex">
+        UPDATE om_sale_header SET app_annex = #{file} WHERE id = #{id}
+    </update>
+
+	<update id="updateAnnex">
+        UPDATE om_sale_header SET annex = #{file} WHERE id = #{id}
+    </update>
+
+    <update id="associatedPo">
+        UPDATE om_sale_header SET po_no = #{poNo} WHERE org_id = #{orgId}
+        AND sale_no IN
+        <foreach collection="saleNos" item="saleNo" open="(" separator="," close=")">
+            #{saleNo}
+        </foreach>
+    </update>
+
+    <update id="unAssociatedPo">
+        UPDATE om_sale_header SET po_no = NULL WHERE org_id = #{orgId} AND po_no = #{poNo}
+    </update>
+
+	<select id="getShipOrder" resultType="com.yunyou.modules.oms.report.entity.OmShipOrderLabel" >
+		SELECT osh.shop                                       AS storeName,
+		   osh.customer_no                                AS orderNo,
+		   DATE_FORMAT(osh.order_date, '%Y-%m-%d')        AS orderDate,
+		   DATE_FORMAT(osh.pay_date, '%Y-%m-%d %H:%i:%s') AS payingDate,
+		   oc.ebcu_name_cn                                AS consigneeName,
+		   omvsv.label                                    AS memberLevel,
+		   opwv.label                                     AS payingType,
+		   opsv.label                                     AS payingStatus,
+		   osh.send_order_no                              AS shipNo,
+		   osh.freight_charge                             AS fare,
+		   osh.coupon_amount                              AS coupon,
+		   osh.consignee_address                          AS consigneeAddr,
+		   osh.consignee                                  AS concatName,
+		   osh.consignee_tel                              AS concatTel,
+		   osd.sku_code                                   AS skuCode,
+		   oi.sku_name                                    AS skuName,
+		   osd.qty                                        AS qtySo,
+		   oiuv.label                                     AS unit,
+		   osd.tax_price                                  AS skuPrice,
+		   osh.sale_no                                    AS soNo,
+		   omstv.label                                    AS saleType,
+		   omsmv.label                                    AS saleMethod,
+		   ocl.clerk_name                                 AS clerkName,
+		   osd.remarks                                    AS remarks,
+		   omitv.label                                    AS invoiceType,
+		   osh.taxpayer_identity_number                   AS taxpayerIdentityNumber,
+		   osh.deposit_bank                               AS depositBank,
+		   osh.deposit_bank_account                       AS depositBankAccount,
+		   osh.registered_area                            AS registeredArea,
+		   osh.registered_telephone                       AS registeredTelephone,
+		   osh.ticket_collector_address                   AS ticketCollectorAddress,
+		   osh.ticket_collector_name                      AS ticketCollectorName,
+		   osh.ticket_collector_phone                     AS ticketCollectorPhone,
+		   osd.tax_amount 								  AS taxAmount,
+		   osh.company_name 							  AS companyName,
+		   osh.remarks			      					  AS buyerRemarks,
+		   osd.spec                                       AS skuSpec,
+		   (osd.qty / (case when osd.rice_num is null or osd.rice_num = 0 then 1 else osd.rice_num end)) AS num,
+		   (case when osd.rice_num = 0 then null else osd.rice_num end)                                  AS riceNum,
+		   osh.prepared_by                                AS preparedBy,
+		   DATE_FORMAT(osh.create_date, '%Y-%m-%d %H:%i:%s')                                AS createDate,
+		   osh.audit_by                                   AS auditBy,
+		   DATE_FORMAT(osh.audit_date, '%Y-%m-%d %H:%i:%s')                                 AS auditDate
+		FROM om_sale_header osh
+			 LEFT JOIN om_sale_detail osd ON osd.header_id = osh.id AND osd.org_id = osh.org_id
+			 LEFT JOIN om_customer oc ON osh.customer = oc.ebcu_customer_no AND osh.org_id = oc.org_id AND oc.ebcu_type LIKE '%CONSIGNEE%'
+			 LEFT JOIN om_item oi ON osh.owner = oi.owner_code AND osd.sku_code = oi.sku_code AND osd.org_id = oi.org_id
+			 LEFT JOIN sys_dict_type opwt ON opwt.type = 'BMS_SETTLEMENT_TYPE'
+			 LEFT JOIN sys_dict_value opwv ON opwv.dict_type_id = opwt.id AND opwv.`value` = osh.settle_mode
+			 LEFT JOIN sys_dict_type opst ON opst.type = 'OMS_PAY_STATUS'
+			 LEFT JOIN sys_dict_value opsv ON opsv.dict_type_id = opst.id AND opsv.`value` = osh.pay_status
+			 LEFT JOIN sys_dict_type oiut ON oiut.type = 'OMS_ITEM_UNIT'
+			 LEFT JOIN sys_dict_value oiuv ON oiuv.dict_type_id = oiut.id AND oiuv.`value` = osd.unit
+			 LEFT JOIN sys_dict_type omst ON omst.type = 'OMS_SALE_TYPE'
+			 LEFT JOIN sys_dict_value omstv ON omst.id = omstv.dict_type_id AND omstv.value = osh.sale_type
+			 LEFT JOIN sys_dict_type omsm ON omsm.type = 'OMS_SALE_METHOD'
+			 LEFT JOIN sys_dict_value omsmv ON omsm.id = omsmv.dict_type_id AND omsmv.value = osh.sale_method
+			 LEFT JOIN sys_dict_type omvs ON omvs.type = 'OMS_VIP_LEVEL'
+			 LEFT JOIN sys_dict_value omvsv ON omvs.id = omvsv.dict_type_id AND omvsv.value = osh.vip_status
+			 LEFT JOIN sys_dict_type omit ON omit.type = 'BMS_INVOICE_TYPE'
+			 LEFT JOIN sys_dict_value omitv ON omit.id = omitv.dict_type_id AND omitv.value = osh.invoice_type
+			 LEFT JOIN om_clerk ocl ON osh.clerk_code = ocl.clerk_code AND osh.org_id = ocl.org_id
+  		where osh.id in
+		<foreach collection="ids" item="item" index="index" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		order by osh.sale_no
+	</select>
+
+	<select id="saleOrderCountAndAmountByDay" resultType="java.util.Map" >
+		SELECT
+			DATE_FORMAT(a.order_date,'%Y-%m-%d') as date,
+			count(a.id) as orderCount,
+			sum(ifnull(a.order_settle_amount, 0)) as orderAmount
+		FROM om_sale_header a
+		<where>
+			a.del_flag = 0
+			<if test="fromDate != null">
+				AND a.order_date &gt;= #{fromDate}
+			</if>
+			<if test="toDate != null">
+				AND a.order_date &lt;= #{toDate}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id in (SELECT id FROM sys_office WHERE 1 = 1 and CONCAT(parent_ids, id, ',') like concat('%',#{orgId},'%'))
+			</if>
+		</where>
+		group by
+			DATE_FORMAT(a.order_date,'%Y-%m-%d')
+	</select>
+
+	<select id="findSaleOrderCountAndAmount" resultType="java.util.Map" >
+		SELECT
+			count(a.id) as orderCount,
+			sum(ifnull(a.order_settle_amount, 0)) as orderAmount
+		FROM om_sale_header a
+		<where>
+			a.del_flag = 0
+			<if test="fromDate != null">
+				AND a.order_date &gt;= #{fromDate}
+			</if>
+			<if test="toDate != null">
+				AND a.order_date &lt;= #{toDate}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id in (SELECT id FROM sys_office WHERE 1 = 1 and CONCAT(parent_ids, id, ',') like concat('%',#{orgId},'%'))
+			</if>
+		</where>
+	</select>
+</mapper>

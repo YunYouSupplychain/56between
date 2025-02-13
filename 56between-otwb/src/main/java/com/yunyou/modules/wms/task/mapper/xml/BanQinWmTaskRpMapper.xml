@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.task.mapper.BanQinWmTaskRpMapper">
+    
+	<sql id="banQinWmTaskRpColumns">
+		a.id AS "id",
+		a.rp_id AS "rpId",
+		a.status AS "status",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.lot_num AS "lotNum",
+		a.fm_loc AS "fmLoc",
+		a.fm_id AS "fmId",
+		a.to_loc AS "toLoc",
+		a.to_id AS "toId",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_rp_uom AS "qtyRpUom",
+		a.qty_rp_ea AS "qtyRpEa",
+		a.rp_op AS "rpOp",
+		a.rp_time AS "rpTime",
+		a.print_num AS "printNum",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmTaskRpJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+
+	<select id="get" resultType="BanQinWmTaskRpEntity" >
+		SELECT 
+			<include refid="banQinWmTaskRpColumns"/>
+		FROM wm_task_rp a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntity" resultType="BanQinWmTaskRpEntity" >
+		SELECT
+			<include refid="banQinWmTaskRpColumns"/>,
+			ec.ebcu_name_cn AS ownerName,
+			cdws.sku_name AS skuName,
+			cwp.cdpa_format AS packDesc,
+			cwpr_a.cdpr_quantity AS cdprQuantity,
+			cwpr_a.cdpr_unit_level AS cdprUnitLevel,
+			cwpr_a.cdpr_desc AS cdprDesc,
+			wmil.qty AS qty,
+			wmil.qty - wmil.qty_hold -wmil.qty_alloc - wmil.qty_pk - wmil.qty_pa_out - wmil.qty_rp_out - wmil.qty_mv_out AS qtyUse,
+			wmil.qty_hold AS qtyHold,
+			wmil.qty_alloc AS qtyAlloc,
+			wmil.qty_pk AS qtyPk,
+			wmil.qty_pa_out AS qtyPaOut,
+			wmil.qty_rp_out AS qtyRpOut,
+			wmil.qty_mv_out AS qtyMvOut,
+			wmla.lot_att01 AS lotAtt01,
+			wmla.lot_att02 AS lotAtt02,
+			wmla.lot_att03 AS lotAtt03,
+			wmla.lot_att04 AS lotAtt04,
+			wmla.lot_att05 AS lotAtt05,
+			wmla.lot_att06 AS lotAtt06,
+			wmla.lot_att07 AS lotAtt07,
+			wmla.lot_att08 AS lotAtt08,
+			wmla.lot_att09 AS lotAtt09,
+			wmla.lot_att10 AS lotAtt10,
+			wmla.lot_att11 AS lotAtt11,
+			wmla.lot_att12 AS lotAtt12
+		FROM wm_task_rp a
+		LEFT JOIN wm_inv_lot_loc wmil ON wmil.lot_num = a.lot_num AND wmil.trace_id = a.fm_id AND wmil.sku_code = a.sku_code AND wmil.owner_code = a.owner_code AND wmil.loc_code = a.fm_loc AND wmil.org_id = a.org_id
+		LEFT JOIN wm_inv_lot_att wmla ON a.lot_num = wmla.lot_num AND a.org_id = wmla.org_id
+		LEFT JOIN CD_WH_SKU cdws ON a.sku_code = cdws.sku_code AND a.owner_code = cdws.owner_code AND a.org_id = cdws.org_id
+		LEFT JOIN EB_CUSTOMER ec ON a.owner_code = ec.ebcu_customer_no AND a.org_id = ec.org_id
+		LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = a.pack_code AND cwp.org_id = a.org_id
+		LEFT JOIN cd_wh_package_relation cwpr_a ON cwpr_a.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_a.cdpr_unit_level = a.uom AND cwpr_a.org_id = cwp.org_id
+		LEFT JOIN cd_wh_package_relation cwpr_b ON cwpr_b.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_b.cdpr_unit_level = a.uom AND cwpr_b.org_id = cwp.org_id
+		LEFT JOIN cd_wh_package_relation cwpr_c ON cwpr_c.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_c.cdpr_unit_level = a.uom AND cwpr_c.org_id = cwp.org_id
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmTaskRp" >
+		SELECT 
+			<include refid="banQinWmTaskRpColumns"/>
+		FROM wm_task_rp a
+		<include refid="banQinWmTaskRpJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmTaskRpEntity" >
+		SELECT
+			<include refid="banQinWmTaskRpColumns"/>,
+			ec.ebcu_name_cn AS ownerName,
+			cdws.sku_name AS skuName,
+			cwp.cdpa_format AS packDesc,
+			cwpr_a.cdpr_quantity AS cdprQuantity,
+			cwpr_a.cdpr_unit_level AS cdprUnitLevel,
+			cwpr_a.cdpr_desc AS cdprDesc,
+			wmil.qty AS qty,
+			wmil.qty - wmil.qty_hold -wmil.qty_alloc - wmil.qty_pk - wmil.qty_pa_out - wmil.qty_rp_out - wmil.qty_mv_out AS qtyUse,
+			wmil.qty_hold AS qtyHold,
+			wmil.qty_alloc AS qtyAlloc,
+			wmil.qty_pk AS qtyPk,
+			wmil.qty_pa_out AS qtyPaOut,
+			wmil.qty_rp_out AS qtyRpOut,
+			wmil.qty_mv_out AS qtyMvOut,
+			wmla.lot_att01 AS lotAtt01,
+			wmla.lot_att02 AS lotAtt02,
+			wmla.lot_att03 AS lotAtt03,
+			wmla.lot_att04 AS lotAtt04,
+			wmla.lot_att05 AS lotAtt05,
+			wmla.lot_att06 AS lotAtt06,
+			wmla.lot_att07 AS lotAtt07,
+			wmla.lot_att08 AS lotAtt08,
+			wmla.lot_att09 AS lotAtt09,
+			wmla.lot_att10 AS lotAtt10,
+			wmla.lot_att11 AS lotAtt11,
+			wmla.lot_att12 AS lotAtt12,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName
+		FROM wm_task_rp a
+		LEFT JOIN wm_inv_lot_loc wmil ON wmil.lot_num = a.lot_num AND wmil.trace_id = a.fm_id AND wmil.sku_code = a.sku_code AND wmil.owner_code = a.owner_code AND wmil.loc_code = a.fm_loc AND wmil.org_id = a.org_id
+		LEFT JOIN wm_inv_lot_att wmla ON a.lot_num = wmla.lot_num AND a.org_id = wmla.org_id
+		LEFT JOIN CD_WH_SKU cdws ON a.sku_code = cdws.sku_code AND a.owner_code = cdws.owner_code AND a.org_id = cdws.org_id
+		LEFT JOIN EB_CUSTOMER ec ON a.owner_code = ec.ebcu_customer_no AND a.org_id = ec.org_id
+		LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = a.pack_code AND cwp.org_id = a.org_id
+		LEFT JOIN cd_wh_package_relation cwpr_a ON cwpr_a.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_a.cdpr_unit_level = a.uom AND cwpr_a.org_id = cwp.org_id
+		LEFT JOIN cd_wh_package_relation cwpr_b ON cwpr_b.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_b.cdpr_unit_level = a.uom AND cwpr_b.org_id = cwp.org_id
+		LEFT JOIN cd_wh_package_relation cwpr_c ON cwpr_c.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr_c.cdpr_unit_level = a.uom AND cwpr_c.org_id = cwp.org_id
+		<include refid="banQinWmTaskRpJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="rpId != null and rpId != ''">
+				AND a.rp_id like concat('%', #{rpId}, '%')
+			</if>
+			<if test="status != '' and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="ownerCode != '' and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != '' and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="fmLoc != '' and fmLoc != ''">
+				AND a.fm_loc = #{fmLoc}
+			</if>
+			<if test="fmId != '' and fmId != ''">
+				AND a.fm_id = #{fmId}
+			</if>
+			<if test="toLoc != '' and toLoc != ''">
+				AND a.to_loc = #{toLoc}
+			</if>
+			<if test="toId != '' and toId != ''">
+				AND a.to_id = #{toId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.rp_id DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmTaskRp" >
+		SELECT 
+			<include refid="banQinWmTaskRpColumns"/>
+		FROM wm_task_rp a
+		<include refid="banQinWmTaskRpJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_task_rp(
+			id,
+			rp_id,
+			status,
+			owner_code,
+			sku_code,
+			lot_num,
+			fm_loc,
+			fm_id,
+			to_loc,
+			to_id,
+			pack_code,
+			uom,
+			qty_rp_uom,
+			qty_rp_ea,
+			rp_op,
+			rp_time,
+			print_num,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{rpId},
+			#{status},
+			#{ownerCode},
+			#{skuCode},
+			#{lotNum},
+			#{fmLoc},
+			#{fmId},
+			#{toLoc},
+			#{toId},
+			#{packCode},
+			#{uom},
+			#{qtyRpUom},
+			#{qtyRpEa},
+			#{rpOp},
+			#{rpTime},
+			#{printNum},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_task_rp SET 	
+			rp_id = #{rpId},
+			status = #{status},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			lot_num = #{lotNum},
+			fm_loc = #{fmLoc},
+			fm_id = #{fmId},
+			to_loc = #{toLoc},
+			to_id = #{toId},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_rp_uom = #{qtyRpUom},
+			qty_rp_ea = #{qtyRpEa},
+			rp_op = #{rpOp},
+			rp_time = #{rpTime},
+			print_num = #{printNum},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_task_rp
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_task_rp SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="rfRPGetRpDetailQuery" resultType="BanQinWmTaskRpEntity">
+		SELECT
+			wmtr.id AS id,
+			wmtr.rp_id AS rpId,
+			wmtr.status AS status,
+			wmtr.owner_code AS ownerCode,
+			ebcs.ebcu_name_cn AS ownerName,
+			wmtr.sku_code AS skuCode,
+			cdws.sku_name AS skuName,
+			wmtr.lot_num AS lotNum,
+			wmtr.fm_loc AS fmLoc,
+			wmtr.fm_id AS fmId,
+			wmtr.to_loc AS toLoc,
+			wmtr.to_id AS toId,
+			wmtr.pack_code AS packCode,
+			cdpa.cdpa_format AS packDesc,
+			wmtr.uom AS uom,
+			wmtr.qty_rp_uom AS qtyRpUom,
+			wmtr.qty_rp_ea AS qtyRpEa,
+			wmtr.rp_op AS rpOp,
+			wmtr.rp_time AS rpTime,
+			wmtr.org_id AS orgId
+		FROM wm_task_rp wmtr
+		LEFT JOIN cd_wh_sku cdws ON cdws.sku_code = wmtr.sku_code AND cdws.owner_code = wmtr.owner_code AND cdws.org_id = wmtr.org_id
+		LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = wmtr.pack_code AND cdpa.org_id = wmtr.org_id
+		LEFT JOIN eb_customer ebcs ON ebcs.ebcu_customer_no = wmtr.owner_code AND ebcs.org_id= wmtr.org_id
+		WHERE 1 = 1
+		AND wmtr.status = '00'
+		AND wmtr.org_id = #{orgId}
+		AND wmtr.rp_id = #{rpId}
+		ORDER BY wmtr.rp_id
+	</select>
+	
+</mapper>

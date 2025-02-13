@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.finance.mapper.BmsSettleModelMapper">
+
+    <sql id="bmsSettleModelColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.settle_model_code AS "settleModelCode",
+		a.settle_object_code AS "settleObjectCode",
+		a.responsible_person AS "responsiblePerson",
+		a.org_id AS "orgId"
+    </sql>
+
+    <sql id="extraColumns">
+        bso.settle_object_name AS "settleObjectName",
+        b.login_name AS "createBy.name",
+        c.login_name AS "updateBy.name",
+        so.name AS "orgName"
+    </sql>
+
+    <sql id="bmsSettleModelJoins">
+        LEFT JOIN bms_settle_object bso ON a.settle_object_code = bso.settle_object_code AND a.org_id = bso.org_id
+        LEFT JOIN sys_user b ON a.create_by = b.id
+        LEFT JOIN sys_user c ON a.update_by = c.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.finance.entity.BmsSettleModel">
+        SELECT
+        <include refid="bmsSettleModelColumns"/>
+        FROM bms_settle_model a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.finance.entity.BmsSettleModel">
+        SELECT
+        <include refid="bmsSettleModelColumns"/>
+        FROM bms_settle_model a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="settleModelCode != null and settleModelCode != ''">
+                AND a.settle_model_code = #{settleModelCode}
+            </if>
+            <if test="settleObjectCode != null and settleObjectCode != ''">
+                AND a.settle_object_code = #{settleObjectCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.finance.entity.BmsSettleModel">
+        SELECT
+        <include refid="bmsSettleModelColumns"/>
+        FROM bms_settle_model a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_settle_model
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            settle_model_code,
+            settle_object_code,
+            responsible_person,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{settleModelCode},
+            #{settleObjectCode},
+            #{responsiblePerson},
+            #{orgId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_settle_model
+        SET update_by          = #{updateBy.id},
+            update_date        = #{updateDate},
+            remarks            = #{remarks},
+            rec_ver            = rec_ver + 1,
+            settle_model_code  = #{settleModelCode},
+            settle_object_code = #{settleObjectCode},
+            responsible_person = #{responsiblePerson},
+            org_id             = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_settle_model
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_settle_model WHERE id = #{id}
+    </delete>
+
+    <select id="getEntity" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsSettleModelEntity">
+        SELECT
+        <include refid="bmsSettleModelColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_settle_model a
+        <include refid="bmsSettleModelJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="getEntityByCode" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsSettleModelEntity">
+        SELECT
+        <include refid="bmsSettleModelColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_settle_model a
+        <include refid="bmsSettleModelJoins"/>
+        WHERE a.del_flag = '0'
+        AND a.settle_model_code = #{settleModelCode}
+        AND a.org_id = #{orgId}
+    </select>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsSettleModelEntity">
+        SELECT
+        <include refid="bmsSettleModelColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_settle_model a
+        <include refid="bmsSettleModelJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="settleModelCode != null and settleModelCode != ''">
+                AND a.settle_model_code LIKE concat('%',#{settleModelCode},'%')
+            </if>
+            <if test="settleObjectCode != null and settleObjectCode != ''">
+                AND a.settle_object_code LIKE concat('%',#{settleObjectCode},'%')
+            </if>
+            <if test="settleObjectName != null and settleObjectName != ''">
+                AND bso.settle_object_name LIKE concat('%',#{settleObjectName},'%')
+            </if>
+            <if test="responsiblePerson != null and responsiblePerson != ''">
+                AND a.responsible_person LIKE concat('%',#{responsiblePerson},'%')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findContractSubject" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsSettleModelDetailEntity">
+        SELECT bcci.id                 AS "contractCostItemId",
+               bc.settle_object_code   AS "settleObjectCode",
+               bso.settle_object_name  AS "settleObjectName",
+               bc.sys_contract_no      AS "sysContractNo",
+               bc.contract_no          AS "contractNo",
+               bc.subcontract_no       AS "subcontractNo",
+               bc.contract_status      AS "contractStatus",
+               bc.effective_date_fm    AS "effectiveDateFm",
+               bc.effective_date_to    AS "effectiveDateTo",
+               bcci.bill_module        AS "billModule",
+               bcci.bill_subject_code  AS "billSubjectCode",
+               bbs.bill_subject_name   AS "billSubjectName",
+               bbs.bill_category       AS "billCategory",
+               bcci.receivable_payable AS "receivablePayable",
+               bcci.bill_terms_code    AS "billTermsCode",
+               bbt.bill_terms_desc     AS "billTermsDesc",
+               bbt.output_objects      AS "outputObjects",
+               bbt.occurrence_quantity AS "occurrenceQuantity",
+               bcci.formula_code       AS "formulaCode",
+               bbf.formula_name        AS "formulaName"
+        FROM bms_contract bc
+             INNER JOIN bms_contract_cost_item bcci ON bc.sys_contract_no = bcci.sys_contract_no AND bc.org_id = bcci.org_id
+             INNER JOIN bms_bill_subject bbs ON bcci.bill_subject_code = bbs.bill_subject_code AND bcci.org_id = bbs.org_id
+             INNER JOIN bms_bill_terms bbt ON bcci.bill_terms_code = bbt.bill_terms_code
+             INNER JOIN bms_bill_formula bbf ON bcci.formula_code = bbf.formula_code
+             LEFT JOIN bms_settle_object bso ON bc.settle_object_code = bso.settle_object_code AND bc.org_id = bso.org_id
+        WHERE bc.del_flag = '0'
+          AND bc.contract_status = '10'
+          AND bc.settle_object_code = #{settleObjectCode}
+          AND bc.org_id = #{orgId}
+        ORDER BY bc.sys_contract_no,
+                 bcci.bill_subject_code,
+                 bcci.bill_terms_code
+    </select>
+
+</mapper>

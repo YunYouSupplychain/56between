@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.report.mapper.TmGasDailyStatisticsMapper">
+
+    <select id="findPage" resultType="com.yunyou.modules.tms.report.entity.TmGasDailyStatistics">
+        SELECT a.delivery_outlet_code                                    AS "gasCode",
+               ttos.transport_obj_name                                   AS "gasName",
+               DATE_FORMAT(thoss.update_date, '%Y年%m月%d日')             AS "date",
+               thoss.sku_code                                            AS "oilCode",
+               ti.sku_name                                               AS "oilName",
+               SUM(IFNULL(thoss.order_qty, 0))                           AS "orderQty",
+               SUM(IFNULL(IFNULL(thosr.actual_qty, thoss.order_qty), 0)) AS "pickupQty",
+               SUM(IFNULL(thoss.actual_qty, 0))                          AS "dischargeQty"
+        FROM tm_handover_order_header a
+            INNER JOIN tm_handover_order_sku thoss ON a.handover_no = thoss.handover_no AND a.org_id = thoss.org_id AND thoss.receive_ship = 'S'
+            LEFT JOIN tm_handover_order_sku thosr ON thoss.transport_no = thosr.transport_no AND thoss.owner_code = thosr.owner_code AND thoss.sku_code = thosr.sku_code AND thoss.org_id = thosr.org_id AND thosr.receive_ship = 'R'
+            LEFT JOIN tm_transport_obj ttos ON a.delivery_outlet_code = ttos.transport_obj_code AND a.base_org_id = ttos.org_id
+            LEFT JOIN tm_item ti ON thoss.owner_code = ti.owner_code AND thoss.sku_code = ti.sku_code AND thoss.base_org_id = ti.org_id
+        WHERE a.base_org_id = #{baseOrgId}
+            ${dataScope}
+        <if test="fmDate != null">
+            AND a.update_date &gt;= #{fmDate}
+        </if>
+        <if test="toDate != null">
+            AND a.update_date &lt;= #{toDate}
+        </if>
+        <if test="gasCode != null and gasCode != ''">
+            AND a.delivery_outlet_code = #{gasCode}
+        </if>
+        <if test="baseOrgId != null and baseOrgId != ''">
+            AND a.base_org_id = #{baseOrgId}
+        </if>
+        GROUP BY a.delivery_outlet_code, DATE_FORMAT(thoss.update_date, '%Y-%m-%d'), thoss.sku_code
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY thoss.update_date, a.delivery_outlet_code, thoss.sku_code
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.interfaces.log.mapper.InterfaceLogMapper">
+    
+	<sql id="interfaceLogColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.interface_type AS "interfaceType",
+		a.is_success AS "isSuccess",
+		a.message AS "message",
+		a.request_data AS "requestData",
+		a.response_data AS "responseData",
+		a.search_no AS "searchNo",
+		a.handle_direction AS "handleDirection",
+		a.interface_direction AS "interfaceDirection",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5"
+	</sql>
+	
+	<sql id="interfaceLogJoins">
+		
+	</sql>
+
+	<select id="get" resultType="InterfaceLog" >
+		SELECT 
+			<include refid="interfaceLogColumns"/>
+		FROM interface_log a
+		<include refid="interfaceLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="InterfaceLog" >
+		SELECT 
+			<include refid="interfaceLogColumns"/>
+		FROM interface_log a
+		<include refid="interfaceLogJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="InterfaceLog" >
+		SELECT 
+			<include refid="interfaceLogColumns"/>
+		FROM interface_log a
+		<include refid="interfaceLogJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO interface_log(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			interface_type,
+			is_success,
+			message,
+			request_data,
+			response_data,
+			search_no,
+			handle_direction,
+			interface_direction,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{interfaceType},
+			#{isSuccess},
+			#{message},
+			#{requestData},
+			#{responseData},
+			#{searchNo},
+			#{handleDirection},
+			#{interfaceDirection},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE interface_log SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			interface_type = #{interfaceType},
+			is_success = #{isSuccess},
+			message = #{message},
+			request_data = #{requestData},
+			response_data = #{responseData},
+			search_no = #{searchNo},
+			handle_direction = #{handleDirection},
+			interface_direction = #{interfaceDirection},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5}
+		WHERE id = #{id}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM interface_log
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE interface_log SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,129 @@
+@CHARSET "UTF-8";
+/**tab css样式*/
+
+.content-tabs {
+    position: relative;
+    height: 42px;
+    background: #ffffff;
+    /*line-height: 41px;*/
+    /*border-bottom: 1px solid #007bff;*/
+    line-height: 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    border-bottom: 1px solid #d2d3d4;
+    /*border-bottom: solid 1px #eee;;*/
+}
+
+.content-tabs .roll-nav,
+.page-tabs-list {
+    position: absolute;
+    width: 41px;
+    height: 41px;
+    text-align: center;
+    color: #999;
+    z-index: 2;
+    top: 0;
+}
+.content-tabs .roll-left-0 {
+    left: 0;
+    border-right: solid 1px #eee;
+}
+.content-tabs .roll-left {
+    left: 41px;
+    border-right: solid 1px #eee;
+}
+
+.content-tabs .roll-right {
+    right: 0;
+    border-left: solid 1px #eee;
+}
+
+.content-tabs button {
+    background: #fff;
+    border: 0;
+    height: 41px;
+    width: 41px;
+    outline: none;
+}
+
+.content-tabs button:hover {
+    background: #fafafa;
+}
+
+nav.page-tabs {
+    margin-left: 82px;
+    height: 42px;
+    overflow: hidden;
+}
+
+nav.page-tabs .page-tabs-content {
+    float: left;
+}
+
+.page-tabs a {
+    display: block;
+    float: left;
+    border-right: solid 1px #eee;
+    padding: 0 15px;
+}
+
+.page-tabs a i:hover {
+    color: #c00;
+}
+
+.page-tabs a:hover,
+.content-tabs .roll-nav:hover {
+    color: #007bff;
+    background: #f2f2f2;
+    cursor: pointer;
+}
+.page-tabs a {
+    color: #999;
+}
+
+.page-tabs a i {
+    color: #ccc;
+}
+
+.page-tabs a.active {
+    /* background: #007bff; */
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+}
+.roll-right.J_tabRight {
+    right: 90px
+}
+.roll-right.J_tabUpgrade {
+    width: 30px;
+    right: 60px
+}
+
+.roll-right.btn-group {
+    right: 60px;
+    width: 80px;
+    padding: 0;
+}
+
+.roll-right.btn-group button {
+    width: 80px;
+}
+
+.roll-right.J_tabExit {
+    background: #fff;
+    height: 41px;
+    width: 60px;
+    outline: none;
+}
+
+.dropdown-menu-right {
+    left: auto;
+}
+
+/* 右键面板 */
+.context-menu-item.context-menu-hover {
+    color: #fff;
+    cursor: pointer;
+    background-color: #007bff;
+}
+.context-menu-icon.context-menu-icon--fa::before {
+    color: #007bff;
+}

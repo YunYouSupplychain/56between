@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmTfDetailMapper">
+    
+	<sql id="banQinWmTfDetailColumns">
+		a.id AS "id",
+		a.tf_no AS "tfNo",
+		a.line_no AS "lineNo",
+		a.status AS "status",
+		a.fm_owner AS "fmOwner",
+		a.fm_sku AS "fmSku",
+		a.fm_lot AS "fmLot",
+		a.fm_loc AS "fmLoc",
+		a.fm_id AS "fmId",
+		a.fm_pack AS "fmPack",
+		a.fm_uom AS "fmUom",
+		a.fm_qty_uom AS "fmQtyUom",
+		a.fm_qty_ea AS "fmQtyEa",
+		a.to_owner AS "toOwner",
+		a.to_sku AS "toSku",
+		a.to_lot AS "toLot",
+		a.to_loc AS "toLoc",
+		a.to_id AS "toId",
+		a.to_pack AS "toPack",
+		a.to_uom AS "toUom",
+		a.to_qty_uom AS "toQtyUom",
+		a.to_qty_ea AS "toQtyEa",
+		a.edi_send_time AS "ediSendTime",
+		a.is_edi_send AS "isEdiSend",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinWmTfDetailJoins">
+		
+	</sql>
+	
+	<select id="get" resultType="BanQinWmTfDetail" >
+		SELECT 
+			<include refid="banQinWmTfDetailColumns"/>
+		FROM wm_tf_detail a
+		<include refid="banQinWmTfDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="getEntity" resultType="BanQinWmTfDetailEntity" >
+        SELECT
+            <include refid="banQinWmTfDetailColumns"/>
+        FROM wm_tf_detail a
+        WHERE a.id = #{id}
+    </select>
+	
+	<select id="findList" resultType="BanQinWmTfDetail" >
+        SELECT
+            <include refid="banQinWmTfDetailColumns"/>
+        FROM wm_tf_detail a
+        <include refid="banQinWmTfDetailJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+            <if test="tfNo != null and tfNo != ''">
+                AND a.tf_no = #{tfNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+			<if test="fmOwner != null and fmOwner != ''">
+				AND a.fm_owner = #{fmOwner}
+			</if>
+			<if test="fmSku != null and fmSku != ''">
+				AND a.fm_sku = #{fmSku}
+			</if>
+			<if test="toOwner != null and toOwner != ''">
+				AND a.fm_owner = #{toOwner}
+			</if>
+			<if test="toSku != null and toSku != ''">
+				AND a.to_sku = #{toSku}
+			</if>
+        </where>
+    </select>
+
+    <select id="findPage" resultType="BanQinWmTfDetailEntity">
+        SELECT
+            <include refid="banQinWmTfDetailColumns"/>,
+            wilab.lot_att01 AS lotAtt01,
+            wilab.lot_att02 AS lotAtt02,
+            wilab.lot_att03 AS lotAtt03,
+            wilab.lot_att04 AS lotAtt04,
+            wilab.lot_att05 AS lotAtt05,
+            wilab.lot_att06 AS lotAtt06,
+            wilab.lot_att07 AS lotAtt07,
+            wilab.lot_att08 AS lotAtt08,
+            wilab.lot_att09 AS lotAtt09,
+            wilab.lot_att10 AS lotAtt10,
+            wilab.lot_att11 AS lotAtt11,
+            wilab.lot_att12 AS lotAtt12,
+            ecf.ebcu_name_cn AS fmOwnerName,
+            ect.ebcu_name_cn AS toOwnerName,
+            cwsf.sku_name AS fmSkuName,
+            cwsf.is_serial AS fmIsSerial,
+            cwst.sku_name AS toSkuName,
+            cwst.is_serial AS toIsSerial,
+            cwpf.cdpa_format AS fmPackDesc,
+            cwprf.cdpr_desc AS fmUomDesc,
+            cwprf.cdpr_quantity AS fmCdprQuantity,
+            cwpt.cdpa_format AS toPackDesc,
+            cwprt.cdpr_desc AS toUomDesc,
+            cwprt.cdpr_quantity AS toCdprQuantity,
+            (will.qty - will.qty_hold - will.qty_alloc - will.qty_pk - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out) AS availableNum,
+            will.qty AS qty,
+            will.qty_hold AS qtyHold,
+            will.qty_alloc AS qtyAlloc,
+            will.qty_pk AS qtyPk,
+            will.qty_pa_out AS qtyPaOut,
+            will.qty_rp_out AS qtyRpOut,
+            (CASE WHEN will.qty_hold > 0 THEN 'Y' ELSE 'N' END) AS isAllowTf,
+            wila.lot_att01 AS fmLotAtt01,
+            wila.lot_att02 AS fmLotAtt02,
+            wila.lot_att03 AS fmLotAtt03,
+            wila.lot_att04 AS fmLotAtt04,
+            wila.lot_att05 AS fmLotAtt05,
+            wila.lot_att06 AS fmLotAtt06,
+            wila.lot_att07 AS fmLotAtt07,
+            wila.lot_att08 AS fmLotAtt08,
+            wila.lot_att09 AS fmLotAtt09,
+            wila.lot_att10 AS fmLotAtt10,
+            wila.lot_att11 AS fmLotAtt11,
+            wila.lot_att12 AS fmLotAtt12
+        FROM wm_tf_detail a
+        LEFT JOIN eb_customer ecf ON ecf.ebcu_customer_no = a.fm_owner AND ecf.ebcu_type LIKE concat('%OWNER,%') AND ecf.org_id = a.org_id
+        LEFT JOIN eb_customer ect ON ect.ebcu_customer_no = a.to_owner AND ect.ebcu_type LIKE concat('%OWNER,%') AND ect.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cwsf ON cwsf.owner_code = a.fm_owner AND cwsf.sku_code = a.fm_sku AND cwsf.org_id = a.org_id
+        LEFT JOIN cd_wh_sku cwst ON cwst.owner_code = a.to_owner AND cwst.sku_code = a.to_sku AND cwst.org_id = a.org_id
+        LEFT JOIN cd_wh_package cwpf ON cwpf.cdpa_code = a.fm_pack AND cwpf.org_id = a.org_id
+        LEFT JOIN cd_wh_package_relation cwprf ON cwprf.cdpr_cdpa_pm_code = cwpf.pm_code AND cwprf.cdpr_unit_level = a.fm_uom AND cwprf.org_id = a.org_id
+        LEFT JOIN cd_wh_package cwpt ON cwpt.cdpa_code = a.to_pack AND cwpt.org_id = a.org_id
+        LEFT JOIN cd_wh_package_relation cwprt ON cwprt.cdpr_cdpa_pm_code = cwpt.pm_code AND cwprt.cdpr_unit_level = a.to_uom AND cwprt.org_id = a.org_id
+        LEFT JOIN wm_inv_lot_loc will ON will.owner_code = a.fm_owner AND will.sku_code = a.fm_sku AND will.lot_num = a.fm_lot AND will.loc_code = a.fm_loc AND will.trace_id = a.fm_id AND will.org_id = a.org_id
+        LEFT JOIN wm_inv_lot_att wila ON a.fm_lot = wila.lot_num AND a.org_id = wila.org_id
+        LEFT JOIN wm_inv_lot_att wilab ON a.to_lot = wilab.lot_num AND a.org_id = wilab.org_id
+        <where>
+            AND a.org_id = #{orgId}
+            ${dataScope}
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+            <if test="tfNo != null and tfNo != ''">
+                AND a.tf_no = #{tfNo}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="wmTfIsSerialQuery" resultType="BanQinWmTfDetail" >
+        SELECT wtd.tf_no AS tfNo,
+            wtd.line_no AS lineNo,
+            wtd.fm_qty_ea AS fmQtyEa,
+            wtd.to_qty_ea as toQtyEa,
+            cws.is_serial AS fmIsSerial,
+            cws1.is_serial AS toIsSerial
+        FROM wm_tf_detail wtd
+        LEFT JOIN cd_wh_sku cws ON cws.owner_code = wtd.fm_owner AND cws.sku_code = wtd.fm_sku AND cws.org_id = wtd.org_id
+        LEFT JOIN cd_wh_sku cws1 ON cws1.owner_code = wtd.to_owner AND cws1.sku_code = wtd.to_sku AND cws1.org_id = wtd.org_id
+        WHERE 1 = 1
+        AND wtd.status = '00'
+        AND wtd.tf_no = #{tfNo}
+        AND wtd.org_id = #{orgId}
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmTfDetail" >
+		SELECT 
+			<include refid="banQinWmTfDetailColumns"/>
+		FROM wm_tf_detail a
+		<include refid="banQinWmTfDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_tf_detail(
+			id,
+			tf_no,
+			line_no,
+			status,
+			fm_owner,
+			fm_sku,
+			fm_lot,
+			fm_loc,
+			fm_id,
+			fm_pack,
+			fm_uom,
+			fm_qty_uom,
+			fm_qty_ea,
+			to_owner,
+			to_sku,
+			to_lot,
+			to_loc,
+			to_id,
+			to_pack,
+			to_uom,
+			to_qty_uom,
+			to_qty_ea,
+			edi_send_time,
+			is_edi_send,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			header_id
+		) VALUES (
+			#{id},
+			#{tfNo},
+			#{lineNo},
+			#{status},
+			#{fmOwner},
+			#{fmSku},
+			#{fmLot},
+			#{fmLoc},
+			#{fmId},
+			#{fmPack},
+			#{fmUom},
+			#{fmQtyUom},
+			#{fmQtyEa},
+			#{toOwner},
+			#{toSku},
+			#{toLot},
+			#{toLoc},
+			#{toId},
+			#{toPack},
+			#{toUom},
+			#{toQtyUom},
+			#{toQtyEa},
+			#{ediSendTime},
+			#{isEdiSend},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_tf_detail SET 	
+			tf_no = #{tfNo},
+			line_no = #{lineNo},
+			status = #{status},
+			fm_owner = #{fmOwner},
+			fm_sku = #{fmSku},
+			fm_lot = #{fmLot},
+			fm_loc = #{fmLoc},
+			fm_id = #{fmId},
+			fm_pack = #{fmPack},
+			fm_uom = #{fmUom},
+			fm_qty_uom = #{fmQtyUom},
+			fm_qty_ea = #{fmQtyEa},
+			to_owner = #{toOwner},
+			to_sku = #{toSku},
+			to_lot = #{toLot},
+			to_loc = #{toLoc},
+			to_id = #{toId},
+			to_pack = #{toPack},
+			to_uom = #{toUom},
+			to_qty_uom = #{toQtyUom},
+			to_qty_ea = #{toQtyEa},
+			edi_send_time = #{ediSendTime},
+			is_edi_send = #{isEdiSend},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			header_id = #{headerId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_tf_detail
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_tf_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

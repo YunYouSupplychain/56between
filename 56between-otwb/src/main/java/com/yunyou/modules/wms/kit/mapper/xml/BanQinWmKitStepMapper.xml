@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.kit.mapper.BanQinWmKitStepMapper">
+    
+	<sql id="banQinWmKitStepColumns">
+		a.id AS "id",
+		a.kit_no AS "kitNo",
+		a.kit_line_no AS "kitLineNo",
+		a.step_line_no AS "stepLineNo",
+		a.owner_code AS "ownerCode",
+		a.parent_sku_code AS "parentSkuCode",
+		a.step AS "step",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_kit AS "qtyKit",
+		a.qty_kit_ea AS "qtyKitEa",
+		a.kit_op AS "kitOp",
+		a.kit_time AS "kitTime",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinWmKitStepJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmKitStep" >
+		SELECT 
+			<include refid="banQinWmKitStepColumns"/>
+		FROM wm_kit_step a
+		<include refid="banQinWmKitStepJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmKitStep" >
+		SELECT 
+			<include refid="banQinWmKitStepColumns"/>
+		FROM wm_kit_step a
+		<include refid="banQinWmKitStepJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="kitNo != null and kitNo != ''">
+				AND a.kit_no = #{kitNo}
+			</if>
+			<if test="kitLineNo != null and kitLineNo != ''">
+				AND a.kit_line_no = #{kitLineNo}
+			</if>
+			<if test="stepLineNo != null and stepLineNo != ''">
+				AND a.step_line_no = #{stepLineNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="parentSkuCode != null and parentSkuCode != ''">
+				AND a.parent_sku_code = #{parentSkuCode}
+			</if>
+			<if test="step != null and step != ''">
+				AND a.step = #{step}
+			</if>
+			<if test="packCode != null and packCode != ''">
+				AND a.pack_code = #{packCode}
+			</if>
+			<if test="uom != null and uom != ''">
+				AND a.uom = #{uom}
+			</if>
+			<if test="kitOp != null and kitOp != ''">
+				AND a.kit_op = #{kitOp}
+			</if>
+			<if test="kitTime != null and kitTime != ''">
+				AND a.kit_time = #{kitTime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmKitStep" >
+		SELECT 
+			<include refid="banQinWmKitStepColumns"/>
+		FROM wm_kit_step a
+		<include refid="banQinWmKitStepJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_kit_step(
+			id,
+			kit_no,
+			kit_line_no,
+			step_line_no,
+			owner_code,
+			parent_sku_code,
+			step,
+			pack_code,
+			uom,
+			qty_kit,
+			qty_kit_ea,
+			kit_op,
+			kit_time,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			header_id
+		) VALUES (
+			#{id},
+			#{kitNo},
+			#{kitLineNo},
+			#{stepLineNo},
+			#{ownerCode},
+			#{parentSkuCode},
+			#{step},
+			#{packCode},
+			#{uom},
+			#{qtyKit},
+			#{qtyKitEa},
+			#{kitOp},
+			#{kitTime},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_kit_step SET 	
+			kit_no = #{kitNo},
+			kit_line_no = #{kitLineNo},
+			step_line_no = #{stepLineNo},
+			owner_code = #{ownerCode},
+			parent_sku_code = #{parentSkuCode},
+			step = #{step},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_kit = #{qtyKit},
+			qty_kit_ea = #{qtyKitEa},
+			kit_op = #{kitOp},
+			kit_time = #{kitTime},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+		    header_id = #{headerId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_kit_step
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_kit_step SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getMaxLineNo" resultType="java.lang.Long">
+		SELECT MAX(CONVERT(a.step_line_no, SIGNED )) FROM wm_kit_step a WHERE a.kit_no = #{kitNo} AND a.org_id = #{orgId} AND a.kit_line_no = #{kitLineNo}
+	</select>
+
+	<select id="getEntityByKitNoAndKitLineNo" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmKitStepEntity">
+		SELECT
+		   	cwp.cdpa_format AS "packDesc",
+		   	cwpr.cdpr_desc AS "uomDesc",
+		   	cwpr.cdpr_quantity AS "uomqty",
+		   	suo.name AS "kitOpName",
+			<include refid="banQinWmKitStepColumns"/>
+		FROM wm_kit_step a
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwp.pm_code = cwpr.cdpr_cdpa_pm_code
+		  LEFT JOIN sys_user suo ON a.KIT_OP = suo.id
+		WHERE a.kit_no = #{kitNo} AND a.org_id = #{orgId} AND a.kit_line_no IN
+		<foreach collection="kitLineNos" item="kitLineNo" open="(" separator="," close=")">
+			#{kitLineNo}
+		</foreach>
+	</select>
+
+</mapper>

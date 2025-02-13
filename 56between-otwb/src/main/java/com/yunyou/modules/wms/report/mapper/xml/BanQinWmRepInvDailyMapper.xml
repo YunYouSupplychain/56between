@@ -1,0 +1,875 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.report.mapper.BanQinWmRepInvDailyMapper">
+
+	<select id="findPage" resultType="com.yunyou.modules.wms.report.entity.WmRepInvDailyEntity" >
+		SELECT
+			gg.owner_code AS ownerCode,
+			gg.owner_name AS ownerName,
+			gg.sku_code AS skuCode,
+			gg.sku_name AS skuName,
+			gg.lot_num AS lotNum,
+			gg.lot_att01 AS lotAtt01,
+			gg.lot_att02 AS lotAtt02,
+			gg.lot_att03 AS lotAtt03,
+			gg.lot_att04 AS lotAtt04,
+			gg.lot_att05 AS lotAtt05,
+			gg.lot_att06 AS lotAtt06,
+			gg.lot_att07 AS lotAtt07,
+			gg.lot_att08 AS lotAtt08,
+			gg.lot_att09 AS lotAtt09,
+			gg.lot_att10 AS lotAtt10,
+			gg.lot_att11 AS lotAtt11,
+			gg.lot_att12 AS lotAtt12,
+			SUM( gg.inv_qty ) AS invQty
+		FROM (
+			SELECT
+				ppoi.owner_code,
+				ppoi.owner_name,
+				ppoi.sku_code,
+				ppoi.sku_name,
+				ppoi.lot_num,
+				ppoi.lot_att01,
+				ppoi.lot_att02,
+				ppoi.lot_att03,
+				ppoi.lot_att04,
+				ppoi.lot_att05,
+				ppoi.lot_att06,
+				ppoi.lot_att07,
+				ppoi.lot_att08,
+				ppoi.lot_att09,
+				ppoi.lot_att10,
+				ppoi.lot_att11,
+				ppoi.lot_att12,
+				pptt.fm_qty_ea_after AS inv_qty
+			FROM (
+				SELECT
+					MAX( uu.tran_time ) AS tran_time,
+					uu.owner_code,
+					uu.owner_name,
+					uu.sku_code,
+					uu.sku_name,
+					uu.lot_num,
+					uu.loc_code,
+					uu.trace_id,
+					uu.lot_att01,
+					uu.lot_att02,
+					uu.lot_att03,
+					uu.lot_att04,
+					uu.lot_att05,
+					uu.lot_att06,
+					uu.lot_att07,
+					uu.lot_att08,
+					uu.lot_att09,
+					uu.lot_att10,
+					uu.lot_att11,
+					uu.lot_att12
+				FROM (
+					SELECT
+						ppt.tran_time,
+						pp.owner_code,
+						pp.owner_name,
+						pp.sku_code,
+						pp.sku_name,
+						pp.lot_num,
+						pp.loc_code,
+						pp.trace_id,
+						pp.lot_att01,
+						pp.lot_att02,
+						pp.lot_att03,
+						pp.lot_att04,
+						pp.lot_att05,
+						pp.lot_att06,
+						pp.lot_att07,
+						pp.lot_att08,
+						pp.lot_att09,
+						pp.lot_att10,
+						pp.lot_att11,
+						pp.lot_att12
+					FROM (
+						SELECT
+							MAX( tt.tran_time ) AS tran_time,
+							tt.fm_owner AS owner_code,
+							tt.fm_loc AS loc_code,
+							tt.fm_id AS trace_id,
+							tt.ebcu_name_cn AS owner_name,
+							tt.fm_sku AS sku_code,
+							tt.sku_name AS sku_name,
+							tt.fm_lot AS lot_num,
+							tt.lot_att01,
+							tt.lot_att02,
+							tt.lot_att03,
+							tt.lot_att04,
+							tt.lot_att05,
+							tt.lot_att06,
+							tt.lot_att07,
+							tt.lot_att08,
+							tt.lot_att09,
+							tt.lot_att10,
+							tt.lot_att11,
+							tt.lot_att12 
+						FROM (
+							SELECT
+								wat.tran_time,
+								wat.fm_owner,
+								ec.ebcu_name_cn,
+								wat.fm_sku,
+								cws.sku_name,
+								wat.fm_lot,
+								wila.lot_att01,
+								wila.lot_att02,
+								wila.lot_att03,
+								wila.lot_att04,
+								wila.lot_att05,
+								wila.lot_att06,
+								wila.lot_att07,
+								wila.lot_att08,
+								wila.lot_att09,
+								wila.lot_att10,
+								wila.lot_att11,
+								wila.lot_att12,
+								wat.fm_loc,
+								wat.fm_id
+							FROM wm_act_tran wat
+							LEFT JOIN wm_inv_lot_att wila ON wat.fm_lot = wila.lot_num AND wat.org_id = wila.org_id
+							LEFT JOIN cd_wh_sku cws ON wat.fm_sku = cws.sku_code AND wat.fm_owner = cws.owner_code AND wat.org_id = cws.org_id
+							LEFT JOIN eb_customer ec ON wat.fm_owner = ec.ebcu_customer_no AND wat.org_id = ec.org_id
+							WHERE 1 = 1
+							AND wat.fm_owner IS NOT NULL
+							AND wat.fm_sku IS NOT NULL
+							AND wat.org_id = #{orgId}
+							<if test="tranTime != null and tranTime != ''">
+								AND wat.tran_time &lt;= #{tranTime}
+							</if>
+							<if test="ownerCode != null and ownerCode != ''">
+								AND wat.fm_owner = #{ownerCode}
+							</if>
+							<if test="skuCode != null and skuCode != ''">
+								AND wat.fm_sku = #{skuCode}
+							</if>
+							<if test="lotNum != null and lotNum != ''">
+								AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+							</if>
+							<if test="locCode != null and locCode != ''">
+								AND wat.fm_loc = #{locCode}
+							</if>
+							<if test="traceId != null and traceId != ''">
+								AND wat.fm_id LIKE CONCAT(#{traceId}, '%')
+							</if>
+							<if test="lotAtt01 != null and lotAtt01 != ''">
+								AND wila.lot_att01 LIKE CONCAT(#{lotAtt01}, '%')
+							</if>
+							<if test="lotAtt02 != null and lotAtt02 != ''">
+								AND wila.lot_att02 LIKE CONCAT(#{lotAtt02}, '%')
+							</if>
+							<if test="lotAtt03 != null and lotAtt03 != ''">
+								AND wila.lot_att03 LIKE CONCAT(#{lotAtt03}, '%')
+							</if>
+							<if test="lotAtt04 != null and lotAtt04 != ''">
+								AND wila.lot_att04 LIKE CONCAT(#{lotAtt04}, '%')
+							</if>
+							<if test="lotAtt05 != null and lotAtt05 != ''">
+								AND wila.lot_att05 LIKE CONCAT(#{lotAtt05}, '%')
+							</if>
+							<if test="lotAtt06 != null and lotAtt06 != ''">
+								AND wila.lot_att06 LIKE CONCAT(#{lotAtt06}, '%')
+							</if>
+							<if test="lotAtt07 != null and lotAtt07 != ''">
+								AND wila.lot_att07 LIKE CONCAT(#{lotAtt07}, '%')
+							</if>
+							<if test="lotAtt08 != null and lotAtt08 != ''">
+								AND wila.lot_att08 LIKE CONCAT(#{lotAtt08}, '%')
+							</if>
+							<if test="lotAtt09 != null and lotAtt09 != ''">
+								AND wila.lot_att09 LIKE CONCAT(#{lotAtt09}, '%')
+							</if>
+							<if test="lotAtt10 != null and lotAtt10 != ''">
+								AND wila.lot_att10 LIKE CONCAT(#{lotAtt10}, '%')
+							</if>
+							<if test="lotAtt11 != null and lotAtt11 != ''">
+								AND wila.lot_att11 LIKE CONCAT(#{lotAtt11}, '%')
+							</if>
+							<if test="lotAtt12 != null and lotAtt12 != ''">
+								AND wila.lot_att12 LIKE CONCAT(#{lotAtt12}, '%')
+							</if>
+							UNION ALL
+							SELECT
+								wat.tran_time,
+								wat.to_owner,
+								ec1.ebcu_name_cn,
+								wat.to_sku,
+								cws1.sku_name,
+								wat.to_lot,
+								wila1.lot_att01,
+								wila1.lot_att02,
+								wila1.lot_att03,
+								wila1.lot_att04,
+								wila1.lot_att05,
+								wila1.lot_att06,
+								wila1.lot_att07,
+								wila1.lot_att08,
+								wila1.lot_att09,
+								wila1.lot_att10,
+								wila1.lot_att11,
+								wila1.lot_att12,
+								wat.to_loc,
+								wat.to_id
+							FROM wm_act_tran wat
+							LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+							LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+							LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+							WHERE 1 = 1
+							AND wat.to_owner IS NOT NULL
+							AND wat.to_sku IS NOT NULL
+							AND wat.org_id = #{orgId}
+							<if test="tranTime != null and tranTime != ''">
+								AND wat.tran_time &lt;= #{tranTime}
+							</if>
+							<if test="ownerCode != null and ownerCode != ''">
+								AND wat.fm_owner = #{ownerCode}
+							</if>
+							<if test="skuCode != null and skuCode != ''">
+								AND wat.fm_sku = #{skuCode}
+							</if>
+							<if test="lotNum != null and lotNum != ''">
+								AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+							</if>
+							<if test="locCode != null and locCode != ''">
+								AND wat.fm_loc = #{locCode}
+							</if>
+							<if test="traceId != null and traceId != ''">
+								AND wat.fm_id LIKE CONCAT(#{traceId}, '%')
+							</if>
+							<if test="lotAtt01 != null and lotAtt01 != ''">
+								AND wila1.lot_att01 LIKE CONCAT(#{lotAtt01}, '%')
+							</if>
+							<if test="lotAtt02 != null and lotAtt02 != ''">
+								AND wila1.lot_att02 LIKE CONCAT(#{lotAtt02}, '%')
+							</if>
+							<if test="lotAtt03 != null and lotAtt03 != ''">
+								AND wila1.lot_att03 LIKE CONCAT(#{lotAtt03}, '%')
+							</if>
+							<if test="lotAtt04 != null and lotAtt04 != ''">
+								AND wila1.lot_att04 LIKE CONCAT(#{lotAtt04}, '%')
+							</if>
+							<if test="lotAtt05 != null and lotAtt05 != ''">
+								AND wila1.lot_att05 LIKE CONCAT(#{lotAtt05}, '%')
+							</if>
+							<if test="lotAtt06 != null and lotAtt06 != ''">
+								AND wila1.lot_att06 LIKE CONCAT(#{lotAtt06}, '%')
+							</if>
+							<if test="lotAtt07 != null and lotAtt07 != ''">
+								AND wila1.lot_att07 LIKE CONCAT(#{lotAtt07}, '%')
+							</if>
+							<if test="lotAtt08 != null and lotAtt08 != ''">
+								AND wila1.lot_att08 LIKE CONCAT(#{lotAtt08}, '%')
+							</if>
+							<if test="lotAtt09 != null and lotAtt09 != ''">
+								AND wila1.lot_att09 LIKE CONCAT(#{lotAtt09}, '%')
+							</if>
+							<if test="lotAtt10 != null and lotAtt10 != ''">
+								AND wila1.lot_att10 LIKE CONCAT(#{lotAtt10}, '%')
+							</if>
+							<if test="lotAtt11 != null and lotAtt11 != ''">
+								AND wila1.lot_att11 LIKE CONCAT(#{lotAtt11}, '%')
+							</if>
+							<if test="lotAtt12 != null and lotAtt12 != ''">
+								AND wila1.lot_att12 LIKE CONCAT(#{lotAtt12}, '%')
+							</if>
+						) tt
+						GROUP BY
+							tt.fm_owner,
+							tt.fm_loc,
+							tt.fm_id,
+							tt.ebcu_name_cn,
+							tt.fm_sku,
+							sku_name,
+							tt.fm_lot,
+							tt.lot_att01,
+							tt.lot_att02,
+							tt.lot_att03,
+							tt.lot_att04,
+							tt.lot_att05,
+							tt.lot_att06,
+							tt.lot_att07,
+							tt.lot_att08,
+							tt.lot_att09,
+							tt.lot_att10,
+							tt.lot_att11,
+							tt.lot_att12 
+					) pp
+					LEFT JOIN (
+						SELECT
+							wat.id,
+							wat.tran_time,
+							wat.fm_owner,
+							ec.ebcu_name_cn,
+							wat.fm_sku,
+							cws.sku_name,
+							wat.fm_lot,
+							wila.lot_att01,
+							wila.lot_att02,
+							wila.lot_att03,
+							wila.lot_att04,
+							wila.lot_att05,
+							wila.lot_att06,
+							wila.lot_att07,
+							wila.lot_att08,
+							wila.lot_att09,
+							wila.lot_att10,
+							wila.lot_att11,
+							wila.lot_att12,
+							wat.fm_loc,
+							wat.fm_id,
+							wat.fm_qty_ea_before,
+							wat.fm_qty_ea_after
+						FROM wm_act_tran wat
+						LEFT JOIN wm_inv_lot_att wila ON wat.fm_lot = wila.lot_num AND wat.org_id = wila.org_id
+						LEFT JOIN cd_wh_sku cws ON wat.fm_sku = cws.sku_code AND wat.fm_owner = cws.owner_code AND wat.org_id = cws.org_id
+						LEFT JOIN eb_customer ec ON wat.fm_owner = ec.ebcu_customer_no AND wat.org_id = ec.org_id
+						WHERE 1 = 1
+						AND NOT exists (
+							SELECT 1 FROM wm_act_tran watg
+							LEFT JOIN wm_inv_lot_att wila ON watg.fm_lot = wila.lot_num AND watg.org_id = wila.org_id
+							WHERE 1 = 1
+							AND watg.org_id = #{orgId}
+							<if test="tranTime != null and tranTime != ''">
+								AND watg.tran_time &lt;= #{tranTime}
+							</if>
+							<if test="ownerCode != null and ownerCode != ''">
+								AND watg.fm_owner = #{ownerCode}
+							</if>
+							<if test="skuCode != null and skuCode != ''">
+								AND watg.fm_sku = #{skuCode}
+							</if>
+							<if test="lotNum != null and lotNum != ''">
+								AND watg.fm_lot LIKE CONCAT(#{lotNum}, '%')
+							</if>
+							<if test="locCode != null and locCode != ''">
+								AND watg.fm_loc = #{locCode}
+							</if>
+							<if test="traceId != null and traceId != ''">
+								AND watg.fm_id LIKE CONCAT(#{traceId}, '%')
+							</if>
+							<if test="lotAtt01 != null and lotAtt01 != ''">
+								AND wila.lot_att01 LIKE CONCAT(#{lotAtt01}, '%')
+							</if>
+							<if test="lotAtt02 != null and lotAtt02 != ''">
+								AND wila.lot_att02 LIKE CONCAT(#{lotAtt02}, '%')
+							</if>
+							<if test="lotAtt03 != null and lotAtt03 != ''">
+								AND wila.lot_att03 LIKE CONCAT(#{lotAtt03}, '%')
+							</if>
+							<if test="lotAtt04 != null and lotAtt04 != ''">
+								AND wila.lot_att04 LIKE CONCAT(#{lotAtt04}, '%')
+							</if>
+							<if test="lotAtt05 != null and lotAtt05 != ''">
+								AND wila.lot_att05 LIKE CONCAT(#{lotAtt05}, '%')
+							</if>
+							<if test="lotAtt06 != null and lotAtt06 != ''">
+								AND wila.lot_att06 LIKE CONCAT(#{lotAtt06}, '%')
+							</if>
+							<if test="lotAtt07 != null and lotAtt07 != ''">
+								AND wila.lot_att07 LIKE CONCAT(#{lotAtt07}, '%')
+							</if>
+							<if test="lotAtt08 != null and lotAtt08 != ''">
+								AND wila.lot_att08 LIKE CONCAT(#{lotAtt08}, '%')
+							</if>
+							<if test="lotAtt09 != null and lotAtt09 != ''">
+								AND wila.lot_att09 LIKE CONCAT(#{lotAtt09}, '%')
+							</if>
+							<if test="lotAtt10 != null and lotAtt10 != ''">
+								AND wila.lot_att10 LIKE CONCAT(#{lotAtt10}, '%')
+							</if>
+							<if test="lotAtt11 != null and lotAtt11 != ''">
+								AND wila.lot_att11 LIKE CONCAT(#{lotAtt11}, '%')
+							</if>
+							<if test="lotAtt12 != null and lotAtt12 != ''">
+								AND wila.lot_att12 LIKE CONCAT(#{lotAtt12}, '%')
+							</if>
+							AND (watg.fm_owner = watg.to_owner AND watg.fm_sku = watg.to_sku AND watg.fm_lot = watg.to_lot AND watg.fm_loc = watg.to_loc AND watg.fm_id = watg.to_id )
+							AND watg.fm_owner IS NOT NULL
+							AND watg.fm_sku IS NOT NULL
+							AND wat.id = watg.id )
+						AND wat.fm_owner IS NOT NULL
+						AND wat.fm_sku IS NOT NULL
+						AND wat.org_id = #{orgId}
+						<if test="tranTime != null and tranTime != ''">
+							AND wat.tran_time &lt;= #{tranTime}
+						</if>
+						<if test="ownerCode != null and ownerCode != ''">
+							AND wat.fm_owner = #{ownerCode}
+						</if>
+						<if test="skuCode != null and skuCode != ''">
+							AND wat.fm_sku = #{skuCode}
+						</if>
+						<if test="lotNum != null and lotNum != ''">
+							AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+						</if>
+						<if test="locCode != null and locCode != ''">
+							AND wat.fm_loc = #{locCode}
+						</if>
+						<if test="traceId != null and traceId != ''">
+							AND wat.fm_id LIKE CONCAT(#{traceId}, '%')
+						</if>
+						<if test="lotAtt01 != null and lotAtt01 != ''">
+							AND wila.lot_att01 LIKE CONCAT(#{lotAtt01}, '%')
+						</if>
+						<if test="lotAtt02 != null and lotAtt02 != ''">
+							AND wila.lot_att02 LIKE CONCAT(#{lotAtt02}, '%')
+						</if>
+						<if test="lotAtt03 != null and lotAtt03 != ''">
+							AND wila.lot_att03 LIKE CONCAT(#{lotAtt03}, '%')
+						</if>
+						<if test="lotAtt04 != null and lotAtt04 != ''">
+							AND wila.lot_att04 LIKE CONCAT(#{lotAtt04}, '%')
+						</if>
+						<if test="lotAtt05 != null and lotAtt05 != ''">
+							AND wila.lot_att05 LIKE CONCAT(#{lotAtt05}, '%')
+						</if>
+						<if test="lotAtt06 != null and lotAtt06 != ''">
+							AND wila.lot_att06 LIKE CONCAT(#{lotAtt06}, '%')
+						</if>
+						<if test="lotAtt07 != null and lotAtt07 != ''">
+							AND wila.lot_att07 LIKE CONCAT(#{lotAtt07}, '%')
+						</if>
+						<if test="lotAtt08 != null and lotAtt08 != ''">
+							AND wila.lot_att08 LIKE CONCAT(#{lotAtt08}, '%')
+						</if>
+						<if test="lotAtt09 != null and lotAtt09 != ''">
+							AND wila.lot_att09 LIKE CONCAT(#{lotAtt09}, '%')
+						</if>
+						<if test="lotAtt10 != null and lotAtt10 != ''">
+							AND wila.lot_att10 LIKE CONCAT(#{lotAtt10}, '%')
+						</if>
+						<if test="lotAtt11 != null and lotAtt11 != ''">
+							AND wila.lot_att11 LIKE CONCAT(#{lotAtt11}, '%')
+						</if>
+						<if test="lotAtt12 != null and lotAtt12 != ''">
+							AND wila.lot_att12 LIKE CONCAT(#{lotAtt12}, '%')
+						</if>
+						UNION ALL
+						SELECT
+							wat.id,
+							wat.tran_time,
+							wat.to_owner,
+							ec1.ebcu_name_cn,
+							wat.to_sku,
+							cws1.sku_name,
+							wat.to_lot,
+							wila1.lot_att01,
+							wila1.lot_att02,
+							wila1.lot_att03,
+							wila1.lot_att04,
+							wila1.lot_att05,
+							wila1.lot_att06,
+							wila1.lot_att07,
+							wila1.lot_att08,
+							wila1.lot_att09,
+							wila1.lot_att10,
+							wila1.lot_att11,
+							wila1.lot_att12,
+							wat.to_loc,
+							wat.to_id,
+							wat.to_qty_ea_before,
+							wat.to_qty_ea_after
+						FROM wm_act_tran wat
+						LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+						LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+						LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+						WHERE 1 = 1
+						AND wat.to_owner IS NOT NULL
+						AND wat.to_sku IS NOT NULL
+						AND wat.org_id = #{orgId}
+						<if test="tranTime != null and tranTime != ''">
+							AND wat.tran_time &lt;= #{tranTime}
+						</if>
+						<if test="ownerCode != null and ownerCode != ''">
+							AND wat.fm_owner = #{ownerCode}
+						</if>
+						<if test="skuCode != null and skuCode != ''">
+							AND wat.fm_sku = #{skuCode}
+						</if>
+						<if test="lotNum != null and lotNum != ''">
+							AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+						</if>
+						<if test="locCode != null and locCode != ''">
+							AND wat.fm_loc = #{locCode}
+						</if>
+						<if test="traceId != null and traceId != ''">
+							AND wat.fm_id LIKE CONCAT(#{traceId}, '%')
+						</if>
+						<if test="lotAtt01 != null and lotAtt01 != ''">
+							AND wila1.lot_att01 LIKE CONCAT(#{lotAtt01}, '%')
+						</if>
+						<if test="lotAtt02 != null and lotAtt02 != ''">
+							AND wila1.lot_att02 LIKE CONCAT(#{lotAtt02}, '%')
+						</if>
+						<if test="lotAtt03 != null and lotAtt03 != ''">
+							AND wila1.lot_att03 LIKE CONCAT(#{lotAtt03}, '%')
+						</if>
+						<if test="lotAtt04 != null and lotAtt04 != ''">
+							AND wila1.lot_att04 LIKE CONCAT(#{lotAtt04}, '%')
+						</if>
+						<if test="lotAtt05 != null and lotAtt05 != ''">
+							AND wila1.lot_att05 LIKE CONCAT(#{lotAtt05}, '%')
+						</if>
+						<if test="lotAtt06 != null and lotAtt06 != ''">
+							AND wila1.lot_att06 LIKE CONCAT(#{lotAtt06}, '%')
+						</if>
+						<if test="lotAtt07 != null and lotAtt07 != ''">
+							AND wila1.lot_att07 LIKE CONCAT(#{lotAtt07}, '%')
+						</if>
+						<if test="lotAtt08 != null and lotAtt08 != ''">
+							AND wila1.lot_att08 LIKE CONCAT(#{lotAtt08}, '%')
+						</if>
+						<if test="lotAtt09 != null and lotAtt09 != ''">
+							AND wila1.lot_att09 LIKE CONCAT(#{lotAtt09}, '%')
+						</if>
+						<if test="lotAtt10 != null and lotAtt10 != ''">
+							AND wila1.lot_att10 LIKE CONCAT(#{lotAtt10}, '%')
+						</if>
+						<if test="lotAtt11 != null and lotAtt11 != ''">
+							AND wila1.lot_att11 LIKE CONCAT(#{lotAtt11}, '%')
+						</if>
+						<if test="lotAtt12 != null and lotAtt12 != ''">
+							AND wila1.lot_att12 LIKE CONCAT(#{lotAtt12}, '%')
+						</if>
+						) ppt
+					ON pp.tran_time = ppt.tran_time
+					AND pp.owner_code = ppt.fm_owner
+					AND pp.sku_code = ppt.fm_sku
+					AND pp.lot_num = ppt.fm_lot
+					AND pp.loc_code = ppt.fm_loc
+					AND pp.trace_id = ppt.fm_id
+					WHERE 1 = 1
+				) uu
+				GROUP BY
+					uu.owner_code,
+					uu.owner_name,
+					uu.sku_code,
+					uu.sku_name,
+					uu.lot_num,
+					uu.loc_code,
+					uu.trace_id,
+					uu.lot_att01,
+					uu.lot_att02,
+					uu.lot_att03,
+					uu.lot_att04,
+					uu.lot_att05,
+					uu.lot_att06,
+					uu.lot_att07,
+					uu.lot_att08,
+					uu.lot_att09,
+					uu.lot_att10,
+					uu.lot_att11,
+					uu.lot_att12
+			) ppoi
+			LEFT JOIN (
+				SELECT
+					wat.id,
+					wat.tran_time,
+					wat.fm_owner,
+					ec.ebcu_name_cn,
+					wat.fm_sku,
+					cws.sku_name,
+					wat.fm_lot,
+					wila.lot_att01,
+					wila.lot_att02,
+					wila.lot_att03,
+					wila.lot_att04,
+					wila.lot_att05,
+					wila.lot_att06,
+					wila.lot_att07,
+					wila.lot_att08,
+					wila.lot_att09,
+					wila.lot_att10,
+					wila.lot_att11,
+					wila.lot_att12,
+					wat.fm_loc,
+					wat.fm_id,
+					wat.fm_qty_ea_before,
+					wat.fm_qty_ea_after
+				FROM wm_act_tran wat
+				LEFT JOIN wm_inv_lot_att wila ON wat.fm_lot = wila.lot_num AND wat.org_id = wila.org_id
+				LEFT JOIN cd_wh_sku cws ON wat.fm_sku = cws.sku_code AND wat.fm_owner = cws.owner_code AND wat.org_id = cws.org_id
+				LEFT JOIN eb_customer ec ON wat.fm_owner = ec.ebcu_customer_no AND wat.org_id = ec.org_id
+				WHERE 1 = 1
+				AND NOT exists (
+					SELECT 1 FROM wm_act_tran watg
+					LEFT JOIN wm_inv_lot_att wila ON watg.fm_lot = wila.lot_num AND watg.org_id = wila.org_id
+					WHERE 1 = 1
+					AND watg.org_id = #{orgId}
+					<if test="tranTime != null and tranTime != ''">
+						AND watg.tran_time &lt;= #{tranTime}
+					</if>
+					<if test="ownerCode != null and ownerCode != ''">
+						AND watg.fm_owner = #{ownerCode}
+					</if>
+					<if test="skuCode != null and skuCode != ''">
+						AND watg.fm_sku = #{skuCode}
+					</if>
+					<if test="lotNum != null and lotNum != ''">
+						AND watg.fm_lot LIKE CONCAT(#{lotNum}, '%')
+					</if>
+					<if test="locCode != null and locCode != ''">
+						AND watg.fm_loc = #{locCode}
+					</if>
+					<if test="traceId != null and traceId != ''">
+						AND watg.fm_id LIKE CONCAT(#{traceId}, '%')
+					</if>
+					<if test="lotAtt01 != null and lotAtt01 != ''">
+						AND wila.lot_att01 LIKE CONCAT(#{lotAtt01}, '%')
+					</if>
+					<if test="lotAtt02 != null and lotAtt02 != ''">
+						AND wila.lot_att02 LIKE CONCAT(#{lotAtt02}, '%')
+					</if>
+					<if test="lotAtt03 != null and lotAtt03 != ''">
+						AND wila.lot_att03 LIKE CONCAT(#{lotAtt03}, '%')
+					</if>
+					<if test="lotAtt04 != null and lotAtt04 != ''">
+						AND wila.lot_att04 LIKE CONCAT(#{lotAtt04}, '%')
+					</if>
+					<if test="lotAtt05 != null and lotAtt05 != ''">
+						AND wila.lot_att05 LIKE CONCAT(#{lotAtt05}, '%')
+					</if>
+					<if test="lotAtt06 != null and lotAtt06 != ''">
+						AND wila.lot_att06 LIKE CONCAT(#{lotAtt06}, '%')
+					</if>
+					<if test="lotAtt07 != null and lotAtt07 != ''">
+						AND wila.lot_att07 LIKE CONCAT(#{lotAtt07}, '%')
+					</if>
+					<if test="lotAtt08 != null and lotAtt08 != ''">
+						AND wila.lot_att08 LIKE CONCAT(#{lotAtt08}, '%')
+					</if>
+					<if test="lotAtt09 != null and lotAtt09 != ''">
+						AND wila.lot_att09 LIKE CONCAT(#{lotAtt09}, '%')
+					</if>
+					<if test="lotAtt10 != null and lotAtt10 != ''">
+						AND wila.lot_att10 LIKE CONCAT(#{lotAtt10}, '%')
+					</if>
+					<if test="lotAtt11 != null and lotAtt11 != ''">
+						AND wila.lot_att11 LIKE CONCAT(#{lotAtt11}, '%')
+					</if>
+					<if test="lotAtt12 != null and lotAtt12 != ''">
+						AND wila.lot_att12 LIKE CONCAT(#{lotAtt12}, '%')
+					</if>
+					AND (watg.fm_owner = watg.to_owner AND watg.fm_sku = watg.to_sku AND watg.fm_lot = watg.to_lot AND watg.fm_loc = watg.to_loc AND watg.fm_id = watg.to_id )
+					AND watg.fm_owner IS NOT NULL
+					AND watg.fm_sku IS NOT NULL
+					AND wat.id = watg.id )
+				AND wat.fm_owner IS NOT NULL
+				AND wat.fm_sku IS NOT NULL
+				UNION ALL
+				SELECT
+					wat.id,
+					wat.tran_time,
+					wat.to_owner,
+					ec1.ebcu_name_cn,
+					wat.to_sku,
+					cws1.sku_name,
+					wat.to_lot,
+					wila1.lot_att01,
+					wila1.lot_att02,
+					wila1.lot_att03,
+					wila1.lot_att04,
+					wila1.lot_att05,
+					wila1.lot_att06,
+					wila1.lot_att07,
+					wila1.lot_att08,
+					wila1.lot_att09,
+					wila1.lot_att10,
+					wila1.lot_att11,
+					wila1.lot_att12,
+					wat.to_loc,
+					wat.to_id,
+					wat.to_qty_ea_before,
+					wat.to_qty_ea_after
+				FROM wm_act_tran wat
+				LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+				LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+				LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+				WHERE 1 = 1
+				AND wat.to_owner IS NOT NULL
+				AND wat.to_sku IS NOT NULL
+				AND wat.org_id = #{orgId}
+				<if test="tranTime != null and tranTime != ''">
+					AND wat.tran_time &lt;= #{tranTime}
+				</if>
+				<if test="ownerCode != null and ownerCode != ''">
+					AND wat.fm_owner = #{ownerCode}
+				</if>
+				<if test="skuCode != null and skuCode != ''">
+					AND wat.fm_sku = #{skuCode}
+				</if>
+				<if test="lotNum != null and lotNum != ''">
+					AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+				</if>
+				<if test="locCode != null and locCode != ''">
+					AND wat.fm_loc = #{locCode}
+				</if>
+				<if test="traceId != null and traceId != ''">
+					AND wat.fm_id LIKE CONCAT(#{traceId}, '%')
+				</if>
+				<if test="lotAtt01 != null and lotAtt01 != ''">
+					AND wila1.lot_att01 LIKE CONCAT(#{lotAtt01}, '%')
+				</if>
+				<if test="lotAtt02 != null and lotAtt02 != ''">
+					AND wila1.lot_att02 LIKE CONCAT(#{lotAtt02}, '%')
+				</if>
+				<if test="lotAtt03 != null and lotAtt03 != ''">
+					AND wila1.lot_att03 LIKE CONCAT(#{lotAtt03}, '%')
+				</if>
+				<if test="lotAtt04 != null and lotAtt04 != ''">
+					AND wila1.lot_att04 LIKE CONCAT(#{lotAtt04}, '%')
+				</if>
+				<if test="lotAtt05 != null and lotAtt05 != ''">
+					AND wila1.lot_att05 LIKE CONCAT(#{lotAtt05}, '%')
+				</if>
+				<if test="lotAtt06 != null and lotAtt06 != ''">
+					AND wila1.lot_att06 LIKE CONCAT(#{lotAtt06}, '%')
+				</if>
+				<if test="lotAtt07 != null and lotAtt07 != ''">
+					AND wila1.lot_att07 LIKE CONCAT(#{lotAtt07}, '%')
+				</if>
+				<if test="lotAtt08 != null and lotAtt08 != ''">
+					AND wila1.lot_att08 LIKE CONCAT(#{lotAtt08}, '%')
+				</if>
+				<if test="lotAtt09 != null and lotAtt09 != ''">
+					AND wila1.lot_att09 LIKE CONCAT(#{lotAtt09}, '%')
+				</if>
+				<if test="lotAtt10 != null and lotAtt10 != ''">
+					AND wila1.lot_att10 LIKE CONCAT(#{lotAtt10}, '%')
+				</if>
+				<if test="lotAtt11 != null and lotAtt11 != ''">
+					AND wila1.lot_att11 LIKE CONCAT(#{lotAtt11}, '%')
+				</if>
+				<if test="lotAtt12 != null and lotAtt12 != ''">
+					AND wila1.lot_att12 LIKE CONCAT(#{lotAtt12}, '%')
+				</if>
+			) pptt
+			ON ppoi.tran_time = pptt.tran_time
+			AND ppoi.owner_code = pptt.fm_owner
+			AND ppoi.sku_code = pptt.fm_sku
+			AND ppoi.lot_num = pptt.fm_lot
+			AND ppoi.loc_code = pptt.fm_loc
+			AND ppoi.trace_id = pptt.fm_id
+		) gg
+		GROUP BY
+			gg.owner_code,
+			gg.owner_name,
+			gg.sku_code,
+			gg.sku_name,
+			gg.lot_num,
+			gg.lot_att01,
+			gg.lot_att02,
+			gg.lot_att03,
+			gg.lot_att04,
+			gg.lot_att05,
+			gg.lot_att06,
+			gg.lot_att07,
+			gg.lot_att08,
+			gg.lot_att09,
+			gg.lot_att10,
+			gg.lot_att11,
+			gg.lot_att12
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY gg.owner_code
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findPageByZone" resultType="com.yunyou.modules.wms.report.entity.WmRepInvDailyByZoneEntity">
+		SELECT will.owner_code                             AS ownerCode,
+			   ec.ebcu_name_cn                             AS ownerName,
+			   will.sku_code                               AS skuCode,
+			   cws.sku_name                                AS skuName,
+			   cwz.zone_code                               AS zoneCode,
+			   cwz.zone_name                               AS zoneName,
+			   will.lot_num                                AS lotNum,
+			   SUM(will.qty)                               AS invQty,
+			   SUM(will.qty) * IFNULL(cws.gross_weight, 0) AS weight,
+			   wila.lot_att01                              AS lotAtt01,
+			   wila.lot_att02                              AS lotAtt02,
+			   wila.lot_att03                              AS lotAtt03,
+			   wila.lot_att04                              AS lotAtt04,
+			   wila.lot_att05                              AS lotAtt05,
+			   wila.lot_att06                              AS lotAtt06,
+			   wila.lot_att07                              AS lotAtt07,
+			   wila.lot_att08                              AS lotAtt08,
+			   wila.lot_att09                              AS lotAtt09,
+			   wila.lot_att10                              AS lotAtt10,
+			   wila.lot_att11                              AS lotAtt11,
+			   wila.lot_att12                              AS lotAtt12
+		FROM wm_inv_lot_loc will
+			LEFT JOIN wm_inv_lot_att wila ON will.lot_num = wila.lot_num AND will.org_id = wila.org_id
+			LEFT JOIN cd_wh_loc cwl ON will.loc_code = cwl.loc_code AND will.org_id = cwl.org_id
+			LEFT JOIN cd_wh_zone cwz ON cwl.zone_code = cwz.zone_code AND cwl.org_id = cwz.org_id
+			LEFT JOIN eb_customer ec ON will.owner_code = ec.ebcu_customer_no AND will.org_id = ec.org_id
+			LEFT JOIN cd_wh_sku cws ON will.owner_code = cws.owner_code AND will.sku_code = cws.sku_code AND will.org_id = cws.org_id
+		WHERE will.qty > 0
+		${dataScope}
+		AND will.org_id = #{orgId}
+		<if test="ownerCode != null and ownerCode != ''">
+			AND will.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND will.sku_code = #{skuCode}
+		</if>
+		<if test="zoneCode != null and zoneCode != ''">
+			AND cwz.zone_code = #{zoneCode}
+		</if>
+		<if test="lotNum != null and lotNum != ''">
+			AND will.lot_num = #{lotNum}
+		</if>
+		<if test="lotAtt01 != null and lotAtt01 != ''">
+			AND wila.lot_att01 = #{lotAtt01}
+		</if>
+		<if test="lotAtt02 != null and lotAtt02 != ''">
+			AND wila.lot_att02 = #{lotAtt02}
+		</if>
+		<if test="lotAtt03 != null and lotAtt03 != ''">
+			AND wila.lot_att03 = #{lotAtt03}
+		</if>
+		<if test="lotAtt04 != null and lotAtt04 != ''">
+			AND wila.lot_att04 = #{lotAtt04}
+		</if>
+		<if test="lotAtt05 != null and lotAtt05 != ''">
+			AND wila.lot_att05 = #{lotAtt05}
+		</if>
+		<if test="lotAtt06 != null and lotAtt06 != ''">
+			AND wila.lot_att06 = #{lotAtt06}
+		</if>
+		<if test="lotAtt07 != null and lotAtt07 != ''">
+			AND wila.lot_att07 = #{lotAtt07}
+		</if>
+		<if test="lotAtt08 != null and lotAtt08 != ''">
+			AND wila.lot_att08 = #{lotAtt08}
+		</if>
+		<if test="lotAtt09 != null and lotAtt09 != ''">
+			AND wila.lot_att09 = #{lotAtt09}
+		</if>
+		<if test="lotAtt10 != null and lotAtt10 != ''">
+			AND wila.lot_att10 = #{lotAtt10}
+		</if>
+		<if test="lotAtt11 != null and lotAtt11 != ''">
+			AND wila.lot_att11 = #{lotAtt11}
+		</if>
+		<if test="lotAtt12 != null and lotAtt12 != ''">
+			AND wila.lot_att12 = #{lotAtt12}
+		</if>
+		GROUP BY will.owner_code, will.sku_code, cwz.zone_code, will.lot_num, will.org_id
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY will.owner_code, will.sku_code, cwz.zone_code, will.lot_num
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinWmCarrierTypeRelationMapper">
+    
+	<sql id="banQinWmCarrierTypeRelationColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.carrier_code AS "carrierCode",
+		a.type AS "type",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.tracking_interface_id AS "trackingInterfaceId",
+		a.mail_type AS "mailType"
+	</sql>
+	
+	<sql id="banQinWmCarrierTypeRelationJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinWmCarrierTypeRelation" >
+		SELECT <include refid="banQinWmCarrierTypeRelationColumns"/>
+		FROM wm_carrier_type_relation a
+		<include refid="banQinWmCarrierTypeRelationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntity" resultType="BanQinWmCarrierTypeRelationEntity" >
+		SELECT ebcs.ebcu_name_cn AS carrierName,
+			cti.description AS description,
+		       <include refid="banQinWmCarrierTypeRelationColumns"/>
+		FROM wm_carrier_type_relation a
+		<include refid="banQinWmCarrierTypeRelationJoins"/>
+		LEFT JOIN eb_customer ebcs ON ebcs.ebcu_customer_no = a.carrier_code AND ebcs.org_id= a.org_id
+		LEFT JOIN cd_tracking_info cti ON a.tracking_interface_id = cti.id
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmCarrierTypeRelation" >
+		SELECT <include refid="banQinWmCarrierTypeRelationColumns"/>
+		FROM wm_carrier_type_relation a
+		<include refid="banQinWmCarrierTypeRelationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmCarrierTypeRelationEntity" >
+		SELECT ebcs.ebcu_name_cn AS carrierName,
+			cti.description AS description,
+		       <include refid="banQinWmCarrierTypeRelationColumns"/>
+		FROM wm_carrier_type_relation a
+		<include refid="banQinWmCarrierTypeRelationJoins"/>
+		LEFT JOIN eb_customer ebcs ON ebcs.ebcu_customer_no = a.carrier_code AND ebcs.org_id= a.org_id
+		LEFT JOIN cd_tracking_info cti ON a.tracking_interface_id = cti.id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmCarrierTypeRelation" >
+		SELECT <include refid="banQinWmCarrierTypeRelationColumns"/>
+		FROM wm_carrier_type_relation a
+		<include refid="banQinWmCarrierTypeRelationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_carrier_type_relation(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			carrier_code,
+			type,
+			org_id,
+		 	rec_ver,
+			tracking_interface_id,
+			mail_type
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{carrierCode},
+			#{type},
+			#{orgId},
+			#{recVer},
+		    #{trackingInterfaceId},
+		    #{mailType}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_carrier_type_relation SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			carrier_code = #{carrierCode},
+			type = #{type},
+			org_id = #{orgId},
+			rec_ver = #{recVer} + 1,
+			tracking_interface_id = #{trackingInterfaceId},
+			mail_type = #{mailType}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_carrier_type_relation SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM wm_carrier_type_relation WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM wm_carrier_type_relation WHERE carrier_code = #{carrierCode} AND org_id = #{orgId}
+	</delete>
+
+	<select id="findEntity" resultType="BanQinWmCarrierTypeRelationEntity" >
+		SELECT
+			ebcs.ebcu_name_cn AS carrierName,
+			cti.description AS description,
+		    cti.url AS url,
+		    cti.params AS params,
+			<include refid="banQinWmCarrierTypeRelationColumns"/>
+		FROM wm_carrier_type_relation a
+		LEFT JOIN eb_customer ebcs ON ebcs.ebcu_customer_no = a.carrier_code AND ebcs.org_id = a.org_id
+		LEFT JOIN cd_tracking_info cti ON a.tracking_interface_id = cti.id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.basic.mapper.TmObjRouteMapper">
+    
+	<sql id="tmObjRouteColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.carrier_code AS "carrierCode",
+		a.start_obj_code AS "startObjCode",
+		a.start_obj_address AS "startObjAddress",
+		a.end_obj_code AS "endObjCode",
+		a.end_obj_address AS "endObjAddress",
+		a.audit_status AS "auditStatus",
+		a.mileage AS "mileage",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<select id="get" resultType="com.yunyou.modules.tms.basic.entity.TmObjRoute" >
+		SELECT 
+			<include refid="tmObjRouteColumns"/>
+		FROM tm_obj_route a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.tms.basic.entity.TmObjRoute" >
+		SELECT 
+			<include refid="tmObjRouteColumns"/>
+		FROM tm_obj_route a
+		<where>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="startObjCode != null and startObjCode != ''">
+				AND a.start_obj_code = #{startObjCode}
+			</if>
+			<if test="endObjCode != null and endObjCode != ''">
+				AND a.end_obj_code = #{endObjCode}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.tms.basic.entity.TmObjRoute" >
+		SELECT 
+			<include refid="tmObjRouteColumns"/>
+		FROM tm_obj_route a
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_obj_route(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			rec_ver,
+			carrier_code,
+			start_obj_code,
+			start_obj_address,
+			end_obj_code,
+			end_obj_address,
+			audit_status,
+			mileage,
+			org_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{recVer},
+			#{carrierCode},
+			#{startObjCode},
+			#{startObjAddress},
+			#{endObjCode},
+			#{endObjAddress},
+			#{auditStatus},
+			#{mileage},
+			#{orgId}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE tm_obj_route
+		SET update_by         = #{updateBy.id},
+			update_date       = #{updateDate},
+			rec_ver           = rec_ver + 1,
+			carrier_code      = #{carrierCode},
+			start_obj_code    = #{startObjCode},
+			start_obj_address = #{startObjAddress},
+			end_obj_code      = #{endObjCode},
+			end_obj_address   = #{endObjAddress},
+			audit_status      = #{auditStatus},
+			mileage           = #{mileage},
+			org_id            = #{orgId}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_obj_route WHERE id = #{id}
+	</delete>
+	<select id="getByCode" resultType="com.yunyou.modules.tms.basic.entity.TmObjRoute">
+		SELECT
+		<include refid="tmObjRouteColumns"/>
+		FROM tm_obj_route a
+		WHERE a.carrier_code = #{carrierCode}
+		AND a.start_obj_code = #{startObjCode}
+		AND a.end_obj_code = #{endObjCode}
+		AND a.org_id = #{orgId}
+	</select>
+	<select id="getEntity" resultType="com.yunyou.modules.tms.basic.entity.extend.TmObjRouteEntity">
+		SELECT
+		ttoc.transport_obj_name AS "carrierName",
+		ttos.transport_obj_name AS "startObjName",
+		ttoe.transport_obj_name AS "endObjName",
+		<include refid="tmObjRouteColumns"/>
+		FROM tm_obj_route a
+		LEFT JOIN tm_transport_obj ttoc ON a.carrier_code = ttoc.transport_obj_code AND a.org_id = ttoc.org_id
+		LEFT JOIN tm_transport_obj ttos ON a.start_obj_code = ttos.transport_obj_code AND a.org_id = ttos.org_id
+		LEFT JOIN tm_transport_obj ttoe ON a.end_obj_code = ttoe.transport_obj_code AND a.org_id = ttoe.org_id
+		WHERE a.id = #{id}
+	</select>
+	<select id="findPage" resultType="com.yunyou.modules.tms.basic.entity.extend.TmObjRouteEntity">
+		SELECT
+		ttoc.transport_obj_name AS "carrierName",
+		ttos.transport_obj_name AS "startObjName",
+		ttoe.transport_obj_name AS "endObjName",
+		<include refid="tmObjRouteColumns"/>
+		FROM tm_obj_route a
+		LEFT JOIN tm_transport_obj ttoc ON a.carrier_code = ttoc.transport_obj_code AND a.org_id = ttoc.org_id
+		LEFT JOIN tm_transport_obj ttos ON a.start_obj_code = ttos.transport_obj_code AND a.org_id = ttos.org_id
+		LEFT JOIN tm_transport_obj ttoe ON a.end_obj_code = ttoe.transport_obj_code AND a.org_id = ttoe.org_id
+		<where>
+			${dataScope}
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="startObjCode != null and startObjCode != ''">
+				AND a.start_obj_code = #{startObjCode}
+			</if>
+			<if test="endObjCode != null and endObjCode != ''">
+				AND a.end_obj_code = #{endObjCode}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

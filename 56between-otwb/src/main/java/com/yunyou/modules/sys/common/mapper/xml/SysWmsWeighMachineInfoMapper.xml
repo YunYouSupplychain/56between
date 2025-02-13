@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysWmsWeighMachineInfoMapper">
+    
+	<sql id="sysWmsWeighMachineInfoColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.machine_no AS "machineNo",
+		a.org_id AS "orgId",
+		a.data_set AS "dataSet",
+		so.name AS "orgName",
+		scds.name AS "dataSetName"
+	</sql>
+	
+	<sql id="sysWmsWeighMachineInfoJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+		LEFT JOIN sys_office so ON a.org_id = so.id
+	</sql>
+    
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysWmsWeighMachineInfo" >
+		SELECT 
+			<include refid="sysWmsWeighMachineInfoColumns"/>
+		FROM sys_wms_weigh_machine_info a
+		<include refid="sysWmsWeighMachineInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysWmsWeighMachineInfo" >
+		SELECT 
+			<include refid="sysWmsWeighMachineInfoColumns"/>
+		FROM sys_wms_weigh_machine_info a
+		<include refid="sysWmsWeighMachineInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="machineNo != null and machineNo != ''">
+				AND a.machine_no = #{machineNo}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysWmsWeighMachineInfo" >
+		SELECT 
+			<include refid="sysWmsWeighMachineInfoColumns"/>
+		FROM sys_wms_weigh_machine_info a
+		<include refid="sysWmsWeighMachineInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_wms_weigh_machine_info(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			machine_no,
+			org_id,
+			data_set
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{machineNo},
+			#{orgId},
+			#{dataSet}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_wms_weigh_machine_info
+		SET update_by   = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks     = #{remarks},
+			machine_no  = #{machineNo},
+			org_id      = #{orgId},
+			data_set    = #{dataSet}
+		WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_wms_weigh_machine_info SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_wms_weigh_machine_info WHERE id = #{id}
+	</delete>
+
+	<select id="getEntity" resultType="com.yunyou.modules.sys.common.entity.extend.SysWmsWeighMachineInfoEntity" >
+		SELECT
+		<include refid="sysWmsWeighMachineInfoColumns"/>
+		FROM sys_wms_weigh_machine_info a
+		<include refid="sysWmsWeighMachineInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getBySN" resultType="com.yunyou.modules.sys.common.entity.extend.SysWmsWeighMachineInfoEntity" >
+		SELECT
+		<include refid="sysWmsWeighMachineInfoColumns"/>
+		FROM sys_wms_weigh_machine_info a
+		<include refid="sysWmsWeighMachineInfoJoins"/>
+		WHERE a.machine_no = #{machineNo}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.extend.SysWmsWeighMachineInfoEntity" >
+		SELECT
+		<include refid="sysWmsWeighMachineInfoColumns"/>
+		FROM sys_wms_weigh_machine_info a
+		<include refid="sysWmsWeighMachineInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="machineNo != null and machineNo != ''">
+				AND a.machine_no = #{machineNo}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+</mapper>

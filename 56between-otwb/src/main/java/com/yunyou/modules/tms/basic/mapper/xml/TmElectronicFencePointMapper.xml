@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.basic.mapper.TmElectronicFencePointMapper">
+    
+	<sql id="tmElectronicFencePointColumns">
+		a.id AS "id",
+		a.fence_code AS "fenceCode",
+		a.longitude AS "longitude",
+		a.latitude AS "latitude",
+		a.org_id AS "orgId"
+	</sql>
+
+    <select id="get" resultType="com.yunyou.modules.tms.basic.entity.TmElectronicFencePoint" >
+		SELECT <include refid="tmElectronicFencePointColumns"/>
+		FROM tm_electronic_fence_point a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.tms.basic.entity.TmElectronicFencePoint" >
+		SELECT <include refid="tmElectronicFencePointColumns"/>
+		FROM tm_electronic_fence_point a
+		<where>
+			<if test="fenceCode != null and fenceCode != ''">
+				AND a.fence_code = #{fenceCode}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO tm_electronic_fence_point
+		(
+			fence_code,
+			longitude,
+			latitude,
+			org_id
+		)
+		VALUES
+		(
+			#{fenceCode},
+			#{longitude},
+			#{latitude},
+			#{orgId}
+		)
+	</insert>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_electronic_fence_point WHERE fence_code = #{fenceCode} AND org_id = #{orgId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysCommonSkuSupplierMapper">
+    
+	<sql id="sysCommonSkuSupplierColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.sku_id AS "sku.id",
+		a.supplier_code AS "supplierCode",
+		a.data_set AS "dataSet",
+		a.is_default AS "isDefault"
+	</sql>
+
+	<sql id="extraColumns">
+		scds.name AS "dataSetName",
+		scc.name  AS "supplierName"
+	</sql>
+	
+	<sql id="sysCommonSkuSupplierJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+		LEFT JOIN sys_common_sku b ON b.id = a.sku_id
+		LEFT JOIN sys_common_customer scc ON a.supplier_code = scc.code AND a.data_set = scc.data_set
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysCommonSkuSupplier" >
+		SELECT <include refid="sysCommonSkuSupplierColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_common_sku_supplier a
+		<include refid="sysCommonSkuSupplierJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysCommonSkuSupplier" >
+		SELECT <include refid="sysCommonSkuSupplierColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_common_sku_supplier a
+		<include refid="sysCommonSkuSupplierJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+			<if test="sku != null and sku.id != null and sku.id != ''">
+				AND a.sku_id = #{sku.id}
+			</if>
+			<if test="supplierCode != null and supplierCode != ''">
+				AND a.supplier_code = #{supplierCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysCommonSkuSupplier" >
+		SELECT <include refid="sysCommonSkuSupplierColumns"/>
+		FROM sys_common_sku_supplier a
+		<include refid="sysCommonSkuSupplierJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            and a.data_set = #{dataSet}
+		</where>		
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_common_sku_supplier(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			sku_id,
+			supplier_code,
+			data_set,
+			is_default
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{sku.id},
+			#{supplierCode},
+			#{dataSet},
+			#{isDefault}
+		)
+	</insert>
+	
+	<insert id="batchInsert">
+		INSERT INTO sys_common_sku_supplier(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			sku_id,
+			supplier_code,
+			data_set,
+			is_default
+		) VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		 (
+			#{item.id},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.sku.id},
+			#{item.supplierCode},
+			#{item.dataSet},
+			#{item.isDefault}
+		)
+		</foreach>
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_common_sku_supplier
+		SET update_by     = #{updateBy.id},
+			update_date   = #{updateDate},
+			remarks       = #{remarks},
+			sku_id        = #{sku.id},
+			supplier_code = #{supplierCode},
+			is_default    = #{isDefault}
+		WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_common_sku_supplier SET
+		del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE sku_id = #{sku.id}
+			</otherwise>
+		</choose>
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_common_sku_supplier
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE sku_id = #{sku.id}
+			</otherwise>
+		</choose>
+	</delete>
+
+</mapper>

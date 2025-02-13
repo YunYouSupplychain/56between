@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmTransportOrderRouteMapper">
+    
+	<sql id="tmTransportOrderRouteColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_no AS "transportNo",
+		a.dispatch_no AS "dispatchNo",
+		a.label_no AS "labelNo",
+		a.now_outlet_code AS "nowOutletCode",
+		a.pre_outlet_code AS "preOutletCode",
+		a.next_outlet_code AS "nextOutletCode",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.pre_alloc_dispatch_no AS "preAllocDispatchNo",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode"
+	</sql>
+	
+	<sql id="tmTransportOrderRouteJoins">
+		
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderRoute" >
+		SELECT 
+			<include refid="tmTransportOrderRouteColumns"/>
+		FROM tm_transport_order_route a
+		<include refid="tmTransportOrderRouteJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderRoute" >
+		SELECT 
+			<include refid="tmTransportOrderRouteColumns"/>
+		FROM tm_transport_order_route a
+		<include refid="tmTransportOrderRouteJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="transportNo != null and transportNo != ''">
+				AND a.transport_no = #{transportNo}
+			</if>
+			<if test="dispatchNo != null and dispatchNo != ''">
+				AND a.dispatch_no = #{dispatchNo}
+			</if>
+			<if test="preAllocDispatchNo != null and preAllocDispatchNo != ''">
+				AND a.pre_alloc_dispatch_no = #{preAllocDispatchNo}
+			</if>
+			<if test="labelNo != null and labelNo != ''">
+				AND a.label_no = #{labelNo}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderRoute" >
+		SELECT 
+			<include refid="tmTransportOrderRouteColumns"/>
+		FROM tm_transport_order_route a
+		<include refid="tmTransportOrderRouteJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_transport_order_route(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			transport_no,
+			dispatch_no,
+			label_no,
+			now_outlet_code,
+			pre_outlet_code,
+			next_outlet_code,
+			rec_ver,
+			base_org_id,
+			pre_alloc_dispatch_no,
+            owner_code,
+            sku_code
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{transportNo},
+			#{dispatchNo},
+			#{labelNo},
+			#{nowOutletCode},
+			#{preOutletCode},
+			#{nextOutletCode},
+			#{recVer},
+			#{baseOrgId},
+			#{preAllocDispatchNo},
+            #{ownerCode},
+            #{skuCode}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_transport_order_route SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			transport_no = #{transportNo},
+			dispatch_no = #{dispatchNo},
+			now_outlet_code = #{nowOutletCode},
+			pre_outlet_code = #{preOutletCode},
+			next_outlet_code = #{nextOutletCode},
+			base_org_id = #{baseOrgId},
+			pre_alloc_dispatch_no = #{preAllocDispatchNo},
+            owner_code = #{ownerCode},
+            sku_code = #{skuCode},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_transport_order_route WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_transport_order_route SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+
+	<select id="getByTransportNoAndLabel" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderRoute" >
+		SELECT
+		<include refid="tmTransportOrderRouteColumns"/>
+		FROM tm_transport_order_route a
+		WHERE a.transport_no = #{transportNo}
+		  AND a.label_no = #{labelNo}
+		  AND a.base_org_id = #{baseOrgId}
+	</select>
+	
+</mapper>

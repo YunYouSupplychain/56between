@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.basic.mapper.BmsCarrierRouteMapper">
+
+    <sql id="bmsRouteColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.carrier_code AS "carrierCode",
+		a.route_code AS "routeCode",
+		a.route_name AS "routeName",
+		a.start_area_id AS "startAreaId",
+		a.end_area_id AS "endAreaId",
+		a.mileage AS "mileage",
+		a.timeliness AS "timeliness",
+		a.org_id AS "orgId"
+    </sql>
+
+    <sql id="extraColumns">
+        bcc.ebcu_name_cn AS "carrierName",
+        sas.name AS "startAreaName",
+        sae.name AS "endAreaName",
+        so.name AS "orgName"
+    </sql>
+
+    <sql id="bmsRouteJoins">
+        LEFT JOIN bms_customer bcc ON a.carrier_code = bcc.ebcu_customer_no AND a.org_id = bcc.org_id
+        LEFT JOIN sys_area sas ON a.start_area_id = sas.id
+        LEFT JOIN sys_area sae ON a.end_area_id = sae.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.basic.entity.BmsCarrierRoute">
+        SELECT
+        <include refid="bmsRouteColumns"/>
+        FROM bms_carrier_route a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.basic.entity.BmsCarrierRoute">
+        SELECT
+        <include refid="bmsRouteColumns"/>
+        FROM bms_carrier_route a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="carrierCode != null and carrierCode != ''">
+                AND a.carrier_code = #{carrierCode}
+            </if>
+            <if test="routeCode != null and routeCode != ''">
+                AND a.route_code = #{routeCode}
+            </if>
+            <if test="routeName != null and routeName != ''">
+                AND a.route_name = #{routeName}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.basic.entity.BmsCarrierRoute">
+        SELECT
+        <include refid="bmsRouteColumns"/>
+        FROM bms_carrier_route a
+        <include refid="bmsRouteJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_carrier_route
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            carrier_code,
+            route_code,
+            route_name,
+            start_area_id,
+            end_area_id,
+            mileage,
+            timeliness,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{carrierCode},
+            #{routeCode},
+            #{routeName},
+            #{startAreaId},
+            #{endAreaId},
+            #{mileage},
+            #{timeliness},
+            #{orgId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_carrier_route
+        SET update_by       = #{updateBy.id},
+            update_date     = #{updateDate},
+            remarks         = #{remarks},
+            rec_ver         = rec_ver + 1,
+            carrier_code    = #{carrierCode},
+            route_code      = #{routeCode},
+            route_name      = #{routeName},
+            start_area_id   = #{startAreaId},
+            end_area_id     = #{endAreaId},
+            mileage         = #{mileage},
+            timeliness      = #{timeliness},
+            org_id          = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_carrier_route
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_carrier_route WHERE id = #{id}
+    </delete>
+    <delete id="remove">
+        DELETE FROM bms_carrier_route WHERE carrier_code = #{carrierCode} AND route_code = #{routeCode} AND org_id = #{orgId}
+    </delete>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsCarrierRouteEntity">
+        SELECT
+        <include refid="bmsRouteColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_carrier_route a
+        <include refid="bmsRouteJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="carrierCode != null and carrierCode != ''">
+                AND a.carrier_code = #{carrierCode}
+            </if>
+            <if test="routeCode != null and routeCode != ''">
+                AND a.route_code LIKE
+                <if test="dbName == 'oracle'">'%'||#{routeCode}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{routeCode}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{routeCode},'%')</if>
+            </if>
+            <if test="routeName != null and routeName != ''">
+                AND a.route_name LIKE
+                <if test="dbName == 'oracle'">'%'||#{routeName}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{routeName}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{routeName},'%')</if>
+            </if>
+            <if test="startAreaId != null and startAreaId != ''">
+                AND a.start_area_id = #{startAreaId}
+            </if>
+            <if test="endAreaId != null and endAreaId != ''">
+                AND a.end_area_id = #{endAreaId}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findGrid" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsCarrierRouteEntity">
+        SELECT distinct
+            a.route_code AS "routeCode",
+            a.route_name AS "routeName"
+        FROM bms_carrier_route a
+        <include refid="bmsRouteJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="carrierCode != null and carrierCode != ''">
+                AND a.carrier_code = #{carrierCode}
+            </if>
+            <if test="routeCode != null and routeCode != ''">
+                AND a.route_code LIKE
+                <if test="dbName == 'oracle'">'%'||#{routeCode}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{routeCode}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{routeCode},'%')</if>
+            </if>
+            <if test="routeName != null and routeName != ''">
+                AND a.route_name LIKE
+                <if test="dbName == 'oracle'">'%'||#{routeName}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{routeName}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{routeName},'%')</if>
+            </if>
+            <if test="startAreaId != null and startAreaId != ''">
+                AND a.start_area_id = #{startAreaId}
+            </if>
+            <if test="endAreaId != null and endAreaId != ''">
+                AND a.end_area_id = #{endAreaId}
+            </if>
+            <if test="codeAndName != null and codeAndName != ''">
+                AND (a.route_code LIKE concat('%',#{codeAndName},'%') OR AND a.route_name LIKE concat('%',#{codeAndName},'%'))
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getEntity" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsCarrierRouteEntity">
+        SELECT
+        <include refid="bmsRouteColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_carrier_route a
+        <include refid="bmsRouteJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="getByCode" resultType="com.yunyou.modules.bms.basic.entity.BmsCarrierRoute">
+        SELECT
+        <include refid="bmsRouteColumns"/>
+        FROM bms_carrier_route a
+        WHERE a.carrier_code = #{carrierCode}
+        AND a.route_code = #{routeCode}
+        AND a.org_id = #{orgId}
+    </select>
+
+    <select id="getByStartAndEndAreaId" resultType="com.yunyou.modules.bms.basic.entity.BmsCarrierRoute">
+        SELECT
+        <include refid="bmsRouteColumns"/>
+        FROM bms_carrier_route a
+        WHERE a.carrier_code = #{carrierCode}
+        AND a.start_area_id = #{startAreaId}
+        AND a.end_area_id = #{endAreaId}
+        AND a.org_id = #{orgId}
+    </select>
+
+</mapper>

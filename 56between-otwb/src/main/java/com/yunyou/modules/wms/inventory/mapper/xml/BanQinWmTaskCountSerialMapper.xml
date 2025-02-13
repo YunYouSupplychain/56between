@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmTaskCountSerialMapper">
+    
+	<sql id="banQinWmTaskCountSerialColumns">
+		a.id AS "id",
+		a.count_no AS "countNo",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.serial_no AS "serialNo",
+		a.status AS "status",
+		a.count_result AS "countResult",
+		a.lot_num AS "lotNum",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinWmTaskCountSerialJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmTaskCountSerial" >
+		SELECT 
+			<include refid="banQinWmTaskCountSerialColumns"/>
+		FROM wm_task_count_serial a
+		<include refid="banQinWmTaskCountSerialJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmTaskCountSerial" >
+		SELECT 
+			<include refid="banQinWmTaskCountSerialColumns"/>
+		FROM wm_task_count_serial a
+		<include refid="banQinWmTaskCountSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		    AND a.org_id = #{orgId}
+			<if test="countNo != null and countNo != ''">
+				AND a.count_no = #{countNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="serialNo != null and serialNo != ''">
+				AND a.serial_no = #{serialNo}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND a.lot_num = #{lotNum}
+			</if>
+			<if test="locCode != null and locCode != ''">
+				AND a.locCode = #{locCode}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmTaskCountSerialEntity" >
+		SELECT
+			<include refid="banQinWmTaskCountSerialColumns"/>,
+			ebcu.ebcu_name_cn AS ownerName,
+		    cws.sku_name AS skuName
+		FROM wm_task_count_serial a
+		LEFT JOIN eb_customer ebcu ON a.owner_code = ebcu.ebcu_customer_no AND a.org_id = ebcu.org_id
+		LEFT JOIN cd_wh_sku cws ON cws.owner_code = a.owner_code AND cws.sku_code = a.sku_code AND cws.org_id = a.org_id
+		<include refid="banQinWmTaskCountSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND a.org_id = #{orgId}
+			<if test="countNo != null and countNo != ''">
+				AND a.count_no = #{countNo}
+			</if>
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmTaskCountSerial" >
+		SELECT 
+			<include refid="banQinWmTaskCountSerialColumns"/>
+		FROM wm_task_count_serial a
+		<include refid="banQinWmTaskCountSerialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_task_count_serial(
+			id,
+			count_no,
+			owner_code,
+			sku_code,
+			serial_no,
+			status,
+			count_result,
+			lot_num,
+			loc_code,
+			trace_id,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+		    header_id
+		) VALUES (
+			#{id},
+			#{countNo},
+			#{ownerCode},
+			#{skuCode},
+			#{serialNo},
+			#{status},
+			#{countResult},
+			#{lotNum},
+			#{locCode},
+			#{traceId},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_task_count_serial SET 	
+			count_no = #{countNo},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			serial_no = #{serialNo},
+			status = #{status},
+			count_result = #{countResult},
+			lot_num = #{lotNum},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			header_id = #{headerId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_task_count_serial
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_task_count_serial SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.finance.mapper.BmsSettleModelDetailMapper">
+
+    <sql id="bmsSettleModelDetailColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.rec_ver AS "recVer",
+        a.settle_model_code AS "settleModelCode",
+        a.contract_cost_item_id AS "contractCostItemId",
+        a.org_id AS "orgId"
+    </sql>
+
+    <sql id="extraColumns">
+        bc.sys_contract_no AS "sysContractNo",
+        bc.contract_no AS "contractNo",
+        bc.subcontract_no AS "subcontractNo",
+        bc.contract_status AS "contractStatus",
+        bbs.bill_module AS "billModule",
+        bbs.bill_subject_code AS "billSubjectCode",
+        bbs.bill_subject_name AS "billSubjectName",
+        bcci.receivable_payable AS "receivablePayable",
+        bbs.bill_category AS "billCategory",
+        bbt.bill_terms_code AS "billTermsCode",
+        bbt.bill_terms_desc AS "billTermsDesc",
+        bbt.output_objects AS "outputObjects",
+        bbt.occurrence_quantity AS "occurrenceQuantity",
+        bbf.formula_code AS "formulaCode",
+        bbf.formula_name AS "formulaName",
+        so.name AS "orgName"
+    </sql>
+
+    <sql id="bmsSettleModelDetailJoins">
+        LEFT JOIN bms_contract_cost_item bcci ON a.contract_cost_item_id = bcci.id AND a.org_id = bcci.org_id
+        LEFT JOIN bms_contract bc ON bcci.sys_contract_no = bc.sys_contract_no AND bcci.org_id = bc.org_id
+        LEFT JOIN bms_bill_subject bbs ON bcci.bill_subject_code = bbs.bill_subject_code AND bcci.org_id = bbs.org_id
+        LEFT JOIN bms_bill_terms bbt ON bcci.bill_terms_code = bbt.bill_terms_code
+        LEFT JOIN bms_bill_formula bbf ON bcci.formula_code = bbf.formula_code
+        LEFT JOIN sys_office so ON a.org_id = so.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.finance.entity.BmsSettleModelDetail">
+        SELECT
+        <include refid="bmsSettleModelDetailColumns"/>
+        FROM bms_settle_model_detail a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.finance.entity.BmsSettleModelDetail">
+        SELECT
+        <include refid="bmsSettleModelDetailColumns"/>
+        FROM bms_settle_model_detail a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.settle_model_code = #{settleModelCode}
+            AND a.org_id = #{orgId}
+            <if test="contractCostItemId != null and contractCostItemId != ''">
+                AND a.contract_cost_item_id = #{contractCostItemId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.finance.entity.BmsSettleModelDetail">
+        SELECT
+        <include refid="bmsSettleModelDetailColumns"/>
+        FROM bms_settle_model_detail a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_settle_model_detail
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            settle_model_code,
+            contract_cost_item_id,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{settleModelCode},
+            #{contractCostItemId},
+            #{orgId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_settle_model_detail
+        SET update_by             = #{updateBy.id},
+            update_date           = #{updateDate},
+            remarks               = #{remarks},
+            rec_ver               = rec_ver + 1,
+            settle_model_code     = #{settleModelCode},
+            contract_cost_item_id = #{contractCostItemId},
+            org_id                = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_settle_model_detail
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_settle_model_detail WHERE id = #{id}
+    </delete>
+    <delete id="deleteByModelCode">
+        DELETE FROM bms_settle_model_detail WHERE settle_model_code = #{settleModelCode} AND org_id = #{orgId}
+    </delete>
+
+    <select id="getEntity" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsSettleModelDetailEntity">
+        SELECT
+        <include refid="bmsSettleModelDetailColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_settle_model_detail a
+        <include refid="bmsSettleModelDetailJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="getOnly" resultType="com.yunyou.modules.bms.finance.entity.BmsSettleModelDetail">
+        select
+        <include refid="bmsSettleModelDetailColumns"/>
+        from bms_settle_model_detail a
+        where a.settle_model_code = #{settleModelCode}
+        and a.contract_cost_item_id = #{contractCostItemId}
+        and a.org_id = #{orgId}
+    </select>
+
+    <select id="findBySettleModelCode" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsSettleModelDetailEntity">
+        SELECT
+        <include refid="bmsSettleModelDetailColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_settle_model_detail a
+        <include refid="bmsSettleModelDetailJoins"/>
+        WHERE a.del_flag = '0'
+        AND a.settle_model_code = #{settleModelCode}
+        AND a.org_id = #{orgId}
+    </select>
+
+</mapper>

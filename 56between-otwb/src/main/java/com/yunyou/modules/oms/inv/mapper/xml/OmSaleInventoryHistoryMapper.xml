@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.inv.mapper.OmSaleInventoryHistoryMapper">
+    
+	<sql id="omSaleInventoryHistoryColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.warehouse AS "warehouse",
+		a.owner AS "owner",
+		a.sku_code AS "skuCode",
+		a.org_id AS "orgId",
+		a.before_qty AS "beforeQty",
+		a.oper_qty AS "operQty",
+		a.after_qty AS "afterQty",
+		a.operate AS "operate",
+		a.rec_ver AS "recVer",
+		a.order_no AS "orderNo"
+	</sql>
+	
+	<sql id="omSaleInventoryHistoryJoins">
+		
+	</sql>
+	
+    
+	<select id="get" resultType="OmSaleInventoryHistory" >
+		SELECT 
+			<include refid="omSaleInventoryHistoryColumns"/>
+		FROM om_sale_inventory_history a
+		<include refid="omSaleInventoryHistoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OmSaleInventoryHistory" >
+		SELECT 
+			<include refid="omSaleInventoryHistoryColumns"/>
+		FROM om_sale_inventory_history a
+		<include refid="omSaleInventoryHistoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="OmSaleInventoryHistory" >
+		SELECT 
+			<include refid="omSaleInventoryHistoryColumns"/>
+		FROM om_sale_inventory_history a
+		<include refid="omSaleInventoryHistoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO om_sale_inventory_history(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			warehouse,
+			owner,
+			sku_code,
+			org_id,
+			before_qty,
+			oper_qty,
+			after_qty,
+			operate,
+			rec_ver,
+			order_no
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{warehouse},
+			#{owner},
+			#{skuCode},
+			#{orgId},
+			#{beforeQty},
+			#{operQty},
+			#{afterQty},
+			#{operate},
+			#{recVer},
+			#{orderNo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE om_sale_inventory_history SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			warehouse = #{warehouse},
+			owner = #{owner},
+			sku_code = #{skuCode},
+			org_id = #{orgId},
+			before_qty = #{beforeQty},
+			oper_qty = #{operQty},
+			after_qty = #{afterQty},
+			operate = #{operate},
+			rec_ver = #{recVer},
+			order_no = #{orderNo}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM om_sale_inventory_history
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE om_sale_inventory_history SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

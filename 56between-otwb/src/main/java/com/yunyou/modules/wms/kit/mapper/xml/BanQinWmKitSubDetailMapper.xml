@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.kit.mapper.BanQinWmKitSubDetailMapper">
+    
+	<sql id="banQinWmKitSubDetailColumns">
+		a.id AS "id",
+		a.kit_no AS "kitNo",
+		a.sub_line_no AS "subLineNo",
+		a.parent_line_no AS "parentLineNo",
+		a.status AS "status",
+		a.owner_code AS "ownerCode",
+		a.sub_sku_code AS "subSkuCode",
+		a.sub_sku_type AS "subSkuType",
+		a.qty_bom_ea AS "qtyBomEa",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_plan_ea AS "qtyPlanEa",
+		a.qty_alloc_ea AS "qtyAllocEa",
+		a.qty_pk_ea AS "qtyPkEa",
+		a.qty_kit_ea AS "qtyKitEa",
+		a.rotation_rule AS "rotationRule",
+		a.alloc_rule AS "allocRule",
+		a.area_code AS "areaCode",
+		a.zone_code AS "zoneCode",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.lot_att01 AS "lotAtt01",
+		a.lot_att02 AS "lotAtt02",
+		a.lot_att03 AS "lotAtt03",
+		a.lot_att04 AS "lotAtt04",
+		a.lot_att05 AS "lotAtt05",
+		a.lot_att06 AS "lotAtt06",
+		a.lot_att07 AS "lotAtt07",
+		a.lot_att08 AS "lotAtt08",
+		a.lot_att09 AS "lotAtt09",
+		a.lot_att10 AS "lotAtt10",
+		a.lot_att11 AS "lotAtt11",
+		a.lot_att12 AS "lotAtt12",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinWmKitSubDetailJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmKitSubDetail" >
+		SELECT 
+			<include refid="banQinWmKitSubDetailColumns"/>
+		FROM wm_kit_sub_detail a
+		<include refid="banQinWmKitSubDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmKitSubDetail" >
+		SELECT 
+			<include refid="banQinWmKitSubDetailColumns"/>
+		FROM wm_kit_sub_detail a
+		<include refid="banQinWmKitSubDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="kitNo != null and kitNo != ''">
+				AND a.kit_no = #{kitNo}
+			</if>
+			<if test="subLineNo != null and subLineNo != ''">
+				AND a.sub_line_no = #{subLineNo}
+			</if>
+			<if test="parentLineNo != null and parentLineNo != ''">
+				AND a.parent_line_no = #{parentLineNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="subSkuCode != null and subSkuCode != ''">
+				AND a.sub_sku_code = #{subSkuCode}
+			</if>
+			<if test="subSkuType != null and subSkuType != ''">
+				AND a.sub_sku_type = #{subSkuType}
+			</if>
+			<if test="packCode != null and packCode != ''">
+				AND a.pack_code = #{packCode}
+			</if>
+			<if test="uom != null and uom != ''">
+				AND a.uom = #{uom}
+			</if>
+			<if test="rotationRule != null and rotationRule != ''">
+				AND a.rotation_rule = #{rotationRule}
+			</if>
+			<if test="allocRule != null and allocRule != ''">
+				AND a.alloc_rule = #{allocRule}
+			</if>
+			<if test="areaCode != null and areaCode != ''">
+				AND a.area_code = #{areaCode}
+			</if>
+			<if test="zoneCode != null and zoneCode != ''">
+				AND a.zone_code = #{zoneCode}
+			</if>
+			<if test="locCode != null and locCode != ''">
+				AND a.loc_code = #{locCode}
+			</if>
+			<if test="traceId != null and traceId != ''">
+				AND a.trace_id = #{traceId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmKitSubDetail" >
+		SELECT 
+			<include refid="banQinWmKitSubDetailColumns"/>
+		FROM wm_kit_sub_detail a
+		<include refid="banQinWmKitSubDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_kit_sub_detail(
+			id,
+			kit_no,
+			sub_line_no,
+			parent_line_no,
+			status,
+			owner_code,
+			sub_sku_code,
+			sub_sku_type,
+			qty_bom_ea,
+			pack_code,
+			uom,
+			qty_plan_ea,
+			qty_alloc_ea,
+			qty_pk_ea,
+			qty_kit_ea,
+			rotation_rule,
+			alloc_rule,
+			area_code,
+			zone_code,
+			loc_code,
+			trace_id,
+			lot_att01,
+			lot_att02,
+			lot_att03,
+			lot_att04,
+			lot_att05,
+			lot_att06,
+			lot_att07,
+			lot_att08,
+			lot_att09,
+			lot_att10,
+			lot_att11,
+			lot_att12,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+		    header_id
+		) VALUES (
+			#{id},
+			#{kitNo},
+			#{subLineNo},
+			#{parentLineNo},
+			#{status},
+			#{ownerCode},
+			#{subSkuCode},
+			#{subSkuType},
+			#{qtyBomEa},
+			#{packCode},
+			#{uom},
+			#{qtyPlanEa},
+			#{qtyAllocEa},
+			#{qtyPkEa},
+			#{qtyKitEa},
+			#{rotationRule},
+			#{allocRule},
+			#{areaCode},
+			#{zoneCode},
+			#{locCode},
+			#{traceId},
+			#{lotAtt01},
+			#{lotAtt02},
+			#{lotAtt03},
+			#{lotAtt04},
+			#{lotAtt05},
+			#{lotAtt06},
+			#{lotAtt07},
+			#{lotAtt08},
+			#{lotAtt09},
+			#{lotAtt10},
+			#{lotAtt11},
+			#{lotAtt12},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+		    #{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_kit_sub_detail SET 	
+			kit_no = #{kitNo},
+			sub_line_no = #{subLineNo},
+			parent_line_no = #{parentLineNo},
+			status = #{status},
+			owner_code = #{ownerCode},
+			sub_sku_code = #{subSkuCode},
+			sub_sku_type = #{subSkuType},
+			qty_bom_ea = #{qtyBomEa},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_plan_ea = #{qtyPlanEa},
+			qty_alloc_ea = #{qtyAllocEa},
+			qty_pk_ea = #{qtyPkEa},
+			qty_kit_ea = #{qtyKitEa},
+			rotation_rule = #{rotationRule},
+			alloc_rule = #{allocRule},
+			area_code = #{areaCode},
+			zone_code = #{zoneCode},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			lot_att01 = #{lotAtt01},
+			lot_att02 = #{lotAtt02},
+			lot_att03 = #{lotAtt03},
+			lot_att04 = #{lotAtt04},
+			lot_att05 = #{lotAtt05},
+			lot_att06 = #{lotAtt06},
+			lot_att07 = #{lotAtt07},
+			lot_att08 = #{lotAtt08},
+			lot_att09 = #{lotAtt09},
+			lot_att10 = #{lotAtt10},
+			lot_att11 = #{lotAtt11},
+			lot_att12 = #{lotAtt12},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+		    header_id = #{headerId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_kit_sub_detail
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_kit_sub_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="findPage" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmKitSubDetailEntity" >
+		SELECT
+		   	cws.sku_name AS "subSkuName",
+		   	cwp.cdpa_format AS "packDesc",
+		   	cwpr.cdpr_desc AS "uomDesc",
+		   	cwpr.cdpr_quantity AS "uomQty",
+		   	crah.rule_name AS "allocRuleName",
+		   	crrh.rule_name AS "rotationRuleName",
+		   	cwa.area_name AS "areaName",
+		   	cwz.zone_name AS "zoneName",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_plan_ea/cwpr.cdpr_quantity end) AS "qtyPlanUom",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_alloc_ea/cwpr.cdpr_quantity end) AS "qtyAllocUom",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_pk_ea/cwpr.cdpr_quantity end) AS "qtyPkUom",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_kit_ea/cwpr.cdpr_quantity end) AS "qtyKitUom",
+		   	wkpd.plan_kit_loc AS "planKitLoc",
+			<include refid="banQinWmKitSubDetailColumns"/>
+		FROM wm_kit_sub_detail a
+		  LEFT JOIN cd_wh_sku cws ON a.sub_sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN wm_kit_parent_detail wkpd ON a.kit_no = wkpd.kit_no AND a.parent_line_no = wkpd.parent_line_no AND a.org_id = wkpd.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwpr.cdpr_cdpa_pm_code = cwp.pm_code
+		  LEFT JOIN cd_rule_alloc_header crah ON crah.rule_code = a.alloc_rule AND crah.org_id = a.org_id
+		  LEFT JOIN cd_rule_rotation_header crrh ON crrh.rule_code = a.rotation_rule AND crrh.org_id = a.org_id
+		  LEFT JOIN cd_wh_area cwa ON a.area_code = cwa.area_code AND a.org_id = cwa.org_id
+		  LEFT JOIN cd_wh_zone cwz ON a.zone_code = cwz.zone_code AND a.org_id = cwz.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND a.org_id = #{orgId}
+			<if test="kitNo != null and kitNo != ''">
+				AND a.kit_no = #{kitNo}
+			</if>
+			<if test="subLineNo != null and subLineNo != ''">
+				AND a.sub_line_no = #{subLineNo}
+			</if>
+			<if test="parentLineNo != null and parentLineNo != ''">
+				AND a.parent_line_no = #{parentLineNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="subSkuCode != null and subSkuCode != ''">
+				AND a.sub_sku_code = #{subSkuCode}
+			</if>
+			<if test="subSkuType != null and subSkuType != ''">
+				AND a.sub_sku_type = #{subSkuType}
+			</if>
+			<if test="packCode != null and packCode != ''">
+				AND a.pack_code = #{packCode}
+			</if>
+			<if test="uom != null and uom != ''">
+				AND a.uom = #{uom}
+			</if>
+			<if test="rotationRule != null and rotationRule != ''">
+				AND a.rotation_rule = #{rotationRule}
+			</if>
+			<if test="allocRule != null and allocRule != ''">
+				AND a.alloc_rule = #{allocRule}
+			</if>
+			<if test="areaCode != null and areaCode != ''">
+				AND a.area_code = #{areaCode}
+			</if>
+			<if test="zoneCode != null and zoneCode != ''">
+				AND a.zone_code = #{zoneCode}
+			</if>
+			<if test="locCode != null and locCode != ''">
+				AND a.loc_code = #{locCode}
+			</if>
+			<if test="traceId != null and traceId != ''">
+				AND a.trace_id = #{traceId}
+			</if>
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.sub_line_no ASC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntityByKitNo" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmKitSubDetailEntity" >
+		SELECT
+		   	cws.sku_name AS "subSkuName",
+		   	cwp.cdpa_format AS "packDesc",
+		   	cwpr.cdpr_desc AS "uomDesc",
+		   	cwpr.cdpr_quantity AS "uomQty",
+		   	crah.rule_name AS "allocRuleName",
+		   	crrh.rule_name AS "rotationRuleName",
+		   	cwa.area_name AS "areaName",
+		   	cwz.zone_name AS "zoneName",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_plan_ea/cwpr.cdpr_quantity END) AS "qtyPlanUom",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_alloc_ea/cwpr.cdpr_quantity END) AS "qtyAllocUom",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_pk_ea/cwpr.cdpr_quantity END) AS "qtyPkUom",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_kit_ea/cwpr.cdpr_quantity END) AS "qtyKitUom",
+		   	wkpd.plan_kit_loc AS "planKitLoc",
+			<include refid="banQinWmKitSubDetailColumns"/>
+		FROM wm_kit_sub_detail a
+		  LEFT JOIN cd_wh_sku cws ON a.sub_sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN wm_kit_parent_detail wkpd ON a.kit_no = wkpd.kit_no AND a.parent_line_no = wkpd.parent_line_no AND a.org_id = wkpd.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwpr.cdpr_cdpa_pm_code = cwp.pm_code
+		  LEFT JOIN cd_rule_alloc_header crah ON crah.rule_code = a.alloc_rule AND crah.org_id = a.org_id
+		  LEFT JOIN cd_rule_rotation_header crrh ON crrh.rule_code = a.rotation_rule AND crrh.org_id = a.org_id
+		  LEFT JOIN cd_wh_area cwa ON a.area_code = cwa.area_code AND a.org_id = cwa.org_id
+		  LEFT JOIN cd_wh_zone cwz ON a.zone_code = cwz.zone_code AND a.org_id = cwz.org_id
+		WHERE a.kit_no = #{kitNo} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getEntityByKitNoAndSubLineNo" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinWmKitSubDetailEntity" >
+		SELECT
+		   	cws.sku_name AS "subSkuName",
+		   	cwp.cdpa_format AS "packDesc",
+		   	cwpr.cdpr_desc AS "uomDesc",
+		   	cwpr.cdpr_quantity AS "uomQty",
+		   	crah.rule_name AS "allocRuleName",
+		   	crrh.rule_name AS "rotationRuleName",
+		   	cwa.area_name AS "areaName",
+		   	cwz.zone_name AS "zoneName",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_plan_ea/cwpr.cdpr_quantity end) AS "qtyPlanUom",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_alloc_ea/cwpr.cdpr_quantity end) AS "qtyAllocUom",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_pk_ea/cwpr.cdpr_quantity end) AS "qtyPkUom",
+		   	(CASE WHEN IFNULL(cwpr.cdpr_quantity,0) = 0 THEN 0 ELSE a.qty_kit_ea/cwpr.cdpr_quantity end) AS "qtyKitUom",
+		   	wkpd.plan_kit_loc AS "planKitLoc",
+			<include refid="banQinWmKitSubDetailColumns"/>
+		FROM wm_kit_sub_detail a
+		  LEFT JOIN cd_wh_sku cws ON a.sub_sku_code = cws.sku_code AND a.owner_code = cws.owner_code AND a.org_id = cws.org_id
+		  LEFT JOIN wm_kit_header wkh ON a.kit_no = wkh.kit_no AND a.org_id = wkh.org_id
+		  LEFT JOIN wm_kit_parent_detail wkpd ON a.kit_no = wkpd.kit_no AND a.parent_line_no = wkpd.parent_line_no AND a.org_id = wkpd.org_id
+		  LEFT JOIN cd_wh_package cwp ON a.pack_code = cwp.cdpa_code AND a.org_id = cwp.org_id
+		  LEFT JOIN cd_wh_package_relation cwpr ON a.uom = cwpr.cdpr_unit_level AND a.org_id = cwpr.org_id AND cwpr.cdpr_cdpa_pm_code = cwp.pm_code
+		  LEFT JOIN cd_rule_alloc_header crah ON crah.rule_code = a.alloc_rule AND crah.org_id = a.org_id
+		  LEFT JOIN cd_rule_rotation_header crrh ON crrh.rule_code = a.rotation_rule AND crrh.org_id = a.org_id
+		  LEFT JOIN cd_wh_area cwa ON a.area_code = cwa.area_code AND a.org_id = cwa.org_id
+		  LEFT JOIN cd_wh_zone cwz ON a.zone_code = cwz.zone_code AND a.org_id = cwz.org_id
+		WHERE a.kit_no = #{kitNo} AND a.sub_line_no = #{subLineNo} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getMaxLineNo" resultType="java.lang.Long">
+		SELECT MAX(CONVERT(a.sub_line_no, SIGNED )) FROM wm_kit_sub_detail a WHERE a.kit_no = #{kitNo} AND a.org_id = #{orgId}
+	</select>
+	
+</mapper>

@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysCommonCustomerMapper">
+    
+	<sql id="sysCommonCustomerColumns">
+		a.id                     AS "id",
+		a.create_by              AS "createBy.id",
+		a.create_date            AS "createDate",
+		a.update_by              AS "updateBy.id",
+		a.update_date            AS "updateDate",
+		a.remarks                AS "remarks",
+		a.del_flag               AS "delFlag",
+		a.rec_ver                AS "recVer",
+		a.code                   AS "code",
+		a.name                   AS "name",
+		a.short_name             AS "shortName",
+		a.foreign_name           AS "foreignName",
+		a.type                   AS "type",
+		a.area_id                AS "areaId",
+		a.address                AS "address",
+		a.province               AS "province",
+		a.city                   AS "city",
+		a.area                   AS "area",
+		a.contacts               AS "contacts",
+		a.tel                    AS "tel",
+		a.fax                    AS "fax",
+		a.mail                   AS "mail",
+		a.zip_code               AS "zipCode",
+		a.data_set               AS "dataSet",
+		a.categories             AS "categories",
+		a.industry_type          AS "industryType",
+		a.scope                  AS "scope",
+		a.check_person           AS "checkPerson",
+		a.po_channel             AS "poChannel",
+		a.warehouse              AS "warehouse",
+		a.clerk_code             AS "clerkCode",
+		a.finance_code           AS "financeCode",
+		a.brand                  AS "brand",
+		a.main_business          AS "mainBusiness",
+		a.tax_register_no        AS "taxRegisterNo",
+		a.business_no            AS "businessNo",
+		a.is_general_taxpayer    AS "isGeneralTaxpayer",
+		a.tax_rate               AS "taxRate",
+		a.tax_rate_value         AS "taxRateValue",
+		a.url                    AS "url",
+		a.un_code                AS "unCode",
+		a.classification         AS "classification",
+		a.route_code             AS "routeCode",
+		a.carrier_matched_org_id AS "carrierMatchedOrgId",
+		a.outlet_matched_org_id  AS "outletMatchedOrgId",
+		a.repair_price           AS "repairPrice",
+		a.settle_code            AS "settleCode",
+		a.project                AS "project",
+		a.def1                   AS "def1",
+		a.def2                   AS "def2",
+		a.def3                   AS "def3",
+		a.def4                   AS "def4",
+		a.def5                   AS "def5"
+	</sql>
+	
+	<sql id="extraColumns">
+		scds.name                AS "dataSetName"
+	</sql>
+
+	<sql id="sysCommonCustomerJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomer" >
+		SELECT <include refid="sysCommonCustomerColumns"/>
+		FROM sys_common_customer a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomer" >
+		SELECT
+		<include refid="sysCommonCustomerColumns"/>
+		FROM sys_common_customer a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="type != null and type!= ''">
+				AND a.type like concat('%', #{type}, '%')
+			</if>
+			<if test="categories != null and categories!= ''">
+				AND a.categories = #{categories}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomer" >
+		SELECT
+		<include refid="sysCommonCustomerColumns"/>
+		FROM sys_common_customer a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_common_customer(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			code,
+			name,
+			short_name,
+			foreign_name,
+			type,
+			area_id,
+			address,
+			province,
+			city,
+			area,
+			contacts,
+			tel,
+			fax,
+			mail,
+			zip_code,
+			data_set,
+			categories,
+			industry_type,
+			scope,
+			check_person,
+			po_channel,
+			warehouse,
+			clerk_code,
+			finance_code,
+			brand,
+			main_business,
+			tax_register_no,
+			business_no,
+			is_general_taxpayer,
+			tax_rate,
+			tax_rate_value,
+			url,
+			un_code,
+			classification,
+			route_code,
+			carrier_matched_org_id,
+			outlet_matched_org_id,
+			repair_price,
+			settle_code,
+			project,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{code},
+			#{name},
+			#{shortName},
+			#{foreignName},
+			#{type},
+			#{areaId},
+			#{address},
+			#{province},
+			#{city},
+			#{area},
+			#{contacts},
+			#{tel},
+			#{fax},
+			#{mail},
+			#{zipCode},
+			#{dataSet},
+			#{categories},
+			#{industryType},
+			#{scope},
+			#{checkPerson},
+			#{poChannel},
+			#{warehouse},
+			#{clerkCode},
+			#{financeCode},
+			#{brand},
+			#{mainBusiness},
+			#{taxRegisterNo},
+			#{businessNo},
+			#{isGeneralTaxpayer},
+			#{taxRate},
+			#{taxRateValue},
+			#{url},
+			#{unCode},
+			#{classification},
+			#{routeCode},
+			#{carrierMatchedOrgId},
+			#{outletMatchedOrgId},
+			#{repairPrice},
+			#{settleCode},
+			#{project},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5}
+		)
+	</insert>
+
+	<insert id="batchInsert">
+		INSERT INTO sys_common_customer
+		(
+		id,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag,
+		rec_ver,
+		code,
+		name,
+		short_name,
+		foreign_name,
+		type,
+		area_id,
+		address,
+		province,
+		city,
+		area,
+		contacts,
+		tel,
+		fax,
+		mail,
+		zip_code,
+		data_set,
+		categories,
+		industry_type,
+		scope,
+		check_person,
+		po_channel,
+		warehouse,
+		clerk_code,
+		finance_code,
+		brand,
+		main_business,
+		tax_register_no,
+		business_no,
+		is_general_taxpayer,
+		tax_rate,
+		tax_rate_value,
+		url,
+		un_code,
+		classification,
+		route_code,
+		carrier_matched_org_id,
+		outlet_matched_org_id,
+		repair_price,
+		settle_code,
+		project,
+		def1,
+		def2,
+		def3,
+		def4,
+		def5
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.recVer},
+			#{item.code},
+			#{item.name},
+			#{item.shortName},
+			#{item.foreignName},
+			#{item.type},
+			#{item.areaId},
+			#{item.address},
+			#{item.province},
+			#{item.city},
+			#{item.area},
+			#{item.contacts},
+			#{item.tel},
+			#{item.fax},
+			#{item.mail},
+			#{item.zipCode},
+			#{item.dataSet},
+			#{item.categories},
+			#{item.industryType},
+			#{item.scope},
+			#{item.checkPerson},
+			#{item.poChannel},
+			#{item.warehouse},
+			#{item.clerkCode},
+			#{item.financeCode},
+			#{item.brand},
+			#{item.mainBusiness},
+			#{item.taxRegisterNo},
+			#{item.businessNo},
+			#{item.isGeneralTaxpayer},
+			#{item.taxRate},
+			#{item.taxRateValue},
+			#{item.url},
+			#{item.unCode},
+			#{item.classification},
+			#{item.routeCode},
+			#{item.carrierMatchedOrgId},
+			#{item.outletMatchedOrgId},
+			#{item.repairPrice},
+			#{item.settleCode},
+			#{item.project},
+			#{item.def1},
+			#{item.def2},
+			#{item.def3},
+			#{item.def4},
+			#{item.def5}
+		)
+		</foreach>
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_common_customer
+		SET update_by              = #{updateBy.id},
+			update_date            = #{updateDate},
+			remarks                = #{remarks},
+			rec_ver                = rec_ver + 1,
+			code                   = #{code},
+			name                   = #{name},
+			short_name             = #{shortName},
+			foreign_name           = #{foreignName},
+			type                   = #{type},
+			area_id                = #{areaId},
+			address                = #{address},
+			province               = #{province},
+			city                   = #{city},
+			area                   = #{area},
+			contacts               = #{contacts},
+			tel                    = #{tel},
+			fax                    = #{fax},
+			mail                   = #{mail},
+			zip_code               = #{zipCode},
+			data_set               = #{dataSet},
+			categories             = #{categories},
+			industry_type          = #{industryType},
+			scope                  = #{scope},
+			check_person           = #{checkPerson},
+			po_channel             = #{poChannel},
+			warehouse              = #{warehouse},
+			clerk_code             = #{clerkCode},
+			finance_code           = #{financeCode},
+			brand                  = #{brand},
+			main_business          = #{mainBusiness},
+			tax_register_no        = #{taxRegisterNo},
+			business_no            = #{businessNo},
+			is_general_taxpayer    = #{isGeneralTaxpayer},
+			tax_rate               = #{taxRate},
+			tax_rate_value         = #{taxRateValue},
+			url                    = #{url},
+			un_code                = #{unCode},
+			classification         = #{classification},
+			route_code             = #{routeCode},
+			carrier_matched_org_id = #{carrierMatchedOrgId},
+			outlet_matched_org_id  = #{outletMatchedOrgId},
+			repair_price           = #{repairPrice},
+			settle_code            = #{settleCode},
+			project                = #{project},
+			def1                   = #{def1},
+			def2                   = #{def2},
+			def3                   = #{def3},
+			def4                   = #{def4},
+			def5                   = #{def5}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_common_customer SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_common_customer WHERE id = #{id}
+	</delete>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.extend.SysCommonCustomerEntity">
+		SELECT
+		<include refid="sysCommonCustomerColumns"/>,
+		<include refid="extraColumns"/>
+		FROM sys_common_customer a
+		<include refid="sysCommonCustomerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet!= ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code like concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name like concat('%', #{name}, '%')
+			</if>
+			<if test="type != null and type!= ''">
+				AND a.type like concat('%', #{type}, '%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.extend.SysCommonCustomerEntity">
+		SELECT
+		<include refid="sysCommonCustomerColumns"/>,
+		<include refid="extraColumns"/>
+		FROM sys_common_customer a
+		<include refid="sysCommonCustomerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet!= ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code like concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name like concat('%', #{name}, '%')
+			</if>
+			<if test="type != null and type!= ''">
+				AND a.type like concat('%', #{type}, '%')
+			</if>
+			<if test="codeAndName != null and codeAndName!= ''">
+				AND (a.code like concat('%', #{codeAndName}, '%') or a.name like concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.sys.common.entity.extend.SysCommonCustomerEntity">
+		SELECT <include refid="sysCommonCustomerColumns"/>,
+		       <include refid="extraColumns"/>
+		FROM sys_common_customer a
+		<include refid="sysCommonCustomerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getByIds" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomer" >
+		SELECT <include refid="sysCommonCustomerColumns"/>
+		FROM sys_common_customer a
+		<include refid="sysCommonCustomerJoins"/>
+		<where>
+			a.id in
+			<foreach collection="ids" item="id" index="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		</where>
+	</select>
+
+	<select id="getByCode" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomer">
+		SELECT <include refid="sysCommonCustomerColumns"/>
+		FROM sys_common_customer a
+		<include refid="sysCommonCustomerJoins"/>
+		WHERE a.code = #{code} AND a.data_set = #{dataSet}
+	</select>
+
+	<select id="findSync" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomer">
+		SELECT
+		<include refid="sysCommonCustomerColumns"/>
+		FROM sys_common_customer a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="type != null and type!= ''">
+				AND a.type like concat('%', #{type}, '%')
+			</if>
+			<if test="categories != null and categories!= ''">
+				AND a.categories = #{categories}
+			</if>
+			<if test="ids != null and ids.size > 0">
+				AND a.id IN
+				<foreach collection="ids" item="id" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+</mapper>

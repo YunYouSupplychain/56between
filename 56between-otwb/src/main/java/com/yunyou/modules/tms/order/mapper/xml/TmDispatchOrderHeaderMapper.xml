@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmDispatchOrderHeaderMapper">
+    
+	<sql id="tmDispatchOrderHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.dispatch_no AS "dispatchNo",
+		a.dispatch_status AS "dispatchStatus",
+		a.dispatch_time AS "dispatchTime",
+		a.dispatch_type AS "dispatchType",
+		a.departure_time AS "departureTime",
+		a.is_exception AS "isException",
+		a.is_app_input AS "isAppInput",
+		a.transport_type AS "transportType",
+		a.total_qty AS "totalQty",
+		a.received_qty AS "receivedQty",
+		a.total_weight AS "totalWeight",
+		a.total_cubic AS "totalCubic",
+		a.total_amount AS "totalAmount",
+		a.dispatch_outlet_code AS "dispatchOutletCode",
+		a.dispatcher AS "dispatcher",
+		a.carrier_code AS "carrierCode",
+		a.car_no AS "carNo",
+		a.driver AS "driver",
+		a.driver_tel AS "driverTel",
+		a.start_area_id AS "startAreaId",
+		a.end_area_id AS "endAreaId",
+		a.org_id AS "orgId",
+		a.account AS "account",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.copilot AS "copilot",
+		a.dispatch_plan_no AS "dispatchPlanNo",
+		a.data_source AS "dataSource",
+		a.total_sku_qty AS "totalSkuQty",
+		a.cash_amount AS "cashAmount",
+		a.prepaid_amount AS "prepaidAmount",
+		a.trip AS "trip",
+		a.shift AS "shift",
+		a.platform AS "platform",
+		a.seal_no AS "sealNo",
+		a.feed_back_status AS "feedBackStatus"
+	</sql>
+	
+	<sql id="tmDispatchOrderHeaderJoins">
+		
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.tms.order.entity.TmDispatchOrderHeader" >
+		SELECT 
+			<include refid="tmDispatchOrderHeaderColumns"/>
+		FROM tm_dispatch_order_header a
+		<include refid="tmDispatchOrderHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.tms.order.entity.TmDispatchOrderHeader" >
+		SELECT 
+			<include refid="tmDispatchOrderHeaderColumns"/>
+		FROM tm_dispatch_order_header a
+		<include refid="tmDispatchOrderHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="dispatchNo != null and dispatchNo != ''">
+				AND a.dispatch_no = #{dispatchNo}
+			</if>
+			<if test="dispatchStatus != null and dispatchStatus != ''">
+				AND a.dispatch_status = #{dispatchStatus}
+			</if>
+			<if test="dispatchType != null and dispatchType != ''">
+				AND a.dispatch_type = #{dispatchType}
+			</if>
+            <if test="dispatchPlanNo != null and dispatchPlanNo != ''">
+                AND a.dispatch_plan_no = #{dispatchPlanNo}
+            </if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="carNo != null and carNo != ''">
+				AND a.car_no = #{carNo}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.tms.order.entity.TmDispatchOrderHeader" >
+		SELECT 
+			<include refid="tmDispatchOrderHeaderColumns"/>
+		FROM tm_dispatch_order_header a
+		<include refid="tmDispatchOrderHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_dispatch_order_header(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			dispatch_no,
+			dispatch_status,
+			dispatch_time,
+			dispatch_type,
+			departure_time,
+			is_exception,
+			is_app_input,
+			transport_type,
+			total_qty,
+			received_qty,
+			total_weight,
+			total_cubic,
+			total_amount,
+			dispatch_outlet_code,
+			dispatcher,
+			carrier_code,
+			car_no,
+			driver,
+			driver_tel,
+			start_area_id,
+			end_area_id,
+			org_id,
+			account,
+			rec_ver,
+			base_org_id,
+            copilot,
+            dispatch_plan_no,
+            data_source,
+            total_sku_qty,
+            cash_amount,
+            prepaid_amount,
+			trip,
+			shift,
+			platform,
+			seal_no,
+			feed_back_status
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{dispatchNo},
+			#{dispatchStatus},
+			#{dispatchTime},
+			#{dispatchType},
+			#{departureTime},
+			#{isException},
+			#{isAppInput},
+			#{transportType},
+			#{totalQty},
+			#{receivedQty},
+			#{totalWeight},
+			#{totalCubic},
+			#{totalAmount},
+			#{dispatchOutletCode},
+			#{dispatcher},
+			#{carrierCode},
+			#{carNo},
+			#{driver},
+			#{driverTel},
+			#{startAreaId},
+			#{endAreaId},
+			#{orgId},
+			#{account},
+			#{recVer},
+			#{baseOrgId},
+            #{copilot},
+            #{dispatchPlanNo},
+            #{dataSource},
+            #{totalSkuQty},
+            #{cashAmount},
+            #{prepaidAmount},
+			#{trip},
+			#{shift},
+			#{platform},
+			#{sealNo},
+			#{feedBackStatus}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_dispatch_order_header
+		SET update_by            = #{updateBy.id},
+			update_date          = #{updateDate},
+			remarks              = #{remarks},
+			dispatch_no          = #{dispatchNo},
+			dispatch_status      = #{dispatchStatus},
+			dispatch_time        = #{dispatchTime},
+			dispatch_type        = #{dispatchType},
+			departure_time       = #{departureTime},
+			is_exception         = #{isException},
+			is_app_input         = #{isAppInput},
+			transport_type       = #{transportType},
+			total_qty            = #{totalQty},
+			received_qty         = #{receivedQty},
+			total_weight         = #{totalWeight},
+			total_cubic          = #{totalCubic},
+			total_amount         = #{totalAmount},
+			dispatch_outlet_code = #{dispatchOutletCode},
+			dispatcher           = #{dispatcher},
+			carrier_code         = #{carrierCode},
+			car_no               = #{carNo},
+			driver               = #{driver},
+			driver_tel           = #{driverTel},
+			start_area_id        = #{startAreaId},
+			end_area_id          = #{endAreaId},
+			org_id               = #{orgId},
+			account              = #{account},
+			base_org_id          = #{baseOrgId},
+			copilot              = #{copilot},
+			dispatch_plan_no     = #{dispatchPlanNo},
+			data_source          = #{dataSource},
+			total_sku_qty        = #{totalSkuQty},
+			cash_amount          = #{cashAmount},
+			prepaid_amount       = #{prepaidAmount},
+			trip                 = #{trip},
+			shift                = #{shift},
+			platform             = #{platform},
+			seal_no              = #{sealNo},
+			feed_back_status     = #{feedBackStatus},
+			rec_ver              = rec_ver + 1
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_dispatch_order_header
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_dispatch_order_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getByNo" resultType="com.yunyou.modules.tms.order.entity.TmDispatchOrderHeader" >
+		SELECT
+		<include refid="tmDispatchOrderHeaderColumns"/>
+		FROM tm_dispatch_order_header a
+		WHERE a.dispatch_no = #{dispatchNo}
+	</select>
+	
+</mapper>

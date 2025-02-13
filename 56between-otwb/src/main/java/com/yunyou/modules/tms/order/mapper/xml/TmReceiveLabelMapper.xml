@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmReceiveLabelMapper">
+    
+	<sql id="tmReceiveLabelColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.receive_outlet_code AS "receiveOutletCode",
+		a.label_no AS "labelNo",
+		a.transport_no AS "transportNo",
+		a.customer_no AS "customerNo",
+		a.dispatch_no AS "dispatchNo",
+		a.is_app_input AS "isAppInput",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode"
+	</sql>
+	
+	<sql id="tmReceiveLabelJoins">
+		
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.tms.order.entity.TmReceiveLabel" >
+		SELECT 
+			<include refid="tmReceiveLabelColumns"/>
+		FROM tm_receive_label a
+		<include refid="tmReceiveLabelJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.tms.order.entity.TmReceiveLabel" >
+		SELECT 
+			<include refid="tmReceiveLabelColumns"/>
+		FROM tm_receive_label a
+		<include refid="tmReceiveLabelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="receiveOutletCode != null and receiveOutletCode != ''">
+				AND a.receive_outlet_code = #{receiveOutletCode}
+			</if>
+			<if test="labelNo != null and labelNo != ''">
+				AND a.label_no = #{labelNo}
+			</if>
+			<if test="transportNo != null and transportNo != ''">
+				AND a.transport_no = #{transportNo}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="dispatchNo != null and dispatchNo != ''">
+				AND a.dispatch_no = #{dispatchNo}
+			</if>
+			<if test="isAppInput != null and isAppInput != ''">
+				AND a.is_app_input = #{isAppInput}
+			</if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="baseOrgId != null and baseOrgId != ''">
+                AND a.base_org_id = #{baseOrgId}
+            </if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.tms.order.entity.TmReceiveLabel" >
+		SELECT 
+			<include refid="tmReceiveLabelColumns"/>
+		FROM tm_receive_label a
+		<include refid="tmReceiveLabelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_receive_label(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			receive_outlet_code,
+			label_no,
+			transport_no,
+			customer_no,
+			dispatch_no,
+			is_app_input,
+			org_id,
+			rec_ver,
+			base_org_id,
+            owner_code,
+            sku_code
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{receiveOutletCode},
+			#{labelNo},
+			#{transportNo},
+			#{customerNo},
+			#{dispatchNo},
+			#{isAppInput},
+			#{orgId},
+			#{recVer},
+			#{baseOrgId},
+            #{ownerCode},
+            #{skuCode}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_receive_label SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			receive_outlet_code = #{receiveOutletCode},
+			label_no = #{labelNo},
+			transport_no = #{transportNo},
+			customer_no = #{customerNo},
+			dispatch_no = #{dispatchNo},
+			is_app_input = #{isAppInput},
+			org_id = #{orgId},
+			base_org_id = #{baseOrgId},
+            owner_code = #{ownerCode},
+            sku_code = #{skuCode},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_receive_label WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_receive_label SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+	</update>
+
+</mapper>

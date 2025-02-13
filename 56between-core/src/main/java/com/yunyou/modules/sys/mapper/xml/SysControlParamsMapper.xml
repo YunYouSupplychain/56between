@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.mapper.SysControlParamsMapper">
+
+    <sql id="sysControlParamsColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.code AS "code",
+		a.value AS "value",
+		a.org_id AS "orgId",
+		a.type AS "type"
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.sys.entity.SysControlParams">
+        SELECT
+            so.name AS "orgName",
+        	<include refid="sysControlParamsColumns"/>
+        FROM sys_control_params a
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.sys.entity.SysControlParams">
+        SELECT
+            so.name AS "orgName",
+        	<include refid="sysControlParamsColumns"/>
+        FROM sys_control_params a
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="code != null and code != ''">
+                AND a.code = #{code}
+            </if>
+            <if test="type != null and type != ''">
+                AND a.type = #{type}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.sys.entity.SysControlParams">
+        SELECT
+            so.name AS "orgName",
+        	<include refid="sysControlParamsColumns"/>
+        FROM sys_control_params a
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sys_control_params (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            code,
+            value,
+            org_id,
+            type
+        ) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{code},
+			#{value},
+			#{orgId},
+			#{type}
+		)
+    </insert>
+
+    <update id="update">
+        UPDATE sys_control_params
+        SET update_by   = #{updateBy.id},
+            update_date = #{updateDate},
+            remarks     = #{remarks},
+            code        = #{code},
+            value       = #{value},
+            org_id      = #{orgId},
+            type        = #{type}
+        WHERE id = #{id}
+    </update>
+
+    <!--物理删除-->
+    <update id="delete">
+        DELETE
+        FROM sys_control_params
+        WHERE id = #{id}
+    </update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE sys_control_params
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+    <select id="findPage" resultType="com.yunyou.modules.sys.entity.SysControlParams">
+        SELECT
+            so.name AS "orgName",
+        	<include refid="sysControlParamsColumns"/>
+        FROM sys_control_params a
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="remarks != null and remarks != ''">
+                AND a.remarks LIKE concat('%',#{remarks},'%')
+            </if>
+            <if test="code != null and code != ''">
+                AND a.code LIKE concat('%',#{code},'%')
+            </if>
+            <if test="type != null and type != ''">
+                AND a.type LIKE concat('%',#{type},'%')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getByCode" resultType="com.yunyou.modules.sys.entity.SysControlParams">
+        SELECT
+        <include refid="sysControlParamsColumns"/>
+        FROM sys_control_params a
+        WHERE a.code = #{code} AND a.org_id = #{orgId}
+    </select>
+
+    <select id="getByOnlyCode" resultType="com.yunyou.modules.sys.entity.SysControlParams">
+        SELECT
+        <include refid="sysControlParamsColumns"/>
+        FROM sys_control_params a
+        WHERE a.code = #{code}
+        AND (a.org_id IS NULL OR a.org_id = '')
+    </select>
+
+</mapper>

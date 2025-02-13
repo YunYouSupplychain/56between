@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.basic.mapper.TmTransportEquipmentSpaceMapper">
+    
+	<sql id="tmTransportEquipmentSpaceColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_equipment_type_code AS "transportEquipmentTypeCode",
+		a.transport_equipment_no AS "transportEquipmentNo",
+		a.transport_equipment_location AS "transportEquipmentLocation",
+		a.is_temperature_control AS "isTemperatureControl",
+		a.is_humidity_control AS "isHumidityControl",
+		a.load_weight AS "loadWeight",
+		a.load_cubic AS "loadCubic",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer"
+	</sql>
+	
+	<sql id="tmTransportEquipmentSpaceJoins">
+		
+	</sql>
+
+	<select id="get" resultType="TmTransportEquipmentSpace" >
+		SELECT 
+			<include refid="tmTransportEquipmentSpaceColumns"/>
+		FROM tm_transport_equipment_space a
+		<include refid="tmTransportEquipmentSpaceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmTransportEquipmentSpace" >
+		SELECT 
+			<include refid="tmTransportEquipmentSpaceColumns"/>
+		FROM tm_transport_equipment_space a
+		<include refid="tmTransportEquipmentSpaceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.transport_equipment_type_code = #{transportEquipmentTypeCode}
+			AND a.org_id = #{orgId}
+			<if test="transportEquipmentNo != null and transportEquipmentNo != ''">
+				AND a.transport_equipment_no = #{transportEquipmentNo}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmTransportEquipmentSpace" >
+		SELECT 
+			<include refid="tmTransportEquipmentSpaceColumns"/>
+		FROM tm_transport_equipment_space a
+		<include refid="tmTransportEquipmentSpaceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_transport_equipment_space(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			transport_equipment_type_code,
+			transport_equipment_no,
+			transport_equipment_location,
+			is_temperature_control,
+			is_humidity_control,
+			load_weight,
+			load_cubic,
+			org_id,
+			rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{transportEquipmentTypeCode},
+			#{transportEquipmentNo},
+			#{transportEquipmentLocation},
+			#{isTemperatureControl},
+			#{isHumidityControl},
+			#{loadWeight},
+			#{loadCubic},
+			#{orgId},
+			#{recVer}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_transport_equipment_space
+		SET update_by                     = #{updateBy.id},
+			update_date                   = #{updateDate},
+			remarks                       = #{remarks},
+			transport_equipment_type_code = #{transportEquipmentTypeCode},
+			transport_equipment_no        = #{transportEquipmentNo},
+			transport_equipment_location  = #{transportEquipmentLocation},
+			is_temperature_control        = #{isTemperatureControl},
+			is_humidity_control           = #{isHumidityControl},
+			load_weight                   = #{loadWeight},
+			load_cubic                    = #{loadCubic},
+			org_id                        = #{orgId},
+			rec_ver                       = rec_ver + 1
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_transport_equipment_space SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_transport_equipment_space WHERE id = #{id}
+	</delete>
+
+	<delete id="remove">
+		DELETE FROM tm_transport_equipment_space WHERE transport_equipment_type_code = #{transportEquipmentTypeCode} AND org_id = #{orgId}
+	</delete>
+
+</mapper>

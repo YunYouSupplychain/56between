@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.report.mapper.BmsContractAccountMapper">
+
+    <select id="findList" resultType="com.yunyou.modules.bms.report.entity.BmsContractAccount">
+        select
+            scr.code                                       as regionCode,
+            scr.name                                       as regionName,
+            bcu.area_id                                    as areaId,
+            bcu.project                                    as project,
+            so.code                                        as orgCode,
+            bc.sys_contract_no                             as sysContractNo,
+            group_concat(distinct bcci.receivable_payable) as receivablePayable,
+            bc.settle_object_code                          as settleObjectCode,
+            bcu.ebcu_name_cn                               as settleObjectName,
+            bio.code                                       as invoiceObjectCode,
+            bio.name                                       as invoiceObjectName,
+            bc.effective_date_fm                           as effectiveDateFm,
+            bc.effective_date_to                           as effectiveDateTo,
+            bc.contract_category                           as contractCategory,
+            bc.contract_type                               as contractType,
+            bc.remarks                                     as contractDesc,
+            bc.belong_to_company                           as belongToCompany,
+            bc.contractor                                  as contractor,
+            bc.check_accounts_person                       as checkAccountsPerson,
+            bc.check_accounts_director                     as checkAccountsDirector,
+            bc.check_accounts_time                         as checkAccountsTime,
+            bc.billing_requirement                         as billingRequirement,
+            bc.invoice_type                                as invoiceType,
+            bc.invoice_tax_rate                            as invoiceTaxRate,
+            bc.contract_status                             as contractStatus,
+            bc.org_id                                      as orgId
+        from bms_contract bc
+        inner join bms_contract_cost_item bcci on bc.sys_contract_no = bcci.sys_contract_no and bc.org_id = bcci.org_id
+        left join bms_invoice_object_detail biod on bc.settle_object_code = biod.code and bc.org_id = biod.org_id
+        left join bms_invoice_object bio on biod.object_id = bio.id and biod.org_id = bio.org_id
+        left join bms_customer bcu on bc.settle_object_code = bcu.ebcu_customer_no and bc.org_id = bcu.org_id
+        left join sys_office so on bc.org_id = so.id
+        left join sys_data_set_org_relation sdsor on bc.org_id = sdsor.org_id
+        left join sys_common_region_place scrp on bcu.area_id = scrp.place_id and sdsor.data_set = scrp.data_set
+        left join sys_common_region scr on scrp.code = scr.code and scrp.data_set = scr.data_set
+        <where>
+            bc.org_id = #{orgId}
+            <if test="settleObjectCode != null and settleObjectCode != ''">
+                and bc.settle_object_code = #{settleObjectCode}
+            </if>
+            <if test="contractStatus != null and contractStatus != ''">
+                and bc.contract_status = #{contractStatus}
+            </if>
+        </where>
+        group by bc.sys_contract_no,
+                 bc.org_id
+    </select>
+
+</mapper>

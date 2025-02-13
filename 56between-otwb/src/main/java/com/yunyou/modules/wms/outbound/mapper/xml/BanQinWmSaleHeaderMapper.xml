@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmSaleHeaderMapper">
+    
+	<sql id="banQinWmSaleHeaderColumns">
+		a.id AS "id",
+		a.sale_no AS "saleNo",
+		a.logistic_no AS "logisticNo",
+		a.sale_type AS "saleType",
+		a.priority AS "priority",
+		a.status AS "status",
+		a.audit_status AS "auditStatus",
+		a.audit_op AS "auditOp",
+		a.audit_time AS "auditTime",
+		a.order_time AS "orderTime",
+		a.fm_etd AS "fmEtd",
+		a.to_etd AS "toEtd",
+		a.owner_code AS "ownerCode",
+		a.carrier_code AS "carrierCode",
+		a.trans_type AS "transType",
+		a.line AS "line",
+		a.stop AS "stop",
+		a.vehicle_no AS "vehicleNo",
+		a.driver AS "driver",
+		a.consignee_code AS "consigneeCode",
+		a.consignee_name AS "consigneeName",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_addr AS "consigneeAddr",
+		a.consignee_zip AS "consigneeZip",
+		a.consignee_email AS "consigneeEmail",
+		a.consignee_fax AS "consigneeFax",
+		a.contact_code AS "contactCode",
+		a.contact_name AS "contactName",
+		a.contact_tel AS "contactTel",
+		a.contact_addr AS "contactAddr",
+		a.contact_zip AS "contactZip",
+		a.contact_email AS "contactEmail",
+		a.contact_fax AS "contactFax",
+		a.settle_code AS "settleCode",
+		a.edi_send_time AS "ediSendTime",
+		a.is_edi_send AS "isEdiSend",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmSaleHeaderJoins">
+		
+	</sql>
+	
+	<select id="get" resultType="BanQinWmSaleHeader" >
+		SELECT 
+			<include refid="banQinWmSaleHeaderColumns"/>
+		FROM wm_sale_header a
+		<include refid="banQinWmSaleHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntity" resultType="BanQinWmSaleEntity" >
+		SELECT
+			<include refid="banQinWmSaleHeaderColumns"/>,
+			owner.ebcu_name_cn AS ownerName,
+			carrier.ebcu_name_cn AS carrierName,
+			settle.ebcu_tel AS settleTel,
+			settle.ebcu_fax AS settleFax,
+			settle.ebcu_industry_type AS settleIndustryType,
+			settle.ebcu_address AS settleAddress
+		FROM wm_sale_header a
+		LEFT JOIN eb_customer owner ON a.owner_code = owner.ebcu_customer_no AND a.org_id = owner.org_id
+		LEFT JOIN eb_customer carrier ON a.carrier_code = carrier.ebcu_customer_no and a.org_id = carrier.org_id
+		LEFT JOIN eb_customer consignee ON a.consignee_code = consignee.ebcu_customer_no and a.org_id = consignee.org_id
+		LEFT JOIN eb_customer settle ON a.settle_code = settle.ebcu_customer_no and a.org_id = settle.org_id
+		<include refid="banQinWmSaleHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="BanQinWmSaleHeader" >
+		SELECT 
+			<include refid="banQinWmSaleHeaderColumns"/>
+		FROM wm_sale_header a
+		<include refid="banQinWmSaleHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="saleNo != null and saleNo != ''">
+				AND a.sale_no = #{saleNo}
+			</if>
+			<if test="logisticNo != null and logisticNo != ''">
+				AND a.logistic_no = #{logisticNo}
+			</if>
+			<if test="saleType != null and saleType != ''">
+				AND a.sale_type = #{saleType}
+			</if>
+			<if test="priority != null and priority != ''">
+				AND a.priority = #{priority}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="fmEtd != null and fmEtd != ''">
+				AND a.fm_etd &gt;= #{fmEtd}
+			</if>
+			<if test="toEtd != null and toEtd != ''">
+				AND a.to_etd &lt;= #{toEtd}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmSaleHeader" >
+		SELECT
+			<include refid="banQinWmSaleHeaderColumns"/>,
+			owner.ebcu_name_cn AS ownerName,
+			carrier.ebcu_name_cn AS carrierName,
+			settle.ebcu_tel AS settleTel,
+			settle.ebcu_fax AS settleFax,
+			settle.ebcu_industry_type AS settleIndustryType,
+			settle.ebcu_address AS settleAddress
+		FROM wm_sale_header a
+		LEFT JOIN eb_customer owner ON a.owner_code = owner.ebcu_customer_no AND a.org_id = owner.org_id
+		LEFT JOIN eb_customer carrier ON a.carrier_code = carrier.ebcu_customer_no and a.org_id = carrier.org_id
+		LEFT JOIN eb_customer consignee ON a.consignee_code = consignee.ebcu_customer_no and a.org_id = consignee.org_id
+		LEFT JOIN eb_customer settle ON a.settle_code = settle.ebcu_customer_no and a.org_id = settle.org_id
+		<include refid="banQinWmSaleHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="saleNo != null and saleNo != ''">
+				AND a.sale_no like concat('%', #{saleNo}, '%')
+			</if>
+			<if test="logisticNo != null and logisticNo != ''">
+				AND a.logistic_no = #{logisticNo}
+			</if>
+			<if test="saleType != null and saleType != ''">
+				AND a.sale_type = #{saleType}
+			</if>
+			<if test="priority != null and priority != ''">
+				AND a.priority = #{priority}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="fmEtd != null and fmEtd != ''">
+				AND a.fm_etd &gt;= #{fmEtd}
+			</if>
+			<if test="toEtd != null and toEtd != ''">
+				AND a.to_etd &lt;= #{toEtd}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="getBySaleNoArray" resultType="BanQinWmSaleHeader">
+        SELECT <include refid="banQinWmSaleHeaderColumns"/>
+        FROM wm_sale_header a
+        WHERE 1 = 1
+          AND a.org_id = #{orgId}
+          AND a.sale_no IN
+          <foreach collection="saleNos" item="saleNo" index="saleNo" open=")" separator="," close=")">
+              #{saleNo}
+          </foreach>
+    </select>
+    
+    <select id="checkWmSaleExistsSo" resultType="BanQinWmSaleHeader">
+        SELECT DISTINCT wsh.sale_no FROM wm_sale_header wsh
+        WHERE 1 = 1
+	  	AND wsh.org_id = #{orgId}
+	  	AND EXISTS (SELECT 1 FROM wm_so_detail wad WHERE wad.sale_no = wsh.sale_no AND wad.org_id = wsh.org_id)
+	  	AND wsh.sale_no IN
+		<foreach collection="saleNos" item="saleNo" index="saleNo" open="(" separator="," close=")">
+			#{saleNo}
+		</foreach>
+    </select>
+    
+    <select id="checkSaleStatus" resultType="java.lang.String">
+        SELECT DISTINCT a.sale_no
+        FROM wm_sale_header a
+        WHERE 1 = 1
+	  	AND a.sale_no = #{saleNo}
+	  	AND sale_no IN
+	  	<foreach collection="saleNos" item="saleNo" index="saleNo" open="(" separator="," close=")">
+		  	#{saleNo}
+	  	</foreach>
+	  	AND status IN
+	  	<foreach collection="status" item="status" index="status" open="(" separator="," close=")">
+		  	#{status}
+	  	</foreach>
+	  	AND audit_status IN
+	  	<foreach collection="auditStatus" item="auditStatus" index="auditStatus" open="(" separator="," close=")">
+		  	#{auditStatus}
+	  	</foreach>
+    </select>
+    
+    <select id="checkWmSaleExistsUnCloseSo" resultType="java.lang.String">
+        SELECT wsh.so_no
+          FROM wm_so_header wsh
+         WHERE wsh.status NOT IN ('90', '99')
+           AND EXISTS (
+            SELECT 1
+              FROM wm_so_detail wsd
+             WHERE wsd.sale_no = #{saleNo}
+               AND wsd.status NOT IN ('90')
+               AND wsd.org_id = wsh.org_id
+               AND wsh.so_no = wsd.so_no
+        )
+        and wsh.org_id = #{orgId}
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmSaleHeader" >
+		SELECT 
+			<include refid="banQinWmSaleHeaderColumns"/>
+		FROM wm_sale_header a
+		<include refid="banQinWmSaleHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_sale_header(
+			id,
+			sale_no,
+			logistic_no,
+			sale_type,
+			priority,
+			status,
+			audit_status,
+			audit_op,
+			audit_time,
+			order_time,
+			fm_etd,
+			to_etd,
+			owner_code,
+			carrier_code,
+			trans_type,
+			line,
+			stop,
+			vehicle_no,
+			driver,
+			consignee_code,
+			consignee_name,
+			consignee_tel,
+			consignee_addr,
+			consignee_zip,
+			consignee_email,
+			consignee_fax,
+			contact_code,
+			contact_name,
+			contact_tel,
+			contact_addr,
+			contact_zip,
+			contact_email,
+			contact_fax,
+			settle_code,
+			edi_send_time,
+			is_edi_send,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{saleNo},
+			#{logisticNo},
+			#{saleType},
+			#{priority},
+			#{status},
+			#{auditStatus},
+			#{auditOp},
+			#{auditTime},
+			#{orderTime},
+			#{fmEtd},
+			#{toEtd},
+			#{ownerCode},
+			#{carrierCode},
+			#{transType},
+			#{line},
+			#{stop},
+			#{vehicleNo},
+			#{driver},
+			#{consigneeCode},
+			#{consigneeName},
+			#{consigneeTel},
+			#{consigneeAddr},
+			#{consigneeZip},
+			#{consigneeEmail},
+			#{consigneeFax},
+			#{contactCode},
+			#{contactName},
+			#{contactTel},
+			#{contactAddr},
+			#{contactZip},
+			#{contactEmail},
+			#{contactFax},
+			#{settleCode},
+			#{ediSendTime},
+			#{isEdiSend},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_sale_header SET 	
+			sale_no = #{saleNo},
+			logistic_no = #{logisticNo},
+			sale_type = #{saleType},
+			priority = #{priority},
+			status = #{status},
+			audit_status = #{auditStatus},
+			audit_op = #{auditOp},
+			audit_time = #{auditTime},
+			order_time = #{orderTime},
+			fm_etd = #{fmEtd},
+			to_etd = #{toEtd},
+			owner_code = #{ownerCode},
+			carrier_code = #{carrierCode},
+			trans_type = #{transType},
+			line = #{line},
+			stop = #{stop},
+			vehicle_no = #{vehicleNo},
+			driver = #{driver},
+			consignee_code = #{consigneeCode},
+			consignee_name = #{consigneeName},
+			consignee_tel = #{consigneeTel},
+			consignee_addr = #{consigneeAddr},
+			consignee_zip = #{consigneeZip},
+			consignee_email = #{consigneeEmail},
+			consignee_fax = #{consigneeFax},
+			contact_code = #{contactCode},
+			contact_name = #{contactName},
+			contact_tel = #{contactTel},
+			contact_addr = #{contactAddr},
+			contact_zip = #{contactZip},
+			contact_email = #{contactEmail},
+			contact_fax = #{contactFax},
+			settle_code = #{settleCode},
+			edi_send_time = #{ediSendTime},
+			is_edi_send = #{isEdiSend},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			def6 = #{def6},
+			def7 = #{def7},
+			def8 = #{def8},
+			def9 = #{def9},
+			def10 = #{def10},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_sale_header
+		WHERE id = #{id}
+	</update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+		UPDATE wm_sale_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+    <update id="updateWmSaleHeaderStatus">
+        UPDATE wm_sale_header wsh
+		SET wsh.status = (
+		    CASE WHEN (
+				SELECT COUNT(1) FROM wm_sale_detail wsd
+				WHERE wsh.sale_no = wsd.sale_no
+				AND wsh.org_id = wsd.org_id
+				AND wsd.status &lt;&gt; '90'
+				LIMIT 1) = 0 THEN '00'
+			ELSE (
+			    SELECT (CASE WHEN (MAX(wsd.status) = MIN(wsd.status)) THEN (MAX(wsd.status))
+					WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(Wsd.status) &lt;= '20') THEN '10'
+					WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(Wsd.status) &lt;= '40') THEN '30'
+					WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(Wsd.status) &lt;= '60') THEN '50'
+					WHEN (MAX(wsd.status) &lt;&gt; MIN(wsd.status) AND MAX(Wsd.status) &lt;= '80') THEN '70' END)
+				FROM wm_sale_detail wsd
+				WHERE wsd.status &lt;&gt; '90'
+				AND wsd.status &lt;&gt; '99'
+				AND wsh.sale_no = wsd.sale_no
+				AND wsh.org_id = wsd.org_id)
+			END),
+			wsh.update_by = #{userId},
+			wsh.update_date = now()
+        WHERE 1 = 1
+        AND wsh.status &lt;&gt; '90'
+        AND wsh.status &lt;&gt; '99'
+        AND wsh.org_id = #{orgId}
+        AND wsh.sale_no in
+        <foreach collection="saleNos" item="saleNo" index="saleNo" open="(" separator="," close=")">
+            #{saleNo}
+        </foreach>
+    </update>
+    
+    <delete id="deleteWmSaleHeader">
+        DELETE FROM wm_sale_header wsh
+        WHERE wsh.status = '00'
+        AND wsh.org_id = #{orgId}
+        AND wsh.sale_no IN
+        <foreach collection="saleNos" item="saleNo" index="saleNo" open="(" separator="," close=")">
+            #{saleNo}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.spare.mapper.TmSpareSoScanInfoMapper">
+
+    <sql id="tmSpareSoScanInfoColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.spare_so_no AS "spareSoNo",
+        a.order_type AS "orderType",
+        a.line_no AS "lineNo",
+        a.fitting_code AS "fittingCode",
+        a.supplier_code AS "supplierCode",
+        a.price AS "price",
+        a.barcode AS "barcode",
+        a.operate_time AS "operateTime",
+        a.operator AS "operator",
+        a.org_id AS "orgId",
+        a.rec_ver AS "recVer",
+        a.base_org_id AS "baseOrgId",
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.tms.spare.entity.TmSpareSoScanInfo" >
+        SELECT <include refid="tmSpareSoScanInfoColumns"/>
+        FROM tm_spare_so_scan_info a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.tms.spare.entity.TmSpareSoScanInfo" >
+        SELECT <include refid="tmSpareSoScanInfoColumns"/>
+        FROM tm_spare_so_scan_info a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="spareSoNo != null and spareSoNo != ''">
+                AND a.spare_so_no = #{spareSoNo}
+            </if>
+            <if test="orderType != null and orderType != ''">
+                AND a.order_type = #{orderType}
+            </if>
+            <if test="lineNo != null and lineNo != ''">
+                AND a.line_no = #{lineNo}
+            </if>
+            <if test="fittingCode != null and fittingCode != ''">
+                AND a.fitting_code = #{fittingCode}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code = #{supplierCode}
+            </if>
+            <if test="barcode != null and barcode != ''">
+                AND a.barcode = #{barcode}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="baseOrgId != null and baseOrgId != ''">
+                AND a.base_org_id = #{baseOrgId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.tms.spare.entity.TmSpareSoScanInfo" >
+        SELECT
+        <include refid="tmSpareSoScanInfoColumns"/>
+        FROM tm_spare_so_scan_info a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO tm_spare_so_scan_info(
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            spare_so_no,
+            order_type,
+            line_no,
+            fitting_code,
+            supplier_code,
+            price,
+            barcode,
+            operate_time,
+            operator,
+            org_id,
+            rec_ver,
+            base_org_id
+        ) VALUES (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{spareSoNo},
+            #{orderType},
+            #{lineNo},
+            #{fittingCode},
+            #{supplierCode},
+            #{price},
+            #{barcode},
+            #{operateTime},
+            #{operator},
+            #{orgId},
+            #{recVer},
+            #{baseOrgId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE tm_spare_so_scan_info SET
+            update_by = #{updateBy.id},
+            update_date = #{updateDate},
+            del_flag = #{delFlag},
+            remarks = #{remarks},
+            spare_so_no = #{spareSoNo},
+            order_type = #{orderType},
+            line_no = #{lineNo},
+            fitting_code = #{fittingCode},
+            supplier_code = #{supplierCode},
+            price = #{price},
+            barcode = #{barcode},
+            operate_time = #{operateTime},
+            operator = #{operator},
+            org_id = #{orgId},
+            base_org_id = #{baseOrgId},
+            rec_ver = rec_ver + 1
+        WHERE id = #{id} AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE tm_spare_so_scan_info SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM tm_spare_so_scan_info WHERE id = #{id}
+    </delete>
+</mapper>

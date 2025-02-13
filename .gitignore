@@ -1,0 +1,8 @@
+.svn
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+*.class
+target/*

@@ -1,0 +1,980 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inbound.mapper.BanQinWmAsnHeaderMapper">
+    
+	<sql id="banQinWmAsnHeaderColumns">
+		a.id AS "id",
+		a.asn_no AS "asnNo",
+		a.logistic_no AS "logisticNo",
+		a.asn_type AS "asnType",
+		a.order_time AS "orderTime",
+		a.fm_eta AS "fmEta",
+		a.to_eta AS "toEta",
+		a.priority AS "priority",
+		a.status AS "status",
+		a.audit_status AS "auditStatus",
+		a.audit_op AS "auditOp",
+		a.audit_time AS "auditTime",
+		a.hold_status AS "holdStatus",
+		a.hold_op AS "holdOp",
+		a.hold_time AS "holdTime",
+		a.qc_status AS "qcStatus",
+		a.owner_code AS "ownerCode",
+		a.supplier_code AS "supplierCode",
+		a.carrier_code AS "carrierCode",
+		a.settle_code AS "settleCode",
+		a.print_num AS "printNum",
+		a.is_appoint_dock AS "isAppointDock",
+		a.edi_send_time AS "ediSendTime",
+		a.is_edi_send AS "isEdiSend",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.def6 AS "def6",
+		a.def7 AS "def7",
+		a.def8 AS "def8",
+		a.def9 AS "def9",
+		a.def10 AS "def10",
+		a.def11 AS "def11",
+		a.def12 AS "def12",
+		a.def13 AS "def13",
+		a.def14 AS "def14",
+		a.def15 AS "def15",
+		a.def16 AS "def16",
+		a.def17 AS "def17",
+		a.def18 AS "def18",
+		a.def19 AS "def19",
+		a.def20 AS "def20",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.freight_amount AS "freightAmount",
+		a.driver AS "driver",
+		a.vehicle_no AS "vehicleNo",
+		a.tel AS "tel",
+		a.data_source AS "dataSource"
+	</sql>
+	
+	<sql id="banQinWmAsnHeaderJoins">
+        LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+
+	<select id="get" resultType="BanQinWmAsnHeader" >
+		SELECT 
+			<include refid="banQinWmAsnHeaderColumns"/>
+		FROM wm_asn_header a
+		<include refid="banQinWmAsnHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="getEntity" resultType="BanQinWmAsnEntity" >
+        SELECT
+            <include refid="banQinWmAsnHeaderColumns"/>,
+			owner.ebcu_name_cn AS ownerName,
+			supplier.ebcu_name_cn AS supplierName,
+			supplier.ebcu_tel AS supplierTel,
+			supplier.ebcu_fax AS supplierFax,
+			supplier.ebcu_address AS supplierAddress,
+			supplier.ebcu_industry_type AS supplierIndustryType,
+			carrier.ebcu_name_cn AS carrierName,
+			carrier.ebcu_tel AS carrierTel,
+			carrier.ebcu_fax AS carrierFax,
+			carrier.ebcu_address AS carrierAddress,
+			carrier.ebcu_industry_type AS carrierIndustryType,
+			settle.ebcu_name_cn AS settleName,
+			settle.ebcu_tel AS settleTel,
+			settle.ebcu_fax AS settleFax,
+			settle.ebcu_address AS settleAddress,
+			settle.ebcu_industry_type AS settleIndustryType
+        FROM wm_asn_header a
+        LEFT JOIN eb_customer owner ON a.owner_code = owner.ebcu_customer_no AND a.org_id = owner.org_id AND FIND_IN_SET('OWNER', owner.ebcu_type)
+        LEFT JOIN eb_customer supplier ON a.supplier_code = supplier.ebcu_customer_no AND a.org_id = supplier.org_id AND FIND_IN_SET('SUPPLIER', supplier.ebcu_type)
+        LEFT JOIN eb_customer carrier ON a.carrier_code = carrier.ebcu_customer_no AND a.org_id = carrier.org_id AND FIND_IN_SET('CARRIER', carrier.ebcu_type)
+        LEFT JOIN eb_customer settle ON a.settle_code = settle.ebcu_customer_no AND a.org_id = settle.org_id AND FIND_IN_SET('SETTLEMENT', settle.ebcu_type)
+        WHERE a.id = #{id}
+    </select>
+	
+	<select id="findList" resultType="BanQinWmAsnHeader" >
+		SELECT 
+			<include refid="banQinWmAsnHeaderColumns"/>
+		FROM wm_asn_header a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="asnNo != null and asnNo != ''">
+				AND a.asn_no = #{asnNo}
+			</if>
+			<if test="logisticNo != null and logisticNo != ''">
+				AND a.logistic_no = #{logisticNo}
+			</if>
+			<if test="asnType != null and asnType != ''">
+				AND a.asn_type = #{asnType}
+			</if>
+			<if test="beginOrderTime != null and beginOrderTime !=''">
+				<![CDATA[ AND a.order_time >= #{beginOrderTime} ]]>
+			</if>
+			<if test="endOrderTime != null and endOrderTime !=''">
+				<![CDATA[ AND a.order_time <= #{endOrderTime} ]]>
+			</if>
+			<if test="priority != null and priority != ''">
+				AND a.priority = #{priority}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="auditOp != null and auditOp != ''">
+				AND a.audit_op = #{auditOp}
+			</if>
+			<if test="auditTime != null and auditTime != ''">
+				AND a.audit_time = #{auditTime}
+			</if>
+			<if test="holdStatus != null and holdStatus != ''">
+				AND a.hold_status = #{holdStatus}
+			</if>
+			<if test="holdOp != null and holdOp != ''">
+				AND a.hold_op = #{holdOp}
+			</if>
+			<if test="holdTime != null and holdTime != ''">
+				AND a.hold_time = #{holdTime}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="supplierCode != null and supplierCode != ''">
+				AND a.supplier_code = #{supplierCode}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+			<if test="createDate != null and createDate != ''">
+				AND a.create_date = #{createDate}
+			</if>
+			<if test="updateBy != null and updateBy.id != null and updateBy.id != ''">
+				AND a.update_by = #{updateBy.id}
+			</if>
+			<if test="updateDate != null and updateDate != ''">
+				AND a.update_date = #{updateDate}
+			</if>
+		</where>
+	</select>
+
+    <select id="findPage" resultType="BanQinWmAsnEntity" >
+        SELECT
+            <include refid="banQinWmAsnHeaderColumns"/>,
+			owner.ebcu_name_cn AS ownerName,
+			supplier.ebcu_name_cn AS supplierName,
+			carrier.ebcu_name_cn AS carrierName,
+			settle.ebcu_name_cn AS settleName,
+            creater.name AS "createBy.name",
+            updater.name AS "updateBy.name",
+            so.name AS orgName
+        FROM wm_asn_header a
+		LEFT JOIN eb_customer owner ON a.owner_code = owner.ebcu_customer_no AND a.org_id = owner.org_id AND FIND_IN_SET('OWNER', owner.ebcu_type)
+		LEFT JOIN eb_customer supplier ON a.supplier_code = supplier.ebcu_customer_no AND a.org_id = supplier.org_id AND FIND_IN_SET('SUPPLIER', supplier.ebcu_type)
+		LEFT JOIN eb_customer carrier ON a.carrier_code = carrier.ebcu_customer_no AND a.org_id = carrier.org_id AND FIND_IN_SET('CARRIER', carrier.ebcu_type)
+		LEFT JOIN eb_customer settle ON a.settle_code = settle.ebcu_customer_no AND a.org_id = settle.org_id AND FIND_IN_SET('SETTLEMENT', settle.ebcu_type)
+        <include refid="banQinWmAsnHeaderJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="asnNo != null and asnNo != ''">
+                AND a.asn_no like concat('%', #{asnNo}, '%')
+            </if>
+            <if test="logisticNo != null and logisticNo != ''">
+                AND a.logistic_no like concat('%', #{logisticNo}, '%')
+            </if>
+            <if test="asnType != null and asnType != ''">
+                AND a.asn_type = #{asnType}
+            </if>
+			<if test="beginOrderTime != null and beginOrderTime !=''">
+				<![CDATA[ AND a.order_time >= #{beginOrderTime} ]]>
+			</if>
+			<if test="endOrderTime != null and endOrderTime !=''">
+				<![CDATA[ AND a.order_time <= #{endOrderTime} ]]>
+			</if>
+            <if test="priority != null and priority != ''">
+                AND a.priority = #{priority}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
+            </if>
+            <if test="auditOp != null and auditOp != ''">
+                AND a.audit_op = #{auditOp}
+            </if>
+            <if test="auditTime != null and auditTime != ''">
+                AND a.audit_time = #{auditTime}
+            </if>
+            <if test="holdStatus != null and holdStatus != ''">
+                AND a.hold_status = #{holdStatus}
+            </if>
+            <if test="holdOp != null and holdOp != ''">
+                AND a.hold_op = #{holdOp}
+            </if>
+            <if test="holdTime != null and holdTime != ''">
+                AND a.hold_time = #{holdTime}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code = #{supplierCode}
+            </if>
+            <if test="carrierCode != null and carrierCode != ''">
+                AND a.carrier_code = #{carrierCode}
+            </if>
+            <if test="createBy != null and createBy.id != null and createBy.id != ''">
+                AND a.create_by = #{createBy.id}
+            </if>
+            <if test="createDate != null and createDate != ''">
+                AND a.create_date = #{createDate}
+            </if>
+            <if test="updateBy != null and updateBy.id != null and updateBy.id != ''">
+                AND a.update_by = #{updateBy.id}
+            </if>
+            <if test="updateDate != null and updateDate != ''">
+                AND a.update_date = #{updateDate}
+            </if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 like concat('%', #{def1}, '%')
+			</if>
+			<if test="def2 != null and def2 != ''">
+				AND a.def2 like concat('%', #{def2}, '%')
+			</if>
+			<if test="def3 != null and def3 != ''">
+				AND a.def3 like concat('%', #{def3}, '%')
+			</if>
+			<if test="def4 != null and def4 != ''">
+				AND a.def4 like concat('%', #{def4}, '%')
+			</if>
+			<if test="def5 != null and def5 != ''">
+				AND a.def5 like concat('%', #{def5}, '%')
+			</if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmAsnHeader" >
+		SELECT 
+			<include refid="banQinWmAsnHeaderColumns"/>
+		FROM wm_asn_header a
+		<include refid="banQinWmAsnHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_asn_header(
+			id,
+			asn_no,
+			logistic_no,
+			asn_type,
+			order_time,
+			fm_eta,
+			to_eta,
+			priority,
+			status,
+			audit_status,
+			audit_op,
+			audit_time,
+			hold_status,
+			hold_op,
+			hold_time,
+			qc_status,
+			owner_code,
+			supplier_code,
+			carrier_code,
+			settle_code,
+			print_num,
+			is_appoint_dock,
+			edi_send_time,
+			is_edi_send,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			def11,
+			def12,
+			def13,
+			def14,
+			def15,
+			def16,
+			def17,
+			def18,
+			def19,
+			def20,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			freight_amount,
+			driver,
+			vehicle_no,
+			tel,
+			data_source
+		) VALUES (
+			#{id},
+			#{asnNo},
+			#{logisticNo},
+			#{asnType},
+			#{orderTime},
+			#{fmEta},
+			#{toEta},
+			#{priority},
+			#{status},
+			#{auditStatus},
+			#{auditOp},
+			#{auditTime},
+			#{holdStatus},
+			#{holdOp},
+			#{holdTime},
+			#{qcStatus},
+			#{ownerCode},
+			#{supplierCode},
+			#{carrierCode},
+			#{settleCode},
+			#{printNum},
+			#{isAppointDock},
+			#{ediSendTime},
+			#{isEdiSend},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{def11},
+			#{def12},
+			#{def13},
+			#{def14},
+			#{def15},
+			#{def16},
+			#{def17},
+			#{def18},
+			#{def19},
+			#{def20},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{freightAmount},
+			#{driver},
+			#{vehicleNo},
+			#{tel},
+			#{dataSource}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_asn_header
+		SET asn_no          = #{asnNo},
+			logistic_no     = #{logisticNo},
+			asn_type        = #{asnType},
+			order_time      = #{orderTime},
+			fm_eta          = #{fmEta},
+			to_eta          = #{toEta},
+			priority        = #{priority},
+			status          = #{status},
+			audit_status    = #{auditStatus},
+			audit_op        = #{auditOp},
+			audit_time      = #{auditTime},
+			hold_status     = #{holdStatus},
+			hold_op         = #{holdOp},
+			hold_time       = #{holdTime},
+			qc_status       = #{qcStatus},
+			owner_code      = #{ownerCode},
+			supplier_code   = #{supplierCode},
+			carrier_code    = #{carrierCode},
+			settle_code     = #{settleCode},
+			print_num       = #{printNum},
+			is_appoint_dock = #{isAppointDock},
+			edi_send_time   = #{ediSendTime},
+			is_edi_send     = #{isEdiSend},
+			def1            = #{def1},
+			def2            = #{def2},
+			def3            = #{def3},
+			def4            = #{def4},
+			def5            = #{def5},
+			def6            = #{def6},
+			def7            = #{def7},
+			def8            = #{def8},
+			def9            = #{def9},
+			def10           = #{def10},
+			def11           = #{def11},
+			def12           = #{def12},
+			def13           = #{def13},
+			def14           = #{def14},
+			def15           = #{def15},
+			def16           = #{def16},
+			def17           = #{def17},
+			def18           = #{def18},
+			def19           = #{def19},
+			def20           = #{def20},
+			remarks         = #{remarks},
+			rec_ver         = #{recVer} + 1,
+			update_by       = #{updateBy.id},
+			update_date     = #{updateDate},
+			freight_amount  = #{freightAmount},
+			driver          = #{driver},
+			vehicle_no      = #{vehicleNo},
+			tel             = #{tel},
+			data_source     = #{dataSource}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_asn_header
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_asn_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="BanQinWmAsnHeader" statementType="STATEMENT">
+		SELECT * FROM wm_asn_header WHERE ${propertyName} = '${value}'
+	</select>
+
+    <!--*******************************************************SELECT*************************************************************-->
+	<select id="getByAsnNo" resultType="BanQinWmAsnHeader">
+		SELECT <include refid="banQinWmAsnHeaderColumns"/>
+        FROM wm_asn_header a
+        WHERE a.asn_no = #{asnNo}
+        AND a.org_id = #{orgId}
+	</select>
+
+    <select id="findNotQCById" resultType="java.lang.String">
+        SELECT wah.id
+        FROM wm_asn_header wah
+        WHERE NOT EXISTS(SELECT 1 FROM wm_qc_header wqh WHERE wqh.order_no = wah.asn_no AND wqh.org_id = wah.org_id)
+        <if test="orderIds != null and orderIds.size > 0">
+            AND wah.id IN
+            <foreach collection="orderIds" item="orderId" open="(" separator="," close=")">
+                #{orderId}
+            </foreach>
+        </if>
+        <if test="orderIds == null or orderIds.size == 0">
+            AND false
+        </if>
+    </select>
+
+    <!--*******************************************************UPDATE*************************************************************-->
+    <update id="updateAuditStatusById">
+        UPDATE wm_asn_header
+        SET audit_status = #{auditStatus},
+	  		audit_op = #{auditOp},
+		  	audit_time = sysdate()
+        WHERE status = '00'
+          AND hold_status = '00'
+          AND id IN
+          <foreach collection="orderIds" item="orderId" open="(" separator="," close=")">
+              #{orderId}
+          </foreach>
+    </update>
+
+    <update id="updateHoldStatusById">
+        UPDATE wm_asn_header
+        set hold_status = #{holdStatus},
+			hold_op = #{holdOp},
+			hold_time = sysdate()
+        WHERE id IN
+        <foreach collection="orderIds" item="orderId" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </update>
+
+    <update id="updateStatus">
+        UPDATE wm_asn_header wah SET
+            wah.status = (SELECT CASE
+							  WHEN MIN(wmad.status) = '90' THEN '90'
+							  WHEN MIN(wmad.status) = '20' THEN '20'
+							  WHEN MIN(wmad.status) = '10' THEN '10'
+							  WHEN (MAX(wmad.status) = '10' OR MAX(wmad.status) = '20') AND MIN(wmad.status) = '00' THEN '10'
+							  ELSE '00'END status
+						FROM wm_asn_detail wmad
+                		WHERE wmad.status != '90' AND wmad.asn_no = #{asnNo} AND wmad.org_id = #{orgId})
+        WHERE wah.asn_no = #{asnNo} AND wah.org_id = #{orgId}
+    </update>
+
+	<!--*******************************************************DELETE*************************************************************-->
+	<delete id="removeByAsnNo">
+        DELETE FROM wm_asn_header WHERE asn_no = #{asnNo} AND org_id = #{orgId}
+    </delete>
+	
+	<select id="checkAsnStatusQuery" resultType="BanQinWmAsnHeader">
+		SELECT wah.id AS id,
+		 	   wah.asn_no AS asnNo
+		FROM wm_asn_header wah
+		<where>
+			<if test="asnIds != null and asnIds.length > 0">
+				AND wah.id IN
+				<foreach collection="asnIds" item="asnId" open="(" separator="," close=")">
+					#{asnId}
+				</foreach>
+			</if>
+			<if test="status != null and status.length > 0">
+				AND wah.status IN
+				<foreach collection="status" item="status" open="(" separator="," close=")">
+					#{status}
+				</foreach>
+			</if>
+			<if test="holdStatus != null and holdStatus.length > 0">
+				AND wah.hold_status IN
+				<foreach collection="holdStatus" item="holdStatus" open="(" separator="," close=")">
+					#{holdStatus}
+				</foreach>
+			</if>
+			<if test="auditStatus != null and auditStatus.length > 0">
+				AND wah.audit_status IN
+				<foreach collection="auditStatus" item="auditStatus" open="(" separator="," close=")">
+					#{auditStatus}
+				</foreach>
+			</if>
+			<if test="isPalletize != null and isPalletize != ''">
+				AND NOT EXISTS(SELECT 1 FROM wm_asn_detail wad
+				WHERE wad.asn_no = wah.asn_no
+				AND wad.org_id = wah.org_id
+				AND wad.is_palletize = #{isPalletize})
+			</if>
+			<if test="isVoucher != null and isVoucher == 'Y'.toString()">
+				AND EXISTS(SELECT 1 FROM wm_asn_detail_receive wadr
+				WHERE wadr.asn_no = wah.asn_no
+				AND wadr.status = '20'
+				AND wadr.org_id = wah.org_id
+				AND (wadr.voucher_no IS NULL OR wadr.voucher_no = '')
+			</if>
+			<if test="isVoucher != null and isVoucher == 'N'.toString()">
+				AND EXISTS(SELECT 1 FROM wm_asn_detail_receive wadr
+				WHERE wadr.asn_no = wah.asn_no
+				AND wadr.status = '20'
+				AND wadr.org_id = wah.org_id
+				AND (wadr.voucher_no IS NULL OR wadr.voucher_no = '')
+			</if>
+			<if test="isArrangeLoc != null and isArrangeLoc == 'Y'.toString()">
+				AND EXISTS(SELECT 1 FROM wm_asn_detail_receive wadr
+				WHERE wadr.asn_no = wah.asn_no
+				AND wadr.org_id = wah.org_id
+				AND wadr.plan_pa_loc IS NOT NULL
+				AND wadr.plan_pa_loc != '')
+			</if>
+			<if test="isArrangeLoc != null and isArrangeLoc == 'N'.toString()">
+				AND NOT EXISTS(SELECT 1 FROM wm_asn_detail_receive wadr
+				WHERE wadr.asn_no = wah.asn_no
+				AND wadr.org_id = wah.org_id
+				AND wadr.plan_pa_loc IS NOT NULL
+				AND wadr.plan_pa_loc != '')
+			</if>
+			<if test="isCrossDock != null and isCrossDock == 'Y'.toString()">
+				AND EXISTS(SELECT 1 FROM wm_asn_detail_receive wadr
+				WHERE wadr.asn_no = wah.asn_no
+				AND wadr.org_id = wah.org_id
+				AND wadr.cd_Type IS NOT NULL
+				AND wadr.cd_Type != '')
+			</if>
+			<if test="isCrossDock != null and isCrossDock == 'N'.toString()">
+				AND NOT EXISTS(SELECT 1 FROM wm_asn_detail_receive wadr
+				WHERE wadr.asn_no = wah.asn_no
+				AND wadr.org_id = wah.org_id
+				AND wadr.cd_Type IS NOT NULL
+				AND wadr.cd_Type != '')
+			</if>
+		</where>
+	</select>
+
+	<select id="getByIds" resultType="BanQinWmAsnHeader" >
+		SELECT
+			<include refid="banQinWmAsnHeaderColumns"/>
+		FROM wm_asn_header a
+		WHERE a.id IN
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+	
+	<select id="getReceivingOrder" resultType="com.yunyou.modules.wms.report.entity.ReceivingOrderLabel">
+		SELECT wmd.asn_no                                          AS asnNo,
+			   wmd.sku_code                                        As skuCode,
+			   cdsk.sku_name                                       AS skuName,
+			   wmd.owner_code                                      AS ownerCode,
+			   ebcu1.ebcu_name_cn                                  AS ownerName,
+			   wmh.supplier_code                                   AS supplierCode,
+			   ebcu2.ebcu_name_cn                                  AS supplierName,
+			   cdpa.cdpa_format                                    AS packCode,
+			   cwpr.cdpr_quantity                                  AS uomQty,
+			   sum(CEILING(wmdr.qty_plan_ea / cwpr.cdpr_quantity)) AS planBoxQty,
+			   sum(wmdr.qty_plan_ea)                               as planQty,
+			   sum(wmdr.qty_rcv_ea)                                AS rcvQty,
+			   wmdr.to_id                                          AS toId,
+			   wmdr.plan_pa_loc                                    AS planLoc,
+			   wmdr.to_loc                                         AS toLoc,
+			   wmh.def4                                            AS customerNo,
+			   wmh.def5                                            AS def5,
+			   IFNULL(pl.cdpr_ti, '')                              AS ti,
+			   IFNULL(pl.cdpr_hi, '')                              AS hi,
+			   cdsk.spec                                           AS def3,
+			   DATE_FORMAT(wmdr.lot_att01, '%Y-%m-%d')             AS lotAtt01,
+			   su.name                                             AS printer
+		FROM wm_asn_detail wmd
+			 LEFT JOIN wm_asn_header wmh ON wmh.asn_no = wmd.asn_no AND wmh.org_id = wmd.org_id
+			 LEFT JOIN cd_wh_sku cdsk ON cdsk.sku_code = wmd.sku_code AND cdsk.owner_code = wmd.owner_code AND cdsk.org_id = wmd.org_id
+			 LEFT JOIN wm_asn_detail_receive wmdr
+					   ON wmdr.asn_no = wmd.asn_no AND wmdr.owner_code = wmd.owner_code AND wmdr.sku_code = wmd.sku_code AND wmdr.asn_line_no = wmd.line_no AND
+						  wmdr.org_id = wmd.org_id
+			 LEFT JOIN eb_customer ebcu1 ON ebcu1.ebcu_customer_no = wmd.owner_code AND ebcu1.org_id = wmd.org_id
+			 LEFT JOIN eb_customer ebcu2 ON ebcu2.ebcu_customer_no = wmh.supplier_code AND ebcu2.org_id = wmh.org_id
+			 LEFT JOIN cd_wh_package cdpa ON cdpa.org_id = wmdr.org_id AND cdpa.cdpa_code = wmdr.pack_code
+			 LEFT JOIN cd_wh_package_relation cwpr ON cdpa.pm_code = cwpr.cdpr_cdpa_pm_code AND cdpa.org_id = cwpr.org_id AND cwpr.cdpr_unit_level = 'CS'
+			 LEFT JOIN cd_wh_package_relation pl ON cdpa.pm_code = pl.cdpr_cdpa_pm_code AND cdpa.org_id = pl.org_id AND pl.cdpr_unit_level = 'PL'
+			 LEFT JOIN sys_user su ON su.id = wmh.create_by
+		WHERE wmh.id IN
+		<foreach collection="list" item="asnId" index="asnId" open="(" separator="," close=")">
+			#{asnId}
+		</foreach>
+		GROUP BY wmd.asn_no, wmd.sku_code, wmd.owner_code, wmh.supplier_code, cdpa.cdpa_format, cwpr.cdpr_quantity, wmdr.to_id, wmdr.to_loc, wmdr.plan_pa_loc,
+			pl.cdpr_ti, pl.cdpr_hi, DATE_FORMAT(wmdr.lot_att01, '%Y-%m-%d'), su.name
+		ORDER BY wmd.asn_no, wmd.sku_code, wmdr.to_id
+	</select>
+	
+	<select id="getTraceLabel" resultType="com.yunyou.modules.wms.report.entity.TraceLabel">
+		SELECT r.to_id                                       AS traceId,
+			   r.owner_code                                  As ownerCode,
+			   ebcu.ebcu_name_cn                             AS ownerName,
+			   r.sku_code                                    As skuCode,
+			   cws.sku_name                                  AS skuName,
+			   cws.spec                                      AS skuDef3,
+			   r.pack_code                                   AS packCode,
+			   cwp.cdpa_format                               AS packDesc,
+			   DATE_FORMAT(r.lot_att01, '%Y-%m-%d')          AS lotAtt01,
+			   DATE_FORMAT(r.lot_att02, '%Y-%m-%d')          AS lotAtt02,
+			   DATE_FORMAT(r.lot_att03, '%Y-%m-%d')          AS lotAtt03,
+			   r.org_id                                      AS orgId,
+			   so.`name`                                     AS orgName,
+			   r.qty_plan_ea                                 AS qtyPlanEa,
+			   cwpr.cdpr_quantity                            AS unitQty,
+			   FORMAT(r.qty_plan_ea / cwpr.cdpr_quantity, 1) AS qtyPlanBox,
+			   r.to_loc                                      AS toLoc
+		FROM wm_asn_detail_receive r
+			 LEFT JOIN wm_asn_detail d ON d.asn_no = r.asn_no AND d.line_no = r.asn_line_no AND d.org_id = r.org_id
+			 LEFT JOIn wm_asn_header h ON h.asn_no = r.asn_no AND h.org_id = r.org_id
+			 LEFT JOIN cd_wh_sku cws ON r.owner_code = cws.owner_code AND r.sku_code = cws.sku_code AND r.org_id = cws.org_id
+			 LEFT JOIN eb_customer ebcu ON r.owner_code = ebcu.ebcu_customer_no AND ebcu.ebcu_type like '%OWNER,%' AND ebcu.org_id = r.org_id
+			 LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = r.pack_code AND cwp.org_id = r.org_id
+			 LEFT JOIN cd_wh_package_relation cwpr ON cwp.pm_code = cwpr.cdpr_cdpa_pm_code AND cwp.org_id = cwpr.org_id AND cwpr.cdpr_unit = 'CS'
+			 LEFT JOIN sys_office so ON r.org_id = so.id
+		WHERE d.is_palletize = 'Y'
+		  AND h.id IN
+		<foreach collection="list" item="asnId" index="asnId" open="(" separator="," close=")">
+			#{asnId}
+		</foreach>
+		ORDER BY h.asn_no, r.asn_line_no, r.line_no
+	</select>
+
+	<select id="wmRepInDailyQuery" resultType="com.yunyou.modules.wms.inbound.entity.BanQinWmRepInDailyQueryEntity">
+		SELECT wadr.asn_no                                   AS asnNo,
+			   wadr.asn_line_no                              AS asnLineNo,
+			   wah.status                                    AS status,
+			   wah.asn_type                                  AS asnType,
+			   wadr.logistic_no                              AS logisticNo,
+			   wadr.logistic_line_no                         AS logisticLineNo,
+			   wadr.owner_code                               AS ownerCode,
+			   ec.ebcu_name_cn                               AS ownerName,
+			   wadr.sku_code                                 AS skuCode,
+			   cws.sku_name                                  AS skuName,
+			   cdpa.cdpa_format                              as packCde,
+			   wadr.uom                                      AS uom,
+			   CEILING(wad.qty_asn_ea / cwpr.cdpr_quantity)  AS qtyAsnUom,
+			   wad.qty_asn_ea                                AS qtyAsnEa,
+			   wadr.to_loc                                   AS toLoc,
+			   wadr.to_id                                    AS toId,
+			   CEILING(wadr.qty_rcv_ea / cwpr.cdpr_quantity) AS qtyRcvUom,
+			   wadr.qty_rcv_ea                               AS qtyRcvEa,
+			   wah.fm_eta                                    AS fmEta,
+			   wah.to_eta                                    AS toEta,
+			   wadr.rcv_time                                 AS rcvTime,
+			   wadr.lot_att01                                AS lotAtt01,
+			   wadr.lot_att02                                AS lotAtt02,
+			   wadr.lot_att03                                AS lotAtt03,
+			   wadr.lot_att04                                AS lotAtt04,
+			   wadr.lot_att05                                AS lotAtt05,
+			   wadr.lot_att06                                AS lotAtt06,
+			   wadr.lot_att07                                AS lotAtt07,
+			   wadr.lot_att08                                AS lotAtt08,
+			   wadr.lot_att09                                AS lotAtt09,
+			   wadr.lot_att10                                AS lotAtt10,
+			   wadr.lot_att11                                AS lotAtt11,
+			   wadr.lot_att12                                AS lotAtt12,
+			   wah.org_id                                    AS orgId,
+			   wah.def1                                      AS def1,
+			   wah.def2                                      AS def2,
+			   wah.def3                                      AS def3,
+			   wah.def4                                      AS def4,
+			   wah.def5                                      AS def5,
+			   so.name                                       AS orgName,
+			   wah.order_time                                AS orderTime
+		FROM wm_asn_header wah
+			 LEFT JOIN wm_asn_detail_receive wadr ON wah.asn_no = wadr.asn_no AND wah.org_id = wadr.org_id
+			 LEFT JOIN wm_asn_detail wad ON wadr.asn_no = wad.asn_no AND wadr.asn_line_no = wad.line_no AND wadr.org_id = wad.org_id
+			 LEFT JOIN cd_wh_sku cws ON wadr.owner_code = cws.owner_code AND wadr.sku_code = cws.sku_code AND wah.org_id = cws.org_id
+			 LEFT JOIN eb_customer ec ON wadr.owner_code = ec.ebcu_customer_no AND wadr.org_id = ec.org_id AND ec.ebcu_type LIKE concat('%OWNER%')
+			 LEFT JOIN cd_wh_package cdpa ON cdpa.org_id = wadr.org_id AND cdpa.cdpa_code = wadr.pack_code
+			 LEFT JOIN cd_wh_package_relation cwpr ON cdpa.pm_code = cwpr.cdpr_cdpa_pm_code AND cdpa.org_id = cwpr.org_id AND cwpr.cdpr_unit_level = 'CS'
+			 LEFT JOIN sys_office so ON wah.org_id = so.id
+		<where>
+			${dataScope}
+			<if test="asnNo != null and asnNo != ''">
+				AND wah.asn_no like concat('%', #{asnNo},'%')
+			</if>
+			<if test="asnType != null and asnType != ''">
+				AND wah.asn_type = #{asnType}
+			</if>
+			<if test="status != null and status != ''">
+				AND wah.status = #{status}
+			</if>
+			<if test="logisticNo != null and logisticNo != ''">
+				AND wadr.logistic_no like concat('%', #{logisticNo}, '%')
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND wadr.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND wadr.sku_code = #{skuCode}
+			</if>
+			<if test="rcvTimeFrom != null and rcvTimeFrom != ''">
+				AND wadr.rcv_time &gt;= #{rcvTimeFrom}
+			</if>
+			<if test="rcvTimeTo != null and rcvTimeTo != ''">
+				AND wadr.rcv_time &lt;= #{rcvTimeTo}
+			</if>
+			<if test="beginOrderTime != null and beginOrderTime != ''">
+				AND wah.order_time &gt;= #{beginOrderTime}
+			</if>
+			<if test="endOrderTime != null and endOrderTime != ''">
+				AND wah.order_time &lt;= #{endOrderTime}
+			</if>
+		</where>
+	</select>
+
+	<select id="countQtyQuery" resultType="com.yunyou.modules.wms.inbound.entity.BanQinWmRepInDailyQueryEntity">
+		SELECT wad.qty_asn_ea  AS qtyAsnEa,
+			   wadr.qty_rcv_ea AS qtyRcvEa
+		FROM wm_asn_header wah
+			 LEFT JOIN wm_asn_detail_receive wadr ON wah.asn_no = wadr.asn_no AND wah.org_id = wadr.org_id
+			 LEFT JOIN wm_asn_detail wad ON wadr.asn_no = wad.asn_no AND wadr.asn_line_no = wad.line_no AND wadr.org_id = wad.org_id
+		<where>
+			${dataScope}
+			<if test="asnNo != null and asnNo != ''">
+				AND wah.asn_no like concat('%', #{asnNo},'%')
+			</if>
+			<if test="asnType != null and asnType != ''">
+				AND wah.asn_type = #{asnType}
+			</if>
+			<if test="status != null and status != ''">
+				AND wah.status = #{status}
+			</if>
+			<if test="logisticNo != null and logisticNo != ''">
+				AND wadr.logistic_no like concat('%', #{logisticNo}, '%')
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND wadr.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND wadr.sku_code = #{skuCode}
+			</if>
+			<if test="rcvTimeFrom != null and rcvTimeFrom != ''">
+				AND wadr.rcv_time &gt;= #{rcvTimeFrom}
+			</if>
+			<if test="rcvTimeTo != null and rcvTimeTo != ''">
+				AND wadr.rcv_time &lt;= #{rcvTimeTo}
+			</if>
+		</where>
+	</select>
+	
+	<select id="rfRcCheckAsnIsPalletizeQuery" resultType="java.util.Map">
+		<![CDATA[
+		SELECT (SELECT COUNT(wmad.id)
+				FROM wm_asn_detail wmad
+				LEFT JOIN wm_asn_header wmah ON wmad.asn_no = wmah.asn_no AND wmad.org_id = wmah.org_id
+				WHERE wmad.asn_no = #{asnNo}
+				AND wmad.STATUS >= '00'
+				AND wmad.STATUS < '20'
+				AND wmah.STATUS >= '00'
+				AND wmah.STATUS < '20'
+				AND wmah.audit_status = '99'
+				AND wmad.org_id = #{orgId}) AS total,
+		(SELECT COUNT(wmad.id)
+			FROM wm_asn_detail wmad
+			LEFT JOIN wm_asn_header wmah ON wmad.asn_no = wmah.asn_no AND wmad.org_id = wmah.org_id
+			WHERE wmad.asn_no = #{asnNo}
+			AND wmad.STATUS >= '00'
+			AND wmad.STATUS < '20'
+		    AND wmah.STATUS >= '00'
+			AND wmah.STATUS < '20'
+			AND wmah.audit_status = '99'
+			AND wmad.org_id = #{orgId}
+			AND wmad.is_palletize = 'Y') AS isPal,
+		(SELECT COUNT(wmad.id)
+			FROM wm_asn_detail wmad
+			LEFT JOIN wm_asn_header wmah ON wmad.asn_no = wmah.asn_no AND wmad.org_id = wmah.org_id
+			WHERE wmad.asn_no = #{asnNo}
+			AND wmad.STATUS >= '00'
+			AND wmad.STATUS < '20' AND wmah.STATUS >= '00'
+			AND wmah.STATUS < '20'
+			AND wmah.audit_status = '99'
+			AND wmad.org_id = #{orgId}
+			AND wmad.is_palletize = 'N') AS neverPal
+		FROM dual
+		]]>
+	</select>
+	
+	<select id="rfRcGetAsnDetailByTraceIDOrSkuQuery" resultType="BanQinWmAsnDetailReceiveEntity">
+		SELECT wmdt.id               AS id,
+			   wmdt.asn_no           AS asnNo,
+			   wmdt.line_no          AS lineNo,
+			   wmdt.asn_line_no      AS asnLineNo,
+			   wmdt.logistic_no      AS logisticNo,
+			   wmdt.logistic_line_no AS logisticLineNo,
+			   wmdt.po_no            AS poNo,
+			   wmdt.po_line_no       AS poLineNo,
+			   wmdt.status           AS status,
+			   wmad.is_palletize     AS isPalletize,
+			   wmdt.owner_code       AS ownerCode,
+			   ebcs.ebcu_name_cn     AS ownerName,
+			   wmdt.sku_code         AS skuCode,
+			   cdws.sku_name         AS skuName,
+			   cdws.is_serial        AS isSerial,
+			   wmdt.rcv_time         AS rcvTime,
+			   wmdt.pack_code        AS packCode,
+			   cdpa.cdpa_format      AS packDesc,
+			   wmdt.uom              AS uom,
+			   cdpr.cdpr_desc        AS uomDesc,
+			   wmdt.qty_plan_ea      AS qtyPlanEa,
+			   wmdt.plan_id          AS planId,
+			   wmdt.qty_rcv_ea       AS qtyRcvEa,
+			   wmdt.to_loc           AS toLoc,
+			   wmdt.to_id            AS toId,
+			   wmdt.price            AS price,
+			   wmdt.pa_rule          AS paRule,
+			   wmdt.pa_id            AS paId,
+			   wmdt.lot_num          AS lotNum,
+			   wmdt.lot_att01        AS lotAtt01,
+			   wmdt.lot_att02        AS lotAtt02,
+			   wmdt.lot_att03        AS lotAtt03,
+			   wmdt.lot_att04        AS lotAtt04,
+			   wmdt.lot_att05        AS lotAtt05,
+			   wmdt.lot_att06        AS lotAtt06,
+			   wmdt.lot_att07        AS lotAtt07,
+			   wmdt.lot_att08        AS lotAtt08,
+			   wmdt.lot_att09        AS lotAtt09,
+			   wmdt.lot_att10        AS lotAtt10,
+			   wmdt.lot_att11        AS lotAtt11,
+			   wmdt.lot_att12        AS lotAtt12,
+			   wmdt.org_id           AS orgId,
+			   cdpr.cdpr_ti          AS cdprTI,
+			   cdpr.cdpr_hi          AS cdprHI
+		FROM wm_asn_detail_receive wmdt
+			 LEFT JOIN wm_asn_header wmah ON wmah.asn_no = wmdt.asn_no AND wmah.org_id = wmdt.org_id
+			 LEFT JOIN wm_asn_detail wmad ON wmad.asn_no = wmdt.asn_no AND wmad.line_no = wmdt.asn_line_no AND wmad.org_id = wmdt.org_id
+			 LEFT JOIN cd_wh_sku cdws ON cdws.sku_code = wmad.sku_code AND cdws.owner_code = wmad.owner_code AND cdws.org_id = wmdt.org_id
+			 LEFT JOIN eb_customer ebcs ON ebcs.ebcu_customer_no = wmad.owner_code AND ebcs.org_id = wmdt.org_id
+			 LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = wmdt.pack_code AND cdpa.org_id = wmdt.org_id
+			 LEFT JOIN cd_wh_package_relation cdpr ON cdpr.Cdpr_Cdpa_pm_Code = cdpa.pm_code AND cdpr.org_id = wmdt.org_id AND cdpr.cdpr_unit_level = wmdt.uom
+		WHERE wmah.audit_status = '99'
+		  AND wmdt.status = '00'
+		  AND cdws.is_serial = 'N'
+		<![CDATA[ AND wmah.status >= '00' ]]>
+		<![CDATA[ AND wmah.status < '20' ]]>
+		<![CDATA[ AND wmad.status >= '00' ]]>
+		<![CDATA[ AND wmad.status < '20' ]]>
+		  AND wmdt.asn_no = #{asnNo}
+		  AND wmdt.org_id = #{orgId}
+		<if test="skuCode != null and skuCode != ''">
+			AND wmdt.sku_code = #{skuCode}
+		</if>
+		<if test="planId != null and planId != ''">
+			AND wmdt.to_id = #{planId}
+		</if>
+		<if test="funType != null and funType == '1'.toString()">
+			AND wmad.is_palletize = 'Y'
+		</if>
+		<if test="funType != null and funType == '2'.toString()">
+			AND wmad.is_palletize = 'N'
+		</if>
+		ORDER BY wmdt.line_no, wmdt.plan_id, wmdt.sku_code
+	</select>
+
+	<select id="getCheckReceiveOrder" resultType="com.yunyou.modules.wms.report.entity.WmCheckReceiveOrderLabel">
+		SELECT wah.asn_no                                AS asnNo,
+			   wah.def4                                  AS orderNo,
+			   wah.supplier_code                         AS supplierCode,
+			   ebcu1.ebcu_name_cn                        AS supplierName,
+			   wadr.asn_line_no                          as lineNo,
+			   wadr.sku_code                             As skuCode,
+			   cdsk.sku_name                             AS skuName,
+			   sum(wadr.qty_plan_ea)                     AS qtyPlanEa,
+			   sum(wadr.qty_rcv_ea)                      AS qtyRcvEa,
+			   cwpr.cdpr_quantity                        AS uomQty,
+			   sum(wadr.qty_rcv_ea / cwpr.cdpr_quantity) as qtyRcv,
+			   wadr.lot_att01                            as lotAtt01,
+			   wadr.owner_code                           AS ownerCode
+		FROM wm_asn_header wah
+			 LEFT JOIN wm_asn_detail_receive wadr ON wah.asn_no = wadr.asn_no AND wah.org_id = wadr.org_id
+			 LEFT JOIN eb_customer ebcu1 ON ebcu1.ebcu_customer_no = wah.supplier_code AND ebcu1.org_id = wah.org_id
+			 LEFT JOIN cd_wh_sku cdsk ON cdsk.sku_code = wadr.sku_code AND cdsk.owner_code = wadr.owner_code AND cdsk.org_id = wadr.org_id
+			 LEFT JOIN cd_wh_package cwp ON wadr.pack_code = cwp.cdpa_code AND wadr.org_id = cwp.org_id
+			 LEFT JOIN cd_wh_package_relation cwpr ON cwp.pm_code = cwpr.cdpr_cdpa_pm_code AND cwp.org_id = cwpr.org_id AND cwpr.cdpr_unit_level = wadr.uom
+		WHERE wah.id IN
+		<foreach collection="list" item="asnId" index="asnId" open="(" separator="," close=")">
+			#{asnId}
+		</foreach>
+		GROUP BY wah.asn_no, wadr.asn_line_no, wadr.sku_code, cwpr.cdpr_quantity, wadr.lot_att01
+		ORDER BY wah.asn_no, wadr.asn_line_no
+	</select>
+</mapper>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysOmsBusinessServiceScopeMapper">
+
+    <sql id="sysOmsBusinessServiceScopeColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.group_code AS "groupCode",
+		a.group_name AS "groupName",
+		a.data_set AS "dataSet",
+       scds.name AS "dataSetName"
+    </sql>
+
+    <sql id="sysOmsBusinessServiceScopeJoins">
+        LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.sys.common.entity.SysOmsBusinessServiceScope">
+        SELECT
+        <include refid="sysOmsBusinessServiceScopeColumns"/>
+        FROM sys_oms_business_service_scope a
+        <include refid="sysOmsBusinessServiceScopeJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysOmsBusinessServiceScope">
+        SELECT
+        <include refid="sysOmsBusinessServiceScopeColumns"/>
+        FROM sys_oms_business_service_scope a
+        <include refid="sysOmsBusinessServiceScopeJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.data_set = #{dataSet}
+            <if test="groupCode != null and groupCode != ''">
+                AND a.group_code = #{groupCode}
+            </if>
+            <if test="groupName != null and groupName != ''">
+                AND a.group_name = #{groupName}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysOmsBusinessServiceScope">
+        SELECT
+        <include refid="sysOmsBusinessServiceScopeColumns"/>
+        FROM sys_oms_business_service_scope a
+        <include refid="sysOmsBusinessServiceScopeJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sys_oms_business_service_scope
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            group_code,
+            group_name,
+            data_set
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{groupCode},
+            #{groupName},
+            #{dataSet}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE sys_oms_business_service_scope
+        SET update_by   = #{updateBy.id},
+            update_date = #{updateDate},
+            remarks     = #{remarks},
+            group_code  = #{groupCode},
+            group_name  = #{groupName},
+            data_set      = #{dataSet}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <update id="delete">
+        DELETE
+        FROM sys_oms_business_service_scope
+        WHERE id = #{id}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE sys_oms_business_service_scope
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.SysOmsBusinessServiceScope">
+		SELECT
+        <include refid="sysOmsBusinessServiceScopeColumns"/>
+		FROM sys_oms_business_service_scope a
+        <include refid="sysOmsBusinessServiceScopeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+            <if test="dataSet != null and dataSet != ''">
+                AND a.data_set = #{dataSet}
+            </if>
+			<if test="groupCode != null and groupCode != ''">
+				AND a.group_code LIKE concat('%', #{groupCode}, '%')
+			</if>
+			<if test="groupName != null and groupName != ''">
+				AND a.group_name LIKE concat('%', #{groupName}, '%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.SysOmsBusinessServiceScope">
+        SELECT
+        <include refid="sysOmsBusinessServiceScopeColumns"/>
+        FROM sys_oms_business_service_scope a
+        <include refid="sysOmsBusinessServiceScopeJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="dataSet != null and dataSet != ''">
+                AND a.data_set = #{dataSet}
+            </if>
+            <if test="groupCode != null and groupCode != ''">
+                AND a.group_code LIKE concat('%', #{groupCode}, '%')
+            </if>
+            <if test="groupName != null and groupName != ''">
+                AND a.group_name LIKE concat('%', #{groupName}, '%')
+            </if>
+            <if test="codeAndName != null and codeAndName != ''">
+                AND (a.group_code LIKE concat('%', #{codeAndName}, '%') OR a.group_name LIKE concat('%', #{codeAndName}, '%'))
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findSync" resultType="com.yunyou.modules.sys.common.entity.SysOmsBusinessServiceScope">
+        SELECT <include refid="sysOmsBusinessServiceScopeColumns"/>
+        FROM sys_oms_business_service_scope a
+        <include refid="sysOmsBusinessServiceScopeJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="groupCode != null and groupCode != ''">
+                AND a.group_code = #{groupCode}
+            </if>
+            <if test="groupName != null and groupName != ''">
+                AND a.group_name = #{groupName}
+            </if>
+            <if test="dataSet != null and dataSet != ''">
+                AND a.data_set = #{dataSet}
+            </if>
+        </where>
+    </select>
+
+    <select id="getArea" resultType="com.yunyou.modules.sys.entity.Area">
+        SELECT a.area_id AS "id"
+        FROM sys_oms_business_service_scope_area a
+        WHERE a.head_id = #{id}
+    </select>
+
+    <delete id="deleteArea">
+        DELETE FROM sys_oms_business_service_scope_area WHERE head_id = #{id}
+    </delete>
+
+    <insert id="insertArea">
+        INSERT INTO sys_oms_business_service_scope_area(head_id, area_id)
+        <foreach collection="areaList" item="area" separator=" union all ">
+            SELECT #{id}, #{area.id} ${dual}
+        </foreach>
+    </insert>
+</mapper>

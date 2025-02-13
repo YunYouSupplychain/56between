@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.finance.mapper.BmsCalculateCostMapper">
+
+    <sql id="bmsInboundDataColumns">
+        id AS "id",
+        order_no AS "orderNo",
+        order_type AS "orderType",
+        order_date AS "orderDate",
+        po_no AS "poNo",
+        owner_code AS "ownerCode",
+        owner_name AS "ownerName",
+        supplier_code AS "supplierCode",
+        supplier_name AS "supplierName",
+        sku_code AS "skuCode",
+        sku_name AS "skuName",
+        sku_class AS "skuClass",
+        lot_no AS "lotNo",
+        lot_att01 AS "lotAtt01",
+        lot_att02 AS "lotAtt02",
+        lot_att03 AS "lotAtt03",
+        lot_att04 AS "lotAtt04",
+        lot_att05 AS "lotAtt05",
+        lot_att06 AS "lotAtt06",
+        lot_att07 AS "lotAtt07",
+        lot_att08 AS "lotAtt08",
+        lot_att09 AS "lotAtt09",
+        lot_att10 AS "lotAtt10",
+        lot_att11 AS "lotAtt11",
+        lot_att12 AS "lotAtt12",
+        order_qty AS "orderQty",
+        order_qty_cs AS "orderQtyCs",
+        order_qty_pl AS "orderQtyPl",
+        receipt_qty AS "receiptQty",
+        receipt_qty_cs AS "receiptQtyCs",
+        receipt_qty_pl AS "receiptQtyPl",
+        weight AS "weight",
+        volume AS "volume",
+        receive_time AS "receiveTime",
+        receive_code AS "receiveCode",
+        trace_id AS "traceId",
+        org_id AS "orgId",
+        data_sources AS "dataSources",
+        is_fee AS "isFee",
+        order_no_a AS "orderNoA",
+        order_no_b AS "orderNoB",
+        order_no_c AS "orderNoC",
+        business_type AS "businessType",
+        business_model AS "businessModel"
+    </sql>
+    <sql id="bmsOutboundDataColumns">
+        id AS "id",
+        order_no AS "orderNo",
+        order_type AS "orderType",
+        order_date AS "orderDate",
+        owner_code AS "ownerCode",
+        owner_name AS "ownerName",
+        customer_code AS "customerCode",
+        customer_name AS "customerName",
+        supplier_code AS "supplierCode",
+        supplier_name AS "supplierName",
+        sku_code AS "skuCode",
+        sku_name AS "skuName",
+        sku_class AS "skuClass",
+        lot_no AS "lotNo",
+        lot_att01 AS "lotAtt01",
+        lot_att02 AS "lotAtt02",
+        lot_att03 AS "lotAtt03",
+        lot_att04 AS "lotAtt04",
+        lot_att05 AS "lotAtt05",
+        lot_att06 AS "lotAtt06",
+        lot_att07 AS "lotAtt07",
+        lot_att08 AS "lotAtt08",
+        lot_att09 AS "lotAtt09",
+        lot_att10 AS "lotAtt10",
+        lot_att11 AS "lotAtt11",
+        lot_att12 AS "lotAtt12",
+        order_qty AS "orderQty",
+        order_qty_cs AS "orderQtyCs",
+        order_qty_pl AS "orderQtyPl",
+        ship_qty AS "shipQty",
+        ship_qty_cs AS "shipQtyCs",
+        ship_qty_pl AS "shipQtyPl",
+        weight AS "weight",
+        volume AS "volume",
+        ship_time AS "shipTime",
+        org_id AS "orgId",
+        data_sources AS "dataSources",
+        is_fee AS "isFee",
+        order_no_a AS "orderNoA",
+        order_no_b AS "orderNoB",
+        order_no_c AS "orderNoC",
+        business_type AS "businessType",
+        business_model AS "businessModel",
+        project_code AS "projectCode",
+        project_name AS "projectName"
+    </sql>
+    <sql id="bmsInventoryDataColumns">
+        id AS "id",
+        inv_date AS "invDate",
+        owner_code AS "ownerCode",
+        owner_name AS "ownerName",
+        supplier_code AS "supplierCode",
+        supplier_name AS "supplierName",
+        sku_code AS "skuCode",
+        sku_name AS "skuName",
+        sku_class AS "skuClass",
+        lot_no AS "lotNo",
+        lot_att01 AS "lotAtt01",
+        lot_att02 AS "lotAtt02",
+        lot_att03 AS "lotAtt03",
+        lot_att04 AS "lotAtt04",
+        lot_att05 AS "lotAtt05",
+        lot_att06 AS "lotAtt06",
+        lot_att07 AS "lotAtt07",
+        lot_att08 AS "lotAtt08",
+        lot_att09 AS "lotAtt09",
+        lot_att10 AS "lotAtt10",
+        lot_att11 AS "lotAtt11",
+        lot_att12 AS "lotAtt12",
+        loc_code AS "locCode",
+        trace_id AS "traceId",
+        in_qty AS "inQty",
+        in_qty_cs AS "inQtyCs",
+        in_qty_pl AS "inQtyPl",
+        out_qty AS "outQty",
+        out_qty_cs AS "outQtyCs",
+        out_qty_pl AS "outQtyPl",
+        begin_qty AS "beginQty",
+        begin_qty_cs AS "beginQtyCs",
+        begin_qty_pl AS "beginQtyPl",
+        end_qty AS "endQty",
+        end_qty_cs AS "endQtyCs",
+        end_qty_pl AS "endQtyPl",
+        weight AS "weight",
+        volume AS "volume",
+        org_id AS "orgId",
+        data_sources AS "dataSources",
+        is_fee AS "isFee",
+        business_type AS "businessModel",
+        project_code AS "projectCode",
+        project_name AS "projectName"
+    </sql>
+    <sql id="bmsDispatchOrderDataColumns">
+        id AS "id",
+        order_no AS "orderNo",
+        order_type AS "orderType",
+        order_date AS "orderDate",
+        dispatch_time AS "dispatchTime",
+        carrier_code AS "carrierCode",
+        carrier_name AS "carrierName",
+        car_type AS "carType",
+        vehicle_no AS "vehicleNo",
+        driver_code AS "driverCode",
+        driver_name AS "driverName",
+        dispatcher AS "dispatcher",
+        tran_type AS "tranType",
+        total_qty_ea AS "totalQtyEa",
+        data_sources AS "dataSources",
+        is_fee AS "isFee",
+        total_qty_frame AS "totalQtyFrame",
+        sign_by AS "signBy",
+        sign_time AS "signTime",
+        platform AS "platform",
+        seal_no AS "sealNo",
+        shift AS "shift",
+        org_id AS "orgId"
+    </sql>
+    <sql id="bmsDispatchDataColumns">
+        id AS "id",
+        order_no AS "orderNo",
+        order_date AS "orderDate",
+        dispatch_time AS "dispatchTime",
+        transport_method AS "transportMethod",
+        carrier_code AS "carrierCode",
+        carrier_name AS "carrierName",
+        car_type AS "carType",
+        vehicle_no AS "vehicleNo",
+        principal_code AS "principalCode",
+        principal_name AS "principalName",
+        ship_code AS "shipCode",
+        ship_name AS "shipName",
+        ship_city_id AS "shipCityId",
+        ship_city_name AS "shipCityName",
+        origin AS "origin",
+        consignee_code AS "consigneeCode",
+        consignee_name AS "consigneeName",
+        consignee_city_id AS "consigneeCityId",
+        consignee_city_name AS "consigneeCityName",
+        destination AS "destination",
+        owner_code AS "ownerCode",
+        owner_name AS "ownerName",
+        supplier_code AS "supplierCode",
+        supplier_name AS "supplierName",
+        sku_code AS "skuCode",
+        sku_name AS "skuName",
+        sku_class AS "skuClass",
+        qty AS "qty",
+        qty_cs AS "qtyCs",
+        qty_pl AS "qtyPl",
+        weight AS "weight",
+        volume AS "volume",
+        org_id AS "orgId",
+        data_sources AS "dataSources",
+        is_fee AS "isFee",
+        order_no_a AS "orderNoA",
+        order_no_b AS "orderNoB",
+        order_no_c AS "orderNoC",
+        order_no_d AS "orderNoD",
+        order_no_e AS "orderNoE",
+        order_no_f AS "orderNoF",
+        order_no_g AS "orderNoG",
+        business_type AS "businessType",
+        business_model AS "businessModel",
+        is_ices AS "isIces",
+        is_iqc AS "isIqc",
+        quarantine_type AS "quarantineType",
+        project_code AS "projectCode",
+        project_name AS "projectName"
+    </sql>
+    <sql id="bmsReturnDataColumns">
+        id AS "id",
+        order_no AS "orderNo",
+        order_date AS "orderDate",
+        customer_no AS "customerNo",
+        dispatch_no AS "dispatchNo",
+        consignee_code AS "consigneeCode",
+        consignee_name AS "consigneeName",
+        carrier_code AS "carrierCode",
+        carrier_name AS "carrierName",
+        car_type AS "carType",
+        vehicle_no AS "vehicleNo",
+        owner_code AS "ownerCode",
+        owner_name AS "ownerName",
+        supplier_code AS "supplierCode",
+        supplier_name AS "supplierName",
+        sku_code AS "skuCode",
+        sku_name AS "skuName",
+        sku_class AS "skuClass",
+        order_qty AS "orderQty",
+        order_qty_cs AS "orderQtyCs",
+        order_qty_pl AS "orderQtyPl",
+        receipt_qty AS "receiptQty",
+        receipt_qty_cs AS "receiptQtyCs",
+        receipt_qty_pl AS "receiptQtyPl",
+        returned_qty AS "returnedQty",
+        returned_qty_cs AS "returnedQtyCs",
+        returned_qty_pl AS "returnedQtyPl",
+        weight AS "weight",
+        volume AS "volume",
+        exception_type AS "exceptionType",
+        exception_reason AS "exceptionReason",
+        org_id AS "orgId",
+        data_sources AS "dataSources",
+        is_fee AS "isFee",
+        order_no_a AS "orderNoA",
+        project_code AS "projectCode",
+        project_name AS "projectName"
+    </sql>
+    <sql id="bmsExceptionDataColumns">
+        id AS "id",
+        order_no AS "orderNo",
+        order_date AS "orderDate",
+        dispatch_no AS "dispatchNo",
+        principal_code AS "principalCode",
+        principal_name AS "principalName",
+        customer_code AS "customerCode",
+        customer_name AS "customerName",
+        carrier_code AS "carrierCode",
+        carrier_name AS "carrierName",
+        car_type AS "carType",
+        vehicle_no AS "vehicleNo",
+        owner_code AS "ownerCode",
+        owner_name AS "ownerName",
+        supplier_code AS "supplierCode",
+        supplier_name AS "supplierName",
+        sku_code AS "skuCode",
+        sku_name AS "skuName",
+        sku_class AS "skuClass",
+        exception_qty AS "exceptionQty",
+        exception_qty_cs AS "exceptionQtyCs",
+        exception_qty_pl AS "exceptionQtyPl",
+        weight AS "weight",
+        volume AS "volume",
+        exception_type AS "exceptionType",
+        exception_reason AS "exceptionReason",
+        responsibility AS "responsibility",
+        responsible_person AS "responsiblePerson",
+        org_id AS "orgId",
+        data_sources AS "dataSources",
+        is_fee AS "isFee",
+        order_no_a AS "orderNoA",
+        order_no_b AS "orderNoB",
+        order_no_c AS "orderNoC",
+        registration_time AS "registrationTime",
+        registrant AS "registrant",
+        project_code AS "projectCode",
+        project_name AS "projectName"
+    </sql>
+    <sql id="bmsWaybillDataColumns">
+        id AS "id",
+        order_no AS "orderNo",
+        order_date AS "orderDate",
+        transport_method AS "transportMethod",
+        carrier_code AS "carrierCode",
+        carrier_name AS "carrierName",
+        car_type AS "carType",
+        principal_code AS "principalCode",
+        principal_name AS "principalName",
+        ship_code AS "shipCode",
+        ship_name AS "shipName",
+        ship_city_id AS "shipCityId",
+        ship_city_name AS "shipCityName",
+        origin AS "origin",
+        consignee_code AS "consigneeCode",
+        consignee_name AS "consigneeName",
+        consignee_city_id AS "consigneeCityId",
+        consignee_city_name AS "consigneeCityName",
+        destination AS "destination",
+        owner_code AS "ownerCode",
+        owner_name AS "ownerName",
+        supplier_code AS "supplierCode",
+        supplier_name AS "supplierName",
+        sku_code AS "skuCode",
+        sku_name AS "skuName",
+        sku_class AS "skuClass",
+        qty AS "qty",
+        qty_cs AS "qtyCs",
+        qty_pl AS "qtyPl",
+        weight AS "weight",
+        volume AS "volume",
+        org_id AS "orgId",
+        data_sources AS "dataSources",
+        is_fee AS "isFee"
+    </sql>
+
+    <select id="findConditionParamsByModel" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsCalcConditionParams">
+        select bsm.settle_model_code       AS "settleModelCode",
+               bsmd.id                     AS "detailId",
+               bsm.settle_object_code      AS "settleObjectCode",
+               bso.settle_object_name      AS "settleObjectName",
+               bc.sys_contract_no          AS "sysContractNo",
+               bc.contract_no              AS "contractNo",
+               bc.subcontract_no           AS "subContractNo",
+               bc.effective_date_fm        AS "effectiveDateFm",
+               bc.effective_date_to        AS "effectiveDateTo",
+               bsmd.contract_cost_item_id  AS "contractDetailId",
+               bcci.bill_module            AS "billModule",
+               bcci.bill_subject_code      AS "billSubjectCode",
+               bbs.bill_subject_name       AS "billSubjectName",
+               bbs.bill_category           AS "billCategory",
+               bcci.receivable_payable     AS "receivablePayable",
+               bcci.bill_terms_code        AS "billTermsCode",
+               bbt.bill_terms_desc         AS "billTermsDesc",
+               bbt.method_name             AS "methodName",
+               bbt.output_objects          AS "outputObjects",
+               bbt.occurrence_quantity     AS "occurrence",
+               bcci.formula_code           AS "formulaCode",
+               bbf.formula_name            AS "formulaName",
+               bbf.formula                 AS "formula",
+               bcci.tax_rate               AS "taxRate",
+               bcci.coefficient            AS "coefficient",
+               bcci.max_amount             AS "maxAmount",
+               bcci.min_amount             AS "minAmount",
+               bsm.org_id                  AS "orgId"
+        from bms_settle_model bsm
+             inner join bms_settle_model_detail bsmd on bsm.settle_model_code = bsmd.settle_model_code and bsm.org_id = bsmd.org_id
+             inner join bms_contract_cost_item bcci on bsmd.contract_cost_item_id = bcci.id
+             inner join bms_contract bc on bcci.sys_contract_no = bc.sys_contract_no and bcci.org_id = bc.org_id
+             inner join bms_bill_subject bbs on bcci.bill_subject_code = bbs.bill_subject_code and bcci.org_id = bbs.org_id
+             inner join bms_bill_terms bbt on bcci.bill_terms_code = bbt.bill_terms_code
+             inner join bms_bill_formula bbf on bcci.formula_code = bbf.formula_code
+             inner join bms_settle_object bso on bsm.settle_object_code = bso.settle_object_code and bsm.org_id = bso.org_id
+        where bc.contract_status = '10'
+          AND bsm.id = #{modelId}
+    </select>
+
+    <select id="findConditionParamsByContract" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsCalcConditionParams">
+        select bcci.id                 AS "detailId",
+               bc.settle_object_code   AS "settleObjectCode",
+               bso.settle_object_name  AS "settleObjectName",
+               bc.sys_contract_no      AS "sysContractNo",
+               bc.contract_no          AS "contractNo",
+               bc.subcontract_no       AS "subContractNo",
+               bc.effective_date_fm    AS "effectiveDateFm",
+               bc.effective_date_to    AS "effectiveDateTo",
+               bcci.id                 AS "contractDetailId",
+               bcci.bill_module        AS "billModule",
+               bcci.bill_subject_code  AS "billSubjectCode",
+               bbs.bill_subject_name   AS "billSubjectName",
+               bbs.bill_category       AS "billCategory",
+               bcci.receivable_payable AS "receivablePayable",
+               bcci.bill_terms_code    AS "billTermsCode",
+               bbt.bill_terms_desc     AS "billTermsDesc",
+               bbt.method_name         AS "methodName",
+               bbt.output_objects      AS "outputObjects",
+               bbt.occurrence_quantity AS "occurrence",
+               bcci.formula_code       AS "formulaCode",
+               bbf.formula_name        AS "formulaName",
+               bbf.formula             AS "formula",
+               bcci.tax_rate           AS "taxRate",
+               bcci.coefficient        AS "coefficient",
+               bcci.max_amount         AS "maxAmount",
+               bcci.min_amount         AS "minAmount",
+               bc.org_id               AS "orgId"
+        from bms_contract bc
+             inner join bms_contract_cost_item bcci on bcci.sys_contract_no = bc.sys_contract_no and bcci.org_id = bc.org_id
+             inner join bms_bill_subject bbs on bcci.bill_subject_code = bbs.bill_subject_code and bcci.org_id = bbs.org_id
+             inner join bms_bill_terms bbt on bcci.bill_terms_code = bbt.bill_terms_code
+             inner join bms_bill_formula bbf on bcci.formula_code = bbf.formula_code
+             inner join bms_settle_object bso on bc.settle_object_code = bso.settle_object_code and bc.org_id = bso.org_id
+        where bc.contract_status = '10'
+          AND bc.id = #{contractId}
+    </select>
+
+    <select id="findByModelDetailIdAndIoE" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsCalcTermsParams">
+        SELECT a.seq_no         AS "seqNo",
+               a.field          AS "field",
+               a.title          AS "title",
+               a.type           AS "type",
+               a.field_option   AS "fieldOption",
+               a.field_value    AS "fieldValue",
+               a.is_enable      AS "isEnable",
+               a.is_show        AS "isShow",
+               a.is_settle_date AS "isSettleDate"
+        FROM bms_settle_model_detail_params a
+        WHERE a.fk_id = #{modelDetailId}
+          AND a.include_or_exclude = #{includeOrExclude}
+        ORDER BY a.seq_no
+    </select>
+
+    <select id="findByContractDetailIdAndIoE" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsCalcTermsParams">
+        SELECT a.seq_no         AS "seqNo",
+               a.field          AS "field",
+               a.title          AS "title",
+               a.type           AS "type",
+               a.field_option   AS "fieldOption",
+               a.field_value    AS "fieldValue",
+               a.is_enable      AS "isEnable",
+               a.is_show        AS "isShow",
+               a.is_settle_date AS "isSettleDate"
+        FROM bms_contract_detail_terms_params a
+        WHERE a.fk_id = #{contractDetailId}
+          AND a.include_or_exclude = #{includeOrExclude}
+        ORDER BY a.seq_no
+    </select>
+
+    <select id="findInboundData" resultType="com.yunyou.modules.bms.business.entity.BmsInboundData">
+        select <include refid="bmsInboundDataColumns"/> from bms_inbound_data
+        <where>
+            ${dataScope}
+        </where>
+    </select>
+    <select id="findOutboundData" resultType="com.yunyou.modules.bms.business.entity.BmsOutboundData">
+        select <include refid="bmsOutboundDataColumns"/> from bms_outbound_data
+        <where>
+            ${dataScope}
+        </where>
+    </select>
+    <select id="findInventoryData" resultType="com.yunyou.modules.bms.business.entity.BmsInventoryData">
+        select <include refid="bmsInventoryDataColumns"/> from bms_inventory_data
+        <where>
+            ${dataScope}
+        </where>
+    </select>
+    <select id="findDispatchOrderData" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchOrderData">
+        select <include refid="bmsDispatchOrderDataColumns"/> from bms_dispatch_order_data
+        <where>
+            ${dataScope}
+        </where>
+    </select>
+    <select id="findDispatchData" resultType="com.yunyou.modules.bms.business.entity.BmsDispatchData">
+        select <include refid="bmsDispatchDataColumns"/> from bms_dispatch_data
+        <where>
+            ${dataScope}
+        </where>
+    </select>
+    <select id="findReturnData" resultType="com.yunyou.modules.bms.business.entity.BmsReturnData">
+        select <include refid="bmsReturnDataColumns"/> from bms_return_data
+        <where>
+            ${dataScope}
+        </where>
+    </select>
+    <select id="findExceptionData" resultType="com.yunyou.modules.bms.business.entity.BmsExceptionData">
+        select <include refid="bmsExceptionDataColumns"/> from bms_exception_data
+        <where>
+            ${dataScope}
+        </where>
+    </select>
+    <select id="findWaybillData" resultType="com.yunyou.modules.bms.business.entity.BmsWaybillData">
+        select <include refid="bmsWaybillDataColumns"/> from bms_waybill_data
+        <where>
+            ${dataScope}
+        </where>
+    </select>
+</mapper>

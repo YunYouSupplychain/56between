@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysCommonCustomerContactsMapper">
+    
+	<sql id="sysCommonCustomerContactsColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.customer_id AS "customer.id",
+		a.code AS "code",
+		a.name AS "name",
+		a.title AS "title",
+		a.tel AS "tel",
+		a.remarks AS "remarks",
+		a.mobile_phone AS "mobilePhone",
+		a.fax AS "fax",
+		a.email AS "email",
+		a.address_name AS "addressName",
+		a.address AS "address",
+		a.is_default AS "isDefault",
+		a.data_set AS "dataSet",
+		a.project_id AS "projectId",
+		a.category as "category",
+		scds.name AS "dataSetName"
+	</sql>
+	
+	<sql id="sysCommonCustomerContactsJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+		LEFT JOIN sys_common_customer b ON b.id = a.customer_id
+	</sql>
+	
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomerContacts" >
+		SELECT 
+			<include refid="sysCommonCustomerContactsColumns"/>
+		FROM sys_common_customer_contacts a
+		<include refid="sysCommonCustomerContactsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomerContacts" >
+		SELECT 
+			<include refid="sysCommonCustomerContactsColumns"/>
+		FROM sys_common_customer_contacts a
+		<include refid="sysCommonCustomerContactsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            and a.data_set = #{dataSet}
+			<if test="customer != null and customer.id != null and customer.id != ''">
+				AND a.customer_id = #{customer.id}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{code}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{code}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{code},'%')</if>
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="tel != null and tel != ''">
+				AND a.tel LIKE 
+					<if test="dbName == 'oracle'">'%'||#{tel}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{tel}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{tel},'%')</if>
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				AND a.mobile_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{mobilePhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{mobilePhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{mobilePhone},'%')</if>
+			</if>
+			<if test="fax != null and fax != ''">
+				AND a.fax LIKE 
+					<if test="dbName == 'oracle'">'%'||#{fax}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{fax}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{fax},'%')</if>
+			</if>
+			<if test="email != null and email != ''">
+				AND a.email LIKE 
+					<if test="dbName == 'oracle'">'%'||#{email}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{email}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{email},'%')</if>
+			</if>
+			<if test="addressName != null and addressName != ''">
+				AND a.address_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{addressName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{addressName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{addressName},'%')</if>
+			</if>
+			<if test="address != null and address != ''">
+				AND a.address LIKE 
+					<if test="dbName == 'oracle'">'%'||#{address}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{address}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{address},'%')</if>
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomerContacts" >
+		SELECT 
+			<include refid="sysCommonCustomerContactsColumns"/>
+		FROM sys_common_customer_contacts a
+		<include refid="sysCommonCustomerContactsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<select id="findByCustomerIds" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomerContacts" >
+		SELECT 
+			<include refid="sysCommonCustomerContactsColumns"/>
+		FROM sys_common_customer_contacts a
+		<where>
+			a.del_flag = 0
+			AND a.customer_id IN
+			<foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</where>		
+	</select>
+	
+	<select id="findByHeadId" resultType="com.yunyou.modules.sys.common.entity.SysCommonCustomerContacts" >
+		SELECT 
+			<include refid="sysCommonCustomerContactsColumns"/>
+		FROM sys_common_customer_contacts a
+		<where>
+			a.del_flag = 0
+			AND a.customer_id = #{headId}
+		</where>		
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_common_customer_contacts(
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			customer_id,
+			code,
+			name,
+			title,
+			tel,
+			remarks,
+			mobile_phone,
+			fax,
+			email,
+			address_name,
+			address,
+			is_default,
+			data_set,
+			project_id,
+			category
+		) VALUES (
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{customer.id},
+			#{code},
+			#{name},
+			#{title},
+			#{tel},
+			#{remarks},
+			#{mobilePhone},
+			#{fax},
+			#{email},
+			#{addressName},
+			#{address},
+			#{isDefault},
+			#{dataSet},
+			#{projectId},
+			#{category}
+		)
+	</insert>
+	
+	<insert id="batchInsert">
+		INSERT INTO sys_common_customer_contacts(
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			customer_id,
+			code,
+			name,
+			title,
+			tel,
+			remarks,
+			mobile_phone,
+			fax,
+			email,
+			address_name,
+			address,
+			is_default,
+			data_set,
+			project_id,
+			category
+		) VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		 (
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.delFlag},
+			#{item.customer.id},
+			#{item.code},
+			#{item.name},
+			#{item.title},
+			#{item.tel},
+			#{item.remarks},
+			#{item.mobilePhone},
+			#{item.fax},
+			#{item.email},
+			#{item.addressName},
+			#{item.address},
+			#{item.isDefault},
+			#{item.dataSet},
+			#{item.projectId},
+			#{item.category}
+		)
+		</foreach>
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_common_customer_contacts
+		SET update_by    = #{updateBy.id},
+			update_date  = #{updateDate},
+			customer_id  = #{customer.id},
+			code         = #{code},
+			name         = #{name},
+			title        = #{title},
+			tel          = #{tel},
+			remarks      = #{remarks},
+			mobile_phone = #{mobilePhone},
+			fax          = #{fax},
+			email        = #{email},
+			address_name = #{addressName},
+			address      = #{address},
+			is_default   = #{isDefault},
+			category     = #{category}
+		WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_common_customer_contacts SET
+		del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE customer_id = #{customer.id}
+			</otherwise>
+		</choose>
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_common_customer_contacts
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE customer_id = #{customer.id}
+			</otherwise>
+		</choose>
+	</delete>
+	
+	<delete id="deleteByCustomerIds">
+		DELETE FROM sys_common_customer_contacts
+		WHERE customer_id IN
+		<foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+</mapper>

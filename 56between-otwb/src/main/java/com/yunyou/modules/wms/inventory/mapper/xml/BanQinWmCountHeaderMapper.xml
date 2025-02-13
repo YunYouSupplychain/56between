@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmCountHeaderMapper">
+    
+	<sql id="banQinWmCountHeaderColumns">
+		a.id AS "id",
+		a.count_no AS "countNo",
+		a.status AS "status",
+		a.count_type AS "countType",
+		a.count_range AS "countRange",
+		a.count_method AS "countMethod",
+		a.count_mode AS "countMode",
+		a.owner_code AS "ownerCode",
+		a.owner_name AS "ownerName",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+		a.lot_num AS "lotNum",
+		a.area_code AS "areaCode",
+		a.area_name AS "areaName",
+		a.zone_code AS "zoneCode",
+		a.zone_name AS "zoneName",
+		a.fm_loc AS "fmLoc",
+		a.to_loc AS "toLoc",
+		a.trace_id AS "traceId",
+		a.take_start_time AS "takeStartTime",
+		a.take_end_time AS "takeEndTime",
+		a.random_num AS "randomNum",
+		a.random_rate AS "randomRate",
+		a.parent_count_no AS "parentCountNo",
+		a.close_time AS "closeTime",
+		a.is_create_check AS "isCreateCheck",
+		a.is_serial AS "isSerial",
+		a.monitor_op AS "monitorOp",
+		a.lot_att01 AS "lotAtt01",
+		a.lot_att02 AS "lotAtt02",
+		a.lot_att03 AS "lotAtt03",
+		a.lot_att04 AS "lotAtt04",
+		a.lot_att05 AS "lotAtt05",
+		a.lot_att06 AS "lotAtt06",
+		a.lot_att07 AS "lotAtt07",
+		a.lot_att08 AS "lotAtt08",
+		a.lot_att09 AS "lotAtt09",
+		a.lot_att10 AS "lotAtt10",
+		a.lot_att11 AS "lotAtt11",
+		a.lot_att12 AS "lotAtt12",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmCountHeaderJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+
+	<select id="get" resultType="BanQinWmCountHeader" >
+		SELECT 
+			<include refid="banQinWmCountHeaderColumns"/>
+		FROM wm_count_header a
+		<include refid="banQinWmCountHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntity" resultType="BanQinWmCountHeaderEntity" >
+		SELECT
+			<include refid="banQinWmCountHeaderColumns"/>
+		FROM wm_count_header a
+		<include refid="banQinWmCountHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmCountHeader" >
+		SELECT 
+			<include refid="banQinWmCountHeaderColumns"/>
+		FROM wm_count_header a
+		<include refid="banQinWmCountHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			<if test="countNo != null and countNo != ''">
+				AND a.count_no = #{countNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="countType != null and countType != ''">
+				AND a.count_type = #{countType}
+			</if>
+			<if test="countRange != null and countRange != ''">
+				AND a.count_range = #{countRange}
+			</if>
+			<if test="countMethod != null and countMethod != ''">
+				AND a.count_method = #{countMethod}
+			</if>
+			<if test="countMode != null and countMode != ''">
+				AND a.count_mode = #{countMode}
+			</if>
+			<if test="monitorOp != null and monitorOp != ''">
+				AND a.monitor_op = #{monitorOp}
+			</if>
+			<if test="parentCountNo != null and parentCountNo != ''">
+				AND a.parent_count_no = #{parentCountNo}
+			</if>
+			<if test="isSerial != null and isSerial != ''">
+				AND a.is_serial = #{isSerial}
+			</if>
+		</where>
+	</select>
+
+    <select id="findPage" resultType="BanQinWmCountHeaderEntity" >
+        SELECT
+			<include refid="banQinWmCountHeaderColumns"/>,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName
+        FROM wm_count_header a
+        <include refid="banQinWmCountHeaderJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+			<if test="countNo != null and countNo != ''">
+				AND a.count_no = #{countNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="countType != null and countType != ''">
+				AND a.count_type = #{countType}
+			</if>
+			<if test="countRange != null and countRange != ''">
+				AND a.count_range = #{countRange}
+			</if>
+			<if test="countMethod != null and countMethod != ''">
+				AND a.count_method = #{countMethod}
+			</if>
+			<if test="countMode != null and countMode != ''">
+				AND a.count_mode = #{countMode}
+			</if>
+			<if test="monitorOp != null and monitorOp != ''">
+				AND a.monitor_op = #{monitorOp}
+			</if>
+			<if test="isSerial != null and isSerial != ''">
+				AND a.is_serial = #{isSerial}
+			</if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmCountHeader" >
+		SELECT 
+			<include refid="banQinWmCountHeaderColumns"/>
+		FROM wm_count_header a
+		<include refid="banQinWmCountHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_count_header(
+			id,
+			count_no,
+			status,
+			count_type,
+			count_range,
+			count_method,
+			count_mode,
+			owner_code,
+			owner_name,
+			sku_code,
+			sku_name,
+			lot_num,
+			area_code,
+			area_name,
+			zone_code,
+			zone_name,
+			fm_loc,
+			to_loc,
+			trace_id,
+			take_start_time,
+			take_end_time,
+			random_num,
+			random_rate,
+			parent_count_no,
+			close_time,
+			is_create_check,
+			is_serial,
+			monitor_op,
+			lot_att01,
+			lot_att02,
+			lot_att03,
+			lot_att04,
+			lot_att05,
+			lot_att06,
+			lot_att07,
+			lot_att08,
+			lot_att09,
+			lot_att10,
+			lot_att11,
+			lot_att12,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{countNo},
+			#{status},
+			#{countType},
+			#{countRange},
+			#{countMethod},
+			#{countMode},
+			#{ownerCode},
+			#{ownerName},
+			#{skuCode},
+			#{skuName},
+			#{lotNum},
+			#{areaCode},
+			#{areaName},
+			#{zoneCode},
+			#{zoneName},
+			#{fmLoc},
+			#{toLoc},
+			#{traceId},
+			#{takeStartTime},
+			#{takeEndTime},
+			#{randomNum},
+			#{randomRate},
+			#{parentCountNo},
+			#{closeTime},
+			#{isCreateCheck},
+			#{isSerial},
+			#{monitorOp},
+			#{lotAtt01},
+			#{lotAtt02},
+			#{lotAtt03},
+			#{lotAtt04},
+			#{lotAtt05},
+			#{lotAtt06},
+			#{lotAtt07},
+			#{lotAtt08},
+			#{lotAtt09},
+			#{lotAtt10},
+			#{lotAtt11},
+			#{lotAtt12},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_count_header SET 	
+			count_no = #{countNo},
+			status = #{status},
+			count_type = #{countType},
+			count_range = #{countRange},
+			count_method = #{countMethod},
+			count_mode = #{countMode},
+			owner_code = #{ownerCode},
+			owner_name = #{ownerName},
+			sku_code = #{skuCode},
+			sku_name = #{skuName},
+			lot_num = #{lotNum},
+			area_code = #{areaCode},
+			area_name = #{areaName},
+			zone_code = #{zoneCode},
+			zone_name = #{zoneName},
+			fm_loc = #{fmLoc},
+			to_loc = #{toLoc},
+			trace_id = #{traceId},
+			take_start_time = #{takeStartTime},
+			take_end_time = #{takeEndTime},
+			random_num = #{randomNum},
+			random_rate = #{randomRate},
+			parent_count_no = #{parentCountNo},
+			close_time = #{closeTime},
+			is_create_check = #{isCreateCheck},
+			is_serial = #{isSerial},
+			monitor_op = #{monitorOp},
+			lot_att01 = #{lotAtt01},
+			lot_att02 = #{lotAtt02},
+			lot_att03 = #{lotAtt03},
+			lot_att04 = #{lotAtt04},
+			lot_att05 = #{lotAtt05},
+			lot_att06 = #{lotAtt06},
+			lot_att07 = #{lotAtt07},
+			lot_att08 = #{lotAtt08},
+			lot_att09 = #{lotAtt09},
+			lot_att10 = #{lotAtt10},
+			lot_att11 = #{lotAtt11},
+			lot_att12 = #{lotAtt12},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_count_header
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_count_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getCountTaskLabel" resultType="com.yunyou.modules.wms.report.entity.CountTaskLabel">
+		SELECT
+			wch.count_no AS countNo,
+			sdtv1.label AS countType,
+			sdtv2.label AS countMode,
+			wtc.count_id AS countId,
+			wtc.trace_id AS traceId,
+			cdl.zone_code AS zoneCode,
+			wtc.loc_code AS locCode,
+			wtc.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cdpa.cdpa_format AS packDesc,
+			wtc.qty_count_ea qtyCountEa,
+			wtc.qty AS invQty
+		FROM wm_task_count wtc
+		LEFT JOIN wm_count_header wch ON wch.org_id = wch.org_id AND wch.count_no = wtc.count_no
+		LEFT JOIN cd_wh_sku cws ON wtc.org_id = cws.org_id AND wtc.sku_code = cws.sku_code AND wtc.owner_code = cws.owner_code
+		LEFT JOIN cd_wh_loc cdl ON cdl.loc_code = wtc.loc_code AND cdl.org_id = wtc.org_id
+		LEFT JOIN sys_dict_type sdt1 ON sdt1.type = 'SYS_WM_COUNT_TYPE'
+		LEFT JOIN sys_dict_value sdtv1 ON sdtv1.dict_type_id = sdt1.id AND sdtv1.value = wch.count_type
+		LEFT JOIN sys_dict_type sdt2 ON sdt2.type = 'SYS_WM_COUNT_MODE'
+		LEFT JOIN sys_dict_value sdtv2 ON sdtv2.dict_type_id = sdt2.id AND sdtv2.value = wch.count_mode
+		LEFT JOIN cd_wh_package cdpa ON cdpa.org_id = wtc.org_id AND cdpa.cdpa_code = wtc.pack_code
+		WHERE 1 = 1
+		  AND wch.count_method = 'S'
+		  AND wch.id IN
+		  <foreach collection="list" item="id" index="id" open="(" separator="," close=")">
+			  #{id}
+		  </foreach>
+		  ORDER BY cdl.pk_seq
+	</select>
+	
+</mapper>

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdWhPackageMapper">
+    
+	<sql id="banQinCdWhPackageColumns">
+		a.id AS "id",
+		a.cdpa_code AS "cdpaCode",
+		a.cdpa_type AS "cdpaType",
+		a.cdpa_format AS "cdpaFormat",
+		a.cdpa_desc AS "cdpaDesc",
+		a.cdpa_is_use AS "cdpaIsUse",
+		a.cdpa_format_en AS "cdpaFormatEn",
+		a.cdpa_wh_code AS "cdpaWhCode",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.pm_code AS "pmCode"
+	</sql>
+	
+	<sql id="banQinCdWhPackageJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinCdWhPackage" >
+		SELECT 
+			<include refid="banQinCdWhPackageColumns"/>
+		FROM cd_wh_package a
+		<include refid="banQinCdWhPackageJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinCdWhPackage" >
+		SELECT 
+			<include refid="banQinCdWhPackageColumns"/>
+		FROM cd_wh_package a
+		<include refid="banQinCdWhPackageJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="cdpaCode != null and cdpaCode != ''">
+				AND a.cdpa_code = #{cdpaCode}
+			</if>
+			<if test="cdpaType != null and cdpaType != ''">
+				AND a.cdpa_type = #{cdpaType}
+			</if>
+			<if test="cdpaFormat != null and cdpaFormat != ''">
+				AND a.cdpa_format = #{cdpaFormat}
+			</if>
+			<if test="cdpaDesc != null and cdpaDesc != ''">
+				AND a.cdpa_desc = #{cdpaDesc}
+			</if>
+		</where>
+	</select>
+	<select id="findPage" resultType="BanQinCdWhPackage" >
+		SELECT
+			<include refid="banQinCdWhPackageColumns"/>,
+			cwpr.cdpr_unit AS unitCode,
+			cwpr.cdpr_desc AS unitDesc
+		FROM cd_wh_package a
+		LEFT JOIN cd_wh_package_relation cwpr ON a.pm_code = cwpr.cdpr_cdpa_pm_code AND a.org_id = cwpr.org_id AND cwpr.cdpr_is_main = 'Y'
+		<include refid="banQinCdWhPackageJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="cdpaCode != null and cdpaCode != ''">
+				AND a.cdpa_code like concat('%', #{cdpaCode}, '%')
+			</if>
+			<if test="cdpaType != null and cdpaType != ''">
+				AND a.cdpa_type = #{cdpaType}
+			</if>
+			<if test="cdpaFormat != null and cdpaFormat != ''">
+				AND a.cdpa_format like concat('%', #{cdpaFormat}, '%')
+			</if>
+			<if test="cdpaDesc != null and cdpaDesc != ''">
+				AND a.cdpa_desc = #{cdpaDesc}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (1 = 2
+				OR a.cdpa_code like concat('%', #{codeAndName}, '%')
+				OR a.cdpa_type like concat('%', #{codeAndName}, '%')
+				OR a.cdpa_format like concat('%', #{codeAndName}, '%')
+				)
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="BanQinCdWhPackage" >
+		SELECT 
+			<include refid="banQinCdWhPackageColumns"/>
+		FROM cd_wh_package a
+		<include refid="banQinCdWhPackageJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_wh_package(
+			id,
+			cdpa_code,
+			cdpa_type,
+			cdpa_format,
+			cdpa_desc,
+			cdpa_is_use,
+			cdpa_format_en,
+			cdpa_wh_code,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			pm_code
+		) VALUES (
+			#{id},
+			#{cdpaCode},
+			#{cdpaType},
+			#{cdpaFormat},
+			#{cdpaDesc},
+			#{cdpaIsUse},
+			#{cdpaFormatEn},
+			#{cdpaWhCode},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{pmCode}
+		)
+	</insert>
+    <insert id="batchInsert">
+		INSERT INTO cd_wh_package
+		(
+			id,
+			cdpa_code,
+			cdpa_type,
+			cdpa_format,
+			cdpa_desc,
+			cdpa_is_use,
+			cdpa_format_en,
+			cdpa_wh_code,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			pm_code
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.cdpaCode},
+			#{item.cdpaType},
+			#{item.cdpaFormat},
+			#{item.cdpaDesc},
+			#{item.cdpaIsUse},
+			#{item.cdpaFormatEn},
+			#{item.cdpaWhCode},
+			#{item.recVer},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.delFlag},
+			#{item.orgId},
+			#{item.pmCode}
+		)
+		</foreach>
+	</insert>
+
+    <update id="update">
+		UPDATE cd_wh_package SET 	
+			cdpa_code = #{cdpaCode},
+			cdpa_type = #{cdpaType},
+			cdpa_format = #{cdpaFormat},
+			cdpa_desc = #{cdpaDesc},
+			cdpa_is_use = #{cdpaIsUse},
+			cdpa_format_en = #{cdpaFormatEn},
+			cdpa_wh_code = #{cdpaWhCode},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			pm_code = #{pmCode}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_wh_package SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM cd_wh_package WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM cd_wh_package WHERE cdpa_code = #{packCode} and org_id = #{orgId}
+	</delete>
+
+	<select id="findByPackageCode" resultType="BanQinCdWhPackage">
+		select <include refid="banQinCdWhPackageColumns"/>
+        FROM cd_wh_package a
+        where a.del_flag = '0'
+        and a.cdpa_code = #{packCode}
+        and a.org_id = #{orgId}
+	</select>
+</mapper>

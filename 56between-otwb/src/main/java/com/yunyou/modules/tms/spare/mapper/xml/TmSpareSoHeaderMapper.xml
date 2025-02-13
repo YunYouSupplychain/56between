@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.spare.mapper.TmSpareSoHeaderMapper">
+
+    <sql id="tmSpareSoHeaderColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.spare_so_no AS "spareSoNo",
+        a.order_time AS "orderTime",
+        a.order_status AS "orderStatus",
+        a.order_type AS "orderType",
+        a.customer_no AS "customerNo",
+        a.operator AS "operator",
+        a.org_id AS "orgId",
+        a.rec_ver AS "recVer",
+        a.base_org_id AS "baseOrgId"
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.tms.spare.entity.TmSpareSoHeader" >
+        SELECT <include refid="tmSpareSoHeaderColumns"/>
+        FROM tm_spare_so_header a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.tms.spare.entity.TmSpareSoHeader" >
+        SELECT <include refid="tmSpareSoHeaderColumns"/>
+        FROM tm_spare_so_header a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="spareSoNo != null and spareSoNo != ''">
+                AND a.spare_so_no = #{spareSoNo}
+            </if>
+            <if test="orderStatus != null and orderStatus != ''">
+                AND a.order_status = #{orderStatus}
+            </if>
+            <if test="orderType != null and orderType != ''">
+                AND a.order_type = #{orderType}
+            </if>
+            <if test="customerNo != null and customerNo != ''">
+                AND a.customer_no = #{customerNo}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="baseOrgId != null and baseOrgId != ''">
+                AND a.base_org_id = #{baseOrgId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.tms.spare.entity.TmSpareSoHeader" >
+        SELECT
+        <include refid="tmSpareSoHeaderColumns"/>
+        FROM tm_spare_so_header a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO tm_spare_so_header(
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            spare_so_no,
+            order_time,
+            order_status,
+            order_type,
+            customer_no,
+            operator,
+            org_id,
+            rec_ver,
+            base_org_id
+        ) VALUES (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{spareSoNo},
+            #{orderTime},
+            #{orderStatus},
+            #{orderType},
+            #{customerNo},
+            #{operator},
+            #{orgId},
+            #{recVer},
+            #{baseOrgId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE tm_spare_so_header SET
+            update_by = #{updateBy.id},
+            update_date = #{updateDate},
+            del_flag = #{delFlag},
+            remarks = #{remarks},
+            spare_so_no = #{spareSoNo},
+            order_time = #{orderTime},
+            order_status = #{orderStatus},
+            order_type = #{orderType},
+            customer_no = #{customerNo},
+            operator = #{operator},
+            org_id = #{orgId},
+            base_org_id = #{baseOrgId},
+            rec_ver = rec_ver + 1
+        WHERE id = #{id} AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE tm_spare_so_header SET del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM tm_spare_so_header WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdRuleQcClassMapper">
+    
+	<sql id="banQinCdRuleQcClassColumns">
+		a.id AS "id",
+		a.rule_code AS "ruleCode",
+		a.line_no AS "lineNo",
+		a.fm_class AS "fmClass",
+		a.to_class AS "toClass",
+		a.qty_type AS "qtyType",
+		a.qty AS "qty",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinCdRuleQcClassJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinCdRuleQcClass" >
+		SELECT 
+			<include refid="banQinCdRuleQcClassColumns"/>
+		FROM cd_rule_qc_class a
+		<include refid="banQinCdRuleQcClassJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinCdRuleQcClass" >
+		SELECT 
+			<include refid="banQinCdRuleQcClassColumns"/>
+		FROM cd_rule_qc_class a
+		<include refid="banQinCdRuleQcClassJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			${dataScope}
+            <if test="ruleCode != null and ruleCode != ''">
+                AND a.rule_code = #{ruleCode}
+            </if>
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+		</where>
+		ORDER BY a.line_no
+	</select>
+	
+	<select id="findAllList" resultType="BanQinCdRuleQcClass" >
+		SELECT 
+			<include refid="banQinCdRuleQcClassColumns"/>
+		FROM cd_rule_qc_class a
+		<include refid="banQinCdRuleQcClassJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_rule_qc_class(
+			id,
+			rule_code,
+			line_no,
+			fm_class,
+			to_class,
+			qty_type,
+			qty,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			header_id
+		) VALUES (
+			#{id},
+			#{ruleCode},
+			#{lineNo},
+			#{fmClass},
+			#{toClass},
+			#{qtyType},
+			#{qty},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cd_rule_qc_class SET 	
+			rule_code = #{ruleCode},
+			line_no = #{lineNo},
+			fm_class = #{fmClass},
+			to_class = #{toClass},
+			qty_type = #{qtyType},
+			qty = #{qty},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId},
+			header_id = #{headerId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_rule_qc_class SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM cd_rule_qc_class WHERE id = #{id}
+	</delete>
+    <delete id="deleteByHeaderId">
+        DELETE FROM cd_rule_qc_class WHERE header_id = #{headerId}
+    </delete>
+	<delete id="remove">
+		DELETE FROM cd_rule_qc_class WHERE rule_code = #{ruleCode} AND org_id = #{orgId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.report.mapper.TmRepDispatchOrderMapper">
+
+    <select id="findList" resultType="com.yunyou.modules.tms.report.entity.TmRepDispatchOrder">
+        select tdoh.dispatch_no                 as dispatchNo,
+               tcc.transport_obj_name           as carrierName,
+               ttos.address                     as startAddress,
+               ttoc.address                     as endAddress,
+               ttoc.transport_obj_name          as consigneeName,
+               tdoh.car_no                      as vehicleNo,
+               td.name                          as driverName,
+               tdoh.departure_time              as departureTime,
+               thoh.update_date                 as arrivalTime,
+               tcrr.mileage                     as mileage,
+               tv.alarm_temp                    as alarmTemp,
+               tv.transport_equipment_type_code as gpsNo,
+               ttet.supplier_code               as gpsManufacturer,
+               tdoh.org_id                      as orgId
+        from tm_dispatch_order_header tdoh
+            inner join tm_dispatch_order_label tdol on tdoh.dispatch_no = tdol.dispatch_no and tdol.receive_ship = 'S' and tdoh.org_id = tdol.org_id
+            inner join tm_transport_order_header ttoh on tdol.transport_no = ttoh.transport_no and tdol.org_id = ttoh.org_id
+            left join tm_handover_order_header thoh on tdoh.dispatch_no = thoh.dispatch_no and tdol.dispatch_site_outlet_code = thoh.delivery_outlet_code and tdoh.org_id = thoh.org_id and thoh.status = '20'
+            left join tm_transport_obj tcc on tdoh.carrier_code = tcc.transport_obj_code and tdoh.base_org_id = tcc.org_id
+            left join tm_transport_obj ttos on ttoh.receive_outlet_code = ttos.transport_obj_code and ttoh.base_org_id = ttos.org_id
+            left join tm_transport_obj ttoc on ttoh.outlet_code = ttoc.transport_obj_code and ttoh.base_org_id = ttoc.org_id
+            left join tm_carrier_route_relation tcrr on tdoh.carrier_code = tcrr.carrier_code and ttos.area_id = tcrr.origin_id and ttoc.area_id = tcrr.destination_id and tdoh.base_org_id = tcrr.org_id
+            left join tm_vehicle tv on tdoh.car_no = tv.car_no and tdoh.base_org_id = tv.org_id
+            left join tm_transport_equipment_type ttet on tv.transport_equipment_type_code = ttet.transport_equipment_type_code and tv.org_id = ttet.org_id
+            left join tm_driver td on tdoh.driver = td.code and tdoh.base_org_id = td.org_id
+        <where>
+            ${dataScope}
+            <if test="dispatchNo != null and dispatchNo != ''">
+                AND tdoh.dispatch_no = #{dispatchNo}
+            </if>
+            <if test="carrierName != null and carrierName != ''">
+                AND tcc.transport_obj_name = #{carrierName}
+            </if>
+            <if test="consigneeName != null and consigneeName != ''">
+                AND ttoc.transport_obj_name = #{consigneeName}
+            </if>
+            <if test="vehicleNo != null and vehicleNo != ''">
+                AND tdoh.car_no = #{vehicleNo}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                AND tdoh.org_id = #{orgId}
+            </if>
+        </where>
+        group by tdoh.dispatch_no, ttos.address, ttoc.address, ttoc.transport_obj_name, tdoh.org_id
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY tdoh.dispatch_no DESC
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

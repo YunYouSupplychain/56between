@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmGetWayBillLogMapper">
+    
+	<sql id="banQinWmGetWayBillLogColumns">
+		a.id AS "id",
+		a.so_no AS "soNo",
+		a.wave_no AS "waveNo",
+		a.tracking_no AS "trackingNo",
+		a.case_no AS "caseNo",
+		a.type AS "type",
+		a.response AS "response",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<select id="findList" resultType="BanQinWmGetWayBillLog" >
+		SELECT
+			<include refid="banQinWmGetWayBillLogColumns"/>
+		FROM wm_get_way_bill_log a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="soNo != null and soNo != ''">
+				AND a.so_no = #{soNo}
+			</if>
+			<if test="trackingNo != null and trackingNo != ''">
+				AND a.tracking_no = #{trackingNo}
+			</if>
+			<if test="caseNo != null and caseNo != ''">
+				AND a.case_no = #{caseNo}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="BanQinWmGetWayBillLog" >
+		SELECT
+			<include refid="banQinWmGetWayBillLogColumns"/>
+		FROM wm_get_way_bill_log a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<insert id="insert">
+		REPLACE INTO wm_get_way_bill_log(
+			id,
+			so_no,
+			wave_no,
+			tracking_no,
+		    case_no,
+			type,
+			response,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{soNo},
+			#{waveNo},
+		    #{trackingNo},
+			#{caseNo},
+		    #{type},
+			#{response},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_get_way_bill_log SET
+			so_no = #{soNo},
+			wave_no = #{waveNo},
+		    type = #{type},
+		    tracking_no = #{trackingNo},
+			case_no = #{caseNo},
+			response = #{response},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_get_way_bill_log
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_get_way_bill_log SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.basic.mapper.TmVehicleMapper">
+    
+	<sql id="tmVehicleColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.car_no AS "carNo",
+		a.transport_equipment_type_code AS "transportEquipmentTypeCode",
+		a.carrier_code AS "carrierCode",
+		a.vehicle_type AS "vehicleType",
+		a.car_type AS "carType",
+		a.dispatch_base AS "dispatchBase",
+		a.main_driver AS "mainDriver",
+		a.copilot AS "copilot",
+		a.trailer AS "trailer",
+		a.car_brand AS "carBrand",
+		a.car_model AS "carModel",
+		a.car_color AS "carColor",
+		a.car_body_no AS "carBodyNo",
+		a.supplier_code AS "supplierCode",
+		a.ownership AS "ownership",
+		a.approved_loading_weight AS "approvedLoadingWeight",
+		a.approved_loading_cubic AS "approvedLoadingCubic",
+		a.total_traction_weight AS "totalTractionWeight",
+		a.equipment_quality AS "equipmentQuality",
+		a.door_number AS "doorNumber",
+		a.length AS "length",
+		a.width AS "width",
+		a.height AS "height",
+		a.is_temperature_control AS "isTemperatureControl",
+		a.temperature_type AS "temperatureType",
+		a.min_temperature AS "minTemperature",
+		a.max_temperature AS "maxTemperature",
+		a.refrigeration_equipment_code AS "refrigerationEquipmentCode",
+		a.is_risk AS "isRisk",
+		a.risk_level AS "riskLevel",
+		a.buying_time AS "buyingTime",
+		a.purchase_location AS "purchaseLocation",
+		a.purchase_amount AS "purchaseAmount",
+		a.emission_standard AS "emissionStandard",
+		a.oil_consumption AS "oilConsumption",
+		a.mileage AS "mileage",
+		a.horsepower AS "horsepower",
+		a.depreciable_life AS "depreciableLife",
+		a.scrapped_life AS "scrappedLife",
+		a.active_time AS "activeTime",
+		a.scrapped_time AS "scrappedTime",
+		a.salvage_rate AS "salvageRate",
+		a.axle_number AS "axleNumber",
+		a.engine_no AS "engineNo",
+		a.oil_type AS "oilType",
+		a.registered_time AS "registeredTime",
+		a.registered_location AS "registeredLocation",
+		a.driving_license_no AS "drivingLicenseNo",
+		a.driving_license_expiry_time AS "drivingLicenseExpiryTime",
+		a.operating_license_expiry_time AS "operatingLicenseExpiryTime",
+		a.operating_duration AS "operatingDuration",
+		a.toll_collection_time AS "tollCollectionTime",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.status AS "status",
+		a.annual_review_expiry_time AS annualReviewExpiryTime,
+		a.two_dimension_expiry_time AS twoDimensionExpiryTime,
+		a.tank_inspection_expiry_time AS tankInspectionExpiryTime,
+		a.insurance_expiry_time AS insuranceExpiryTime,
+		a.vehicle_maintenance_mileage AS vehicleMaintenanceMileage,
+		a.vehicle_apply_grease_mileage AS vehicleApplyGreaseMileage,
+		a.vehicle_oil_change_mileage AS vehicleOilChangeMileage
+	</sql>
+	
+	<sql id="tmVehicleJoins">
+		
+	</sql>
+
+    <select id="get" resultType="TmVehicle" >
+		SELECT 
+			<include refid="tmVehicleColumns"/>
+		FROM tm_vehicle a
+		<include refid="tmVehicleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmVehicle" >
+		SELECT 
+			<include refid="tmVehicleColumns"/>
+		FROM tm_vehicle a
+		<include refid="tmVehicleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="carNo != null and carNo != ''">
+				AND a.car_no = #{carNo}
+			</if>
+			<if test="transportEquipmentTypeCode != null and transportEquipmentTypeCode != ''">
+				AND a.transport_equipment_type_code = #{transportEquipmentTypeCode}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="vehicleType != null and vehicleType != ''">
+				AND a.vehicle_type = #{vehicleType}
+			</if>
+			<if test="carType != null and carType != ''">
+				AND a.car_type = #{carType}
+			</if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+            <if test="dispatchBase != null and dispatchBase != ''">
+                AND a.dispatch_base = #{dispatchBase}
+            </if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmVehicle" >
+		SELECT 
+			<include refid="tmVehicleColumns"/>
+		FROM tm_vehicle a
+		<include refid="tmVehicleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_vehicle(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			car_no,
+			transport_equipment_type_code,
+			carrier_code,
+		    vehicle_type,
+			car_type,
+			dispatch_base,
+			main_driver,
+			copilot,
+			trailer,
+			car_brand,
+			car_model,
+			car_color,
+			car_body_no,
+			supplier_code,
+			ownership,
+			approved_loading_weight,
+			approved_loading_cubic,
+			total_traction_weight,
+			equipment_quality,
+			door_number,
+			length,
+			width,
+			height,
+			is_temperature_control,
+			temperature_type,
+			min_temperature,
+			max_temperature,
+			refrigeration_equipment_code,
+			is_risk,
+			risk_level,
+			buying_time,
+			purchase_location,
+			purchase_amount,
+			emission_standard,
+			oil_consumption,
+			mileage,
+			horsepower,
+			depreciable_life,
+			scrapped_life,
+			active_time,
+			scrapped_time,
+			salvage_rate,
+			axle_number,
+			engine_no,
+			oil_type,
+			registered_time,
+			registered_location,
+			driving_license_no,
+			driving_license_expiry_time,
+			operating_license_expiry_time,
+			operating_duration,
+			toll_collection_time,
+			org_id,
+			rec_ver,
+            status,
+			annual_review_expiry_time,
+			two_dimension_expiry_time,
+			tank_inspection_expiry_time,
+			insurance_expiry_time,
+			vehicle_maintenance_mileage,
+			vehicle_apply_grease_mileage,
+			vehicle_oil_change_mileage
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{carNo},
+			#{transportEquipmentTypeCode},
+			#{carrierCode},
+			#{vehicleType},
+			#{carType},
+			#{dispatchBase},
+			#{mainDriver},
+			#{copilot},
+			#{trailer},
+			#{carBrand},
+			#{carModel},
+			#{carColor},
+			#{carBodyNo},
+			#{supplierCode},
+			#{ownership},
+			#{approvedLoadingWeight},
+			#{approvedLoadingCubic},
+			#{totalTractionWeight},
+			#{equipmentQuality},
+			#{doorNumber},
+			#{length},
+			#{width},
+			#{height},
+			#{isTemperatureControl},
+			#{temperatureType},
+			#{minTemperature},
+			#{maxTemperature},
+			#{refrigerationEquipmentCode},
+			#{isRisk},
+			#{riskLevel},
+			#{buyingTime},
+			#{purchaseLocation},
+			#{purchaseAmount},
+			#{emissionStandard},
+			#{oilConsumption},
+			#{mileage},
+			#{horsepower},
+			#{depreciableLife},
+			#{scrappedLife},
+			#{activeTime},
+			#{scrappedTime},
+			#{salvageRate},
+			#{axleNumber},
+			#{engineNo},
+			#{oilType},
+			#{registeredTime},
+			#{registeredLocation},
+			#{drivingLicenseNo},
+			#{drivingLicenseExpiryTime},
+			#{operatingLicenseExpiryTime},
+			#{operatingDuration},
+			#{tollCollectionTime},
+			#{orgId},
+			#{recVer},
+            #{status},
+			#{annualReviewExpiryTime},
+			#{twoDimensionExpiryTime},
+			#{tankInspectionExpiryTime},
+			#{insuranceExpiryTime},
+			#{vehicleMaintenanceMileage},
+			#{vehicleApplyGreaseMileage},
+			#{vehicleOilChangeMileage}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_vehicle
+		SET update_by                     = #{updateBy.id},
+			update_date                   = #{updateDate},
+			del_flag                      = #{delFlag},
+			remarks                       = #{remarks},
+			car_no                        = #{carNo},
+			transport_equipment_type_code = #{transportEquipmentTypeCode},
+			carrier_code                  = #{carrierCode},
+			vehicle_type                  = #{vehicleType},
+			car_type                      = #{carType},
+			dispatch_base                 = #{dispatchBase},
+			main_driver                   = #{mainDriver},
+			copilot                       = #{copilot},
+			trailer                       = #{trailer},
+			car_brand                     = #{carBrand},
+			car_model                     = #{carModel},
+			car_color                     = #{carColor},
+			car_body_no                   = #{carBodyNo},
+			supplier_code                 = #{supplierCode},
+			ownership                     = #{ownership},
+			approved_loading_weight       = #{approvedLoadingWeight},
+			approved_loading_cubic        = #{approvedLoadingCubic},
+			total_traction_weight         = #{totalTractionWeight},
+			equipment_quality             = #{equipmentQuality},
+			door_number                   = #{doorNumber},
+			length                        = #{length},
+			width                         = #{width},
+			height                        = #{height},
+			is_temperature_control        = #{isTemperatureControl},
+			temperature_type              = #{temperatureType},
+			min_temperature               = #{minTemperature},
+			max_temperature               = #{maxTemperature},
+			refrigeration_equipment_code  = #{refrigerationEquipmentCode},
+			is_risk                       = #{isRisk},
+			risk_level                    = #{riskLevel},
+			buying_time                   = #{buyingTime},
+			purchase_location             = #{purchaseLocation},
+			purchase_amount               = #{purchaseAmount},
+			emission_standard             = #{emissionStandard},
+			oil_consumption               = #{oilConsumption},
+			mileage                       = #{mileage},
+			horsepower                    = #{horsepower},
+			depreciable_life              = #{depreciableLife},
+			scrapped_life                 = #{scrappedLife},
+			active_time                   = #{activeTime},
+			scrapped_time                 = #{scrappedTime},
+			salvage_rate                  = #{salvageRate},
+			axle_number                   = #{axleNumber},
+			engine_no                     = #{engineNo},
+			oil_type                      = #{oilType},
+			registered_time               = #{registeredTime},
+			registered_location           = #{registeredLocation},
+			driving_license_no            = #{drivingLicenseNo},
+			driving_license_expiry_time   = #{drivingLicenseExpiryTime},
+			operating_license_expiry_time = #{operatingLicenseExpiryTime},
+			operating_duration            = #{operatingDuration},
+			toll_collection_time          = #{tollCollectionTime},
+			org_id                        = #{orgId},
+			status                        = #{status},
+			annual_review_expiry_time     = #{annualReviewExpiryTime},
+			two_dimension_expiry_time     = #{twoDimensionExpiryTime},
+			tank_inspection_expiry_time   = #{tankInspectionExpiryTime},
+			insurance_expiry_time         = #{insuranceExpiryTime},
+			vehicle_maintenance_mileage   = #{vehicleMaintenanceMileage},
+			vehicle_apply_grease_mileage  = #{vehicleApplyGreaseMileage},
+			vehicle_oil_change_mileage    = #{vehicleOilChangeMileage},
+			rec_ver                       = rec_ver + 1
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_vehicle SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_vehicle WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM tm_vehicle WHERE car_no = #{carNo} AND org_id = #{orgId}
+	</delete>
+
+	<select id="getEntity" resultType="com.yunyou.modules.tms.basic.entity.extend.TmVehicleEntity" >
+		SELECT
+			ttet.transport_equipment_type_name_cn AS "transportEquipmentTypeName",
+			ttoc.transport_obj_name AS "carrierName",
+			ttos.transport_obj_name AS "supplierName",
+			tdm.name AS "mainDriverName",
+		    tdm.phone AS "mainDriverTel",
+			tdc.name AS "copilotName",
+		    so.name AS "dispatchBaseName",
+			tvt.name AS "vehicleTypeName",
+			<include refid="tmVehicleColumns"/>
+		FROM tm_vehicle a
+		LEFT JOIN tm_transport_equipment_type ttet ON a.transport_equipment_type_code = ttet.transport_equipment_type_code AND a.org_id = ttet.org_id
+		LEFT JOIN tm_vehicle_type tvt ON a.vehicle_type = tvt.code AND a.org_id = tvt.org_id
+		LEFT JOIN tm_transport_obj ttoc ON a.carrier_code = ttoc.transport_obj_code AND a.org_id = ttoc.org_id
+		LEFT JOIN tm_transport_obj ttos ON a.supplier_code = ttos.transport_obj_code AND a.org_id = ttos.org_id
+		LEFT JOIN tm_driver tdm ON a.main_driver = tdm.code AND a.org_id = tdm.org_id
+		LEFT JOIN tm_driver tdc ON a.copilot = tdc.code AND a.org_id = tdc.org_id
+		LEFT JOIN sys_office so ON a.dispatch_base = so.id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.basic.entity.extend.TmVehicleEntity" >
+		SELECT
+			ttet.transport_equipment_type_name_cn AS "transportEquipmentTypeName",
+			ttoc.transport_obj_name AS "carrierName",
+			ttos.transport_obj_name AS "supplierName",
+			tdm.name AS "mainDriverName",
+            tdm.phone AS "mainDriverTel",
+			tdc.name AS "copilotName",
+            so.name AS "dispatchBaseName",
+			tvt.name AS "vehicleTypeName",
+			<include refid="tmVehicleColumns"/>
+		FROM tm_vehicle a
+		LEFT JOIN tm_transport_equipment_type ttet ON a.transport_equipment_type_code = ttet.transport_equipment_type_code AND a.org_id = ttet.org_id
+		LEFT JOIN tm_vehicle_type tvt ON a.vehicle_type = tvt.code AND a.org_id = tvt.org_id
+		LEFT JOIN tm_transport_obj ttoc on a.carrier_code = ttoc.transport_obj_code AND a.org_id = ttoc.org_id
+		LEFT JOIN tm_transport_obj ttos on a.supplier_code = ttos.transport_obj_code AND a.org_id = ttos.org_id
+		LEFT JOIN tm_driver tdm ON a.main_driver = tdm.code AND a.org_id = tdm.org_id
+		LEFT JOIN tm_driver tdc ON a.copilot = tdc.code AND a.org_id = tdc.org_id
+        LEFT JOIN sys_office so ON a.dispatch_base = so.id
+		<where>
+			${dataScope}
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+			<if test="carNo != null and carNo != ''">
+				AND a.car_no LIKE concat('%', #{carNo}, '%')
+			</if>
+			<if test="transportEquipmentTypeCode != null and transportEquipmentTypeCode != ''">
+				AND a.transport_equipment_type_code = #{transportEquipmentTypeCode}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="vehicleType != null and vehicleType != ''">
+				AND a.vehicle_type = #{vehicleType}
+			</if>
+			<if test="carType != null and carType != ''">
+				AND a.car_type = #{carType}
+			</if>
+            <if test="dispatchBase != null and dispatchBase != ''">
+                AND a.dispatch_base = #{dispatchBase}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.tms.basic.entity.extend.TmVehicleEntity" >
+		SELECT
+			ttet.transport_equipment_type_name_cn AS "transportEquipmentTypeName",
+			ttoc.transport_obj_name AS "carrierName",
+			ttos.transport_obj_name AS "supplierName",
+			tdm.name AS "mainDriverName",
+            tdm.phone AS "mainDriverTel",
+			tdc.name AS "copilotName",
+            so.name AS "dispatchBaseName",
+		    sdv.label AS "vehicleTypeDesc",
+			tvt.name AS "vehicleTypeName",
+			<include refid="tmVehicleColumns"/>
+		FROM tm_vehicle a
+		LEFT JOIN tm_transport_equipment_type ttet ON a.transport_equipment_type_code = ttet.transport_equipment_type_code AND a.org_id = ttet.org_id
+		LEFT JOIN tm_vehicle_type tvt ON a.vehicle_type = tvt.code AND a.org_id = tvt.org_id
+		LEFT JOIN tm_transport_obj ttoc on a.carrier_code = ttoc.transport_obj_code AND a.org_id = ttoc.org_id
+		LEFT JOIN tm_transport_obj ttos on a.supplier_code = ttos.transport_obj_code AND a.org_id = ttos.org_id
+		LEFT JOIN tm_driver tdm on a.main_driver = tdm.code AND a.org_id = tdm.org_id
+		LEFT JOIN tm_driver tdc on a.copilot = tdc.code AND a.org_id = tdc.org_id
+        LEFT JOIN sys_office so ON a.dispatch_base = so.id
+        LEFT JOIN sys_dict_type sdt ON sdt.type = 'TMS_CAR_TYPE'
+        LEFT JOIN sys_dict_value sdv ON sdt.id = sdv.dict_type_id AND sdv.value = a.car_type
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="carNo != null and carNo != ''">
+				AND a.car_no LIKE concat('%', #{carNo}, '%')
+			</if>
+			<if test="transportEquipmentTypeCode != null and transportEquipmentTypeCode != ''">
+				AND a.transport_equipment_type_code = #{transportEquipmentTypeCode}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND (a.carrier_code = #{carrierCode} OR a.carrier_code IS NULL OR a.carrier_code = '')
+			</if>
+			<if test="vehicleType != null and vehicleType != ''">
+				AND a.vehicle_type = #{vehicleType}
+			</if>
+			<if test="carType != null and carType != ''">
+				AND a.car_type = #{carType}
+			</if>
+            <if test="dispatchBase != null and dispatchBase != ''">
+                AND a.dispatch_base = #{dispatchBase}
+            </if>
+            <if test="dispatchCenterId != null and dispatchCenterId != ''">
+                AND (a.dispatch_base = #{dispatchCenterId} OR a.dispatch_base IS NULL OR a.dispatch_base = '')
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.car_no LIKE concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="getByNo" resultType="com.yunyou.modules.tms.basic.entity.TmVehicle">
+        SELECT
+        <include refid="tmVehicleColumns"/>
+        FROM tm_vehicle a
+        WHERE a.del_flag = '0'
+         AND a.car_no = #{carNo}
+         AND a.org_id = #{orgId}
+    </select>
+
+    <select id="getEntityByNo" resultType="com.yunyou.modules.tms.basic.entity.extend.TmVehicleEntity">
+		SELECT ttet.transport_equipment_type_name_cn AS "transportEquipmentTypeName",
+			   ttoc.transport_obj_name               AS "carrierName",
+			   ttos.transport_obj_name               AS "supplierName",
+			   tdm.name                              AS "mainDriverName",
+			   tdm.phone                             AS "mainDriverTel",
+			   tdc.name                              AS "copilotName",
+			   so.name                               AS "dispatchBaseName",
+			   tvt.name                              AS "vehicleTypeName",
+			   <include refid="tmVehicleColumns"/>
+		FROM tm_vehicle a
+		  LEFT JOIN tm_transport_equipment_type ttet ON a.transport_equipment_type_code = ttet.transport_equipment_type_code AND a.org_id = ttet.org_id
+		  LEFT JOIN tm_vehicle_type tvt ON a.vehicle_type = tvt.code AND a.org_id = tvt.org_id
+		  LEFT JOIN tm_transport_obj ttoc ON a.carrier_code = ttoc.transport_obj_code AND a.org_id = ttoc.org_id
+		  LEFT JOIN tm_transport_obj ttos ON a.supplier_code = ttos.transport_obj_code AND a.org_id = ttos.org_id
+		  LEFT JOIN tm_driver tdm ON a.main_driver = tdm.code AND a.org_id = tdm.org_id
+		  LEFT JOIN tm_driver tdc ON a.copilot = tdc.code AND a.org_id = tdc.org_id
+		  LEFT JOIN sys_office so ON a.dispatch_base = so.id
+		WHERE a.del_flag = '0'
+		  AND a.car_no = #{carNo}
+		  AND a.org_id = #{orgId}
+	</select>
+
+</mapper>

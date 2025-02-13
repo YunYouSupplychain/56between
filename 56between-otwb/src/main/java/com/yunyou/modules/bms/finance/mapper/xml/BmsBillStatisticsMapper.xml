@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.finance.mapper.BmsBillStatisticsMapper">
+
+    <sql id="bmsBillStatisticsColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        a.rec_ver AS "recVer",
+        a.bill_no AS "billNo",
+        a.confirm_no AS "confirmNo",
+        a.status AS "status",
+        a.settle_model_code AS "settleModelCode",
+        a.settle_object_code AS "settleObjectCode",
+        a.settle_object_name AS "settleObjectName",
+        a.settle_method AS "settleMethod",
+        a.settle_category AS "settleCategory",
+        a.sys_contract_no AS "sysContractNo",
+        a.contract_no AS "contractNo",
+        a.subcontract_no AS "subcontractNo",
+        a.bill_module AS "billModule",
+        a.bill_subject_code AS "billSubjectCode",
+        a.bill_subject_name AS "billSubjectName",
+        a.bill_category AS "billCategory",
+        a.bill_terms_code AS "billTermsCode",
+        a.bill_terms_desc AS "billTermsDesc",
+        a.receivable_payable AS "receivablePayable",
+        a.bill_standard AS "billStandard",
+        a.bill_qty AS "billQty",
+        a.occurrence_qty AS "occurrenceQty",
+        a.cost AS "cost",
+        a.date_fm AS "dateFm",
+        a.date_to AS "dateTo",
+        a.warehouse_code AS "warehouseCode",
+        a.warehouse_name AS "warehouseName",
+        a.org_id AS "orgId"
+    </sql>
+
+    <sql id="extraColumns">
+        b.name AS "orgName",
+        suc.name AS "createBy.name"
+    </sql>
+
+    <sql id="findPageWhere">
+        <if test="settleModelCode != null and settleModelCode != ''">
+            AND a.settle_model_code LIKE concat('%', #{settleModelCode}, '%')
+        </if>
+        <if test="settleObjectName != null and settleObjectName != ''">
+            AND a.settle_object_name LIKE concat('%', #{settleObjectName}, '%')
+        </if>
+        <if test="settleObjectCode != null and settleObjectCode != ''">
+            AND a.settle_object_code = #{settleObjectCode}
+        </if>
+        <if test="sysContractNo != null and sysContractNo != ''">
+            AND a.sys_contract_no LIKE concat('%', #{sysContractNo}, '%')
+        </if>
+        <if test="subcontractNo != null and subcontractNo != ''">
+            AND a.subcontract_no LIKE concat('%', #{subcontractNo}, '%')
+        </if>
+        <if test="contractNo != null and contractNo != ''">
+            AND a.contract_no LIKE concat('%', #{contractNo}, '%')
+        </if>
+        <if test="billModule != null and billModule != ''">
+            AND a.bill_module = #{billModule}
+        </if>
+        <if test="billTermsCode != null and billTermsCode != ''">
+            AND a.bill_terms_code = #{billTermsCode}
+        </if>
+        <if test="billSubjectCode != null and billSubjectCode != ''">
+            AND a.bill_subject_code = #{billSubjectCode}
+        </if>
+        <if test="billCategory != null and billCategory != ''">
+            AND a.bill_category = #{billCategory}
+        </if>
+        <if test="settleMethod != null and settleMethod != ''">
+            AND a.settle_method = #{settleMethod}
+        </if>
+        <if test="settleCategory != null and settleCategory != ''">
+            AND a.settle_category = #{settleCategory}
+        </if>
+        <if test="receivablePayable != null and receivablePayable != ''">
+            AND a.receivable_payable = #{receivablePayable}
+        </if>
+        <if test="billNo != null and billNo != ''">
+            AND a.bill_no LIKE concat('%', #{billNo}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND a.status = #{status}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            AND a.warehouse_code = #{warehouseCode}
+        </if>
+        <if test="creator != null and creator != ''">
+            AND suc.name = #{creator}
+        </if>
+        <if test="confirmNo != null and confirmNo != ''">
+            AND a.confirm_no LIKE concat('%', #{confirmNo}, '%')
+        </if>
+        <if test="createTimeFm != null">
+            AND a.create_date &gt;= #{createTimeFm}
+        </if>
+        <if test="createTimeTo != null">
+            AND a.create_date &lt;= #{createTimeTo}
+        </if>
+        <if test="filterZero != null and filterZero == 'Y'.toString()">
+            AND (a.bill_standard != 0 OR a.bill_qty != 0 OR a.occurrence_qty != 0 OR a.cost != 0)
+        </if>
+    </sql>
+
+    <sql id="bmsBillStatisticsJoins">
+        LEFT JOIN sys_office b ON a.org_id = b.id
+        LEFT JOIN sys_user suc ON a.create_by = suc.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.finance.entity.BmsBillStatistics">
+        SELECT
+        <include refid="bmsBillStatisticsColumns"/>
+        FROM bms_bill_statistics a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.finance.entity.BmsBillStatistics">
+        SELECT
+        <include refid="bmsBillStatisticsColumns"/>
+        FROM bms_bill_statistics a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="settleModelCode != null and settleModelCode != ''">
+                AND a.settle_model_code = #{settleModelCode}
+            </if>
+            <if test="settleObjectCode != null and settleObjectCode != ''">
+                AND a.settle_object_code = #{settleObjectCode}
+            </if>
+            <if test="settleObjectName != null and settleObjectName != ''">
+                AND a.settle_object_name = #{settleObjectName}
+            </if>
+            <if test="sysContractNo != null and sysContractNo != ''">
+                AND a.sys_contract_no = #{sysContractNo}
+            </if>
+            <if test="subcontractNo != null and subcontractNo != ''">
+                AND a.subcontract_no = #{subcontractNo}
+            </if>
+            <if test="contractNo != null and contractNo != ''">
+                AND a.contract_no = #{contractNo}
+            </if>
+            <if test="billModule != null and billModule != ''">
+                AND a.bill_module = #{billModule}
+            </if>
+            <if test="billTermsCode != null and billTermsCode != ''">
+                AND a.bill_terms_code = #{billTermsCode}
+            </if>
+            <if test="billTermsDesc != null and billTermsDesc != ''">
+                AND a.bill_terms_desc = #{billTermsDesc}
+            </if>
+            <if test="billSubjectCode != null and billSubjectCode != ''">
+                AND a.bill_subject_code = #{billSubjectCode}
+            </if>
+            <if test="billSubjectName != null and billSubjectName != ''">
+                AND a.bill_subject_name = #{billSubjectName}
+            </if>
+            <if test="billCategory != null and billCategory != ''">
+                AND a.bill_category = #{billCategory}
+            </if>
+            <if test="settleMethod != null and settleMethod != ''">
+                AND a.settle_method = #{settleMethod}
+            </if>
+            <if test="settleCategory != null and settleCategory != ''">
+                AND a.settle_category = #{settleCategory}
+            </if>
+            <if test="receivablePayable != null and receivablePayable != ''">
+                AND a.receivable_payable = #{receivablePayable}
+            </if>
+            <if test="warehouseCode != null and warehouseCode != ''">
+                AND a.warehouse_code = #{warehouseCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.finance.entity.BmsBillStatistics">
+        SELECT
+        <include refid="bmsBillStatisticsColumns"/>
+        FROM bms_bill_statistics a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_bill_statistics
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            bill_no,
+            confirm_no,
+            status,
+            settle_model_code,
+            settle_object_code,
+            settle_object_name,
+            settle_method,
+            settle_category,
+            sys_contract_no,
+            contract_no,
+            subcontract_no,
+            bill_module,
+            bill_subject_code,
+            bill_subject_name,
+            bill_category,
+            bill_terms_code,
+            bill_terms_desc,
+            receivable_payable,
+            bill_standard,
+            bill_qty,
+            occurrence_qty,
+            cost,
+            date_fm,
+            date_to,
+            warehouse_code,
+            warehouse_name,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{billNo},
+            #{confirmNo},
+            #{status},
+            #{settleModelCode},
+            #{settleObjectCode},
+            #{settleObjectName},
+            #{settleMethod},
+            #{settleCategory},
+            #{sysContractNo},
+            #{contractNo},
+            #{subcontractNo},
+            #{billModule},
+            #{billSubjectCode},
+            #{billSubjectName},
+            #{billCategory},
+            #{billTermsCode},
+            #{billTermsDesc},
+            #{receivablePayable},
+            #{billStandard},
+            #{billQty},
+            #{occurrenceQty},
+            #{cost},
+            #{dateFm},
+            #{dateTo},
+            #{warehouseCode},
+            #{warehouseName},
+            #{orgId}
+        )
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO bms_bill_statistics
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            bill_no,
+            confirm_no,
+            status,
+            settle_model_code,
+            settle_object_code,
+            settle_object_name,
+            settle_method,
+            settle_category,
+            sys_contract_no,
+            contract_no,
+            subcontract_no,
+            bill_module,
+            bill_subject_code,
+            bill_subject_name,
+            bill_category,
+            bill_terms_code,
+            bill_terms_desc,
+            receivable_payable,
+            bill_standard,
+            bill_qty,
+            occurrence_qty,
+            cost,
+            date_fm,
+            date_to,
+            warehouse_code,
+            warehouse_name,
+            org_id
+        ) VALUES
+        <foreach collection="items" item="item" separator=",">
+        (
+            #{item.id},
+            #{item.createBy.id},
+            #{item.createDate},
+            #{item.updateBy.id},
+            #{item.updateDate},
+            #{item.remarks},
+            #{item.delFlag},
+            #{item.recVer},
+            #{item.billNo},
+            #{item.confirmNo},
+            #{item.status},
+            #{item.settleModelCode},
+            #{item.settleObjectCode},
+            #{item.settleObjectName},
+            #{item.settleMethod},
+            #{item.settleCategory},
+            #{item.sysContractNo},
+            #{item.contractNo},
+            #{item.subcontractNo},
+            #{item.billModule},
+            #{item.billSubjectCode},
+            #{item.billSubjectName},
+            #{item.billCategory},
+            #{item.billTermsCode},
+            #{item.billTermsDesc},
+            #{item.receivablePayable},
+            #{item.billStandard},
+            #{item.billQty},
+            #{item.occurrenceQty},
+            #{item.cost},
+            #{item.dateFm},
+            #{item.dateTo},
+            #{item.warehouseCode},
+            #{item.warehouseName},
+            #{item.orgId}
+        )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE bms_bill_statistics
+        SET update_by          = #{updateBy.id},
+            update_date        = #{updateDate},
+            remarks            = #{remarks},
+            rec_ver            = rec_ver + 1,
+            bill_no            = #{billNo},
+            confirm_no         = #{confirmNo},
+            status             = #{status},
+            settle_model_code  = #{settleModelCode},
+            settle_object_code = #{settleObjectCode},
+            settle_object_name = #{settleObjectName},
+            settle_method      = #{settleMethod},
+            settle_category    = #{settleCategory},
+            sys_contract_no    = #{sysContractNo},
+            contract_no        = #{contractNo},
+            subcontract_no     = #{subcontractNo},
+            bill_module        = #{billModule},
+            bill_subject_code  = #{billSubjectCode},
+            bill_subject_name  = #{billSubjectName},
+            bill_category      = #{billCategory},
+            bill_terms_code    = #{billTermsCode},
+            bill_terms_desc    = #{billTermsDesc},
+            receivable_payable = #{receivablePayable},
+            bill_standard      = #{billStandard},
+            bill_qty           = #{billQty},
+            occurrence_qty     = #{occurrenceQty},
+            cost               = #{cost},
+            date_fm            = #{dateFm},
+            date_to            = #{dateTo},
+            warehouse_code     = #{warehouseCode},
+            warehouse_name     = #{warehouseName},
+            org_id             = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_bill_statistics
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_bill_statistics WHERE id = #{id}
+    </delete>
+    <delete id="batchDelete">
+        DELETE FROM bms_bill_statistics WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteByConfirmNo">
+        DELETE FROM bms_bill_statistics WHERE confirm_no = #{confirmNo} AND org_id = #{orgId}
+    </delete>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.finance.entity.extend.BmsBillStatisticsEntity">
+        SELECT
+        <include refid="bmsBillStatisticsColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_bill_statistics a
+        <include refid="bmsBillStatisticsJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <include refid="findPageWhere"/>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.bill_no DESC, a.warehouse_code, a.settle_object_code, a.settle_model_code, a.bill_subject_name
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getTotal" resultType="java.util.HashMap">
+        SELECT sum(ifnull(a.occurrence_qty, 0)) AS "sumOccurrenceQty",
+        sum(ifnull(a.bill_qty, 0))       AS "sumBillQty",
+        sum(ifnull(a.cost, 0))           AS "sumCost"
+        FROM bms_bill_statistics a
+        <include refid="bmsBillStatisticsJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <include refid="findPageWhere"/>
+        </where>
+    </select>
+
+</mapper>

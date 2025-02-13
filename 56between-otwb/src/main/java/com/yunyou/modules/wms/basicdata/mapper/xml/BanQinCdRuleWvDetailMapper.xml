@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdRuleWvDetailMapper">
+    
+	<sql id="banQinCdRuleWvDetailColumns">
+		a.id AS "id",
+		a.rule_code AS "ruleCode",
+		a.line_no AS "lineNo",
+		a.main_code AS "mainCode",
+		a.descr AS "descr",
+		a.is_enable AS "isEnable",
+		a.sql AS "sql",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinCdRuleWvDetailJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinCdRuleWvDetail" >
+		SELECT 
+			<include refid="banQinCdRuleWvDetailColumns"/>
+		FROM cd_rule_wv_detail a
+		<include refid="banQinCdRuleWvDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="getByHeaderId" resultType="BanQinCdRuleWvDetail" >
+        SELECT
+        <include refid="banQinCdRuleWvDetailColumns"/>
+        FROM cd_rule_wv_detail a
+        <include refid="banQinCdRuleWvDetailJoins"/>
+        WHERE a.header_id = #{headerId}
+    </select>
+	
+	<select id="findList" resultType="BanQinCdRuleWvDetail" >
+		SELECT 
+			<include refid="banQinCdRuleWvDetailColumns"/>
+		FROM cd_rule_wv_detail a
+		<include refid="banQinCdRuleWvDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			${dataScope}
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+            <if test="ruleCode != null and ruleCode != ''">
+                AND a.rule_code = #{ruleCode}
+            </if>
+			<if test="isEnable != null and isEnable != ''">
+				AND a.is_enable = #{isEnable}
+			</if>
+		</where>
+		ORDER BY a.line_no
+	</select>
+	
+	<select id="findAllList" resultType="BanQinCdRuleWvDetail" >
+		SELECT 
+			<include refid="banQinCdRuleWvDetailColumns"/>
+		FROM cd_rule_wv_detail a
+		<include refid="banQinCdRuleWvDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_rule_wv_detail(
+			id,
+			rule_code,
+			line_no,
+			main_code,
+			descr,
+			is_enable,
+			`sql`,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			header_id
+		) VALUES (
+			#{id},
+			#{ruleCode},
+			#{lineNo},
+			#{mainCode},
+			#{descr},
+			#{isEnable},
+			#{sql},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cd_rule_wv_detail SET 	
+			rule_code = #{ruleCode},
+			line_no = #{lineNo},
+			main_code = #{mainCode},
+			descr = #{descr},
+			is_enable = #{isEnable},
+			`sql` = #{sql},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_rule_wv_detail SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM cd_rule_wv_detail WHERE id = #{id}
+	</delete>
+    <delete id="deleteByHeaderId">
+        DELETE FROM cd_rule_wv_detail WHERE header_id = #{headerId}
+    </delete>
+	<delete id="remove">
+		DELETE FROM cd_rule_wv_detail WHERE rule_code = #{ruleCode} AND org_id = #{orgId}
+	</delete>
+
+</mapper>

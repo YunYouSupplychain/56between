@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.manager.mapper.TmDemandPlanMapper">
+
+	<sql id="tmDemandPlanHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.plan_order_no AS "planOrderNo",
+		a.owner_code AS "ownerCode",
+		a.order_time AS "orderTime",
+		a.arrival_time AS "arrivalTime",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.status AS "status"
+	</sql>
+
+	<sql id="tmDemandPlanDetailColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.plan_order_no AS "planOrderNo",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.qty AS "qty",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId"
+	</sql>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmDemandPlanEntity" >
+		SELECT
+			b.transport_obj_name AS "ownerName",
+			<include refid="tmDemandPlanHeaderColumns"/>
+		FROM tm_demand_plan_header a
+		LEFT JOIN tm_transport_obj b ON a.owner_code = b.transport_obj_code AND a.base_org_id = b.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		  ${dataScope}
+		<if test="planOrderNo != null and planOrderNo != ''">
+			AND a.plan_order_no LIKE concat(#{planOrderNo}, '%')
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND a.owner_code = #{ownerCode}
+		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
+		<if test="orderTimeFm != null and orderTimeFm != ''">
+			AND a.order_time &gt;= #{orderTimeFm}
+		</if>
+		<if test="orderTimeTo != null and orderTimeTo != ''">
+			AND a.order_time &lt;= #{orderTimeTo}
+		</if>
+		<if test="arrivalTimeFm != null and arrivalTimeFm != ''">
+			AND a.arrival_time &gt;= #{arrivalTimeFm}
+		</if>
+		<if test="arrivalTimeTo != null and arrivalTimeTo != ''">
+			AND a.arrival_time &lt;= #{arrivalTimeTo}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findHeaderList" resultType="com.yunyou.modules.tms.order.entity.extend.TmDemandPlanEntity" >
+		SELECT
+			b.transport_obj_name AS "ownerName",
+			<include refid="tmDemandPlanHeaderColumns"/>
+		FROM tm_demand_plan_header a
+		LEFT JOIN tm_transport_obj b ON a.owner_code = b.transport_obj_code AND a.base_org_id = b.org_id
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		${dataScope}
+		<if test="planOrderNo != null and planOrderNo != ''">
+			AND a.plan_order_no = #{planOrderNo}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND a.owner_code = #{ownerCode}
+		</if>
+		<if test="orderTimeFm != null and orderTimeFm != ''">
+			AND a.order_time &gt;= #{orderTimeFm}
+		</if>
+		<if test="orderTimeTo != null and orderTimeTo != ''">
+			AND a.order_time &lt;= #{orderTimeTo}
+		</if>
+		<if test="arrivalTimeFm != null and arrivalTimeFm != ''">
+			AND a.arrival_time &gt;= #{arrivalTimeFm}
+		</if>
+		<if test="arrivalTimeTo != null and arrivalTimeTo != ''">
+			AND a.arrival_time &lt;= #{arrivalTimeTo}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+        <if test="status != null and status != ''">
+            AND a.status = #{status}
+        </if>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.tms.order.entity.extend.TmDemandPlanEntity">
+		SELECT
+			b.transport_obj_name AS "ownerName",
+			<include refid="tmDemandPlanHeaderColumns"/>
+		FROM tm_demand_plan_header a
+		LEFT JOIN tm_transport_obj b ON a.owner_code = b.transport_obj_code AND a.base_org_id = b.org_id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findDetailList" resultType="com.yunyou.modules.tms.order.entity.extend.TmDemandPlanDetailEntity" >
+		SELECT
+		    tto.transport_obj_name AS "ownerName",
+			b.sku_name AS "skuName",
+			<include refid="tmDemandPlanDetailColumns"/>
+		FROM tm_demand_plan_Detail a
+		LEFT JOIN tm_item b ON a.owner_code = b.owner_code AND a.sku_code = b.sku_code AND a.base_org_id = b.org_id
+		LEFT JOIN tm_transport_obj tto ON a.owner_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+		WHERE 1 = 1
+		<if test="planOrderNo != null and planOrderNo != ''">
+			AND a.plan_order_no = #{planOrderNo}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND a.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND a.sku_code = #{skuCode}
+		</if>
+	</select>
+
+</mapper>

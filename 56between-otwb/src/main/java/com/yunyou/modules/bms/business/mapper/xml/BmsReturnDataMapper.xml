@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.business.mapper.BmsReturnDataMapper">
+
+    <sql id="bmsReturnDataColumns">
+        a.id AS "id",
+        a.create_by AS "createBy.id",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        a.update_date AS "updateDate",
+        a.del_flag AS "delFlag",
+        a.order_no AS "orderNo",
+        a.order_date AS "orderDate",
+        a.customer_no AS "customerNo",
+        a.dispatch_no AS "dispatchNo",
+        a.consignee_code AS "consigneeCode",
+        a.consignee_name AS "consigneeName",
+        a.carrier_code AS "carrierCode",
+        a.carrier_name AS "carrierName",
+        a.car_type AS "carType",
+        a.vehicle_no AS "vehicleNo",
+        a.owner_code AS "ownerCode",
+        a.owner_name AS "ownerName",
+        a.supplier_code AS "supplierCode",
+        a.supplier_name AS "supplierName",
+        a.sku_code AS "skuCode",
+        a.sku_name AS "skuName",
+        a.sku_class AS "skuClass",
+        a.order_qty AS "orderQty",
+        a.order_qty_cs AS "orderQtyCs",
+        a.order_qty_pl AS "orderQtyPl",
+        a.receipt_qty AS "receiptQty",
+        a.receipt_qty_cs AS "receiptQtyCs",
+        a.receipt_qty_pl AS "receiptQtyPl",
+        a.returned_qty AS "returnedQty",
+        a.returned_qty_cs AS "returnedQtyCs",
+        a.returned_qty_pl AS "returnedQtyPl",
+        a.weight AS "weight",
+        a.volume AS "volume",
+        a.exception_type AS "exceptionType",
+        a.exception_reason AS "exceptionReason",
+        a.org_id AS "orgId",
+        a.data_sources AS "dataSources",
+        a.is_fee AS "isFee",
+        a.order_no_a AS "orderNoA",
+        a.project_code AS "projectCode",
+        a.project_name AS "projectName"
+    </sql>
+
+    <sql id="extraColumns">
+        so.name AS "orgName"
+    </sql>
+
+    <sql id="bmsReturnDataJoins">
+        LEFT JOIN sys_office so ON a.org_id = so.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.business.entity.BmsReturnData">
+        SELECT
+        <include refid="bmsReturnDataColumns"/>
+        FROM bms_return_data a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.business.entity.BmsReturnData">
+        SELECT
+        <include refid="bmsReturnDataColumns"/>
+        FROM bms_return_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.business.entity.BmsReturnData">
+        SELECT
+        <include refid="bmsReturnDataColumns"/>
+        FROM bms_return_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_return_data
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            del_flag,
+            order_no,
+            order_date,
+            customer_no,
+            dispatch_no,
+            consignee_code,
+            consignee_name,
+            carrier_code,
+            carrier_name,
+            car_type,
+            vehicle_no,
+            owner_code,
+            owner_name,
+            supplier_code,
+            supplier_name,
+            sku_code,
+            sku_name,
+            sku_class,
+            order_qty,
+            order_qty_cs,
+            order_qty_pl,
+            receipt_qty,
+            receipt_qty_cs,
+            receipt_qty_pl,
+            returned_qty,
+            returned_qty_cs,
+            returned_qty_pl,
+            weight,
+            volume,
+            exception_type,
+            exception_reason,
+            org_id,
+            data_sources,
+            is_fee,
+            order_no_a,
+            project_code,
+            project_name
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{delFlag},
+            #{orderNo},
+            #{orderDate},
+            #{customerNo},
+            #{dispatchNo},
+            #{consigneeCode},
+            #{consigneeName},
+            #{carrierCode},
+            #{carrierName},
+            #{carType},
+            #{vehicleNo},
+            #{ownerCode},
+            #{ownerName},
+            #{supplierCode},
+            #{supplierName},
+            #{skuCode},
+            #{skuName},
+            #{skuClass},
+            #{orderQty},
+            #{orderQtyCs},
+            #{orderQtyPl},
+            #{receiptQty},
+            #{receiptQtyCs},
+            #{receiptQtyPl},
+            #{returnedQty},
+            #{returnedQtyCs},
+            #{returnedQtyPl},
+            #{weight},
+            #{volume},
+            #{exceptionType},
+            #{exceptionReason},
+            #{orgId},
+            #{dataSources},
+            #{isFee},
+            #{orderNoA},
+            #{projectCode},
+            #{projectName}
+        )
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO bms_return_data(
+        id,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        del_flag,
+        order_no,
+        order_date,
+        customer_no,
+        dispatch_no,
+        consignee_code,
+        consignee_name,
+        carrier_code,
+        carrier_name,
+        car_type,
+        vehicle_no,
+        owner_code,
+        owner_name,
+        supplier_code,
+        supplier_name,
+        sku_code,
+        sku_name,
+        sku_class,
+        order_qty,
+        order_qty_cs,
+        order_qty_pl,
+        receipt_qty,
+        receipt_qty_cs,
+        receipt_qty_pl,
+        returned_qty,
+        returned_qty_cs,
+        returned_qty_pl,
+        weight,
+        volume,
+        exception_type,
+        exception_reason,
+        org_id,
+        data_sources,
+        is_fee,
+        order_no_a,
+        project_code,
+        project_name
+        ) VALUES
+        <foreach collection="items" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.createBy.id},
+            #{item.createDate},
+            #{item.updateBy.id},
+            #{item.updateDate},
+            #{item.delFlag},
+            #{item.orderNo},
+            #{item.orderDate},
+            #{item.customerNo},
+            #{item.dispatchNo},
+            #{item.consigneeCode},
+            #{item.consigneeName},
+            #{item.carrierCode},
+            #{item.carrierName},
+            #{item.carType},
+            #{item.vehicleNo},
+            #{item.ownerCode},
+            #{item.ownerName},
+            #{item.supplierCode},
+            #{item.supplierName},
+            #{item.skuCode},
+            #{item.skuName},
+            #{item.skuClass},
+            #{item.orderQty},
+            #{item.orderQtyCs},
+            #{item.orderQtyPl},
+            #{item.receiptQty},
+            #{item.receiptQtyCs},
+            #{item.receiptQtyPl},
+            #{item.returnedQty},
+            #{item.returnedQtyCs},
+            #{item.returnedQtyPl},
+            #{item.weight},
+            #{item.volume},
+            #{item.exceptionType},
+            #{item.exceptionReason},
+            #{item.orgId},
+            #{item.dataSources},
+            #{item.isFee},
+            #{item.orderNoA},
+            #{item.projectCode},
+            #{item.projectName}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE bms_return_data
+        SET update_by = #{updateBy.id},
+            update_date = #{updateDate},
+            del_flag = #{delFlag},
+            order_no = #{orderNo},
+            order_date = #{orderDate},
+            customer_no = #{customerNo},
+            dispatch_no = #{dispatchNo},
+            consignee_code = #{consigneeCode},
+            consignee_name = #{consigneeName},
+            carrier_code = #{carrierCode},
+            carrier_name = #{carrierName},
+            car_type = #{carType},
+            vehicle_no = #{vehicleNo},
+            owner_code = #{ownerCode},
+            owner_name = #{ownerName},
+            supplier_code = #{supplierCode},
+            supplier_name = #{supplierName},
+            sku_code = #{skuCode},
+            sku_name = #{skuName},
+            sku_class = #{skuClass},
+            order_qty = #{orderQty},
+            order_qty_cs = #{orderQtyCs},
+            order_qty_pl = #{orderQtyPl},
+            receipt_qty = #{receiptQty},
+            receipt_qty_cs = #{receiptQtyCs},
+            receipt_qty_pl = #{receiptQtyPl},
+            returned_qty = #{returnedQty},
+            returned_qty_cs = #{returnedQtyCs},
+            returned_qty_pl = #{returnedQtyPl},
+            weight = #{weight},
+            volume = #{volume},
+            exception_type = #{exceptionType},
+            exception_reason = #{exceptionReason},
+            org_id = #{orgId},
+            data_sources = #{dataSources},
+            is_fee = #{isFee},
+            order_no_a = #{orderNoA},
+            project_code = #{projectCode},
+            project_name = #{projectName}
+        WHERE id = #{id}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_return_data
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_return_data WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByCondition">
+        DELETE FROM bms_return_data WHERE
+        <![CDATA[order_date >= #{fmDate}]]>
+        <![CDATA[AND order_date <= #{toDate}]]>
+        <if test="dataSources != null and dataSources != ''">
+            AND data_sources = #{dataSources}
+        </if>
+        <if test="orgId != null and orgId != ''">
+            AND org_id = #{orgId}
+        </if>
+    </delete>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.business.entity.extend.BmsReturnDataEntity">
+        SELECT
+        <include refid="bmsReturnDataColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_return_data a
+        <include refid="bmsReturnDataJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="orderDateFm != null">
+                AND a.order_date &gt;= #{orderDateFm}
+            </if>
+            <if test="orderDateTo != null">
+                AND a.order_date &lt;= #{orderDateTo}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no LIKE concat('%', #{orderNo}, '%')
+            </if>
+            <if test="customerNo != null and customerNo != ''">
+                AND a.customer_no LIKE concat('%', #{customerNo}, '%')
+            </if>
+            <if test="consigneeCode != null and consigneeCode != ''">
+                AND a.consignee_code LIKE concat('%', #{consigneeCode}, '%')
+            </if>
+            <if test="consigneeName != null and consigneeName != ''">
+                AND a.consignee_name LIKE concat('%', #{consigneeName}, '%')
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code LIKE concat('%', #{supplierCode}, '%')
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                AND a.supplier_name LIKE concat('%', #{supplierName}, '%')
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code LIKE concat('%', #{ownerCode}, '%')
+            </if>
+            <if test="ownerName != null and ownerName != ''">
+                AND a.owner_name LIKE concat('%', #{ownerName}, '%')
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code LIKE concat('%', #{skuCode}, '%')
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name LIKE concat('%', #{skuName}, '%')
+            </if>
+            <if test="isFee != null and isFee != ''">
+                AND a.is_fee = #{isFee}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+    <select id="findCalcData" resultType="com.yunyou.modules.bms.business.entity.BmsReturnData">
+        select * from bms_return_data <where>${sql}</where>
+    </select>
+</mapper>

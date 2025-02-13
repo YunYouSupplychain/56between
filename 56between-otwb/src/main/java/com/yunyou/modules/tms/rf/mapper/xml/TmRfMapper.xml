@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.rf.mapper.TmRfMapper">
+
+	<select id="findCanLoadLabelByStackBarCode" resultType="com.yunyou.modules.tms.order.entity.extend.TmTransportOrderLabelEntity">
+		SELECT
+			a.id AS "id",
+			a.create_by AS "createBy.id",
+			a.create_date AS "createDate",
+			a.update_by AS "updateBy.id",
+			a.update_date AS "updateDate",
+			a.remarks AS "remarks",
+			a.del_flag AS "delFlag",
+			a.transport_no AS "transportNo",
+			a.customer_no AS "customerNo",
+			a.label_no AS "labelNo",
+			a.status AS "status",
+			a.weight AS "weight",
+			a.cubic AS "cubic",
+			a.org_id AS "orgId",
+			a.rec_ver AS "recVer",
+			a.base_org_id AS "baseOrgId",
+			a.sign_by AS "signBy",
+			a.sign_time AS "signTime",
+			a.sign_remarks AS "signRemarks",
+			a.receipt_by AS "receiptBy",
+			a.receipt_time AS "receiptTime",
+			a.receipt_remarks AS "receiptRemarks",
+			a.owner_code AS "ownerCode",
+			a.line_no AS "lineNo",
+			a.sku_code AS "skuCode",
+			a.qty AS "qty",
+			a.def1 AS "def1",
+			a.def2 AS "def2",
+			a.def3 AS "def3",
+			a.def4 AS "def4",
+			a.def5 AS "def5",
+			a.def6 AS "def6",
+			a.def7 AS "def7",
+			a.def8 AS "def8",
+			a.def9 AS "def9",
+			a.def10 AS "def10"
+		FROM tm_transport_order_label a
+		WHERE a.status IN ('00', '10')
+		AND NOT EXISTS(SELECT 1 FROM tm_dispatch_order_label t WHERE a.transport_no = t.transport_no AND a.label_no = t.label_no AND a.base_org_id = t.base_org_id)
+		AND a.org_id = #{orgId}
+		AND a.def1 IN
+		<foreach collection="stackBarCodes" item="stackBarCode" index="index" separator="," open="(" close=")">
+			#{stackBarCode}
+		</foreach>
+	</select>
+
+	<select id="findDispatchLabelByStackBarCode" resultType="com.yunyou.modules.tms.order.entity.extend.TmDispatchOrderLabelEntity" >
+		SELECT
+			a.id AS "id",
+			a.create_by AS "createBy.id",
+			a.create_date AS "createDate",
+			a.update_by AS "updateBy.id",
+			a.update_date AS "updateDate",
+			a.remarks AS "remarks",
+			a.del_flag AS "delFlag",
+			a.label_no AS "labelNo",
+			a.dispatch_no AS "dispatchNo",
+			a.transport_no AS "transportNo",
+			a.customer_no AS "customerNo",
+			a.receive_ship AS "receiveShip",
+			a.org_id AS "orgId",
+			a.rec_ver AS "recVer",
+			a.base_org_id AS "baseOrgId",
+			a.dispatch_site_outlet_code AS "dispatchSiteOutletCode",
+			a.status AS "status",
+			a.cabin AS "cabin",
+			a.owner_code AS "ownerCode",
+			a.sku_code AS "skuCode",
+			a.qty AS "qty",
+			a.weight AS "weight",
+			a.cubic AS "cubic",
+			a.store_dispatch_no AS "storeDispatchNo",
+			a.def1 AS "def1",
+			a.def2 AS "def2",
+			a.def3 AS "def3",
+			a.def4 AS "def4",
+			a.def5 AS "def5",
+			a.def6 AS "def6",
+			a.def7 AS "def7",
+			a.def8 AS "def8",
+			a.def9 AS "def9",
+			a.def10 AS "def10",
+			b.principal_code     AS "principalCode",
+			c.transport_obj_name AS "principalName",
+			b.customer_code      AS "customerCode",
+			d.transport_obj_name AS "customerName",
+			b.ship_code			 AS "shipCode",
+			f.transport_obj_name AS "shipName",
+			b.consignee_code	 AS "consigneeCode",
+			e.transport_obj_name AS "consigneeName",
+			tdoh.car_no AS "carNo"
+		FROM tm_dispatch_order_label a
+		INNER JOIN tm_transport_order_label t ON a.transport_no = t.transport_no AND a.label_no = t.label_no AND a.base_org_id = t.base_org_id
+		LEFT JOIN tm_transport_order_header b ON a.transport_no = b.transport_no AND a.base_org_id = b.base_org_id
+		LEFT JOIN tm_transport_obj c ON b.principal_code = c.transport_obj_code AND b.base_org_id = c.org_id
+		LEFT JOIN tm_transport_obj d ON b.customer_code = d.transport_obj_code AND b.base_org_id = d.org_id
+		LEFT JOIN tm_transport_obj e ON e.transport_obj_code = b.consignee_code AND e.org_id = b.base_org_id
+		LEFT JOIN tm_transport_obj f ON f.transport_obj_code = b.ship_code AND f.org_id = b.base_org_id
+		LEFT JOIN tm_dispatch_order_header tdoh ON a.dispatch_no = tdoh.dispatch_no AND a.org_id = tdoh.org_id
+		WHERE a.receive_ship = 'S'
+		AND t.org_id = #{orgId}
+		AND t.def1 = #{stackBarCode}
+	</select>
+</mapper>

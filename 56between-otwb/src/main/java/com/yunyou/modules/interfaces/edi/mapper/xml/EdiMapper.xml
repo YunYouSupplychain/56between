@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.interfaces.edi.mapper.EdiMapper">
+
+	<select id="findInvEdi" resultType="com.yunyou.modules.interfaces.edi.entity.EdiInvInfo">
+		SELECT will.org_id                                                                                                      AS orgId,
+			   so.name                                                                                                          AS warehouse,
+			   will.owner_code                                                                                                  AS ownerCode,
+			   ec.ebcu_name_cn                                                                                                  AS ownerName,
+			   will.sku_code                                                                                                    AS skuCode,
+			   cws.sku_name                                                                                                     AS skuName,
+			   cws.spec                                                                                                         AS skuSpec,
+			   cws.shelf_life                                                                                                   AS shelfLife,
+			   cws.qty_unit                                                                                                     AS qtyUnit,
+			   will.qty - will.qty_hold - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out                                   AS qtyEa,
+			   (will.qty - will.qty_hold - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out) / IFNULL(cwpr.cdpr_quantity, 1) AS qtyBox,
+			   will.loc_code                                                                                                    AS locCode,
+			   (CASE WHEN will.qty_hold > 0 THEN '1' ELSE '0' END)                                                              AS lockStatus,
+			   DATEDIFF(wila.lot_att02, curdate())                                                                              AS remainDays,
+			   will.lot_num                                                                                                     AS lotNum,
+			   wila.lot_att01                                                                                                   AS lotAtt01,
+			   wila.lot_att02                                                                                                   AS lotAtt02,
+			   wila.lot_att03                                                                                                   AS lotAtt03,
+			   wila.lot_att04                                                                                                   AS lotAtt04,
+			   wila.lot_att05                                                                                                   AS lotAtt05,
+			   wila.lot_att06                                                                                                   AS lotAtt06,
+			   wila.lot_att07                                                                                                   AS lotAtt07,
+			   wila.lot_att08                                                                                                   AS lotAtt08,
+			   wila.lot_att09                                                                                                   AS lotAtt09,
+			   wila.lot_att10                                                                                                   AS lotAtt10,
+			   wila.lot_att11                                                                                                   AS lotAtt11,
+			   wila.lot_att12                                                                                                   AS lotAtt12
+		FROM wm_inv_lot_loc will
+			 INNER JOIN sys_office so ON will.org_id = so.id
+			 LEFT JOIN wm_inv_lot_att wila ON will.lot_num = wila.lot_num AND will.org_id = wila.org_id
+			 LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+			 LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+			 LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+			 LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = 'CS' AND cwpr.org_id = cwp.org_id
+		<where>
+			<if test="orgId != null and orgId != ''">
+				AND will.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	<select id="findPlanInvEdi" resultType="com.yunyou.modules.interfaces.edi.entity.EdiPlanInvInfo">
+		select a.owner_code                       as ownerCode,
+			   ec.ebcu_name_cn                    as ownerName,
+			   so.name                            as warehouse,
+			   a.sku_code                         as skuCode,
+			   a.sku_name                         as skuName,
+			   a.sku_spec                         as skuSpec,
+			   'EA'                               as uom,
+			   SUM(a.qty)                         as qtyEa,
+			   SUM(a.cs_qty)                      as qtyBox,
+			   IF(SUM(a.hold_qty) > 0, '1', '0')  as lockStatus,
+			   SUM(a.available_qty)               as qtyAvailable,
+			   SUM(a.available_qty + a.un_in_qty) as qtyPlan,
+			   a.org_id                           as org_id
+		from (select wil.owner_code                                                                                     as owner_code,
+					 wil.sku_code                                                                                       as sku_code,
+					 cws.sku_name                                                                                       as sku_name,
+					 cws.spec                                                                                           as sku_spec,
+					 wil.qty                                                                                            as qty,
+					 ceiling(wil.qty / if(cwpr.cdpr_quantity is null or cwpr.cdpr_quantity = 0, 1, cwpr.cdpr_quantity)) as cs_qty,
+					 wil.qty - wil.qty_pk - wil.qty_alloc - wil.qty_prealloc                                            as available_qty,
+					 wil.qty_hold                                                                                       as hold_qty,
+					 0                                                                                                  as un_in_qty,
+					 wil.org_id                                                                                         as org_id
+			  from wm_inv_lot wil
+				   left join cd_wh_sku cws on wil.owner_code = cws.owner_code and wil.sku_code = cws.sku_code and wil.org_id = cws.org_id
+				   left join cd_wh_package cwp on cws.pack_code = cwp.cdpa_code and cws.org_id = cwp.org_id
+				   left join cd_wh_package_relation cwpr on cwp.pm_code = cwpr.cdpr_cdpa_pm_code and cwp.org_id = cwpr.org_id and cwpr.cdpr_unit_level = 'CS'
+			  <where>
+				<if test="orgId != null and orgId != ''">
+					and wil.org_id = #{orgId}
+				</if>
+			  </where>
+			  union all
+			  select wad.owner_code                  as owner_code,
+					 wad.sku_code                    as sku_code,
+					 cws.sku_name                    as sku_name,
+					 cws.spec                        as sku_spec,
+					 0                               as qty,
+					 0                               as cs_qty,
+					 0                               as available_qty,
+					 0                               as hold_qty,
+					 wad.qty_asn_ea - wad.qty_rcv_ea as un_in_qty,
+					 wad.org_id                      as org_id
+			  from wm_asn_detail wad
+				   left join cd_wh_sku cws on wad.owner_code = cws.owner_code and wad.sku_code = cws.sku_code and wad.org_id = cws.org_id
+			  where wad.status &lt; '20'
+				and wad.qty_asn_ea - wad.qty_rcv_ea &gt; 0
+				<if test="orgId != null and orgId != ''">
+					and wad.org_id = #{orgId}
+				</if>
+			  union all
+			  select oth.owner     as owner_code,
+					 otd.sku_code  as sku_code,
+					 cws.sku_name  as sku_name,
+					 cws.spec      as sku_spec,
+					 0             as qty,
+					 0             as cs_qty,
+					 0             as available_qty,
+					 0             as hold_qty,
+					 otd.qty       as un_in_qty,
+					 oth.warehouse as org_id
+			  from om_task_header oth
+				   inner join om_task_detail otd on oth.id = otd.header_id and oth.org_id = otd.org_id
+				   left join cd_wh_sku cws on oth.owner = cws.owner_code and otd.sku_code = cws.sku_code and oth.warehouse = cws.org_id
+			  where oth.status &lt;= '20'
+				and otd.qty &gt; 0
+				<if test="orgId != null and orgId != ''">
+					and oth.warehouse = #{orgId}
+				</if>
+			  union all
+			  select och.owner,
+					 ocd.sku_code,
+					 cws.sku_name                      as sku_name,
+					 cws.spec                          as sku_spec,
+					 0                                 as qty,
+					 0                                 as cs_qty,
+					 0                                 as available_qty,
+					 0                                 as hold_qty,
+					 ocd.qty - IFNULL(ocd.task_qty, 0) as un_in_qty,
+					 och.warehouse                     as org_id
+			  from om_chain_header och
+				   inner join om_chain_detail ocd on och.id = ocd.header_id and och.org_id = ocd.org_id
+				   left join cd_wh_sku cws on och.owner = cws.owner_code and ocd.sku_code = cws.sku_code and och.warehouse = cws.org_id
+			  where och.status in ('30', '35')
+				and ocd.qty - IFNULL(ocd.task_qty, 0) &gt; 0
+				<if test="orgId != null and orgId != ''">
+					and och.warehouse = #{orgId}
+				</if>
+			 ) a
+			 left join eb_customer ec on a.owner_code = ec.ebcu_customer_no and a.org_id = ec.org_id
+			 left join sys_office so on a.org_id = so.id
+		group by a.owner_code, a.sku_code, a.org_id
+	</select>
+
+</mapper>

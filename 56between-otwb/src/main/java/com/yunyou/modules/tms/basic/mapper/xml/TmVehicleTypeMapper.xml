@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.basic.mapper.TmVehicleTypeMapper">
+    
+	<sql id="tmVehicleTypeColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.remarks AS "remarks",
+		a.code AS "code",
+		a.name AS "name",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="tmVehicleTypeJoins">
+		
+	</sql>
+
+    <select id="get" resultType="TmVehicleType" >
+		SELECT 
+			<include refid="tmVehicleTypeColumns"/>
+		FROM tm_vehicle_type a
+		<include refid="tmVehicleTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmVehicleType" >
+		SELECT 
+			<include refid="tmVehicleTypeColumns"/>
+		FROM tm_vehicle_type a
+		<include refid="tmVehicleTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmVehicleType" >
+		SELECT 
+			<include refid="tmVehicleTypeColumns"/>
+		FROM tm_vehicle_type a
+		<include refid="tmVehicleTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_vehicle_type(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			code,
+			name,
+			org_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{code},
+			#{name},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_vehicle_type
+		SET update_by   = #{updateBy.id},
+			update_date = #{updateDate},
+			del_flag    = #{delFlag},
+			remarks     = #{remarks},
+			code        = #{code},
+			name        = #{name},
+			org_id      = #{orgId},
+			rec_ver     = rec_ver + 1
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_vehicle_type SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_vehicle_type WHERE id = #{id}
+	</delete>
+	<delete id="removeByNo">
+		DELETE FROM tm_vehicle_type WHERE code = #{code} AND org_id = #{orgId}
+	</delete>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.basic.entity.TmVehicleType" >
+		SELECT
+		<include refid="tmVehicleTypeColumns"/>
+		FROM tm_vehicle_type a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="code != null and code != ''">
+				AND a.code LIKE concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%', #{name}, '%')
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.tms.basic.entity.TmVehicleType" >
+		SELECT
+		<include refid="tmVehicleTypeColumns"/>
+		FROM tm_vehicle_type a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="code != null and code != ''">
+				AND a.code LIKE concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%', #{name}, '%')
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.code LIKE concat('%', #{codeAndName}, '%')
+					or a.name LIKE concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="getByNo" resultType="com.yunyou.modules.tms.basic.entity.TmVehicleType">
+        SELECT
+        <include refid="tmVehicleTypeColumns"/>
+        FROM tm_vehicle_type a
+        WHERE a.del_flag = '0'
+         AND a.code = #{code}
+         AND a.org_id = #{orgId}
+    </select>
+
+</mapper>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.weigh.mapper.BanQinWmWeighHistoryMapper">
+    
+	<sql id="banQinWmWeighHistoryColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.box_num AS "boxNum",
+		a.org_id AS "orgId",
+		a.tare_qty AS "tareQty",
+		a.weigh_qty AS "weighQty",
+		a.weigh_time AS "weighTime",
+		a.device_no AS "deviceNo",
+		a.handle_action AS "handleAction",
+		a.handle_msg AS "handleMsg",
+		a.order_no AS "orderNo",
+		a.alloc_id AS "allocId",
+		a.customer_order_no AS "customerOrderNo",
+		a.business_no AS "businessNo",
+		a.chain_no AS "chainNo",
+		a.task_no AS "taskNo",
+		a.external_no AS "externalNo",
+		a.wave_no AS "waveNo",
+		a.owner_code AS "ownerCode",
+		a.owner_name AS "ownerName",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+		a.case_no AS "caseNo",
+		a.rec_ver AS "recVer"
+	</sql>
+	
+	<sql id="banQinWmWeighHistoryJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmWeighHistory" >
+		SELECT 
+			<include refid="banQinWmWeighHistoryColumns"/>
+		FROM wm_weigh_history a
+		<include refid="banQinWmWeighHistoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmWeighHistory" >
+		SELECT 
+			<include refid="banQinWmWeighHistoryColumns"/>
+		FROM wm_weigh_history a
+		<include refid="banQinWmWeighHistoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmWeighHistory" >
+		SELECT 
+			<include refid="banQinWmWeighHistoryColumns"/>
+		FROM wm_weigh_history a
+		<include refid="banQinWmWeighHistoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_weigh_history(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			box_num,
+			org_id,
+			tare_qty,
+			weigh_qty,
+			weigh_time,
+			device_no,
+			handle_action,
+			handle_msg,
+			order_no,
+			alloc_id,
+			customer_order_no,
+			business_no,
+			chain_no,
+			task_no,
+			external_no,
+			wave_no,
+			owner_code,
+			owner_name,
+			sku_code,
+			sku_name,
+			case_no,
+			rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{boxNum},
+			#{orgId},
+			#{tareQty},
+			#{weighQty},
+			#{weighTime},
+			#{deviceNo},
+			#{handleAction},
+			#{handleMsg},
+			#{orderNo},
+			#{allocId},
+			#{customerOrderNo},
+			#{businessNo},
+			#{chainNo},
+			#{taskNo},
+			#{externalNo},
+			#{waveNo},
+			#{ownerCode},
+			#{ownerName},
+			#{skuCode},
+			#{skuName},
+			#{caseNo},
+			#{recVer}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_weigh_history SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			box_num = #{boxNum},
+			org_id = #{orgId},
+			tare_qty = #{tareQty},
+			weigh_qty = #{weighQty},
+			weigh_time = #{weighTime},
+			device_no = #{deviceNo},
+			handle_action = #{handleAction},
+			handle_msg = #{handleMsg},
+			order_no = #{orderNo},
+			alloc_id = #{allocId},
+			customer_order_no = #{customerOrderNo},
+			business_no = #{businessNo},
+			chain_no = #{chainNo},
+			task_no = #{taskNo},
+			external_no = #{externalNo},
+			wave_no = #{waveNo},
+			owner_code = #{ownerCode},
+			owner_name = #{ownerName},
+			sku_code = #{skuCode},
+			sku_name = #{skuName},
+			case_no = #{caseNo},
+			rec_ver = #{rever} + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_weigh_history
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_weigh_history SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

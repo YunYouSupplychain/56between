@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.manager.mapper.TmDispatchPlanMapper">
+
+	<sql id="tmDispatchPlanHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.plan_no AS "planNo",
+		a.dispatch_time AS "dispatchTime",
+		a.carrier_code AS "carrierCode",
+		a.dispatch_outlet_code AS "dispatchOutletCode",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.status AS "status"
+	</sql>
+
+	<sql id="tmDispatchPlanDetailColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.plan_no AS "planNo",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.arrival_time AS "arrivalTime",
+		a.plan_qty AS "planQty",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.is_dispatch AS "isDispatch"
+	</sql>
+
+	<sql id="tmDispatchPlanConfigColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.plan_no AS "planNo",
+		a.vehicle_no AS "vehicleNo",
+		a.trip AS "trip",
+		a.pick_up_point AS "pickUpPoint",
+		a.delivery_point AS "deliveryPoint",
+		a.sku_code AS "skuCode",
+		a.qty AS "qty",
+		a.ware_room AS "wareRoom",
+		a.driver AS "driver",
+		a.escort AS "escort",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId",
+		a.transport_no AS "transportNo",
+		a.dispatch_no AS "dispatchNo"
+	</sql>
+	
+	<select id="getEntity" resultType="com.yunyou.modules.tms.order.entity.extend.TmDispatchPlanEntity">
+		SELECT
+			createBy.name AS "createBy.name",
+			updateBy.name AS "updateBy.name",
+			carrier.transport_obj_name AS "carrierName",
+			outlet.transport_obj_name AS "dispatchOutletName",
+			<include refid="tmDispatchPlanHeaderColumns"/>
+		FROM tm_dispatch_plan_header a
+		LEFT JOIN tm_transport_obj carrier ON a.carrier_code = carrier.transport_obj_code AND a.base_org_id = carrier.org_id
+		LEFT JOIN tm_transport_obj outlet ON a.dispatch_outlet_code = outlet.transport_obj_code AND a.base_org_id = outlet.org_id
+		LEFT JOIN sys_user createBy ON createBy.id = a.create_by
+		LEFT JOIN sys_user updateBy ON updateBy.id = a.create_by
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getConfigEntity" resultType="com.yunyou.modules.tms.order.entity.extend.TmDispatchPlanConfigEntity">
+		SELECT
+			<include refid="tmDispatchPlanConfigColumns"/>
+		FROM tm_dispatch_plan_config a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmDispatchPlanEntity">
+		SELECT
+			createBy.name AS "createBy.name",
+			updateBy.name AS "updateBy.name",
+			carrier.transport_obj_name AS "carrierName",
+			outlet.transport_obj_name AS "dispatchOutletName",
+			<include refid="tmDispatchPlanHeaderColumns"/>
+		FROM tm_dispatch_plan_header a
+		LEFT JOIN tm_transport_obj carrier ON a.carrier_code = carrier.transport_obj_code AND a.base_org_id = carrier.org_id
+		LEFT JOIN tm_transport_obj outlet ON a.dispatch_outlet_code = outlet.transport_obj_code AND a.base_org_id = outlet.org_id
+		LEFT JOIN sys_user createBy ON createBy.id = a.create_by
+		LEFT JOIN sys_user updateBy ON updateBy.id = a.create_by
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		  ${dataScope}
+		<if test="planNo != null and planNo != ''">
+			AND a.plan_no LIKE concat(#{planNo}, '%')
+		</if>
+		<if test="dispatchTimeFm != null and dispatchTimeFm != ''">
+			AND a.dispatch_time &gt;= #{dispatchTimeFm}
+		</if>
+		<if test="dispatchTimeTo != null and dispatchTimeTo != ''">
+			AND a.dispatch_time &lt;= #{dispatchTimeTo}
+		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
+		<if test="carrierCode != null and carrierCode != ''">
+			AND a.carrier_code = #{carrierCode}
+		</if>
+		<if test="createBy.id != null and createBy.id != ''">
+			AND a.create_by = #{createBy.id}
+		</if>
+		<if test="createDateFm != null and createDateFm !=''">
+			<![CDATA[ AND a.create_date >= #{createDateFm} ]]>
+		</if>
+		<if test="createDateTo != null and createDateTo !=''">
+			<![CDATA[ AND a.create_date <= #{createDateTo} ]]>
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findHeaderList" resultType="com.yunyou.modules.tms.order.entity.extend.TmDispatchPlanEntity">
+		SELECT
+			createBy.name AS "createBy.name",
+			updateBy.name AS "updateBy.name",
+			<include refid="tmDispatchPlanHeaderColumns"/>
+		FROM tm_dispatch_plan_header a
+		LEFT JOIN sys_user createBy ON createBy.id = a.create_by
+		LEFT JOIN sys_user updateBy ON updateBy.id = a.create_by
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		${dataScope}
+		<if test="planNo != null and planNo != ''">
+			AND a.plan_no = #{planNo}
+		</if>
+		<if test="dispatchTimeFm != null and dispatchTimeFm != ''">
+			AND a.dispatch_time &gt;= #{dispatchTimeFm}
+		</if>
+		<if test="dispatchTimeTo != null and dispatchTimeTo != ''">
+			AND a.dispatch_time &lt;= #{dispatchTimeTo}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+	</select>
+
+	<select id="findDetailList" resultType="com.yunyou.modules.tms.order.entity.extend.TmDispatchPlanDetailEntity" >
+		SELECT
+			tto.transport_obj_name AS "ownerName",
+			tto.route_id AS "lineCode",
+			line.name AS "lineName",
+			b.sku_name AS "skuName",
+			b.sku_type AS "skuType",
+		    sdv.label AS "skuTypeDesc",
+		    tto.classification AS "classification",
+			<include refid="tmDispatchPlanDetailColumns"/>
+		FROM tm_dispatch_plan_Detail a
+		LEFT JOIN tm_item b ON a.owner_code = b.owner_code AND a.sku_code = b.sku_code AND a.base_org_id = b.org_id
+		LEFT JOIN tm_transport_obj tto ON a.owner_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+		LEFT JOIN tm_business_route line ON tto.route_id = line.code AND tto.org_id = line.org_id
+		LEFT JOIN sys_dict_type sdt ON sdt.type = 'TMS_SKU_TYPE'
+		LEFT JOIN sys_dict_value sdv ON sdt.id = sdv.dict_type_id AND sdv.value = b.sku_type
+		WHERE a.del_flag = '0'
+		<if test="planNo != null and planNo != ''">
+			AND a.plan_no = #{planNo}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND a.owner_code = #{ownerCode}
+		</if>
+		<if test="ownerName != null and ownerName != ''">
+			AND tto.transport_obj_name = #{ownerName}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND a.sku_code = #{skuCode}
+		</if>
+		<if test="skuName != null and skuName != ''">
+			AND b.sku_name = #{skuName}
+		</if>
+		<if test="arrivalTime != null and arrivalTime != ''">
+			AND a.arrival_time = #{arrivalTime}
+		</if>
+		<if test="isDispatch != null and isDispatch != ''">
+			AND a.is_dispatch = #{isDispatch}
+		</if>
+		<if test="classification != null and classification != ''">
+			AND tto.classification = #{classification}
+		</if>
+		<if test="skuType != null and skuType != ''">
+			AND b.sku_type = #{skuType}
+		</if>
+		<if test="customerCodeList != null and customerCodeList.size > 0">
+			AND a.owner_code IN
+			<foreach collection="customerCodeList" index="customerCode" item="customerCode" open="(" separator="," close=")">
+				#{customerCode}
+			</foreach>
+		</if>
+		<if test="arrivalTimeFm != null and arrivalTimeFm != ''">
+			<![CDATA[ AND a.arrival_time >= #{arrivalTimeFm} ]]>
+		</if>
+		<if test="arrivalTimeTo != null and arrivalTimeTo != ''">
+			<![CDATA[ AND a.arrival_time <= #{arrivalTimeTo} ]]>
+		</if>
+	</select>
+
+	<select id="findDetailGrid" resultType="com.yunyou.modules.tms.order.entity.extend.TmDispatchPlanDetailEntity" >
+		SELECT
+			tto.transport_obj_name AS "ownerName",
+			tto.route_id AS "lineCode",
+			line.name AS "lineName",
+			b.sku_name AS "skuName",
+			b.sku_type AS "skuType",
+			sdv.label AS "skuTypeDesc",
+			tto.classification AS "classification",
+			<include refid="tmDispatchPlanDetailColumns"/>
+		FROM tm_dispatch_plan_Detail a
+		LEFT JOIN tm_item b ON a.owner_code = b.owner_code AND a.sku_code = b.sku_code AND a.base_org_id = b.org_id
+		LEFT JOIN tm_transport_obj tto ON a.owner_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+		LEFT JOIN tm_business_route line ON tto.route_id = line.code AND tto.org_id = line.org_id
+		LEFT JOIN sys_dict_type sdt ON sdt.type = 'TMS_SKU_TYPE'
+		LEFT JOIN sys_dict_value sdv ON sdt.id = sdv.dict_type_id AND sdv.value = b.sku_type
+		WHERE a.del_flag = '0'
+		<if test="planNo != null and planNo != ''">
+			AND a.plan_no = #{planNo}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="baseOrgId != null and baseOrgId != ''">
+			AND a.base_org_id = #{baseOrgId}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND a.owner_code LIKE concat('%', #{ownerCode}, '%')
+		</if>
+		<if test="ownerName != null and ownerName != ''">
+			AND tto.transport_obj_name LIKE concat('%', #{ownerName}, '%')
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND a.sku_code LIKE concat('%', #{skuCode}, '%')
+		</if>
+		<if test="skuName != null and skuName != ''">
+			AND b.sku_name LIKE concat('%', #{skuName}, '%')
+		</if>
+		<if test="arrivalTime != null and arrivalTime != ''">
+			AND a.arrival_time = #{arrivalTime}
+		</if>
+		<if test="isDispatch != null and isDispatch != ''">
+			AND a.is_dispatch = #{isDispatch}
+		</if>
+		<if test="classification != null and classification != ''">
+			AND tto.classification = #{classification}
+		</if>
+		<if test="skuType != null and skuType != ''">
+			AND b.sku_type = #{skuType}
+		</if>
+		<if test="customerCodeList != null and customerCodeList.size > 0">
+			AND a.owner_code IN
+			<foreach collection="customerCodeList" index="customerCode" item="customerCode" open="(" separator="," close=")">
+				#{customerCode}
+			</foreach>
+		</if>
+		<if test="arrivalTimeFm != null and arrivalTimeFm != ''">
+			<![CDATA[ AND a.arrival_time >= #{arrivalTimeFm} ]]>
+		</if>
+		<if test="arrivalTimeTo != null and arrivalTimeTo != ''">
+			<![CDATA[ AND a.arrival_time <= #{arrivalTimeTo} ]]>
+		</if>
+		<if test="codeAndName != null and codeAndName != ''">
+		  <if test='isOwner == "Y"'>
+			AND (a.owner_code LIKE concat('%', #{codeAndName}, '%')
+				OR tto.transport_obj_name LIKE concat('%', #{codeAndName}, '%'))
+		  </if>
+		  <if test='isSku == "Y"'>
+			AND (a.sku_code LIKE concat('%', #{codeAndName}, '%')
+				OR b.sku_name LIKE concat('%', #{codeAndName}, '%'))
+		  </if>
+		</if>
+	</select>
+
+	<select id="findConfigList" resultType="com.yunyou.modules.tms.order.entity.extend.TmDispatchPlanConfigEntity" >
+		SELECT
+			pick.transport_obj_name AS "pickUpPointName",
+			delivery.transport_obj_name AS "deliveryPointName",
+			delivery.route_id AS "lineCode",
+			line.name AS "lineName",
+			b.sku_name AS "skuName",
+			driver.name AS "driverName",
+			escort.name AS "escortName",
+		    tv.vehicle_type AS "vehicleType",
+			tvt.name AS "vehicleTypeDesc",
+			tv.transport_equipment_type_code AS "equipmentTypeCode",
+			ttet.transport_equipment_type_name_cn AS "equipmentTypeName",
+			<include refid="tmDispatchPlanConfigColumns"/>
+		FROM tm_dispatch_plan_config a
+		LEFT JOIN tm_item b ON a.delivery_point = b.owner_code AND a.sku_code = b.sku_code AND a.base_org_id = b.org_id
+		LEFT JOIN tm_transport_obj pick ON a.pick_up_point = pick.transport_obj_code AND a.base_org_id = pick.org_id
+		LEFT JOIN tm_transport_obj delivery ON a.delivery_point = delivery.transport_obj_code AND a.base_org_id = delivery.org_id
+		LEFT JOIN tm_business_route line ON delivery.route_id = line.code AND delivery.org_id = line.org_id
+		LEFT JOIN tm_driver driver ON a.driver = driver.code AND a.base_org_id = driver.org_id
+		LEFT JOIN tm_driver escort ON a.escort = escort.code AND a.base_org_id = escort.org_id
+		LEFT JOIN tm_vehicle tv ON a.vehicle_no = tv.car_no AND a.base_org_id = tv.org_id
+		LEFT JOIN tm_transport_equipment_type ttet ON tv.transport_equipment_type_code = ttet.transport_equipment_type_code AND tv.org_id = ttet.org_id
+		LEFT JOIN tm_vehicle_type tvt ON tv.vehicle_type = tvt.code AND tv.org_id = tvt.org_id
+		<where>
+			<if test="planNo != null and planNo != ''">
+				AND a.plan_no = #{planNo}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="baseOrgId != null and baseOrgId != ''">
+				AND a.base_org_id = #{baseOrgId}
+			</if>
+			<if test="deliveryPoint != null and deliveryPoint != ''">
+				AND a.delivery_point = #{deliveryPoint}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="vehicleNo != null and vehicleNo != ''">
+				AND a.vehicle_no = #{vehicleNo}
+			</if>
+			<if test="trip != null and trip != ''">
+				AND a.trip = #{trip}
+			</if>
+			<if test="wareRoom != null and wareRoom != ''">
+				AND a.ware_room = #{wareRoom}
+			</if>
+			<if test="driver != null and driver != ''">
+				AND a.driver = #{driver}
+			</if>
+			<if test="escort != null and escort != ''">
+				AND a.escort = #{escort}
+			</if>
+			<if test="lineCode != null and lineCode != ''">
+				AND delivery.route_id = #{lineCode}
+			</if>
+			<if test="pickUpPoint != null and pickUpPoint != ''">
+				AND a.pick_up_point = #{pickUpPoint}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findVehicleByPlanNo" resultType="java.lang.String">
+		SELECT vehicle_no FROM tm_dispatch_plan_vehicle WHERE plan_no = #{planNo} AND org_id = #{orgId}
+	</select>
+	
+	<select id="getVehicle" resultType="com.yunyou.modules.tms.order.entity.extend.TmDispatchPlanVehicleEntity">
+		SELECT v.vehicle_no AS "vehicleNo",
+		       t.vehicle_type AS "vehicleType",
+		       tvt.name AS "vehicleTypeDesc",
+		       t.transport_equipment_type_code AS "equipmentTypeCode",
+		       ttet.transport_equipment_type_name_cn AS "equipmentTypeName"
+		FROM tm_dispatch_plan_vehicle v
+		INNER JOIN tm_vehicle t ON v.vehicle_no = t.car_no AND v.base_org_id = t.org_id
+		LEFT JOIN tm_transport_equipment_type ttet ON t.transport_equipment_type_code = ttet.transport_equipment_type_code AND t.org_id = ttet.org_id
+		LEFT JOIN tm_vehicle_type tvt ON t.vehicle_type = tvt.code AND t.org_id = tvt.org_id
+		WHERE v.plan_no = #{planNo}
+	    AND v.org_id = #{orgId}
+		AND t.org_id = #{baseOrgId}
+		<if test="vehicleNo != null and vehicleNo != ''">
+			AND v.vehicle_no = #{vehicleNo}
+		</if>
+		<if test="vehicleType != null and vehicleType != ''">
+			AND t.vehicle_type = #{vehicleType}
+		</if>
+        ORDER BY v.vehicle_no
+	</select>
+
+	<select id="getVehicleGrid" resultType="com.yunyou.modules.tms.order.entity.extend.TmDispatchPlanVehicleEntity">
+		SELECT v.vehicle_no                          AS "vehicleNo",
+			   t.vehicle_type                        AS "vehicleType",
+			   tvt.name                              AS "vehicleTypeDesc",
+			   t.transport_equipment_type_code       AS "equipmentTypeCode",
+			   ttet.transport_equipment_type_name_cn AS "equipmentTypeName"
+		FROM tm_dispatch_plan_vehicle v
+		INNER JOIN tm_vehicle t ON v.vehicle_no = t.car_no AND v.base_org_id = t.org_id
+		LEFT JOIN tm_transport_equipment_type ttet ON t.transport_equipment_type_code = ttet.transport_equipment_type_code AND t.org_id = ttet.org_id
+		LEFT JOIN tm_vehicle_type tvt ON t.vehicle_type = tvt.code AND t.org_id = tvt.org_id
+		WHERE v.plan_no = #{planNo}
+		  AND v.org_id = #{orgId}
+		  AND t.org_id = #{baseOrgId}
+		<if test="vehicleNo != null and vehicleNo != ''">
+			AND v.vehicle_no LIKE concat('%', #{vehicleNo}, '%')
+		</if>
+		<if test="vehicleType != null and vehicleType != ''">
+			AND t.vehicle_type = #{vehicleType}
+		</if>
+		<if test="codeAndName != null and codeAndName != ''">
+			AND (v.vehicle_no LIKE concat('%', #{codeAndName}, '%'))
+		</if>
+		ORDER BY v.vehicle_no
+	</select>
+	
+	<delete id="deleteDetailByPlanNo">
+		DELETE FROM tm_dispatch_plan_detail WHERE plan_no = #{planNo} AND org_id = #{orgId}
+	</delete>
+
+	<delete id="deleteConfigByPlanNo">
+		DELETE FROM tm_dispatch_plan_config WHERE plan_no = #{planNo} AND org_id = #{orgId}
+	</delete>
+
+	<delete id="deleteVehicleByPlanNo">
+		DELETE FROM tm_dispatch_plan_vehicle WHERE plan_no = #{planNo} AND org_id = #{orgId}
+	</delete>
+
+</mapper>

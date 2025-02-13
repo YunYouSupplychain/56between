@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmWvHeaderMapper">
+    
+	<sql id="banQinWmWvHeaderColumns">
+		a.id AS "id",
+		a.wave_no AS "waveNo",
+		a.status AS "status",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmWvHeaderJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+
+	<select id="get" resultType="BanQinWmWvHeader" >
+		SELECT 
+			<include refid="banQinWmWvHeaderColumns"/>
+		FROM wm_wv_header a
+		<include refid="banQinWmWvHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntity" resultType="BanQinWmWvHeaderEntity" >
+		SELECT
+		<include refid="banQinWmWvHeaderColumns"/>
+		FROM wm_wv_header a
+		<include refid="banQinWmWvHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmWvHeader" >
+		SELECT 
+			<include refid="banQinWmWvHeaderColumns"/>
+		FROM wm_wv_header a
+		<include refid="banQinWmWvHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmWvHeaderEntity" >
+		SELECT
+			<include refid="banQinWmWvHeaderColumns"/>,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName
+		FROM wm_wv_header a
+		<include refid="banQinWmWvHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="isPrint != null and isPrint == 'Y'.toString()">
+				AND a.def1 IS NOT NULL AND a.def1 != ''
+			</if>
+			<if test="isPrint != null and isPrint == 'N'.toString()">
+				AND (a.def1 IS NULL OR a.def1 = '')
+			</if>
+			<if test="createDateFm != null and createDateFm !=''">
+				<![CDATA[ AND a.create_date >= #{createDateFm} ]]>
+			</if>
+			<if test="createDateTo != null and createDateTo !=''">
+				<![CDATA[ AND a.create_date <= #{createDateTo} ]]>
+			</if>
+			<if test="def2 != null and def2 != ''">
+				<choose>
+                    <when test="def2 == 'Y'.toString()">
+                        AND a.def2 = 'Y'
+                    </when>
+                    <otherwise>
+                        AND (a.def2 = 'N' OR a.def2 IS NULL OR a.def2 = '')
+                    </otherwise>
+                </choose>
+			</if>
+			<if test="def3 != null and def3 != ''">
+                <choose>
+                    <when test="def3 == 'Y'.toString()">
+                        AND a.def3 = 'Y'
+                    </when>
+                    <otherwise>
+                        AND (a.def3 = 'N' OR a.def3 IS NULL OR a.def3 = '')
+                    </otherwise>
+                </choose>
+			</if>
+			<if test="createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmWvHeader" >
+		SELECT 
+			<include refid="banQinWmWvHeaderColumns"/>
+		FROM wm_wv_header a
+		<include refid="banQinWmWvHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_wv_header(
+			id,
+			wave_no,
+			status,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{waveNo},
+			#{status},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_wv_header SET 	
+			wave_no = #{waveNo},
+			status = #{status},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			create_by = #{createBy.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_wv_header
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_wv_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!--*************************************************************SELECT区*************************************************************-->
+	<select id="findBySoNo" resultType="BanQinWmWvHeader">
+		SELECT DISTINCT <include refid="banQinWmWvHeaderColumns"/>
+		FROM wm_wv_header a
+		LEFT JOIN wm_wv_detail d ON a.wave_no = d.wave_no AND a.org_id = d.org_id
+		<where>
+					a.del_flag = '0'
+     AND d.so_no = #{soNo}
+     AND a.org_id = #{orgId}
+		</where>
+	</select>
+
+    <update id="updateWvHeaderStatusByWave">
+        UPDATE wm_wv_header wwh
+								SET wwh.status      =
+													CASE WHEN (SELECT COUNT(1)
+																								FROM wm_wv_detail wwd
+																								WHERE wwh.wave_no = wwd.wave_no
+																										AND wwh.org_id = wwd.org_id
+																										AND wwh.status &lt; '90'
+																										AND wwh.status &lt; '99'
+																								LIMIT 1) = 0
+																			THEN '00'
+																		ELSE (
+																			SELECT (CASE
+																				WHEN (MAX(wwd.status) = MIN(wwd.status))
+																					THEN (MAX(wwd.status))
+																				WHEN (MAX(wwd.status) &lt; MIN(wwd.status) AND MAX(wwd.status) &lt;= '20')
+																					THEN '10'
+																				WHEN (MAX(wwd.status) &lt; MIN(wwd.status) AND MAX(wwd.status) &lt;= '40')
+																					THEN '30'
+																				WHEN (MAX(wwd.status) &lt; MIN(wwd.status) AND MAX(wwd.status) &lt;= '60')
+																					THEN '50'
+																				WHEN (MAX(wwd.status) &lt; MIN(wwd.status) AND MAX(wwd.status) &lt;= '80')
+																					THEN '70' END)
+																			FROM wm_wv_detail wwd
+																			WHERE wwd.status &lt; '90'
+																					AND wwd.status &lt; '99'
+																					AND wwh.wave_no = wwd.wave_no
+																					AND wwh.org_id = wwd.org_id
+																			LIMIT 1)
+														END,
+												wwh.update_by   = #{userId},
+												wwh.update_date = now()
+								WHERE wwh.status &lt; '90'
+										AND wwh.status &lt; '99'
+										AND wwh.org_id = #{orgId}
+										AND wwh.wave_no IN
+        <foreach collection="waveNos" item="waveNo" index="waveNo" open="(" separator="," close=")">
+            #{waveNo}
+        </foreach>
+    </update>
+
+    <update id="updateWvHeaderStatusBySo">
+        UPDATE wm_wv_header wwh
+								SET wwh.status      = (
+									CASE WHEN (SELECT COUNT(1)
+																				FROM wm_wv_detail wwd
+																				WHERE wwh.wave_no = wwd.wave_no
+																						AND wwh.org_id = wwd.org_id
+																						AND wwh.status &lt;&gt; '90'
+																						AND wwh.status &lt;&gt; '99'
+																				LIMIT 1) = 0
+															THEN '00'
+														ELSE
+															(SELECT (CASE
+																WHEN (MAX(wwd.status) = MIN(wwd.status))
+																	THEN (MAX(wwd.status))
+																WHEN (MAX(wwd.status) &lt;&gt; MIN(wwd.status) AND MAX(wwd.status) &lt;= '20')
+																	THEN '10'
+																WHEN (MAX(wwd.status) &lt;&gt; MIN(wwd.status) AND MAX(wwd.status) &lt;= '40')
+																	THEN '30'
+																WHEN (MAX(wwd.status) &lt;&gt; MIN(wwd.status) AND MAX(wwd.status) &lt;= '60')
+																	THEN '50'
+																WHEN (MAX(wwd.status) &lt;&gt; MIN(wwd.status) AND MAX(wwd.status) &lt;= '80')
+																	THEN '70' END)
+																FROM wm_wv_detail wwd
+																WHERE wwd.status &lt;&gt; '90'
+																		AND wwd.status &lt;&gt; '99'
+																		AND wwh.wave_no = wwd.wave_no
+																		AND wwh.org_id = wwd.org_id
+															 LIMIT 1)
+										END),
+												wwh.update_by   = #{userId},
+												wwh.update_date = now()
+								WHERE wwh.status &lt;&gt; '90'
+										AND wwh.status &lt;&gt; '99'
+										AND wwh.org_id = #{orgId}
+										AND EXISTS(SELECT 1
+																					FROM wm_wv_detail wwd
+																					WHERE wwh.org_id = wwd.org_id
+																							AND wwh.wave_no = wwd.wave_no
+																							AND wwd.so_no IN
+																					<foreach collection="soNos" item="soNo" index="soNo" open="(" separator="'" close=")">
+																									#{soNo}
+																					</foreach>
+										    )
+    </update>
+	
+	<select id="getPackingList" resultType="com.yunyou.modules.wms.report.entity.PackingListLabel">
+		SELECT	wsh.so_no                                             AS soNo,
+									wsa.wave_no                                           AS waveNo,
+									wsh.owner_code                                        AS ownerCode,
+									owner.ebcu_short_name                                 AS ownerName,
+									wsh.carrier_code                                      AS carrierCode,
+									carrier.ebcu_name_cn                                  AS carrierName,
+									wsh.def5                                              AS customerOrderNo,
+									wsh.def16                                             AS externalOrderNo,
+									wsh.consignee_code                                    AS consigneeCode,
+									wsh.consignee_name                                    AS consigneeName,
+									wsh.contact_tel                                       AS consigneeTel,
+									CONCAT(REPLACE(wsh.def17, ':', ''), wsh.contact_addr) AS consigneeAddr,
+									wsa.sku_code                                          AS skuCode,
+									cws.sku_name                                          AS skuName,
+									cws.bar_code                                          AS barCode,
+									cws.cubic                                             AS volume,
+									cws.gross_weight                                      AS weight,
+									ifnull(wsa.qty_ea DIV cwpr.cdpr_quantity, 0)          AS qtyBox,
+									wsa.qty_ea                                            AS qtyEa,
+									wsa.loc_code                                          AS locCode,
+									wsh.org_id                                            AS orgId,
+									wwd.def1                                              AS seq
+		FROM wm_so_header wsh
+							LEFT JOIN wm_so_detail wsd ON wsh.so_no = wsd.so_no AND wsh.org_id = wsd.org_id
+							LEFT JOIN eb_customer owner ON wsh.owner_code = owner.ebcu_customer_no AND wsh.org_id = owner.org_id
+							LEFT JOIN eb_customer carrier ON wsh.carrier_code = carrier.ebcu_customer_no AND wsh.org_id = carrier.org_id
+							LEFT JOIN wm_so_alloc wsa ON wsd.so_no = wsa.so_no AND wsd.line_no = wsa.line_no AND wsd.org_id = wsa.org_id
+							LEFT JOIN wm_wv_detail wwd ON wsh.so_no = wwd.so_no AND wsh.org_id = wwd.org_id
+							LEFT JOIN wm_wv_header wwh ON wwd.wave_no = wwh.wave_no AND wwd.org_id = wwh.org_id
+							LEFT JOIN cd_wh_sku cws ON wsa.sku_code = cws.sku_code AND wsa.owner_code = cws.owner_code AND wsa.org_id = cws.org_id
+							LEFT JOIN cd_wh_loc cwl ON wsa.loc_code = cwl.loc_code AND wsa.org_id = cwl.org_id
+							LEFT JOIN cd_wh_package cdpa ON cdpa.org_id = wsa.org_id AND cdpa.cdpa_code = wsa.pack_code
+							LEFT JOIN cd_wh_package_relation cwpr ON cdpa.pm_code = cwpr.cdpr_cdpa_pm_code AND cdpa.org_id = cwpr.org_id AND cwpr.cdpr_unit_level = 'CS'
+		WHERE wsa.status &gt;= '40'
+				AND wwh.id IN
+		<foreach collection="list" item="waveId" index="waveId" open="(" separator="," close=")">
+			#{waveId}
+		</foreach>
+		ORDER BY wwh.wave_no, wwd.def1, wsh.so_no, cwl.pk_seq
+	</select>
+
+	<select id="getWaveSorting" resultType="com.yunyou.modules.wms.report.entity.WaveSortingLabel">
+		SELECT	wsh.so_no         AS soNo,
+									wsh.owner_code    AS ownerCode,
+									ebcu.ebcu_name_cn AS ownerName,
+									wsa.wave_no       AS waveNo,
+									wsa.alloc_id      AS allocId,
+									wsa.loc_code      AS locCode,
+									wsa.trace_id      AS traceId,
+									wsa.sku_code      AS skuCode,
+									cws.sku_name      AS skuName,
+									wsa.lot_num       AS lotNum,
+									cwp.cdpa_format   AS packDesc,
+									wsa.qty_ea        AS qtyEa,
+									wsh.org_id        AS orgId
+		FROM wm_so_header wsh
+							LEFT JOIN wm_so_detail wsd ON wsh.so_no = wsd.so_no AND wsh.org_id = wsd.org_id
+							LEFT JOIN eb_customer ebcu ON wsd.owner_code = ebcu.ebcu_customer_no AND wsd.org_id = ebcu.org_id
+							LEFT JOIN wm_so_alloc wsa ON wsd.so_no = wsa.so_no AND wsd.line_no = wsa.line_no AND wsd.org_id = wsa.org_id
+							LEFT JOIN wm_wv_header wwh ON wsa.wave_no = wwh.wave_no AND wsa.org_id = wwh.org_id
+							LEFT JOIN cd_wh_sku cws ON wsa.sku_code = cws.sku_code AND wsa.owner_code = cws.owner_code AND wsa.org_id = cws.org_id
+							LEFT JOIN cd_wh_package cwp On wsa.pack_code = cwp.cdpa_code AND wsa.org_id = cwp.org_id
+							LEFT JOIN cd_wh_loc cwl ON wsa.loc_code = cwl.loc_code AND wsa.org_id = cwl.org_id
+		WHERE wsa.status IN ('30', '40')
+				AND wwh.id IN
+		<foreach collection="list" item="waveId" index="waveId" open="(" separator="," close=")">
+				#{waveId}
+		</foreach>
+		ORDER BY wsa.wave_no, wsh.so_no, cwl.pk_seq
+	</select>
+
+	<select id="getWaveCombinePicking" resultType="com.yunyou.modules.wms.report.entity.WaveCombinePickingLabel">
+		SELECT	wsa.wave_no                                         AS waveNo,
+									wsa.pick_no                                         AS pickNo,
+									cwl.zone_code                                       AS zoneCode,
+									wsa.loc_code                                        AS locCode,
+									wsa.trace_id                                        AS traceId,
+									wsa.sku_code                                        AS skuCode,
+									cws.sku_name                                        AS skuName,
+									wsa.lot_num                                         AS lotNum,
+									cdpa.cdpa_format                                    AS packDesc,
+									cwpr.cdpr_quantity                                  AS uomQty,
+									CEILING(ifnull(wsa.qty_ea / cwpr.cdpr_quantity, 0)) AS qtyBox,
+									wsa.qty_ea                                          AS qtyEa,
+									wsa.to_loc                                          AS toLoc,
+									wsa.to_id                                           AS toId,
+									wsa.org_id                                          AS orgId,
+									cwl.pk_seq                                          AS pkSeq,
+									wila.lot_att01                                      AS lotAtt01,
+									wila.lot_att02                                      AS lotAtt02,
+									wila.lot_att03                                      AS lotAtt03,
+									wila.lot_att04                                      AS lotAtt04,
+									wila.lot_att05                                      AS lotAtt05,
+									wila.lot_att06                                      AS lotAtt06,
+									wila.lot_att07                                      AS lotAtt07,
+									wila.lot_att08                                      AS lotAtt08,
+									wila.lot_att09                                      AS lotAtt09,
+									wila.lot_att10                                      AS lotAtt10,
+									wila.lot_att11                                      AS lotAtt11,
+									wila.lot_att12                                      AS lotAtt12,
+									cws.spec                                            AS skuDef3
+		FROM wm_wv_header wwh
+							LEFT JOIN wm_so_alloc wsa ON wsa.wave_no = wwh.wave_no AND wsa.org_id = wwh.org_id
+							LEFT JOIN wm_inv_lot_att wila ON wsa.lot_num = wila.lot_num AND wsa.org_id = wila.org_id
+							LEFT JOIN cd_wh_loc cwl ON wsa.loc_code = cwl.loc_code AND wsa.org_id = cwl.org_id
+							LEFT JOIN cd_wh_sku cws ON wsa.sku_code = cws.sku_code AND wsa.owner_code = cws.owner_code AND wsa.org_id = cws.org_id
+							LEFT JOIN cd_wh_package cdpa ON cdpa.org_id = wsa.org_id AND cdpa.cdpa_code = wsa.pack_code
+							LEFT JOIN cd_wh_package_relation cwpr ON cdpa.pm_code = cwpr.cdpr_cdpa_pm_code AND cdpa.org_id = cwpr.org_id AND cwpr.cdpr_unit_level = 'CS'
+		WHERE	wwh.id IN
+		<foreach collection="list" item="waveId" index="waveId" open="(" separator="," close=")">
+			#{waveId}
+		</foreach>
+				-- AND wsa.status IN ('30', '40')
+		ORDER BY wsa.wave_no, wsa.pick_no, cwl.pk_seq, wsa.loc_code
+	</select>
+	
+	<update id="updatePrint">
+		update wm_wv_header set def1 = ifnull(def1, 0) + 1 where wave_no = #{waveNo} and org_id = #{orgId}
+	</update>
+
+	<update id="updateGetWayBillFlag">
+		update wm_wv_header set def2 = 'Y' where wave_no = #{waveNo} and org_id = #{orgId}
+	</update>
+
+	<update id="updatePrintWayBillFlag">
+		update wm_wv_header set def3 = 'Y' where wave_no = #{waveNo} and org_id = #{orgId}
+	</update>
+</mapper>

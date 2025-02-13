@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysTmsDriverMapper">
+    
+	<sql id="sysTmsDriverColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.code AS "code",
+		a.name AS "name",
+		a.carrier_code AS "carrierCode",
+		a.phone AS "phone",
+		a.id_card AS "idCard",
+		a.birth_date AS "birthDate",
+		a.temp_residence_certificate_no AS "tempResidenceCertificateNo",
+		a.nation AS "nation",
+		a.native_place AS "nativePlace",
+		a.education_level AS "educationLevel",
+		a.marital_status AS "maritalStatus",
+		a.political_affiliation AS "politicalAffiliation",
+		a.allow_driver_car_type AS "allowDriverCarType",
+		a.personnel_nature AS "personnelNature",
+		a.driving_age AS "drivingAge",
+		a.is_military_service AS "isMilitaryService",
+		a.is_internal_driver AS "isInternalDriver",
+		a.emergency_contact AS "emergencyContact",
+		a.emergency_contact_relation AS "emergencyContactRelation",
+		a.emergency_contact_tel AS "emergencyContactTel",
+		a.current_address AS "currentAddress",
+		a.registered_address AS "registeredAddress",
+		a.contract_no AS "contractNo",
+		a.report_date AS "reportDate",
+		a.contract_expire_date AS "contractExpireDate",
+		a.basic_wage AS "basicWage",
+		a.employment_qualification_certificate_no AS "employmentQualificationCertificateNo",
+		a.comprehensive_insurance_no AS "comprehensiveInsuranceNo",
+		a.social_insurance_no AS "socialInsuranceNo",
+		a.work_card_no AS "wordCardNo",
+		a.driver_license_no AS "driverLicenseNo",
+		a.driver_license_type AS "driverLicenseType",
+		a.first_receive_license_date AS "firstReceiveLicenseDate",
+		a.driver_license_annual_inspection_date AS "driverLicenseAnnualInspectionDate",
+		a.deduct_point AS "deductPoint",
+		a.ban_driving_date_fm AS "banDrivingDateFm",
+		a.ban_driving_date_to AS "banDriverDateTo",
+		a.ban_driving_reason AS "banDrivingReason",
+		a.height AS "height",
+		a.weight AS "weight",
+		a.blood_type AS "bloodType",
+		a.vision AS "vision",
+		a.shoe_size AS "shoeSize",
+		a.health AS "health",
+		a.health_certificate_no AS "healthCertificateNo",
+		a.health_certificate_expire_date AS "healthCertificateExpireDate",
+		a.mentality_quality AS "mentalityQuality",
+		a.interpersonal_relationship AS "interpersonalRelationship",
+		a.team_spirit AS "teamSpirit",
+		a.data_set AS "dataSet",
+		a.account AS "account",
+		a.rec_ver AS "recVer",
+		scds.name AS "dataSetName"
+	</sql>
+	
+	<sql id="sysTmsDriverJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysTmsDriver" >
+		SELECT 
+			<include refid="sysTmsDriverColumns"/>
+		FROM sys_tms_driver a
+		<include refid="sysTmsDriverJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysTmsDriver" >
+		SELECT 
+			<include refid="sysTmsDriverColumns"/>
+		FROM sys_tms_driver a
+		<include refid="sysTmsDriverJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysTmsDriver" >
+		SELECT 
+			<include refid="sysTmsDriverColumns"/>
+		FROM sys_tms_driver a
+		<include refid="sysTmsDriverJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_tms_driver(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			code,
+			name,
+			carrier_code,
+			phone,
+			id_card,
+			birth_date,
+			temp_residence_certificate_no,
+			nation,
+			native_place,
+			education_level,
+			marital_status,
+			political_affiliation,
+			allow_driver_car_type,
+			personnel_nature,
+			driving_age,
+			is_military_service,
+			is_internal_driver,
+			emergency_contact,
+			emergency_contact_relation,
+			emergency_contact_tel,
+			current_address,
+			registered_address,
+			contract_no,
+			report_date,
+			contract_expire_date,
+			basic_wage,
+			employment_qualification_certificate_no,
+			comprehensive_insurance_no,
+			social_insurance_no,
+			work_card_no,
+			driver_license_no,
+			driver_license_type,
+			first_receive_license_date,
+			driver_license_annual_inspection_date,
+			deduct_point,
+			ban_driving_date_fm,
+			ban_driving_date_to,
+			ban_driving_reason,
+			height,
+			weight,
+			blood_type,
+			vision,
+			shoe_size,
+			health,
+			health_certificate_no,
+			health_certificate_expire_date,
+			mentality_quality,
+			interpersonal_relationship,
+			team_spirit,
+			data_set,
+			account,
+			rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{code},
+			#{name},
+			#{carrierCode},
+			#{phone},
+			#{idCard},
+			#{birthDate},
+			#{tempResidenceCertificateNo},
+			#{nation},
+			#{nativePlace},
+			#{educationLevel},
+			#{maritalStatus},
+			#{politicalAffiliation},
+			#{allowDriverCarType},
+			#{personnelNature},
+			#{drivingAge},
+			#{isMilitaryService},
+			#{isInternalDriver},
+			#{emergencyContact},
+			#{emergencyContactRelation},
+			#{emergencyContactTel},
+			#{currentAddress},
+			#{registeredAddress},
+			#{contractNo},
+			#{reportDate},
+			#{contractExpireDate},
+			#{basicWage},
+			#{employmentQualificationCertificateNo},
+			#{comprehensiveInsuranceNo},
+			#{socialInsuranceNo},
+			#{wordCardNo},
+			#{driverLicenseNo},
+			#{driverLicenseType},
+			#{firstReceiveLicenseDate},
+			#{driverLicenseAnnualInspectionDate},
+			#{deductPoint},
+			#{banDrivingDateFm},
+			#{banDriverDateTo},
+			#{banDrivingReason},
+			#{height},
+			#{weight},
+			#{bloodType},
+			#{vision},
+			#{shoeSize},
+			#{health},
+			#{healthCertificateNo},
+			#{healthCertificateExpireDate},
+			#{mentalityQuality},
+			#{interpersonalRelationship},
+			#{teamSpirit},
+			#{dataSet},
+			#{account},
+			#{recVer}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_tms_driver SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			del_flag = #{delFlag},
+			remarks = #{remarks},
+			code = #{code},
+			name = #{name},
+			carrier_code = #{carrierCode},
+			phone = #{phone},
+			id_card = #{idCard},
+			birth_date = #{birthDate},
+			temp_residence_certificate_no = #{tempResidenceCertificateNo},
+			nation = #{nation},
+			native_place = #{nativePlace},
+			education_level = #{educationLevel},
+			marital_status = #{maritalStatus},
+			political_affiliation = #{politicalAffiliation},
+			allow_driver_car_type = #{allowDriverCarType},
+			personnel_nature = #{personnelNature},
+			driving_age = #{drivingAge},
+			is_military_service = #{isMilitaryService},
+			is_internal_driver = #{isInternalDriver},
+			emergency_contact = #{emergencyContact},
+			emergency_contact_relation = #{emergencyContactRelation},
+			emergency_contact_tel = #{emergencyContactTel},
+			current_address = #{currentAddress},
+			registered_address = #{registeredAddress},
+			contract_no = #{contractNo},
+			report_date = #{reportDate},
+			contract_expire_date = #{contractExpireDate},
+			basic_wage = #{basicWage},
+			employment_qualification_certificate_no = #{employmentQualificationCertificateNo},
+			comprehensive_insurance_no = #{comprehensiveInsuranceNo},
+			social_insurance_no = #{socialInsuranceNo},
+			work_card_no = #{wordCardNo},
+			driver_license_no = #{driverLicenseNo},
+			driver_license_type = #{driverLicenseType},
+			first_receive_license_date = #{firstReceiveLicenseDate},
+			driver_license_annual_inspection_date = #{driverLicenseAnnualInspectionDate},
+			deduct_point = #{deductPoint},
+			ban_driving_date_fm = #{banDrivingDateFm},
+			ban_driving_date_to = #{banDriverDateTo},
+			ban_driving_reason = #{banDrivingReason},
+			height = #{height},
+			weight = #{weight},
+			blood_type = #{bloodType},
+			vision = #{vision},
+			shoe_size = #{shoeSize},
+			health = #{health},
+			health_certificate_no = #{healthCertificateNo},
+			health_certificate_expire_date = #{healthCertificateExpireDate},
+			mentality_quality = #{mentalityQuality},
+			interpersonal_relationship = #{interpersonalRelationship},
+			team_spirit = #{teamSpirit},
+			data_set = #{dataSet},
+			account = #{account},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM sys_tms_driver
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_tms_driver SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getEntity" resultType="com.yunyou.modules.sys.common.entity.extend.SysTmsDriverEntity" >
+		SELECT
+		tto.transport_obj_name AS "carrierName",
+		us.name AS "accountName",
+		<include refid="sysTmsDriverColumns"/>
+		FROM sys_tms_driver a
+		<include refid="sysTmsDriverJoins"/>
+		LEFT JOIN sys_tms_transport_obj tto on a.carrier_code = tto.transport_obj_code AND a.data_set = tto.data_set
+		LEFT JOIN sys_user us on a.account = us.login_name
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.extend.SysTmsDriverEntity" >
+		SELECT
+		tto.transport_obj_name AS "carrierName",
+		us.name AS "accountName",
+		<include refid="sysTmsDriverColumns"/>
+		FROM sys_tms_driver a
+		<include refid="sysTmsDriverJoins"/>
+		LEFT JOIN sys_tms_transport_obj tto on a.carrier_code = tto.transport_obj_code AND a.data_set = tto.data_set
+		LEFT JOIN sys_user us on a.account = us.login_name
+		<where>
+			1 = 1
+			${dataScope}
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code LIKE concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%', #{name}, '%')
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.extend.SysTmsDriverEntity" >
+		SELECT
+		tto.transport_obj_name AS "carrierName",
+		us.name AS "accountName",
+		<include refid="sysTmsDriverColumns"/>
+		FROM sys_tms_driver a
+		<include refid="sysTmsDriverJoins"/>
+		LEFT JOIN sys_tms_transport_obj tto on a.carrier_code = tto.transport_obj_code AND a.data_set = tto.data_set
+		LEFT JOIN sys_user us on a.account = us.login_name
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="code != null and code != ''">
+				AND a.code LIKE concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%', #{name}, '%')
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.code LIKE concat('%', #{codeAndName}, '%')
+					OR a.name LIKE concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="findSync" resultType="com.yunyou.modules.sys.common.entity.SysTmsDriver">
+		SELECT <include refid="sysTmsDriverColumns"/>
+		FROM sys_tms_driver a
+		<include refid="sysTmsDriverJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+	</select>
+
+</mapper>

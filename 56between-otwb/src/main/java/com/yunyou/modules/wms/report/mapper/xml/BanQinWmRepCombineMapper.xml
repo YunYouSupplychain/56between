@@ -1,0 +1,1011 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.report.mapper.BanQinWmRepCombineMapper">
+
+    <select id="findPage" resultType="com.yunyou.modules.wms.report.entity.WmRepCombineEntity">
+		SELECT pop.owner_code AS ownerCode,
+			pop.owner_name AS ownerName,
+			pop.sku_code AS skuCode,
+			pop.sku_name AS skuName,
+			'EA' AS uom,
+			pop.lot_num AS lotNum,
+			pop.lot_att01 AS lotAtt01,
+			SUM(IF(pop.indexname = '期初库存', qty, NULL)) AS qckc,
+			SUM(IF(pop.indexname = '期初库存', uomQty, NULL)) AS qckcUom,
+			SUM(IF(pop.indexname = '本期入库', qty, NULL)) AS bqrk,
+			SUM(IF(pop.indexname = '本期入库', uomQty, NULL)) AS bqrkUom,
+			SUM(IF(pop.indexname = '本期出库', qty, NULL)) AS bqck ,
+			SUM(IF(pop.indexname = '本期出库', uomQty, NULL)) AS bqckUom,
+			SUM(IF(pop.indexname = '本期调整增加数', qty, NULL)) AS bqtzzjs,
+			SUM(IF(pop.indexname = '本期调整增加数', uomQty, NULL)) AS bqtzzjsUom,
+			SUM(IF(pop.indexname = '本期调整减少数', qty, NULL)) AS bqtzjss,
+			SUM(IF(pop.indexname = '本期调整减少数', uomQty, NULL)) AS bqtzjssUom,
+			SUM(IF(pop.indexname = '本期转入', qty, NULL)) AS bqzr,
+			SUM(IF(pop.indexname = '本期转入', uomQty, NULL)) AS bqzrUom,
+			SUM(IF(pop.indexname = '本期转出', qty, NULL)) AS bqzc,
+			SUM(IF(pop.indexname = '本期转出', uomQty, NULL)) AS bqzcUom,
+			SUM(IF(pop.indexname = '期末库存', qty ,NULL)) AS qmkc,
+			SUM(IF(pop.indexname = '期末库存', uomQty ,NULL)) AS qmkcUom
+		FROM (
+			SELECT
+				'期初库存' AS indexname,
+				gg.owner_code,
+				gg.owner_name,
+				gg.sku_code,
+				gg.sku_name,
+				gg.lot_num,
+				gg.lot_att01,
+				SUM(gg.inv_qty) AS qty,
+				SUM(gg.inv_uom_qty) AS uomQty
+			FROM (
+				SELECT
+					ppoi.owner_code,
+					ppoi.owner_name,
+					ppoi.sku_code,
+					ppoi.sku_name,
+					ppoi.lot_num,
+					ppoi.lot_att01,
+					pptt.fm_qty_ea_after AS inv_qty,
+					pptt.fm_qty_uom_after AS inv_uom_qty
+				FROM (
+					SELECT MAX(uu.tran_time) AS tran_time,
+						uu.owner_code,
+						uu.owner_name,
+						uu.sku_code,
+						uu.sku_name,
+						uu.lot_num,
+						uu.lot_att01,
+						uu.loc_code,
+						uu.trace_id
+					FROM (
+						SELECT
+							ppt.tran_time,
+							pp.owner_code,
+							pp.owner_name,
+							pp.sku_code,
+							pp.sku_name,
+							pp.lot_num,
+							pp.lot_att01,
+							pp.loc_code,
+							pp.trace_id
+						FROM (
+							SELECT
+								MAX(tt.tran_time) AS tran_time,
+								tt.fm_owner AS owner_code,
+								tt.fm_loc AS loc_code,
+								tt.fm_id AS trace_id,
+								tt.ebcu_name_cn AS owner_name,
+								tt.fm_sku AS sku_code,
+								tt.sku_name AS sku_name,
+								tt.fm_lot AS lot_num,
+								tt.lot_att01 AS lot_att01
+							FROM (
+								SELECT
+									wat.tran_time,
+									wat.fm_owner,
+									ec.ebcu_name_cn,
+									wat.fm_sku,
+									cws.sku_name,
+									wat.fm_lot,
+									wila.lot_att01,
+									wat.fm_loc,
+									wat.fm_id
+								FROM wm_act_tran wat
+								LEFT JOIN wm_inv_lot_att wila ON wat.fm_lot = wila.lot_num AND wat.org_id = wila.org_id
+								LEFT JOIN cd_wh_sku cws ON wat.fm_sku = cws.sku_code AND wat.fm_owner = cws.owner_code AND wat.org_id = cws.org_id
+								LEFT JOIN eb_customer ec ON wat.fm_owner = ec.ebcu_customer_no AND wat.org_id = ec.org_id
+								WHERE 1 = 1
+								AND wat.fm_owner IS NOT NULL
+								AND wat.fm_sku IS NOT NULL
+								AND wat.org_id = #{orgId}
+								<if test="ownerCode != null and ownerCode != ''">
+									AND wat.fm_owner = #{ownerCode}
+								</if>
+								<if test="skuCode != null and skuCode != ''">
+									AND wat.fm_sku = #{skuCode}
+								</if>
+								<if test="lotNum != null and lotNum != ''">
+									AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+								</if>
+								<if test="tranTimeFm == null or tranTimeFm == ''">
+									AND wat.tran_time &lt;= '1949-01-01 00:00:00'
+								</if>
+								<if test="tranTimeFm != null and tranTimeFm != ''">
+									AND wat.tran_time &lt;= #{tranTimeFm}
+								</if>
+								UNION ALL
+								SELECT
+									wat.tran_time,
+									wat.to_owner,
+									ec1.ebcu_name_cn,
+									wat.to_sku,
+									cws1.sku_name,
+									wat.to_lot,
+									wila1.lot_att01,
+									wat.to_loc,
+									wat.to_id
+								FROM wm_act_tran wat
+								LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+								LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+								LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+								WHERE 1 = 1
+								AND wat.org_id = #{orgId}
+								<if test="ownerCode != null and ownerCode != ''">
+									AND wat.to_owner = #{ownerCode}
+								</if>
+								<if test="skuCode != null and skuCode != ''">
+									AND wat.to_sku = #{skuCode}
+								</if>
+								<if test="lotNum != null and lotNum != ''">
+									AND wat.to_lot LIKE CONCAT(#{lotNum}, '%')
+								</if>
+								<if test="tranTimeFm == null or tranTimeFm == ''">
+									AND wat.tran_time &lt;= '1949-01-01 00:00:00'
+								</if>
+								<if test="tranTimeFm != null and tranTimeFm != ''">
+									AND wat.tran_time &lt;= #{tranTimeFm}
+								</if>
+								AND wat.to_owner IS NOT NULL
+								AND wat.to_sku IS NOT NULL) tt
+							GROUP BY tt.fm_owner ,tt.fm_loc, tt.fm_id, tt.ebcu_name_cn, tt.fm_sku, sku_name, tt.fm_lot, tt.lot_att01
+						) pp
+						LEFT JOIN (
+							SELECT
+								wat.tran_time ,
+								wat.fm_owner,
+								ec.ebcu_name_cn,
+								wat.fm_sku,
+								cws.sku_name,
+								wat.fm_lot,
+								wila.lot_att01,
+								wat.fm_loc,
+								wat.fm_id,
+								wat.fm_qty_ea_before,
+								wat.fm_qty_ea_after
+							FROM wm_act_tran wat
+							LEFT JOIN wm_inv_lot_att wila ON wat.fm_lot = wila.lot_num AND wat.org_id = wila.org_id
+							LEFT JOIN cd_wh_sku cws ON wat.fm_sku = cws.sku_code AND wat.fm_owner = cws.owner_code AND wat.org_id = cws.org_id
+							LEFT JOIN eb_customer ec ON wat.fm_owner = ec.ebcu_customer_no AND wat.org_id=ec.org_id
+							WHERE 1 = 1
+							AND NOT EXISTS (
+								SELECT 1 FROM wm_act_tran watg
+								LEFT JOIN wm_inv_lot_att wila ON watg.fm_lot = wila.lot_num AND watg.org_id = wila.org_id
+								WHERE 1 = 1
+								AND watg.org_id = #{orgId}
+								<if test="tranTimeFm == null or tranTimeFm == ''">
+									AND watg.tran_time &lt;= '1949-01-01 00:00:00'
+								</if>
+								<if test="tranTimeFm != null and tranTimeFm != ''">
+									AND watg.tran_time &lt;= #{tranTimeFm}
+								</if>
+								<if test="ownerCode != null and ownerCode != ''">
+									AND watg.fm_owner = #{ownerCode}
+								</if>
+								<if test="skuCode != null and skuCode != ''">
+									AND watg.fm_sku = #{skuCode}
+								</if>
+								AND (watg.fm_owner = watg.to_owner AND watg.fm_sku = watg.to_sku AND watg.fm_lot = watg.to_lot AND watg.fm_loc = watg.to_loc AND watg.fm_id = watg.to_id)
+								AND watg.fm_owner IS NOT NULL
+								AND watg.fm_sku IS NOT NULL
+								AND wat.id = watg.id)
+							AND wat.org_id = #{orgId}
+							<if test="ownerCode != null and ownerCode != ''">
+								AND wat.fm_owner = #{ownerCode}
+							</if>
+							<if test="skuCode != null and skuCode != ''">
+								AND wat.fm_sku = #{skuCode}
+							</if>
+							<if test="lotNum != null and lotNum != ''">
+								AND wat.to_lot LIKE CONCAT(#{lotNum}, '%')
+							</if>
+							<if test="tranTimeFm == null or tranTimeFm == ''">
+								AND wat.tran_time &lt;= '1949-01-01 00:00:00'
+							</if>
+							<if test="tranTimeFm != null and tranTimeFm != ''">
+								AND wat.tran_time &lt;= #{tranTimeFm}
+							</if>
+							AND wat.fm_owner IS NOT NULL
+							AND wat.fm_sku IS NOT NULL
+							UNION ALL
+							SELECT
+								wat.tran_time,
+								wat.to_owner,
+								ec1.ebcu_name_cn,
+								wat.to_sku,
+								cws1.sku_name,
+								wat.to_lot,
+								wila1.lot_att01,
+								wat.to_loc,
+								wat.to_id,
+								wat.to_qty_ea_before,
+								wat.to_qty_ea_after
+							FROM wm_act_tran wat
+							LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+							LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+							LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+							WHERE 1 = 1
+							AND wat.org_id = #{orgId}
+							<if test="ownerCode != null and ownerCode != ''">
+								AND wat.to_owner = #{ownerCode}
+							</if>
+							<if test="skuCode != null and skuCode != ''">
+								AND wat.to_sku = #{skuCode}
+							</if>
+							<if test="lotNum != null and lotNum != ''">
+								AND wat.to_lot LIKE CONCAT(#{lotNum}, '%')
+							</if>
+							<if test="tranTimeFm == null or tranTimeFm == ''">
+								AND wat.tran_time &lt;= '1949-01-01 00:00:00'
+							</if>
+							<if test="tranTimeFm != null and tranTimeFm != ''">
+								AND wat.tran_time &lt;= #{tranTimeFm}
+							</if>
+							AND wat.to_owner IS NOT NULL
+							AND wat.to_sku IS NOT NULL) ppt
+						ON pp.tran_time = ppt.tran_time
+						AND pp.owner_code = ppt.fm_owner
+						AND pp.sku_code = ppt.fm_sku
+						AND pp.lot_num = ppt.fm_lot
+						AND pp.loc_code = ppt.fm_loc
+						AND pp.trace_id = ppt.fm_id
+						WHERE 1 = 1) uu
+					GROUP BY uu.owner_code, uu.owner_name, uu.sku_code, uu.sku_name, uu.lot_num, uu.lot_att01, uu.loc_code, uu.trace_id) ppoi
+				LEFT JOIN (
+					SELECT
+						wat.tran_time,
+						wat.fm_owner,
+						ec.ebcu_name_cn,
+						wat.fm_sku,
+						cws.sku_name,
+						wat.fm_lot,
+						wila.lot_att01,
+						wat.fm_loc,
+						wat.fm_id,
+						wat.fm_qty_ea_before,
+						wat.fm_qty_ea_before DIV cwpr.cdpr_quantity AS fm_qty_uom_before,
+						wat.fm_qty_ea_after,
+						wat.fm_qty_ea_after DIV cwpr.cdpr_quantity AS fm_qty_uom_after
+					FROM wm_act_tran wat
+					LEFT JOIN wm_inv_lot_att wila ON wat.fm_lot = wila.lot_num AND wat.org_id = wila.org_id
+					LEFT JOIN cd_wh_sku cws ON wat.fm_sku = cws.sku_code AND wat.fm_owner = cws.owner_code AND wat.org_id = cws.org_id
+					LEFT JOIN eb_customer ec ON wat.fm_owner = ec.ebcu_customer_no AND wat.org_id=ec.org_id
+					LEFT JOIN cd_wh_package_relation cwpr ON wat.fm_pack = cwpr.pm_code AND cwpr.cdpr_unit_level = 'CS' AND wat.org_id = cwpr.org_id
+					WHERE 1 = 1
+					AND NOT EXISTS (
+						SELECT 1 FROM wm_act_tran watg
+						LEFT JOIN wm_inv_lot_att wila ON watg.fm_lot = wila.lot_num AND watg.org_id = wila.org_id
+						WHERE 1 = 1
+						AND watg.org_id = #{orgId}
+						<if test="tranTimeFm == null or tranTimeFm == ''">
+							AND watg.tran_time &lt;= '1949-01-01 00:00:00'
+						</if>
+						<if test="tranTimeFm != null and tranTimeFm != ''">
+							AND watg.tran_time &lt;= #{tranTimeFm}
+						</if>
+						<if test="ownerCode != null and ownerCode != ''">
+							AND watg.fm_owner = #{ownerCode}
+						</if>
+						<if test="skuCode != null and skuCode != ''">
+							AND watg.fm_sku = #{skuCode}
+						</if>
+						<if test="lotNum != null and lotNum != ''">
+							AND watg.fm_lot LIKE CONCAT(#{lotNum}, '%')
+						</if>
+						AND (watg.fm_owner = watg.to_owner AND watg.fm_sku = watg.to_sku AND watg.fm_lot = watg.to_lot AND watg.fm_loc = watg.to_loc AND watg.fm_id = watg.to_id)
+						AND watg.fm_owner IS NOT NULL
+						AND watg.fm_sku IS NOT NULL
+						AND wat.id = watg.id)
+					AND wat.org_id = #{orgId}
+					AND wat.fm_owner IS NOT NULL
+					AND wat.fm_sku IS NOT NULL
+					<if test="tranTimeFm == null or tranTimeFm == ''">
+						AND wat.tran_time &lt;= '1949-01-01 00:00:00'
+					</if>
+					<if test="tranTimeFm != null and tranTimeFm != ''">
+						AND wat.tran_time &lt;= #{tranTimeFm}
+					</if>
+					<if test="ownerCode != null and ownerCode != ''">
+						AND wat.fm_owner = #{ownerCode}
+					</if>
+					<if test="skuCode != null and skuCode != ''">
+						AND wat.fm_sku = #{skuCode}
+					</if>
+					<if test="lotNum != null and lotNum != ''">
+						AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+					</if>
+					UNION ALL
+					SELECT
+						wat.tran_time ,
+						wat.to_owner,
+						ec1.ebcu_name_cn,
+						wat.to_sku ,
+						cws1.sku_name,
+						wat.to_lot ,
+						wila1.lot_att01,
+						wat.to_loc ,
+						wat.to_id ,
+						wat.to_qty_ea_before,
+						wat.to_qty_ea_before DIV cwpr1.cdpr_quantity AS to_qty_uom_before,
+						wat.to_qty_ea_after,
+						wat.to_qty_ea_after DIV cwpr1.cdpr_quantity AS to_qty_uom_after
+					FROM wm_act_tran wat
+					LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+					LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+					LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+					LEFT JOIN cd_wh_package_relation cwpr1 ON wat.to_pack = cwpr1.pm_code AND cwpr1.cdpr_unit_level = 'CS' AND wat.org_id = cwpr1.org_id
+					WHERE 1 = 1
+					AND wat.org_id = #{orgId}
+					<if test="tranTimeFm == null or tranTimeFm == ''">
+						AND wat.tran_time &lt;= '1949-01-01 00:00:00'
+					</if>
+					<if test="tranTimeFm != null and tranTimeFm != ''">
+						AND wat.tran_time &lt;= #{tranTimeFm}
+					</if>
+					<if test="ownerCode != null and ownerCode != ''">
+						AND wat.fm_owner = #{ownerCode}
+					</if>
+					<if test="skuCode != null and skuCode != ''">
+						AND wat.fm_sku = #{skuCode}
+					</if>
+					<if test="lotNum != null and lotNum != ''">
+						AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+					</if>
+					AND wat.to_owner IS NOT NULL
+					AND wat.to_sku IS NOT NULL) pptt
+				ON ppoi.tran_time = pptt.tran_time
+				AND ppoi.owner_code = pptt.fm_owner
+				AND ppoi.sku_code = pptt.fm_sku
+				AND ppoi.lot_num = pptt.fm_lot
+				AND ppoi.loc_code = pptt.fm_loc
+				AND ppoi.trace_id = pptt.fm_id) gg
+			GROUP BY gg.owner_code, gg.owner_name, gg.sku_code, gg.sku_name, gg.lot_num, gg.lot_att01
+			UNION ALL
+			SELECT
+				'本期入库',
+				rcv.to_owner,
+				rcv.ebcu_name_cn,
+				rcv.to_sku,
+				rcv.sku_name,
+				rcv.to_lot ,
+				rcv.lot_att01,
+				(rcv.qty - IFNULL(crcv.qty, 0)) AS qty,
+				(rcv.uomQty - IFNULL(crcv.uomQty, 0)) AS uomQty
+			FROM (
+				SELECT
+					wat.to_owner,
+					ec1.ebcu_name_cn,
+					wat.to_sku,
+					cws1.sku_name,
+					wat.to_lot,
+					wila.lot_att01,
+					SUM(IFNULL(wat.to_qty_ea_op, 0)) AS qty,
+					SUM(IFNULL(wat.to_qty_ea_op, 0) DIV cwpr1.cdpr_quantity) AS uomQty
+				FROM wm_act_tran wat
+				LEFT JOIN wm_inv_lot_att wila ON wat.to_lot = wila.lot_num AND wat.org_id = wila.org_id
+				LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+				LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+				LEFT JOIN cd_wh_package_relation cwpr1 ON wat.to_pack = cwpr1.pm_code AND cwpr1.cdpr_unit_level = 'CS' AND wat.org_id = cwpr1.org_id
+				WHERE 1 = 1
+				AND wat.tran_type = 'RCV'
+				AND wat.org_id = #{orgId}
+				<if test="ownerCode != null and ownerCode != ''">
+					AND wat.to_owner = #{ownerCode}
+				</if>
+				<if test="skuCode != null and skuCode != ''">
+					AND wat.to_sku = #{skuCode}
+				</if>
+				<if test="lotNum != null and lotNum != ''">
+					AND wat.to_lot LIKE CONCAT(#{lotNum}, '%')
+				</if>
+				<if test="tranTimeFm == null or tranTimeFm == ''">
+					AND wat.tran_time &gt;= '1949-01-01 00:00:00'
+				</if>
+				<if test="tranTimeFm != null and tranTimeFm != ''">
+					AND wat.tran_time &gt;= #{tranTimeFm}
+				</if>
+				<if test="tranTimeTo != null and tranTimeTo != ''">
+					AND wat.tran_time &lt;= #{tranTimeTo}
+				</if>
+				GROUP BY wat.to_owner, ec1.ebcu_name_cn, wat.to_sku , cws1.sku_name, wat.to_lot, wila.lot_att01) rcv
+			LEFT JOIN (
+				SELECT
+					wat.fm_owner,
+					ec1.ebcu_name_cn,
+					wat.fm_sku,
+					cws1.sku_name,
+					wat.fm_lot,
+					wila1.lot_att01,
+					SUM(IFNULL(wat.fm_qty_ea_op, 0)) AS qty,
+					SUM(IFNULL(wat.fm_qty_ea_op, 0) DIV cwpr1.cdpr_quantity) AS uomQty
+				FROM wm_act_tran wat
+				LEFT JOIN wm_inv_lot_att wila1 ON wat.fm_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+				LEFT JOIN cd_wh_sku cws1 ON wat.fm_sku = cws1.sku_code AND wat.fm_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+				LEFT JOIN eb_customer ec1 ON wat.fm_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+				LEFT JOIN cd_wh_package_relation cwpr1 ON wat.fm_pack = cwpr1.pm_code AND cwpr1.cdpr_unit_level = 'CS' AND wat.org_id = cwpr1.org_id
+				WHERE 1 = 1
+				AND wat.tran_type = 'CRCV'
+				AND wat.org_id = #{orgId}
+				<if test="ownerCode != null and ownerCode != ''">
+					AND wat.fm_owner = #{ownerCode}
+				</if>
+				<if test="skuCode != null and skuCode != ''">
+					AND wat.fm_sku = #{skuCode}
+				</if>
+				<if test="lotNum != null and lotNum != ''">
+					AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+				</if>
+				<if test="tranTimeFm == null or tranTimeFm == ''">
+					AND wat.tran_time &gt;= '1949-01-01 00:00:00'
+				</if>
+				<if test="tranTimeFm != null and tranTimeFm != ''">
+					AND wat.tran_time &gt;= #{tranTimeFm}
+				</if>
+				<if test="tranTimeTo != null and tranTimeTo != ''">
+					AND wat.tran_time &lt;= #{tranTimeTo}
+				</if>
+				GROUP BY wat.fm_owner, ec1.ebcu_name_cn, wat.fm_sku, cws1.sku_name, wat.fm_lot, wila1.lot_att01) crcv
+			ON rcv.to_owner = crcv.fm_owner
+			AND rcv.to_sku = crcv.fm_sku
+			AND rcv.to_lot = crcv.fm_lot
+			UNION ALL
+			SELECT
+				'本期出库',
+				sp.fm_owner,
+				sp.ebcu_name_cn,
+				sp.fm_sku,
+				sp.sku_name,
+				sp.fm_lot,
+				sp.lot_att01,
+				(sp.qty - IFNULL(csp.qty, 0)) AS qty,
+				(sp.uomQty - IFNULL(csp.uomQty, 0)) AS uomQty
+			FROM (
+				SELECT
+					wat.fm_owner,
+					ec1.ebcu_name_cn,
+					wat.fm_sku,
+					cws1.sku_name,
+					wat.fm_lot,
+					wila.lot_att01,
+					SUM(IFNULL(wat.fm_qty_ea_op, 0)) AS qty,
+					SUM(IFNULL(wat.fm_qty_ea_op, 0) DIV cwpr1.cdpr_quantity) AS uomQty
+				FROM wm_act_tran wat
+				LEFT JOIN wm_inv_lot_att wila ON wat.fm_lot = wila.lot_num AND wat.org_id = wila.org_id
+				LEFT JOIN cd_wh_sku cws1 ON wat.fm_sku = cws1.sku_code AND wat.fm_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+				LEFT JOIN eb_customer ec1 ON wat.fm_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+				LEFT JOIN cd_wh_package_relation cwpr1 ON wat.fm_pack = cwpr1.pm_code AND cwpr1.cdpr_unit_level = 'CS' AND wat.org_id = cwpr1.org_id
+				WHERE 1 = 1
+				AND wat.tran_type = 'SP'
+				AND wat.org_id = #{orgId}
+				<if test="ownerCode != null and ownerCode != ''">
+					AND wat.fm_owner = #{ownerCode}
+				</if>
+				<if test="skuCode != null and skuCode != ''">
+					AND wat.fm_sku = #{skuCode}
+				</if>
+				<if test="lotNum != null and lotNum != ''">
+					AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+				</if>
+				<if test="tranTimeFm == null or tranTimeFm == ''">
+					AND wat.tran_time &gt;= '1949-01-01 00:00:00'
+				</if>
+				<if test="tranTimeFm != null and tranTimeFm != ''">
+					AND wat.tran_time &gt;= #{tranTimeFm}
+				</if>
+				<if test="tranTimeTo != null and tranTimeTo != ''">
+					AND wat.tran_time &lt;= #{tranTimeTo}
+				</if>
+				GROUP BY wat.fm_owner, ec1.ebcu_name_cn, wat.fm_sku, cws1.sku_name, wat.fm_lot, wila.lot_att01) sp
+			LEFT JOIN (
+				SELECT
+					wat.to_owner,
+					ec1.ebcu_name_cn,
+					wat.to_sku,
+					cws1.sku_name,
+					wat.to_lot,
+					wila1.lot_att01,
+					SUM(IFNULL(wat.to_qty_ea_op, 0)) AS qty,
+					SUM(IFNULL(wat.to_qty_ea_op, 0) DIV cwpr1.cdpr_quantity) AS uomQty
+				FROM wm_act_tran wat
+				LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+				LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+				LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+				LEFT JOIN cd_wh_package_relation cwpr1 ON wat.to_pack = cwpr1.pm_code AND cwpr1.cdpr_unit_level = 'CS' AND wat.org_id = cwpr1.org_id
+				WHERE 1 = 1
+				AND wat.tran_type = 'CSP'
+				AND wat.org_id = #{orgId}
+				<if test="ownerCode != null and ownerCode != ''">
+					AND wat.to_owner = #{ownerCode}
+				</if>
+				<if test="skuCode != null and skuCode != ''">
+					AND wat.to_sku = #{skuCode}
+				</if>
+				<if test="lotNum != null and lotNum != ''">
+					AND wat.to_lot LIKE CONCAT(#{lotNum}, '%')
+				</if>
+				<if test="tranTimeFm == null or tranTimeFm == ''">
+					AND wat.tran_time &gt;= '1949-01-01 00:00:00'
+				</if>
+				<if test="tranTimeFm != null and tranTimeFm != ''">
+					AND wat.tran_time &gt;= #{tranTimeFm}
+				</if>
+				<if test="tranTimeTo != null and tranTimeTo != ''">
+					AND wat.tran_time &lt;= #{tranTimeTo}
+				</if>
+				GROUP BY wat.to_owner, ec1.ebcu_name_cn, wat.to_sku, cws1.sku_name, wat.to_lot, wila1.lot_att01) csp
+			ON sp.fm_owner = csp.to_owner
+			AND sp.fm_sku = csp.to_sku
+			AND sp.fm_lot = csp.to_lot
+			UNION ALL
+			SELECT
+				'本期调整增加数',
+				wat.to_owner,
+				ec1.ebcu_name_cn,
+				wat.to_sku,
+				cws1.sku_name,
+				wat.to_lot,
+				wila1.lot_att01,
+				SUM(IFNULL(wat.to_qty_ea_op, 0)) AS qty,
+				SUM(IFNULL(wat.to_qty_ea_op, 0) DIV cwpr1.cdpr_quantity) AS uomQty
+			FROM wm_act_tran wat
+			LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+			LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+			LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+			LEFT JOIN cd_wh_package_relation cwpr1 ON wat.to_pack = cwpr1.pm_code AND cwpr1.cdpr_unit_level = 'CS' AND wat.org_id = cwpr1.org_id
+			WHERE 1 = 1
+			AND wat.tran_type = 'AD'
+			AND wat.org_id = #{orgId}
+			AND wat.to_owner IS NOT NULL
+			AND wat.to_sku IS NOT NULL
+			<if test="ownerCode != null and ownerCode != ''">
+				AND wat.to_owner = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND wat.to_sku = #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND wat.to_lot LIKE CONCAT(#{lotNum}, '%')
+			</if>
+			<if test="tranTimeFm == null or tranTimeFm == ''">
+				AND wat.tran_time &gt;= '1949-01-01 00:00:00'
+			</if>
+			<if test="tranTimeFm != null and tranTimeFm != ''">
+				AND wat.tran_time &gt;= #{tranTimeFm}
+			</if>
+			<if test="tranTimeTo != null and tranTimeTo != ''">
+				AND wat.tran_time &lt;= #{tranTimeTo}
+			</if>
+			GROUP BY wat.to_owner, ec1.ebcu_name_cn, wat.to_sku, cws1.sku_name, wat.to_lot, wila1.lot_att01
+			UNION ALL
+			SELECT
+				'本期调整减少数',
+				wat.fm_owner,
+				ec1.ebcu_name_cn,
+				wat.fm_sku,
+				cws1.sku_name,
+				wat.fm_lot,
+				wila1.lot_att01,
+				SUM(IFNULL(wat.fm_qty_ea_op, 0)) AS qty,
+				SUM(IFNULL(wat.fm_qty_ea_op, 0) DIV cwpr1.cdpr_quantity) AS uomQty
+			FROM wm_act_tran wat
+			LEFT JOIN wm_inv_lot_att wila1 ON wat.fm_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+			LEFT JOIN cd_wh_sku cws1 ON wat.fm_sku = cws1.sku_code AND wat.fm_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+			LEFT JOIN eb_customer ec1 ON wat.fm_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+			LEFT JOIN cd_wh_package_relation cwpr1 ON wat.fm_pack = cwpr1.pm_code AND cwpr1.cdpr_unit_level = 'CS' AND wat.org_id = cwpr1.org_id
+			WHERE 1 = 1
+			AND wat.tran_type = 'AD'
+			AND wat.org_id = #{orgId}
+			AND wat.fm_owner IS NOT NULL
+			AND wat.fm_sku IS NOT NULL
+			<if test="ownerCode != null and ownerCode != ''">
+				AND wat.fm_owner = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND wat.fm_sku = #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+			</if>
+			<if test="tranTimeFm == null or tranTimeFm == ''">
+				AND wat.tran_time &gt;= '1949-01-01 00:00:00'
+			</if>
+			<if test="tranTimeFm != null and tranTimeFm != ''">
+				AND wat.tran_time &gt;= #{tranTimeFm}
+			</if>
+			<if test="tranTimeTo != null and tranTimeTo != ''">
+				AND wat.tran_time &lt;= #{tranTimeTo}
+			</if>
+			GROUP BY wat.fm_owner, ec1.ebcu_name_cn, wat.fm_sku, cws1.sku_name, wat.fm_lot, wila1.lot_att01
+			UNION ALL
+			SELECT
+				'本期转入',
+				wat.to_owner,
+				ec1.ebcu_name_cn,
+				wat.to_sku,
+				cws1.sku_name,
+				wat.to_lot,
+				wila1.lot_att01,
+				SUM(IFNULL(wat.to_qty_ea_op, 0)) AS qty,
+				SUM(IFNULL(wat.to_qty_ea_op, 0) DIV cwpr1.cdpr_quantity) AS uomQty
+			FROM wm_act_tran wat
+			LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+			LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+			LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+			LEFT JOIN cd_wh_package_relation cwpr1 ON wat.to_pack = cwpr1.pm_code AND cwpr1.cdpr_unit_level = 'CS' AND wat.org_id = cwpr1.org_id
+			WHERE 1=1
+			AND wat.tran_type = 'TF'
+			AND wat.org_id = #{orgId}
+			<if test="ownerCode != null and ownerCode != ''">
+				AND wat.to_owner = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND wat.to_sku = #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND wat.to_lot LIKE CONCAT(#{lotNum}, '%')
+			</if>
+			<if test="tranTimeFm == null or tranTimeFm == ''">
+				AND wat.tran_time &gt;= '1949-01-01 00:00:00'
+			</if>
+			<if test="tranTimeFm != null and tranTimeFm != ''">
+				AND wat.tran_time &gt;= #{tranTimeFm}
+			</if>
+			<if test="tranTimeTo != null and tranTimeTo != ''">
+				AND wat.tran_time &lt;= #{tranTimeTo}
+			</if>
+			GROUP BY wat.to_owner, ec1.ebcu_name_cn, wat.to_sku, cws1.sku_name, wat.to_lot, wila1.lot_att01
+			UNION ALL
+			SELECT
+				'本期转出',
+				wat.fm_owner,
+				ec1.ebcu_name_cn,
+				wat.fm_sku,
+				cws1.sku_name,
+				wat.fm_lot,
+				wila1.lot_att01,
+				SUM(IFNULL(wat.fm_qty_ea_op, 0)) AS qty,
+				SUM(IFNULL(wat.fm_qty_ea_op, 0) DIV cwpr1.cdpr_quantity) AS uomQty
+			FROM wm_act_tran wat
+			LEFT JOIN wm_inv_lot_att wila1 ON wat.fm_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+			LEFT JOIN cd_wh_sku cws1 ON wat.fm_sku = cws1.sku_code AND wat.fm_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+			LEFT JOIN eb_customer ec1 ON wat.fm_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+			LEFT JOIN cd_wh_package_relation cwpr1 ON wat.fm_pack = cwpr1.pm_code AND cwpr1.cdpr_unit_level = 'CS' AND wat.org_id = cwpr1.org_id
+			WHERE 1 = 1
+			AND wat.tran_type = 'TF'
+			AND wat.org_id = #{orgId}
+			<if test="ownerCode != null and ownerCode != ''">
+				AND wat.fm_owner = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND wat.fm_sku = #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+			</if>
+			<if test="tranTimeFm == null or tranTimeFm == ''">
+				AND wat.tran_time &gt;= '1949-01-01 00:00:00'
+			</if>
+			<if test="tranTimeFm != null and tranTimeFm != ''">
+				AND wat.tran_time &gt;= #{tranTimeFm}
+			</if>
+			<if test="tranTimeTo != null and tranTimeTo != ''">
+				AND wat.tran_time &lt;= #{tranTimeTo}
+			</if>
+			GROUP BY wat.fm_owner, ec1.ebcu_name_cn, wat.fm_sku, cws1.sku_name, wat.fm_lot, wila1.lot_att01
+			UNION ALL
+			SELECT
+				'期末库存',
+				gg.owner_code,
+				gg.owner_name,
+				gg.sku_code,
+				gg.sku_name,
+				gg.lot_num,
+				gg.lot_att01,
+				SUM(gg.inv_qty) AS qty,
+				SUM(gg.inv_uom_qty) AS uomQty
+			FROM (
+				SELECT
+					ppoi.owner_code,
+					ppoi.owner_name,
+					ppoi.sku_code,
+					ppoi.sku_name,
+					ppoi.lot_num,
+					ppoi.lot_att01,
+					pptt.fm_qty_ea_after AS inv_qty,
+					pptt.fm_qty_uom_after AS inv_uom_qty
+				FROM (
+					SELECT MAX(uu.tran_time) AS tran_time,
+						uu.owner_code,
+						uu.owner_name,
+						uu.sku_code,
+						uu.sku_name,
+						uu.lot_num,
+						uu.lot_att01,
+						uu.loc_code,
+						uu.trace_id
+					FROM (
+						SELECT
+							ppt.tran_time,
+							pp.owner_code,
+							pp.owner_name,
+							pp.sku_code,
+							pp.sku_name,
+							pp.lot_num,
+							pp.lot_att01,
+							pp.loc_code,
+							pp.trace_id
+						FROM (
+							SELECT
+								MAX(tt.tran_time) AS tran_time,
+								tt.fm_owner AS owner_code,
+								tt.fm_loc AS loc_code,
+								tt.fm_id AS trace_id,
+								tt.ebcu_name_cn AS owner_name,
+								tt.fm_sku AS sku_code,
+								tt.sku_name AS sku_name,
+								tt.fm_lot AS lot_num,
+								tt.lot_att01 AS lot_att01
+							FROM (
+								SELECT
+									wat.tran_time,
+									wat.fm_owner,
+									ec.ebcu_name_cn,
+									wat.fm_sku ,
+									cws.sku_name,
+									wat.fm_lot,
+									wila.lot_att01,
+									wat.fm_loc,
+									wat.fm_id
+								FROM wm_act_tran wat
+								LEFT JOIN wm_inv_lot_att wila ON wat.fm_lot = wila.lot_num AND wat.org_id = wila.org_id
+								LEFT JOIN cd_wh_sku cws ON wat.fm_sku = cws.sku_code AND wat.fm_owner = cws.owner_code AND wat.org_id = cws.org_id
+								LEFT JOIN eb_customer ec ON wat.fm_owner = ec.ebcu_customer_no AND wat.org_id=ec.org_id
+								WHERE 1 = 1
+								AND wat.org_id = #{orgId}
+								AND wat.fm_owner IS NOT NULL
+								AND wat.fm_sku IS NOT NULL
+								<if test="ownerCode != null and ownerCode != ''">
+									AND wat.fm_owner = #{ownerCode}
+								</if>
+								<if test="skuCode != null and skuCode != ''">
+									AND wat.fm_sku = #{skuCode}
+								</if>
+								<if test="lotNum != null and lotNum != ''">
+									AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+								</if>
+								<if test="tranTimeTo != null and tranTimeTo != ''">
+									AND wat.tran_time &lt;= #{tranTimeTo}
+								</if>
+								UNION ALL
+								SELECT
+									wat.tran_time,
+									wat.to_owner,
+									ec1.ebcu_name_cn,
+									wat.to_sku,
+									cws1.sku_name,
+									wat.to_lot,
+									wila1.lot_att01,
+									wat.to_loc,
+									wat.to_id
+								FROM wm_act_tran wat
+								LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+								LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+								LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+								WHERE 1 = 1
+								AND wat.org_id = #{orgId}
+								<if test="ownerCode != null and ownerCode != ''">
+									AND wat.to_owner = #{ownerCode}
+								</if>
+								<if test="skuCode != null and skuCode != ''">
+									AND wat.to_sku = #{skuCode}
+								</if>
+								<if test="lotNum != null and lotNum != ''">
+									AND wat.to_lot LIKE CONCAT(#{lotNum}, '%')
+								</if>
+								<if test="tranTimeTo != null and tranTimeTo != ''">
+									AND wat.tran_time &lt;= #{tranTimeTo}
+								</if>
+								AND wat.to_owner IS NOT NULL
+								AND wat.to_sku IS NOT NULL) tt
+							GROUP BY tt.fm_owner, tt.fm_loc, tt.fm_id, tt.ebcu_name_cn, tt.fm_sku, tt.sku_name, tt.fm_lot, tt.lot_att01) pp
+						LEFT JOIN (
+							SELECT
+								wat.tran_time,
+								wat.fm_owner,
+								ec.ebcu_name_cn,
+								wat.fm_sku,
+								cws.sku_name,
+								wat.fm_lot,
+								wila.lot_att01,
+								wat.fm_loc,
+								wat.fm_id,
+								wat.fm_qty_ea_before,
+								wat.fm_qty_ea_after
+							FROM wm_act_tran wat
+							LEFT JOIN wm_inv_lot_att wila ON wat.fm_lot = wila.lot_num AND wat.org_id = wila.org_id
+							LEFT JOIN cd_wh_sku cws ON wat.fm_sku = cws.sku_code AND wat.fm_owner = cws.owner_code AND wat.org_id = cws.org_id
+							LEFT JOIN eb_customer ec ON wat.fm_owner = ec.ebcu_customer_no AND wat.org_id = ec.org_id
+							WHERE 1 = 1
+							AND NOT EXISTS (
+								SELECT 1 FROM wm_act_tran watg
+								LEFT JOIN wm_inv_lot_att wila ON watg.fm_lot = wila.lot_num AND watg.org_id = wila.org_id
+								WHERE 1 = 1
+								AND watg.org_id = #{orgId}
+								AND (watg.fm_owner = watg.to_owner AND watg.fm_sku = watg.to_sku AND watg.fm_lot = watg.to_lot AND watg.fm_loc = watg.to_loc AND watg.fm_id = watg.to_id)
+								AND watg.fm_owner IS NOT NULL
+								AND watg.fm_sku IS NOT NULL
+								<if test="ownerCode != null and ownerCode != ''">
+									AND wat.fm_owner = #{ownerCode}
+								</if>
+								<if test="skuCode != null and skuCode != ''">
+									AND wat.fm_sku = #{skuCode}
+								</if>
+								<if test="lotNum != null and lotNum != ''">
+									AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+								</if>
+								<if test="tranTimeTo != null and tranTimeTo != ''">
+									AND wat.tran_time &lt;= #{tranTimeTo}
+								</if>
+								AND wat.id = watg.id)
+							AND wat.org_id = #{orgId}
+							AND wat.fm_owner IS NOT NULL
+							AND wat.fm_sku IS NOT NULL
+							<if test="ownerCode != null and ownerCode != ''">
+								AND wat.fm_owner = #{ownerCode}
+							</if>
+							<if test="skuCode != null and skuCode != ''">
+								AND wat.fm_sku = #{skuCode}
+							</if>
+							<if test="lotNum != null and lotNum != ''">
+								AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+							</if>
+							<if test="tranTimeTo != null and tranTimeTo != ''">
+								AND wat.tran_time &lt;= #{tranTimeTo}
+							</if>
+							UNION ALL
+							SELECT
+								wat.tran_time ,
+								wat.to_owner,
+								ec1.ebcu_name_cn,
+								wat.to_sku ,
+								cws1.sku_name,
+								wat.to_lot ,
+								wila1.lot_att01,
+								wat.to_loc ,
+								wat.to_id ,
+								wat.to_qty_ea_before,
+								wat.to_qty_ea_after
+							FROM wm_act_tran wat
+							LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+							LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+							LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+							WHERE 1 = 1
+							AND wat.org_id = #{orgId}
+							<if test="ownerCode != null and ownerCode != ''">
+								AND wat.to_owner = #{ownerCode}
+							</if>
+							<if test="skuCode != null and skuCode != ''">
+								AND wat.to_sku = #{skuCode}
+							</if>
+							<if test="lotNum != null and lotNum != ''">
+								AND wat.to_lot LIKE CONCAT(#{lotNum}, '%')
+							</if>
+							<if test="tranTimeTo != null and tranTimeTo != ''">
+								AND wat.tran_time &lt;= #{tranTimeTo}
+							</if>
+							AND wat.to_owner IS NOT NULL
+							AND wat.to_sku IS NOT NULL) ppt
+						ON pp.tran_time = ppt.tran_time
+						AND pp.owner_code = ppt.fm_owner
+						AND pp.sku_code = ppt.fm_sku
+						AND pp.lot_num = ppt.fm_lot
+						AND pp.loc_code = ppt.fm_loc
+						AND pp.trace_id = ppt.fm_id
+						WHERE 1=1) uu
+					GROUP BY uu.owner_code, uu.owner_name, uu.sku_code, uu.sku_name, uu.lot_num, uu.lot_att01, uu.loc_code, uu.trace_id) ppoi
+				LEFT JOIN (
+					SELECT
+						wat.id,
+						wat.tran_time,
+						wat.fm_owner,
+						ec.ebcu_name_cn,
+						wat.fm_sku,
+						cws.sku_name,
+						wat.fm_lot,
+						wila.lot_att01,
+						wat.fm_loc,
+						wat.fm_id,
+						wat.fm_qty_ea_before,
+						wat.fm_qty_ea_before DIV cwpr.cdpr_quantity AS fm_qty_uom_before,
+						wat.fm_qty_ea_after,
+						wat.fm_qty_ea_after DIV cwpr.cdpr_quantity AS fm_qty_uom_after
+					FROM wm_act_tran wat
+					LEFT JOIN wm_inv_lot_att wila ON wat.fm_lot = wila.lot_num AND wat.org_id = wila.org_id
+					LEFT JOIN cd_wh_sku cws ON wat.fm_sku = cws.sku_code AND wat.fm_owner = cws.owner_code AND wat.org_id = cws.org_id
+					LEFT JOIN eb_customer ec ON wat.fm_owner = ec.ebcu_customer_no AND wat.org_id=ec.org_id
+					LEFT JOIN cd_wh_package_relation cwpr ON wat.fm_pack = cwpr.pm_code AND cwpr.cdpr_unit_level = 'CS' AND wat.org_id = cwpr.org_id
+					WHERE 1 = 1
+					AND NOT EXISTS (
+						SELECT 1 FROM wm_act_tran watg
+						LEFT JOIN wm_inv_lot_att wila ON watg.fm_lot = wila.lot_num AND watg.org_id = wila.org_id
+						WHERE 1=1
+						AND watg.org_id = #{orgId}
+						AND (watg.fm_owner = watg.to_owner AND watg.fm_sku = watg.to_sku AND watg.fm_lot = watg.to_lot AND watg.fm_loc = watg.to_loc AND watg.fm_id = watg.to_id)
+						AND watg.fm_owner IS NOT NULL
+						AND watg.fm_sku IS NOT NULL
+						<if test="ownerCode != null and ownerCode != ''">
+							AND wat.fm_owner = #{ownerCode}
+						</if>
+						<if test="skuCode != null and skuCode != ''">
+							AND wat.fm_sku = #{skuCode}
+						</if>
+						<if test="lotNum != null and lotNum != ''">
+							AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+						</if>
+						<if test="tranTimeTo != null and tranTimeTo != ''">
+							AND wat.tran_time &lt;= #{tranTimeTo}
+						</if>
+						AND wat.id = watg.id)
+					AND wat.org_id = #{orgId}
+					AND wat.fm_owner IS NOT NULL
+					AND wat.fm_sku IS NOT NULL
+					<if test="ownerCode != null and ownerCode != ''">
+						AND wat.fm_owner = #{ownerCode}
+					</if>
+					<if test="skuCode != null and skuCode != ''">
+						AND wat.fm_sku = #{skuCode}
+					</if>
+					<if test="lotNum != null and lotNum != ''">
+						AND wat.fm_lot LIKE CONCAT(#{lotNum}, '%')
+					</if>
+					<if test="tranTimeTo != null and tranTimeTo != ''">
+						AND wat.tran_time &lt;= #{tranTimeTo}
+					</if>
+					UNION ALL
+					SELECT
+						wat.id,
+						wat.tran_time,
+						wat.to_owner,
+						ec1.ebcu_name_cn,
+						wat.to_sku,
+						cws1.sku_name,
+						wat.to_lot,
+						wila1.lot_att01,
+						wat.to_loc,
+						wat.to_id,
+						wat.to_qty_ea_before,
+						wat.to_qty_ea_before DIV cwpr1.cdpr_quantity AS to_qty_uom_before,
+						wat.to_qty_ea_after,
+						wat.to_qty_ea_after DIV cwpr1.cdpr_quantity AS to_qty_uom_after
+					FROM wm_act_tran wat
+					LEFT JOIN wm_inv_lot_att wila1 ON wat.to_lot = wila1.lot_num AND wat.org_id = wila1.org_id
+					LEFT JOIN cd_wh_sku cws1 ON wat.to_sku = cws1.sku_code AND wat.to_owner = cws1.owner_code AND wat.org_id = cws1.org_id
+					LEFT JOIN eb_customer ec1 ON wat.to_owner = ec1.ebcu_customer_no AND wat.org_id = ec1.org_id
+					LEFT JOIN cd_wh_package_relation cwpr1 ON wat.to_pack = cwpr1.pm_code AND cwpr1.cdpr_unit_level = 'CS' AND wat.org_id = cwpr1.org_id
+					WHERE 1 = 1
+					AND wat.org_id = #{orgId}
+					<if test="ownerCode != null and ownerCode != ''">
+						AND wat.to_owner = #{ownerCode}
+					</if>
+					<if test="skuCode != null and skuCode != ''">
+						AND wat.to_sku = #{skuCode}
+					</if>
+					<if test="lotNum != null and lotNum != ''">
+						AND wat.to_lot LIKE CONCAT(#{lotNum}, '%')
+					</if>
+					<if test="tranTimeTo != null and tranTimeTo != ''">
+						AND wat.tran_time &lt;= #{tranTimeTo}
+					</if>
+					AND wat.to_owner IS NOT NULL
+					AND wat.to_sku IS NOT NULL) pptt
+				ON ppoi.tran_time = pptt.tran_time
+				AND ppoi.owner_code = pptt.fm_owner
+				AND ppoi.sku_code = pptt.fm_sku
+				AND ppoi.lot_num = pptt.fm_lot
+				AND ppoi.loc_code = pptt.fm_loc
+				AND ppoi.trace_id = pptt.fm_id) gg
+			GROUP BY gg.owner_code, gg.owner_name, gg.sku_code, gg.sku_name, gg.lot_num, gg.lot_att01) pop
+		GROUP BY pop.owner_code, pop.owner_name, pop.sku_code, pop.sku_name, pop.lot_num, pop.lot_att01
+		ORDER BY pop.owner_code, pop.sku_code, pop.lot_num
+    </select>
+
+</mapper>

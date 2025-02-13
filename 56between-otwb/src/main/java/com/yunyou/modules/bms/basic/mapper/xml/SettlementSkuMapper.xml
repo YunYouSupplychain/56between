@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.basic.mapper.SettlementSkuMapper">
+
+    <sql id="settlementSkuColumns">
+        a.id                  AS "id",
+		a.create_by           AS "createBy.id",
+		a.create_date         AS "createDate",
+		a.update_by           AS "updateBy.id",
+		a.update_date         AS "updateDate",
+		a.remarks             AS "remarks",
+		a.del_flag            AS "delFlag",
+		a.rec_ver             AS "recVer",
+		a.owner_code          AS "ownerCode",
+		a.sku_code            AS "skuCode",
+		a.sku_name            AS "skuName",
+		a.sku_short_name      AS "skuShortName",
+		a.sku_spec            AS "skuSpec",
+		a.length              AS "length",
+		a.width               AS "width",
+		a.height              AS "height",
+		a.gross_weight        AS "grossWeight",
+		a.net_weight          AS "netWeight",
+		a.volume              AS "volume",
+		a.ea_quantity         AS "eaQuantity",
+		a.ip_quantity         AS "ipQuantity",
+		a.cs_quantity         AS "csQuantity",
+		a.pl_quantity         AS "plQuantity",
+		a.ot_quantity         AS "otQuantity",
+		a.sku_customer_code   AS "skuCustomerCode",
+		a.sku_model           AS "skuModel",
+		a.sku_type            AS "skuType",
+		a.sales_unit          AS "salesUnit",
+		a.store_order_times   AS "storeOrderTimes",
+		a.detachable_flag     AS "detachableFlag",
+		a.deduct_weight_ratio AS "deductWeightRatio",
+		a.sku_weigh_type      AS "skuWeighType",
+		a.sku_temp_layer      AS "skuTempLayer",
+		a.sku_class           AS "skuClass",
+		a.weigh_way           AS "weighWay",
+		a.tare_weight         AS "tareWeight",
+		a.is_iqc              AS "isIqc",
+		a.is_ices             AS "isIces",
+		a.box_volume          AS "boxVolume",
+		a.sku_check_type      AS "skuCheckType",
+		a.org_id              AS "orgId"
+    </sql>
+
+    <sql id="extraColumns">
+        bc.ebcu_name_cn AS "ownerName",
+        bsc.name AS "skuClassName"
+    </sql>
+
+    <sql id="settlementSkuJoins">
+        LEFT JOIN bms_customer bc ON a.owner_code = bc.ebcu_customer_no AND a.org_id = bc.org_id
+        LEFT JOIN bms_sku_classification bsc ON a.sku_class = bsc.code AND a.org_id = bsc.org_id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.basic.entity.SettlementSku">
+        SELECT
+        <include refid="settlementSkuColumns"/>
+        FROM settlement_sku a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.basic.entity.SettlementSku">
+        SELECT
+        <include refid="settlementSkuColumns"/>
+        FROM settlement_sku a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code = #{ownerCode}
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code = #{skuCode}
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name = #{skuName}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.basic.entity.SettlementSku">
+        SELECT
+        <include refid="settlementSkuColumns"/>
+        FROM settlement_sku a
+        <include refid="settlementSkuJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO settlement_sku
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            owner_code,
+            sku_code,
+            sku_name,
+            sku_short_name,
+            sku_spec,
+            length,
+            width,
+            height,
+            gross_weight,
+            net_weight,
+            volume,
+            ea_quantity,
+            ip_quantity,
+            cs_quantity,
+            pl_quantity,
+            ot_quantity,
+            sku_customer_code,
+            sku_model,
+            sku_type,
+            sales_unit,
+            store_order_times,
+            detachable_flag,
+            deduct_weight_ratio,
+            sku_weigh_type,
+            sku_temp_layer,
+            sku_class,
+            weigh_way,
+            tare_weight,
+            is_iqc,
+            is_ices,
+            box_volume,
+            sku_check_type,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{ownerCode},
+            #{skuCode},
+            #{skuName},
+            #{skuShortName},
+            #{skuSpec},
+            #{length},
+            #{width},
+            #{height},
+            #{grossWeight},
+            #{netWeight},
+            #{volume},
+            #{eaQuantity},
+            #{ipQuantity},
+            #{csQuantity},
+            #{plQuantity},
+            #{otQuantity},
+            #{skuCustomerCode},
+            #{skuModel},
+            #{skuType},
+            #{salesUnit},
+            #{storeOrderTimes},
+            #{detachableFlag},
+            #{deductWeightRatio},
+            #{skuWeighType},
+            #{skuTempLayer},
+            #{skuClass},
+            #{weighWay},
+            #{tareWeight},
+            #{isIqc},
+            #{isIces},
+            #{boxVolume},
+            #{skuCheckType},
+            #{orgId}
+        )
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO settlement_sku(
+        id,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        remarks,
+        del_flag,
+        rec_ver,
+        owner_code,
+        sku_code,
+        sku_name,
+        sku_short_name,
+        sku_spec,
+        length,
+        width,
+        height,
+        gross_weight,
+        net_weight,
+        volume,
+        ea_quantity,
+        ip_quantity,
+        cs_quantity,
+        pl_quantity,
+        ot_quantity,
+        sku_customer_code,
+        sku_model,
+        sku_type,
+        sales_unit,
+        store_order_times,
+        detachable_flag,
+        deduct_weight_ratio,
+        sku_weigh_type,
+        sku_temp_layer,
+        sku_class,
+        weigh_way,
+        tare_weight,
+        is_iqc,
+        is_ices,
+        box_volume,
+        sku_check_type,
+        org_id
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator="," close=";">
+            (
+            #{item.id},
+            #{item.createBy.id},
+            #{item.createDate},
+            #{item.updateBy.id},
+            #{item.updateDate},
+            #{item.remarks},
+            #{item.delFlag},
+            #{item.recVer},
+            #{item.ownerCode},
+            #{item.skuCode},
+            #{item.skuName},
+            #{item.skuShortName},
+            #{item.skuSpec},
+            #{item.length},
+            #{item.width},
+            #{item.height},
+            #{item.grossWeight},
+            #{item.netWeight},
+            #{item.volume},
+            #{item.eaQuantity},
+            #{item.ipQuantity},
+            #{item.csQuantity},
+            #{item.plQuantity},
+            #{item.otQuantity},
+            #{item.skuCustomerCode},
+            #{item.skuModel},
+            #{item.skuType},
+            #{item.salesUnit},
+            #{item.storeOrderTimes},
+            #{item.detachableFlag},
+            #{item.deductWeightRatio},
+            #{item.skuWeighType},
+            #{item.skuTempLayer},
+            #{item.skuClass},
+            #{item.weighWay},
+            #{item.tareWeight},
+            #{item.isIqc},
+            #{item.isIces},
+            #{item.boxVolume},
+            #{item.skuCheckType},
+            #{item.orgId}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE settlement_sku
+        SET update_by           = #{updateBy.id},
+            update_date         = #{updateDate},
+            remarks             = #{remarks},
+            rec_ver             = rec_ver + 1,
+            owner_code          = #{ownerCode},
+            sku_code            = #{skuCode},
+            sku_name            = #{skuName},
+            sku_short_name      = #{skuShortName},
+            sku_spec            = #{skuSpec},
+            length              = #{length},
+            width               = #{width},
+            height              = #{height},
+            gross_weight        = #{grossWeight},
+            net_weight          = #{netWeight},
+            volume              = #{volume},
+            ea_quantity         = #{eaQuantity},
+            ip_quantity         = #{ipQuantity},
+            cs_quantity         = #{csQuantity},
+            pl_quantity         = #{plQuantity},
+            ot_quantity         = #{otQuantity},
+            sku_customer_code   = #{skuCustomerCode},
+            sku_model           = #{skuModel},
+            sku_type            = #{skuType},
+            sales_unit          = #{salesUnit},
+            store_order_times   = #{storeOrderTimes},
+            detachable_flag     = #{detachableFlag},
+            deduct_weight_ratio = #{deductWeightRatio},
+            sku_weigh_type      = #{skuWeighType},
+            sku_temp_layer      = #{skuTempLayer},
+            sku_class           = #{skuClass},
+            weigh_way           = #{weighWay},
+            tare_weight         = #{tareWeight},
+            is_iqc              = #{isIqc},
+            is_ices             = #{isIces},
+            box_volume          = #{boxVolume},
+            sku_check_type      = #{skuCheckType},
+            org_id              = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE settlement_sku
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM settlement_sku WHERE id = #{id}
+    </delete>
+    <delete id="remove">
+        DELETE FROM settlement_sku WHERE owner_code = #{ownerCode} AND sku_code = #{skuCode} AND org_id = #{orgId}
+    </delete>
+
+    <select id="getEntity" resultType="com.yunyou.modules.bms.basic.entity.extend.SettlementSkuEntity">
+        SELECT
+        <include refid="settlementSkuColumns"/>,
+        <include refid="extraColumns"/>
+        FROM settlement_sku a
+        <include refid="settlementSkuJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="getByOwnerAndSku" resultType="com.yunyou.modules.bms.basic.entity.SettlementSku">
+        SELECT
+        <include refid="settlementSkuColumns"/>
+        FROM settlement_sku a
+        WHERE a.owner_code = #{ownerCode}
+        AND a.sku_code = #{skuCode}
+        AND a.org_id = #{orgId}
+    </select>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.basic.entity.extend.SettlementSkuEntity">
+        SELECT
+        <include refid="settlementSkuColumns"/>,
+        <include refid="extraColumns"/>
+        FROM settlement_sku a
+        <include refid="settlementSkuJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code LIKE concat('%', #{ownerCode}, '%')
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code LIKE concat('%', #{skuCode}, '%')
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name LIKE concat('%', #{skuName}, '%')
+            </if>
+            <if test="skuClass != null and skuClass != ''">
+                AND a.sku_class = #{skuClass}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findGrid" resultType="com.yunyou.modules.bms.basic.entity.extend.SettlementSkuEntity">
+        SELECT
+        <include refid="settlementSkuColumns"/>,
+        <include refid="extraColumns"/>
+        FROM settlement_sku a
+        <include refid="settlementSkuJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code LIKE concat('%', #{ownerCode}, '%')
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code LIKE concat('%', #{skuCode}, '%')
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name LIKE concat('%', #{skuName}, '%')
+            </if>
+            <if test="skuClass != null and skuClass != ''">
+                AND a.sku_class = #{skuClass}
+            </if>
+            <if test="codeAndName != null and codeAndName != ''">
+                AND (a.sku_code LIKE concat('%', #{codeAndName}, '%')
+                or a.sku_name LIKE concat('%', #{codeAndName}, '%'))
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findGridDataAndSupplier" resultType="com.yunyou.modules.bms.basic.entity.extend.SettlementSkuEntity">
+        SELECT
+        b.supplier_code AS "supplierCode",
+        b.supplier_name AS "supplierName",
+        <include refid="settlementSkuColumns"/>,
+        <include refid="extraColumns"/>
+        FROM settlement_sku a
+        <include refid="settlementSkuJoins"/>
+        LEFT JOIN settlement_sku_supplier b ON a.id = b.sku_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code LIKE concat('%', #{ownerCode}, '%')
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code LIKE concat('%', #{skuCode}, '%')
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name LIKE concat('%', #{skuName}, '%')
+            </if>
+            <if test="skuClass != null and skuClass != ''">
+                AND a.sku_class = #{skuClass}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND b.supplier_code = #{supplierCode}
+            </if>
+            <if test="codeAndName != null and codeAndName != ''">
+                AND (a.sku_code LIKE concat('%', #{codeAndName}, '%')
+                or a.sku_name LIKE concat('%', #{codeAndName}, '%'))
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

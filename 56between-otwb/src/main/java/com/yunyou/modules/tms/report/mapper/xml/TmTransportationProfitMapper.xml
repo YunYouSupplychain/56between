@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.report.mapper.TmTransportationProfitMapper">
+
+    <select id="findList" resultType="com.yunyou.modules.tms.report.entity.TmTransportationProfit">
+        SELECT a.transport_no         AS "transportNo",
+               a.customer_code        AS "customerCode",
+               tto.transport_obj_name AS "customerName",
+               a.order_time           AS "orderTime",
+               a.ship_city_name       AS "shipCity",
+               a.consignee_city_name  AS "consigneeCity",
+               a.base_org_id          AS "baseOrgId",
+               a.org_id               AS "orgId"
+        FROM tm_transport_order_header a
+            LEFT JOIN tm_transport_obj tto ON a.customer_code = tto.transport_obj_code AND a.base_org_id = tto.org_id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        ${dataScope}
+        <if test="transportNo != null and transportNo != ''">
+            AND a.transport_no = #{transportNo}
+        </if>
+        <if test="customerCode != null and customerCode != ''">
+          AND a.customer_code = #{customerCode}
+        </if>
+        <if test="baseOrgId != null and baseOrgId != ''">
+            AND a.base_org_id = #{baseOrgId}
+        </if>
+        <if test="fmDate != null">
+          AND a.order_time &gt;= #{fmDate}
+        </if>
+        <if test="toDate != null">
+          AND a.order_time &lt;= #{toDate}
+        </if>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.transport_no
+            </otherwise>
+        </choose>
+    </select>
+
+</mapper>

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.mapper.OfficeMapper">
+
+    <resultMap id="officeResult" type="com.yunyou.modules.sys.entity.Office">
+        <id property="id" column="id"/>
+        <result property="parentIds" column="parent_ids"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="type" column="type"/>
+        <result property="address" column="address"/>
+        <result property="zipCode" column="zip_code"/>
+        <result property="master" column="master"/>
+        <result property="phone" column="phone"/>
+        <result property="fax" column="fax"/>
+        <result property="email" column="email"/>
+        <result property="useable" column="useable"/>
+        <result property="type" column="type"/>
+        <result property="remarks" column="remarks"/>
+        <association property="area" column="area_id" select="getArea"/>
+        <association property="hasChildren" column="id" select="hasChildren"/>
+    </resultMap>
+
+    <sql id="officeColumns">
+        a.id,
+		a.parent_id AS "parent.id",
+		a.parent_ids,
+		a.area_id AS "area.id",
+		a.code,
+		a.name,
+		a.sort,
+		a.type,
+		a.address,
+		a.zip_code, 
+		a.master, 
+		a.phone, 
+		a.fax, 
+		a.email, 
+		a.remarks,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		a.useable AS useable,
+        p.name AS "parent.name",
+		ar.name AS "area.name",
+		ar.parent_ids AS "area.parentIds"
+    </sql>
+
+    <sql id="officeJoins">
+        LEFT JOIN sys_office p ON p.id = a.parent_id
+		LEFT JOIN sys_area ar ON ar.id = a.area_id
+    </sql>
+
+    <select id="getChildren" parameterType="String" resultMap="officeResult">
+        SELECT *
+        FROM sys_office
+        WHERE parent_id = #{id}
+        ORDER BY sort, code
+    </select>
+
+    <select id="getArea" parameterType="String" resultType="com.yunyou.modules.sys.entity.Area">
+        SELECT *
+        FROM sys_area
+        WHERE id = #{id}
+    </select>
+
+    <select id="hasChildren" parameterType="String" resultType="Boolean">
+        SELECT CASE WHEN EXISTS(SELECT 1 FROM sys_office WHERE parent_id = #{id}) THEN 1 ELSE 0 END ${dual}
+    </select>
+
+    <select id="get" resultType="com.yunyou.modules.sys.entity.Office">
+        SELECT
+        <include refid="officeColumns"/>
+        FROM sys_office a
+        <include refid="officeJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="getByCode" resultType="com.yunyou.modules.sys.entity.Office">
+        SELECT
+        <include refid="officeColumns"/>
+        FROM sys_office a
+        <include refid="officeJoins"/>
+        WHERE a.code = #{code}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.sys.entity.Office">
+        SELECT
+        <include refid="officeColumns"/>
+        FROM sys_office a
+        <include refid="officeJoins"/>
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        OR a.id = #{currentUser.office.id}
+        ${dataScope}
+        ORDER BY a.code
+    </select>
+
+    <select id="findCompanyData" resultType="com.yunyou.modules.sys.entity.Office">
+        SELECT
+        <include refid="officeColumns"/>
+        FROM sys_office a
+        <include refid="officeJoins"/>
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        ${dataScope}
+        <if test="id != null and id != ''">
+            AND (a.id = #{id} or a.parent_ids like concat('%,', #{id}, ',%'))
+        </if>
+        <if test="code != null and code != ''">
+            AND a.code like concat('%',#{code},'%')
+        </if>
+        <if test="name != null and name != ''">
+            AND a.name like concat('%',#{name},'%')
+        </if>
+        <if test="type != null and type != ''">
+            AND a.type = #{type}
+        </if>
+        <if test="typeList != null and typeList.size > 0">
+            AND a.type in
+            <foreach collection="typeList" item="item" index="index" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="codeAndName != null and codeAndName != ''">
+            AND (a.code like concat('%',#{codeAndName},'%') or a.name like concat('%',#{codeAndName},'%'))
+        </if>
+        ORDER BY a.code
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.sys.entity.Office">
+        SELECT
+        <include refid="officeColumns"/>
+        FROM sys_office a
+        <include refid="officeJoins"/>
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        ${dataScope}
+        ORDER BY a.code
+    </select>
+
+    <select id="findByParentIdsLike" resultType="com.yunyou.modules.sys.entity.Office">
+        SELECT
+        <include refid="officeColumns"/>
+        FROM sys_office a
+        <include refid="officeJoins"/>
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_ids LIKE #{parentIds}
+        ORDER BY a.code
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sys_office (
+            id,
+            parent_id,
+            parent_ids,
+            area_id,
+            code,
+            name,
+            sort,
+            type,
+            address,
+            zip_code,
+            master,
+            phone,
+            fax,
+            email,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            useable
+        ) VALUES (
+            #{id},
+            #{parent.id},
+            #{parentIds},
+            #{area.id},
+            #{code},
+            #{name},
+            #{sort},
+            #{type},
+            #{address},
+            #{zipCode},
+            #{master},
+            #{phone},
+            #{fax},
+            #{email},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{useable}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE sys_office
+        SET parent_id   = #{parent.id},
+            parent_ids  = #{parentIds},
+            area_id     = #{area.id},
+            code        = #{code},
+            name        = #{name},
+            type        = #{type},
+            address     = #{address},
+            zip_code    = #{zipCode},
+            master      = #{master},
+            phone       = #{phone},
+            fax         = #{fax},
+            email       = #{email},
+            update_by   = #{updateBy.id},
+            update_date = #{updateDate},
+            remarks     = #{remarks},
+            useable     = #{useable}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateParentIds">
+        UPDATE sys_office
+        SET parent_id  = #{parent.id},
+            parent_ids = #{parentIds}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM sys_office
+        WHERE id = #{id}
+           OR parent_ids LIKE CONCAT('%,', #{id}, ',%')
+    </delete>
+
+    <update id="deleteByLogic">
+        UPDATE sys_office
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+           OR parent_ids LIKE CONCAT('%,', #{id}, ',%')
+    </update>
+
+    <select id="findChildIdsByParentId" resultType="String">
+        SELECT a.id
+        FROM sys_office a
+        WHERE a.del_flag = 0
+          AND a.parent_ids LIKE CONCAT('%,', #{parentId}, ',%')
+    </select>
+
+    <select id="getByName" resultType="com.yunyou.modules.sys.entity.Office">
+        SELECT
+        <include refid="officeColumns"/>
+        FROM sys_office a
+        <include refid="officeJoins"/>
+        WHERE a.name = #{name}
+    </select>
+
+    <select id="findChildrenByParentId" resultType="com.yunyou.modules.sys.entity.Office">
+        SELECT
+        <include refid="officeColumns"/>
+        FROM sys_office a
+        <include refid="officeJoins"/>
+        WHERE a.del_flag = 0
+        AND a.type in ('1', '2', '5')
+        AND a.parent_ids LIKE CONCAT('%,', #{parentId}, ',%')
+    </select>
+
+    <select id="findOutletMatchedOrg" resultType="com.yunyou.modules.sys.entity.Office">
+        SELECT
+        <include refid="officeColumns"/>
+        FROM sys_office a
+        <include refid="officeJoins"/>
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        AND a.type IN ('4', '7')
+        ${dataScope}
+        <if test="id != null and id != ''">
+            AND (a.id = #{id} or a.parent_ids like concat('%,', #{id}, ',%'))
+        </if>
+        <if test="code != null and code != ''">
+            AND a.code like concat('%',#{code},'%')
+        </if>
+        <if test="name != null and name != ''">
+            AND a.name like concat('%',#{name},'%')
+        </if>
+        ORDER BY a.code
+    </select>
+</mapper>

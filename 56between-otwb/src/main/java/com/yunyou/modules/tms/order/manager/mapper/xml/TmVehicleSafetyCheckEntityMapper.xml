@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.manager.mapper.TmVehicleSafetyCheckEntityMapper">
+
+	<sql id="tmVehicleSafetyCheckColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.check_date AS "checkDate",
+		a.weather_condition AS "weatherCondition",
+		a.air_temperature AS "airTemperature",
+		a.vehicle_no AS "vehicleNo",
+		a.trailer_no AS "trailerNo",
+		a.certified_tonnage AS "certifiedTonnage",
+		a.class_item AS "classItem",
+		a.departure_time AS "departureTime",
+		a.departure_odometer_number AS "departureOdometerNumber",
+		a.return_time AS "returnTime",
+		a.return_odometer_number AS "returnOdometerNumber",
+		a.check_list AS "checkList",
+		a.non_conformity AS "nonConformity",
+		a.confirm_conclusion AS "confirmConclusion",
+		a.safety_sign AS "safetySign",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.org_id AS "orgId",
+		a.base_org_id AS "baseOrgId",
+		a.rec_ver AS "recVer"
+	</sql>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.order.entity.extend.TmVehicleSafetyCheckEntity" >
+		SELECT
+			<include refid="tmVehicleSafetyCheckColumns"/>
+		FROM tm_vehicle_safety_check a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		  ${dataScope}
+		<if test="vehicleNo != null and vehicleNo != ''">
+			AND a.vehicle_no = #{vehicleNo}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="checkDateFm != null and checkDateFm != ''">
+			AND a.check_date &gt;= #{checkDateFm}
+		</if>
+		<if test="checkDateTo != null and checkDateTo != ''">
+			AND a.check_date &lt;= #{checkDateTo}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findEntityList" resultType="com.yunyou.modules.tms.order.entity.extend.TmVehicleSafetyCheckEntity" >
+		SELECT
+			<include refid="tmVehicleSafetyCheckColumns"/>
+		FROM tm_vehicle_safety_check a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		${dataScope}
+		<if test="vehicleNo != null and vehicleNo != ''">
+			AND a.vehicle_no = #{vehicleNo}
+		</if>
+		<if test="orgId != null and orgId != ''">
+			AND a.org_id = #{orgId}
+		</if>
+		<if test="checkDateFm != null and checkDateFm != ''">
+			AND a.check_date &gt;= #{checkDateFm}
+		</if>
+		<if test="checkDateTo != null and checkDateTo != ''">
+			AND a.check_date &lt;= #{checkDateTo}
+		</if>
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.tms.order.entity.extend.TmVehicleSafetyCheckEntity">
+		SELECT
+			<include refid="tmVehicleSafetyCheckColumns"/>
+		FROM tm_vehicle_safety_check a
+		WHERE a.id = #{id}
+	</select>
+
+</mapper>

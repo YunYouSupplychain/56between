@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.report.mapper.BanQinWmRepZoneUseRateMapper">
+
+    <select id="findPage" resultType="com.yunyou.modules.wms.report.entity.BanQinWmRepZoneUseRate">
+        SELECT cwz.zone_code AS "zoneCode",
+               cwz.zone_name AS "zoneName",
+               COUNT(cwl.id) AS "total",
+               cwz.org_id    AS "orgId"
+        FROM cd_wh_zone cwz
+          LEFT JOIN cd_wh_loc cwl ON cwz.zone_code = cwl.zone_code AND cwz.org_id = cwl.org_id
+        WHERE cwz.del_flag = #{DEL_FLAG_NORMAL}
+          AND (cwl.def1 != '虚拟' or cwl.def1 is null)
+          ${dataScope}
+        <if test="zoneCode != null and zoneCode != ''">
+            AND cwz.zone_code = #{zoneCode}
+        </if>
+        GROUP BY cwz.zone_code, cwz.org_id
+        HAVING COUNT(cwl.id) > 0
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY cwz.zone_code
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getUseQty" resultType="java.lang.Integer">
+        SELECT COUNT(cwl.id)
+        FROM cd_wh_loc cwl
+        WHERE cwl.zone_code = #{zoneCode}
+          AND cwl.org_id = #{orgId}
+          AND (cwl.def1 != '虚拟' or cwl.def1 is null)
+          AND EXISTS(SELECT 1 FROM wm_inv_lot_loc a WHERE a.loc_code = cwl.loc_code AND a.org_id = cwl.org_id)
+    </select>
+
+</mapper>

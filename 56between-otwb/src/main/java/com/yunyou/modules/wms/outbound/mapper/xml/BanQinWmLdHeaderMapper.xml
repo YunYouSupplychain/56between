@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmLdHeaderMapper">
+    
+	<sql id="banQinWmLdHeaderColumns">
+		a.id AS "id",
+		a.ld_no AS "ldNo",
+		a.status AS "status",
+		a.ld_type AS "ldType",
+		a.so_status AS "soStatus",
+		a.vehicle_no AS "vehicleNo",
+		a.vehicle_type AS "vehicleType",
+		a.driver AS "driver",
+		a.fm_ld_time AS "fmLdTime",
+		a.to_ld_time AS "toLdTime",
+		a.deliver_op AS "deliverOp",
+		a.deliver_time AS "deliverTime",
+		a.carrier_code AS "carrierCode",
+		a.line AS "line",
+		a.consignee_code AS "consigneeCode",
+		a.consignee_name AS "consigneeName",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_addr AS "consigneeAddr",
+		a.contact_name AS "contactName",
+		a.contact_tel AS "contactTel",
+		a.contact_addr AS "contactAddr",
+		a.is_appoint_dock AS "isAppointDock",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmLdHeaderJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+
+	<select id="get" resultType="BanQinWmLdHeader" >
+		SELECT 
+			<include refid="banQinWmLdHeaderColumns"/>
+		FROM wm_ld_header a
+		<include refid="banQinWmLdHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntity" resultType="BanQinWmLdEntity" >
+		SELECT
+		<include refid="banQinWmLdHeaderColumns"/>
+		FROM wm_ld_header a
+		<include refid="banQinWmLdHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmLdHeader" >
+		SELECT 
+			<include refid="banQinWmLdHeaderColumns"/>
+		FROM wm_ld_header a
+		<include refid="banQinWmLdHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			<if test="ldNo != null and ldNo != ''">
+				AND a.ld_no = #{ldNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="ldType != null and ldType != ''">
+				AND a.ld_type = #{ldType}
+			</if>
+			<if test="soStatus != null and soStatus != ''">
+				AND a.so_status = #{soStatus}
+			</if>
+			<if test="fmLdTime != null and fmLdTime != ''">
+				AND a.fm_ld_time &gt;= #{fmLdTime}
+			</if>
+			<if test="toLdTime != null and toLdTime != ''">
+				AND a.to_ld_time &lt;= #{toLdTime}
+			</if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 = #{def1}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmLdEntity">
+		SELECT <include refid="banQinWmLdHeaderColumns"/>,
+			ec_a.ebcu_name_cn AS carrierName,
+			ec_a.ebcu_tel AS carrierTel,
+			ec_a.ebcu_address AS carrierAddress,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName
+		FROM wm_ld_header a
+		LEFT JOIN eb_customer ec_a ON ec_a.ebcu_customer_no = a.carrier_code AND ec_a.org_id = a.org_id
+		<include refid="banQinWmLdHeaderJoins"/>
+		WHERE 1 = 1
+		${dataScope}
+		<if test="soNo != null and soNo !=''">
+			AND EXISTS (SELECT 1
+				FROM wm_ld_detail wld
+				LEFT JOIN wm_so_alloc wsa ON wsa.alloc_id = wld.alloc_id AND wsa.org_id = wld.org_id
+				WHERE wld.ld_no = a.ld_no
+				AND wld.org_id = a.org_id
+				AND wsa.so_no LIKE CONCAT(#{soNo}, '%')
+		</if>
+		<if test="ldNo != null and ldNo != ''">
+			AND a.ld_no LIKE CONCAT(#{ldNo}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
+		<if test="soStatus != null and soStatus != ''">
+			AND a.so_status = #{soStatus}
+		</if>
+		<if test="ldType != null and ldType != ''">
+			AND a.ld_type = #{ldType}
+		</if>
+		<if test="vehicleNo != null and vehicleNo != ''">
+			AND a.vehicle_no LIKE CONCAT(#{vehicleNo}, '%')
+		</if>
+		<if test="vehicleType != null and vehicleType != ''">
+			AND a.vehicle_type = #{vehicleType}
+		</if>
+		<if test="driver != null and driver != ''">
+			AND a.driver LIKE CONCAT(#{driver}, '%')
+		</if>
+		<if test="fmLdTimeFm != null and fmLdTimeFm != ''">
+			AND a.fm_ld_time &gt;= #{fmLdTimeFm}
+		</if>
+		<if test="fmLdTimeTo != null and fmLdTimeTo != ''">
+			AND a.fm_ld_time &lt;= #{fmLdTimeTo}
+		</if>
+		<if test="toLdTimeFm != null and toLdTimeFm != ''">
+			AND a.to_ld_time &gt;= #{toLdTimeFm}
+		</if>
+		<if test="toLdTimeTo != null and toLdTimeTo != ''">
+			AND a.to_ld_time &lt;= #{toLdTimeTo}
+		</if>
+		<if test="deliverTimeFm != null and deliverTimeFm != ''">
+			AND a.deliver_time &gt;= #{deliverTimeFm}
+		</if>
+		<if test="deliverTimeTo != null and deliverTimeTo != ''">
+			AND a.deliver_time &lt;= #{deliverTimeTo}
+		</if>
+		<if test="createDateFm != null and createDateFm != ''">
+			AND a.create_date &gt;= #{createDateFm}
+		</if>
+		<if test="createDateTo != null and createDateTo != ''">
+			AND a.create_date &lt;= #{createDateTo}
+		</if>
+		<if test="def1 != null and def1 != ''">
+			AND a.def1 = #{def1}
+		</if>
+		ORDER BY a.ld_no DESC
+	</select>
+    
+    <select id="findEntity" resultType="BanQinWmLdEntity">
+        SELECT <include refid="banQinWmLdHeaderColumns"/>,
+            ec_a.ebcu_name_cn AS carrierName,
+            ec_a.ebcu_tel AS carrierTel,
+			ec_a.ebcu_address AS carrierAddress
+        FROM wm_ld_header a
+        LEFT JOIN eb_customer ec_a ON ec_a.ebcu_customer_no = a.carrier_code AND ec_a.org_id = a.org_id
+        WHERE 1 = 1
+          AND a.org_id = #{orgId}
+          <if test="soNo != null and soNo !=''">
+			  AND EXISTS (SELECT 1
+				  FROM wm_ld_detail wld
+				  LEFT JOIN wm_so_alloc wsa ON wsa.alloc_id = wld.alloc_id AND wsa.org_id = wld.org_id
+				  WHERE wld.ld_no = a.ld_no
+				  AND wld.org_id = a.org_id
+				  AND wsa.so_no LIKE CONCAT(#{soNo}, '%')
+		  </if>
+		  <if test="ldNo != null and ldNo != ''">
+			  AND a.ld_no LIKE CONCAT(#{ldNo}, '%')
+		  </if>
+		  <if test="status != null and status != ''">
+			  AND a.status = #{status}
+		  </if>
+		  <if test="soStatus != null and soStatus != ''">
+			  AND a.so_status = #{soStatus}
+		  </if>
+		  <if test="ldType != null and ldType != ''">
+			  AND a.ld_type = #{ldType}
+		  </if>
+		  <if test="vehicleNo != null and vehicleNo != ''">
+			  AND a.vehicle_no LIKE CONCAT(#{vehicleNo}, '%')
+		  </if>
+		  <if test="vehicleType != null and vehicleType != ''">
+			  AND a.vehicle_type = #{vehicleType}
+		  </if>
+		  <if test="driver != null and driver != ''">
+			  AND a.driver LIKE CONCAT(#{driver}, '%')
+		  </if>
+		  <if test="fmLdTimeFm != null and fmLdTimeFm != ''">
+			  AND a.fm_ld_time &gt;= #{fmLdTimeFm}
+		  </if>
+		  <if test="fmLdTimeTo != null and fmLdTimeTo != ''">
+			  AND a.fm_ld_time &lt;= #{fmLdTimeTo}
+		  </if>
+		  <if test="toLdTimeFm != null and toLdTimeFm != ''">
+			  AND a.to_ld_time &gt;= #{toLdTimeFm}
+		  </if>
+		  <if test="toLdTimeTo != null and toLdTimeTo != ''">
+			  AND a.to_ld_time &lt;= #{toLdTimeTo}
+		  </if>
+		  <if test="deliverTimeFm != null and deliverTimeFm != ''">
+			  AND a.deliver_time &gt;= #{deliverTimeFm}
+		  </if>
+		  <if test="deliverTimeTo != null and deliverTimeTo != ''">
+			  AND a.deliver_time &lt;= #{deliverTimeTo}
+		  </if>
+		  <if test="statusList != null and statusList.size() > 0">
+		      AND a.status IN
+			  <foreach collection="statusList" item="status" index="status" open="(" separator="," close=")">
+			     #{status}
+			  </foreach>
+		  </if>
+		  <if test="def1 != null and def1 != ''">
+			  AND a.def1 = #{def1}
+		  </if>
+    </select>
+	
+	<select id="findAllList" resultType="BanQinWmLdHeader" >
+		SELECT 
+			<include refid="banQinWmLdHeaderColumns"/>
+		FROM wm_ld_header a
+		<include refid="banQinWmLdHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_ld_header(
+			id,
+			ld_no,
+			status,
+			ld_type,
+			so_status,
+			vehicle_no,
+			vehicle_type,
+			driver,
+			fm_ld_time,
+			to_ld_time,
+			deliver_op,
+			deliver_time,
+			carrier_code,
+			line,
+			consignee_code,
+			consignee_name,
+			consignee_tel,
+			consignee_addr,
+			contact_name,
+			contact_tel,
+			contact_addr,
+			is_appoint_dock,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{ldNo},
+			#{status},
+			#{ldType},
+			#{soStatus},
+			#{vehicleNo},
+			#{vehicleType},
+			#{driver},
+			#{fmLdTime},
+			#{toLdTime},
+			#{deliverOp},
+			#{deliverTime},
+			#{carrierCode},
+			#{line},
+			#{consigneeCode},
+			#{consigneeName},
+			#{consigneeTel},
+			#{consigneeAddr},
+			#{contactName},
+			#{contactTel},
+			#{contactAddr},
+			#{isAppointDock},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_ld_header SET 	
+			ld_no = #{ldNo},
+			status = #{status},
+			ld_type = #{ldType},
+			so_status = #{soStatus},
+			vehicle_no = #{vehicleNo},
+			vehicle_type = #{vehicleType},
+			driver = #{driver},
+			fm_ld_time = #{fmLdTime},
+			to_ld_time = #{toLdTime},
+			deliver_op = #{deliverOp},
+			deliver_time = #{deliverTime},
+			carrier_code = #{carrierCode},
+			line = #{line},
+			consignee_code = #{consigneeCode},
+			consignee_name = #{consigneeName},
+			consignee_tel = #{consigneeTel},
+			consignee_addr = #{consigneeAddr},
+			contact_name = #{contactName},
+			contact_tel = #{contactTel},
+			contact_addr = #{contactAddr},
+			is_appoint_dock = #{isAppointDock},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_ld_header
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_ld_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getStoreCheckAcceptOrder" resultType="com.yunyou.modules.wms.report.entity.WmStoreCheckAcceptOrderLabel">
+		select
+			CONCAT(wlh.vehicle_no, '--', ifnull(wsh.consignee_code, ''), '--', date_format(wlh.create_date,'%Y%m%d')) as orderNo,
+			date_add(wlh.create_date, INTERVAL 1 DAY ) AS dispatchDate,
+			wlh.ld_no as ldNo,
+			wsh.consignee_code as consigneeCode,
+			wsh.consignee_name as consigneeName,
+			wsh.consignee_tel as consigneeTel,
+			wsh.consignee_addr as consigneeAddress,
+			wlh.vehicle_no as carNo,
+			wlh.driver as driver,
+			cws.spec as skuType,
+			cws.temp_level as skuTempLayer,
+			wsh.def5 as customerNo,
+			wsa.sku_code as skuCode,
+			cws.sku_name as skuName,
+			cws.bar_code as skuBarCode,
+			wsd.qty_so_ea as planQty,
+			cwpr.cdpr_quantity AS uomQty,
+			wila.lot_att01 as lotAtt01,
+			sum(wsa.qty_uom) as qty,
+			sum(wsa.qty_ea) as qtyEa
+		from wm_ld_header wlh
+		left join wm_ld_detail wld
+			   on wlh.ld_no = wld.ld_no
+			  and wlh.org_id = wld.org_id
+		left join wm_so_alloc wsa
+			   on wld.alloc_id = wsa.alloc_id
+			  and wld.org_id = wsa.org_id
+		left join wm_so_detail wsd
+			   on wsa.so_no = wsd.so_no
+			  and wsa.line_no = wsd.line_no
+			  and wsa.org_id = wsd.org_id
+		left join wm_so_header wsh
+			   on wsa.so_no = wsh.so_no
+			  and wsa.org_id = wsh.org_id
+		left join cd_wh_sku cws
+			   on wsa.owner_code = cws.owner_code
+			  and wsa.sku_code = cws.sku_code
+			  and wsa.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cwp
+			   ON wsa.pack_code = cwp.cdpa_code
+			  AND wsa.org_id = cwp.org_id
+		LEFT JOIN cd_wh_package_relation cwpr
+			   ON cwp.pm_code = cwpr.cdpr_cdpa_pm_code
+			  AND cwp.org_id = cwpr.org_id
+			  AND cwpr.cdpr_unit_level = wsa.uom
+		left join wm_inv_lot_att wila
+			   on wsa.lot_num = wila.lot_num
+			  and wsa.owner_code = wila.owner_code
+			  and wsa.sku_code = wila.sku_code
+			  and wsa.org_id = wila.org_id
+		WHERE wlh.id IN
+		<foreach collection="list" item="ldId" index="ldId" open="(" separator="," close=")">
+			#{ldId}
+		</foreach>
+		group by
+			wlh.create_date,
+			wlh.ld_no,
+			wsh.consignee_code,
+			wsh.consignee_name,
+			wsh.consignee_tel,
+			wsh.consignee_addr,
+			wlh.vehicle_no,
+			wlh.driver,
+			cws.temp_level,
+			cws.spec,
+			wsh.def5,
+			wsa.sku_code,
+			cws.sku_name,
+			cws.bar_code,
+			wsd.qty_so_ea,
+			cwpr.cdpr_quantity,
+			wila.lot_att01
+		ORDER BY
+		wlh.ld_no,
+		wsh.consignee_code,
+		wsa.sku_code
+	</select>
+    <select id="getLdOrder" resultType="com.yunyou.modules.wms.outbound.entity.extend.PrintLdOrder">
+		select wlh.ld_no          as ldNo,
+			   sdv.label          as ldType,
+			   wlh.carrier_code   as carrierName,
+			   sdv1.label         as vehicleType,
+			   wlh.vehicle_no     as vehicleNo,
+			   wlh.driver         as driver,
+			   wlh.consignee_name as consigneeName,
+			   wlh.consignee_addr as consigneeAddr,
+			   wlh.deliver_op     as deliverOp,
+			   wlh.deliver_time   as deliverTime,
+			   wlh.org_id         as orgId,
+			   wsa.so_no          as soNo,
+			   ec.ebcu_name_cn    as ownerName,
+			   wsa.sku_code       as skuCode,
+			   cws.sku_name       as skuName,
+			   wsa.to_id          as toId,
+			   wsa.uom            as uom,
+			   wsa.qty_ea         as qtyEa,
+			   wsa.qty_uom        as qtyUom
+		from wm_ld_header wlh
+			inner join wm_ld_detail wld on wlh.ld_no = wld.ld_no and wlh.org_id = wld.org_id
+			left join wm_so_alloc wsa on wld.alloc_id = wsa.alloc_id and wld.org_id = wsa.org_id
+			left join eb_customer ec on wsa.owner_code = ec.ebcu_customer_no and wsa.org_id = ec.org_id
+			left join cd_wh_sku cws on wsa.owner_code = cws.owner_code and wsa.sku_code = cws.sku_code and wsa.org_id = cws.org_id
+			left join sys_dict_type sdt on sdt.type = 'SYS_WM_LD_TYPE'
+			left join sys_dict_value sdv on sdt.id = sdv.dict_type_id and wlh.ld_type = sdv.value
+			left join sys_dict_type sdt1 on sdt1.type = 'SYS_WM_LD_TYPE'
+			left join sys_dict_value sdv1 on sdt1.id = sdv1.dict_type_id and wlh.vehicle_type = sdv1.value
+		where wlh.id in
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		order by wlh.ld_no, wsa.so_no, wsa.sku_code
+	</select>
+</mapper>

@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmInvQueryMapper">
+    <sql id="common_Where_if">
+        <if test="ownerCode != null and ownerCode != ''">
+            AND will.owner_code = #{ownerCode}
+        </if>
+        <if test="skuCode != null and skuCode != ''">
+            AND will.sku_code = #{skuCode}
+        </if>
+        <if test="lotNum != null and lotNum != ''">
+            AND will.lot_num LIKE concat('%', #{lotNum}, '%')
+        </if>
+        <if test="locCode != null and locCode != ''">
+            AND will.loc_code = #{locCode}
+        </if>
+        <if test="traceId != null and traceId != ''">
+            AND will.trace_id LIKE concat('%', #{traceId}, '%')
+        </if>
+        <if test="zoneCode != null and zoneCode != ''">
+            AND cwz.zone_code = #{zoneCode}
+        </if>
+        <if test="areaCode != null and areaCode != ''">
+            AND cwa.area_code = #{areaCode}
+        </if>
+        <if test="lotAtt01 != null and lotAtt01 != ''">
+            AND wila.lot_att01 = #{lotAtt01}
+        </if>
+        <if test="lotAtt02 != null and lotAtt02 != ''">
+            AND wila.lot_att02 = #{lotAtt02}
+        </if>
+        <if test="lotAtt03 != null and lotAtt03 != ''">
+            AND wila.lot_att03 = #{lotAtt03}
+        </if>
+        <if test="lotAtt04 != null and lotAtt04 != ''">
+            AND wila.lot_att04 LIKE concat('%', #{lotAtt04}, '%')
+        </if>
+        <if test="lotAtt05 != null and lotAtt05 != ''">
+            AND wila.lot_att05 LIKE concat('%', #{lotAtt05}, '%')
+        </if>
+        <if test="lotAtt06 != null and lotAtt06 != ''">
+            AND wila.lot_att06 LIKE concat('%', #{lotAtt06}, '%')
+        </if>
+        <if test="lotAtt07 != null and lotAtt07 != ''">
+            AND wila.lot_att07 LIKE concat('%', #{lotAtt07}, '%')
+        </if>
+        <if test="lotAtt08 != null and lotAtt08 != ''">
+            AND wila.lot_att08 LIKE concat('%', #{lotAtt08}, '%')
+        </if>
+        <if test="lotAtt09 != null and lotAtt09 != ''">
+            AND wila.lot_att09 LIKE concat('%', #{lotAtt09}, '%')
+        </if>
+        <if test="lotAtt10 != null and lotAtt10 != ''">
+            AND wila.lot_att10 LIKE concat('%', #{lotAtt10}, '%')
+        </if>
+        <if test="lotAtt11 != null and lotAtt11 != ''">
+            AND wila.lot_att11 LIKE concat('%', #{lotAtt11}, '%')
+        </if>
+        <if test="lotAtt12 != null and lotAtt12 != ''">
+            AND wila.lot_att12 LIKE concat('%', #{lotAtt12}, '%')
+        </if>
+    </sql>
+    
+	<select id="findByOwner" resultType="com.yunyou.modules.wms.inventory.entity.BanQinWmInvQuery" >
+        SELECT will.owner_code AS ownerCode,
+            ec.ebcu_name_cn AS ownerName,
+            'EA' AS printUom,
+            IFNULL(cwpr.cdpr_desc, '件') AS cdprDesc,
+            SUM(will.qty / (CASE WHEN cwpr.cdpr_quantity = 0 THEN 1 WHEN cwpr.cdpr_quantity IS NULL THEN 1 ELSE cwpr.cdpr_quantity END)) AS qtyUom,
+            SUM(will.qty) AS qty,
+            SUM(will.qty - will.qty_alloc -will.qty_hold - will.qty_pk - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out) AS qtyAvailable,
+            SUM(will.qty_alloc) AS qtyAlloc,
+            SUM(will.qty_hold) AS qtyHold,
+            SUM(will.qty_pk) AS qtyPk,
+            SUM(will.qty_pa_out) AS qtyPaOut,
+            SUM(will.qty_rp_out) AS qtyRpOut,
+            SUM(will.qty_mv_out) AS qtyMvOut,
+            SUM(will.qty_pa_in) AS qtyPaIn,
+            SUM(will.qty_rp_in) AS qtyRpIn,
+            SUM(will.qty_mv_in) AS qtyMvIn,
+            so.name AS orgName
+        FROM wm_inv_lot_loc will
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+        LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+        LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+        LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = cws.print_uom AND cwpr.org_id = cwp.org_id
+        LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = will.loc_code AND cwl.org_id = will.org_id
+        LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = cwl.zone_code AND cwz.org_id = cwl.org_id
+        LEFT JOIN cd_wh_area cwa ON cwa.area_code = cwz.area_code AND cwa.org_id = cwz.org_id
+        LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = will.lot_num AND wila.org_id = will.org_id
+        LEFT JOIN sys_office so on will.org_id = so.id
+        <where>
+            ${dataScope}
+            <include refid="common_Where_if"/>
+		</where>
+        GROUP BY will.owner_code, ec.ebcu_name_cn, cws.print_uom, cwpr.cdpr_desc, so.name
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY will.owner_code
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findBySku" resultType="com.yunyou.modules.wms.inventory.entity.BanQinWmInvQuery" >
+        SELECT will.owner_code AS ownerCode,
+            ec.ebcu_name_cn AS ownerName,
+            will.sku_code AS skuCode,
+            cws.sku_name AS skuName,
+            cws.print_uom AS printUom,
+            cwpr.cdpr_desc AS cdprDesc,
+            sum(will.qty / (CASE WHEN cwpr.cdpr_quantity = 0 THEN 1 WHEN cwpr.cdpr_quantity IS NULL THEN 1 ELSE cwpr.cdpr_quantity END)) AS qtyUom,
+            sum(will.qty) AS qty,
+            sum(will.qty-will.qty_alloc - will.qty_hold - will.qty_pk - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out) AS qtyAvailable,
+            sum(will.qty_alloc) AS qtyAlloc,
+            sum(will.qty_hold) AS qtyHold,
+            sum(will.qty_pk) AS qtyPk,
+            sum(will.qty_pa_out) AS qtyPaOut,
+            sum(will.qty_rp_out) AS qtyRpOut,
+            sum(will.qty_mv_out) AS qtyMvOut,
+            sum(will.qty_pa_in) AS qtyPaIn,
+            sum(will.qty_rp_in) AS qtyRpIn,
+            sum(will.qty_mv_in) AS qtyMvIn,
+            so.name AS orgName
+        FROM wm_inv_lot_loc will
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+        LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+        LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+        LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = cws.print_uom AND cwpr.org_id = cwp.org_id
+        LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = will.loc_code AND cwl.org_id = will.org_id
+        LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = cwl.zone_code AND cwz.org_id = cwl.org_id
+        LEFT JOIN cd_wh_area cwa ON cwa.area_code = cwz.area_code AND cwa.org_id = cwz.org_id
+        LEFT JOIN wm_inv_lot_att wila ON wila.lot_num  =will.lot_num AND wila.org_id = will.org_id
+        LEFT JOIN sys_office so on will.org_id = so.id
+		<where>
+            ${dataScope}
+            <include refid="common_Where_if"/>
+		</where>
+        GROUP BY will.owner_code, will.sku_code, ec.ebcu_name_cn, cws.sku_name, cws.quick_code, cws.print_uom, cwpr.cdpr_desc, so.name
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY will.sku_code
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findByLot" resultType="com.yunyou.modules.wms.inventory.entity.BanQinWmInvQuery" >
+        SELECT will.owner_code AS ownerCode,
+            ec.ebcu_name_cn AS ownerName,
+            will.sku_code AS skuCode,
+            cws.sku_name AS skuName,
+            cws.print_uom AS printUom,
+            cwpr.cdpr_desc AS cdprDesc,
+            will.lot_num AS lotNum,
+            SUM(will.qty / (CASE WHEN cwpr.cdpr_quantity = 0 THEN 1 WHEN cwpr.cdpr_quantity IS NULL THEN 1 ELSE cwpr.cdpr_quantity END)) AS qtyUom,
+            SUM(will.qty) AS qty,
+            SUM(will.qty-will.qty_alloc - will.qty_hold - will.qty_pk - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out) AS qtyAvailable,
+            wil.qty_prealloc AS qtyPrealloc,
+            SUM(will.qty_alloc) AS qtyAlloc,
+            SUM(will.qty_hold) AS qtyHold,
+            SUM(will.qty_pk) AS qtyPk,
+            SUM(will.qty_pa_out) AS qtyPaOut,
+            SUM(will.qty_rp_out) AS qtyRpOut,
+            SUM(will.qty_mv_out) AS qtyMvOut,
+            SUM(will.qty_pa_in) AS qtyPaIn,
+            SUM(will.qty_rp_in) AS qtyRpIn,
+            SUM(will.qty_mv_in) AS qtyMvIn,
+            DATE_FORMAT(wila.lot_att01, '%Y-%m-%d') AS lotAtt01,
+            DATE_FORMAT(wila.lot_att02, '%Y-%m-%d') AS lotAtt02,
+            DATE_FORMAT(wila.lot_att03, '%Y-%m-%d') AS lotAtt03,
+            wila.lot_att04 AS lotAtt04,
+            wila.lot_att05 AS lotAtt05,
+            wila.lot_att06 AS lotAtt06,
+            wila.lot_att07 AS lotAtt07,
+            wila.lot_att08 AS lotAtt08,
+            wila.lot_att09 AS lotAtt09,
+            wila.lot_att10 AS lotAtt10,
+            wila.lot_att11 AS lotAtt11,
+            wila.lot_att12 AS lotAtt12,
+            so.name AS orgName
+        FROM wm_inv_lot_loc will
+        LEFT JOIN wm_inv_lot wil ON wil.lot_num = will.lot_num AND wil.org_id = will.org_id
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+        LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+        LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+        LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = cws.print_uom AND cwpr.org_id = cwp.org_id
+        LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = will.loc_code AND cwl.org_id = will.org_id
+        LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = cwl.zone_code AND cwz.org_id = cwl.org_id
+        LEFT JOIN cd_wh_area cwa ON cwa.area_code = cwz.area_code AND cwa.org_id = cwz.org_id
+        LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = will.lot_num AND wila.org_id = will.org_id
+        LEFT JOIN sys_office so on will.org_id = so.id
+		<where>
+            ${dataScope}
+            <include refid="common_Where_if"/>
+		</where>
+        GROUP BY will.owner_code,
+                will.sku_code,
+                ec.ebcu_name_cn,
+                cws.sku_name,
+                cws.quick_code,
+                cws.print_uom,
+                cwpr.cdpr_desc,
+                will.lot_num,
+                wil.qty_prealloc,
+                cwpr.cdpr_quantity,
+                wila.lot_att01,
+                wila.lot_att02,
+                wila.lot_att03,
+                wila.lot_att04,
+                wila.lot_att05,
+                wila.lot_att06,
+                wila.lot_att07,
+                wila.lot_att08,
+                wila.lot_att09,
+                wila.lot_att10,
+                wila.lot_att11,
+                wila.lot_att12,
+                so.name
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY will.lot_num
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findByLoc" resultType="com.yunyou.modules.wms.inventory.entity.BanQinWmInvQuery" >
+        SELECT will.loc_code AS locCode,
+            SUM(will.qty) AS qty,
+            SUM(will.qty - will.qty_alloc - will.qty_hold - will.qty_pk - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out) AS qtyAvailable,
+            SUM(will.qty_alloc) AS qtyAlloc,
+            SUM(will.qty_hold) AS qtyHold,
+            SUM(will.qty_pk) AS qtyPk,
+            SUM(will.qty_pa_out) AS qtyPaOut,
+            SUM(will.qty_rp_out) AS qtyRpOut,
+            SUM(will.qty_mv_out) AS qtyMvOut,
+            SUM(will.qty_pa_in) AS qtyPaIn,
+            SUM(will.qty_rp_in) AS qtyRpIn,
+            SUM(will.qty_mv_in) AS qtyMvIn,
+            so.name AS orgName
+        FROM wm_inv_lot_loc will
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+        LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+        LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = will.loc_code AND cwl.org_id = will.org_id
+        LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = cwl.zone_code AND cwz.org_id = cwl.org_id
+        LEFT JOIN cd_wh_area cwa ON cwa.area_code = cwz.area_code AND cwa.org_id = cwz.org_id
+        LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = will.lot_num AND wila.org_id = will.org_id
+        LEFT JOIN sys_office so on will.org_id = so.id
+		<where>
+            ${dataScope}
+            <include refid="common_Where_if"/>
+		</where>
+        GROUP BY will.loc_code, so.name
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY will.loc_code
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findBySkuAndLoc" resultType="com.yunyou.modules.wms.inventory.entity.BanQinWmInvQuery" >
+        SELECT will.owner_code AS ownerCode,
+            ec.ebcu_name_cn AS ownerName,
+            will.sku_code AS skuCode,
+            cws.sku_name AS skuName,
+            cws.print_uom AS printUom,
+            cwpr.cdpr_desc AS cdprDesc,
+            will.loc_code AS locCode,
+            SUM(will.qty / ( CASE WHEN cwpr.cdpr_quantity = 0 THEN 1 WHEN cwpr.cdpr_quantity IS NULL THEN 1 ELSE cwpr.cdpr_quantity END)) AS qtyUom,
+            SUM(will.qty) AS qty,
+            SUM(will.qty - will.qty_alloc - will.qty_hold - will.qty_pk - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out) AS qtyAvailable,
+            SUM(will.qty_alloc) AS qtyAlloc,
+            SUM(will.qty_hold) AS qtyHold,
+            SUM(will.qty_pk) AS qtyPk,
+            SUM(will.qty_pa_out) AS qtyPaOut,
+            SUM(will.qty_rp_out) AS qtyRpOut,
+            SUM(will.qty_mv_out) AS qtyMvOut,
+            SUM(will.qty_pa_in) AS qtyPaIn,
+            SUM(will.qty_rp_in) AS qtyRpIn,
+            SUM(will.qty_mv_in) AS qtyMvIn,
+            so.name AS orgName
+        FROM wm_inv_lot_loc will
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+        LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+        LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+        LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = cws.print_uom AND cwpr.org_id = cwp.org_id
+        LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = will.loc_code AND cwl.org_id = will.org_id
+        LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = cwl.zone_code AND cwz.org_id = cwl.org_id
+        LEFT JOIN cd_wh_area cwa ON cwa.area_code = cwz.area_code AND cwa.org_id = cwz.org_id
+        LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = will.lot_num AND wila.org_id = will.org_id
+        LEFT JOIN sys_office so on will.org_id = so.id
+		<where>
+            ${dataScope}
+            <include refid="common_Where_if"/>
+		</where>
+        GROUP BY will.owner_code,
+                will.sku_code,
+                ec.ebcu_name_cn,
+                cws.sku_name,
+                cws.print_uom,
+                cwpr.cdpr_desc,
+                will.loc_code,
+                so.name
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY will.sku_code, will.loc_code
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findByTraceId" resultType="com.yunyou.modules.wms.inventory.entity.BanQinWmInvQuery" >
+        SELECT will.id AS id,
+            will.owner_code AS ownerCode,
+            ec.ebcu_name_cn AS ownerName,
+            will.sku_code AS skuCode,
+            cws.sku_name AS skuName,
+            cws.print_uom AS printUom,
+            cwpr.cdpr_desc AS cdprDesc,
+            will.lot_num AS lotNum,
+            will.loc_code AS locCode,
+            will.trace_id AS traceId,
+            will.qty / (CASE WHEN cwpr.cdpr_quantity = 0 THEN 1 WHEN cwpr.cdpr_quantity IS NULL THEN 1 ELSE cwpr.cdpr_quantity END) AS qtyUom,
+            will.qty AS qty,
+            will.qty - will.qty_alloc - will.qty_hold - will.qty_pk - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out AS qtyAvailable,
+            will.qty_alloc AS qtyAlloc,
+            will.qty_hold AS qtyHold,
+            will.qty_pk AS qtyPk,
+            will.qty_pa_out AS qtyPaOut,
+            will.qty_rp_out AS qtyRpOut,
+            will.qty_mv_out AS qtyMvOut,
+            will.qty_pa_in AS qtyPaIn,
+            will.qty_rp_in AS qtyRpIn,
+            will.qty_mv_in AS qtyMvIn,
+            DATE_FORMAT(wila.lot_att01, '%Y-%m-%d') AS lotAtt01,
+            DATE_FORMAT(wila.lot_att02, '%Y-%m-%d') AS lotAtt02,
+            DATE_FORMAT(wila.lot_att03, '%Y-%m-%d') AS lotAtt03,
+            wila.lot_att04 AS lotAtt04,
+            wila.lot_att05 AS lotAtt05,
+            wila.lot_att06 AS lotAtt06,
+            wila.lot_att07 AS lotAtt07,
+            wila.lot_att08 AS lotAtt08,
+            wila.lot_att09 AS lotAtt09,
+            wila.lot_att10 AS lotAtt10,
+            wila.lot_att11 AS lotAtt11,
+            wila.lot_att12 AS lotAtt12,
+            so.name AS orgName
+        FROM wm_inv_lot_loc will
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+        LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+        LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+        LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = cws.print_uom AND cwpr.org_id = cwp.org_id
+        LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = will.loc_code AND cwl.org_id = will.org_id
+        LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = cwl.zone_code AND cwz.org_id = cwl.org_id
+        LEFT JOIN cd_wh_area cwa ON cwa.area_code = cwz.area_code AND cwa.org_id = cwz.org_id
+        LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = will.lot_num AND wila.org_id = will.org_id
+        LEFT JOIN sys_office so on will.org_id = so.id
+        <where>
+            ${dataScope}
+            <include refid="common_Where_if"/>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY will.lot_num, will.loc_code, will.trace_id
+			</otherwise>
+		</choose>
+	</select>
+
+    <select id="findExportInfo" resultType="com.yunyou.modules.wms.inventory.entity.extend.BanQinWmInvExportEntity" >
+        SELECT will.owner_code AS ownerCode,
+            ec.ebcu_name_cn AS ownerName,
+            will.sku_code AS skuCode,
+            cws.sku_name AS skuName,
+            cws.print_uom AS printUom,
+            cwpr.cdpr_desc AS cdprDesc,
+            will.lot_num AS lotNum,
+            will.loc_code AS locCode,
+            will.trace_id AS traceId,
+            will.qty / (CASE WHEN cwpr.cdpr_quantity = 0 THEN 1 WHEN cwpr.cdpr_quantity IS NULL THEN 1 ELSE cwpr.cdpr_quantity END) AS qtyUom,
+            will.qty AS qty,
+            will.qty - will.qty_alloc - will.qty_hold - will.qty_pk - will.qty_pa_out - will.qty_rp_out - will.qty_mv_out AS qtyAvailable,
+            will.qty_alloc AS qtyAlloc,
+            will.qty_hold AS qtyHold,
+            will.qty_pk AS qtyPk,
+            will.qty_pa_out AS qtyPaOut,
+            will.qty_rp_out AS qtyRpOut,
+            will.qty_mv_out AS qtyMvOut,
+            will.qty_pa_in AS qtyPaIn,
+            will.qty_rp_in AS qtyRpIn,
+            will.qty_mv_in AS qtyMvIn,
+            DATE_FORMAT(wila.lot_att01, '%Y-%m-%d') AS lotAtt01,
+            DATE_FORMAT(wila.lot_att02, '%Y-%m-%d') AS lotAtt02,
+            DATE_FORMAT(wila.lot_att03, '%Y-%m-%d') AS lotAtt03,
+            wila.lot_att04 AS lotAtt04,
+            wila.lot_att05 AS lotAtt05,
+            wila.lot_att06 AS lotAtt06,
+            wila.lot_att07 AS lotAtt07,
+            wila.lot_att08 AS lotAtt08,
+            wila.lot_att09 AS lotAtt09,
+            wila.lot_att10 AS lotAtt10,
+            wila.lot_att11 AS lotAtt11,
+            wila.lot_att12 AS lotAtt12,
+            so.name AS orgName
+        FROM wm_inv_lot_loc will
+        LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = will.owner_code AND ec.org_id = will.org_id
+        LEFT JOIN cd_wh_sku cws ON cws.owner_code = will.owner_code AND cws.sku_code = will.sku_code AND cws.org_id = will.org_id
+        LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+        LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = cws.print_uom AND cwpr.org_id = cwp.org_id
+        LEFT JOIN cd_wh_loc cwl ON cwl.loc_code = will.loc_code AND cwl.org_id = will.org_id
+        LEFT JOIN cd_wh_zone cwz ON cwz.zone_code = cwl.zone_code AND cwz.org_id = cwl.org_id
+        LEFT JOIN cd_wh_area cwa ON cwa.area_code = cwz.area_code AND cwa.org_id = cwz.org_id
+        LEFT JOIN wm_inv_lot_att wila ON wila.lot_num = will.lot_num AND wila.org_id = will.org_id
+        LEFT JOIN sys_office so on will.org_id = so.id
+        <where>
+            ${dataScope}
+            <include refid="common_Where_if"/>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY will.lot_num, will.loc_code, will.trace_id
+            </otherwise>
+        </choose>
+    </select>
+    <select id="getTraceLabel" resultType="com.yunyou.modules.wms.report.entity.TraceLabel">
+        SELECT will.trace_id                            AS traceId,
+               will.owner_code                          As ownerCode,
+               ebcu.ebcu_name_cn                        AS ownerName,
+               will.sku_code                            As skuCode,
+               cws.sku_name                             AS skuName,
+               cws.spec                                 AS skuDef3,
+               cws.pack_code                            AS packCode,
+               cwp.cdpa_format                          AS packDesc,
+               DATE_FORMAT(wila.lot_att01, '%Y-%m-%d')  AS lotAtt01,
+               DATE_FORMAT(wila.lot_att02, '%Y-%m-%d')  AS lotAtt02,
+               DATE_FORMAT(wila.lot_att03, '%Y-%m-%d')  AS lotAtt03,
+               will.org_id                              AS orgId,
+               so.`name`                                AS orgName,
+               will.qty                                 AS qtyPlanEa,
+               cwpr.cdpr_quantity                       AS unitQty,
+               FORMAT(will.qty / cwpr.cdpr_quantity, 1) AS qtyPlanBox,
+               will.loc_code                            AS toLoc
+        FROM wm_inv_lot_loc will
+            LEFT JOIN wm_inv_lot_att wila ON will.lot_num = wila.lot_num AND will.org_id = wila.org_id
+            LEFT JOIN eb_customer ebcu ON will.owner_code = ebcu.ebcu_customer_no AND ebcu.ebcu_type LIKE '%OWNER,%' AND ebcu.org_id = will.org_id
+            LEFT JOIN cd_wh_sku cws ON will.owner_code = cws.owner_code AND will.sku_code = cws.sku_code AND will.org_id = cws.org_id
+            LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+            LEFT JOIN cd_wh_package_relation cwpr ON cwp.pm_code = cwpr.cdpr_cdpa_pm_code AND cwp.org_id = cwpr.org_id AND cwpr.cdpr_unit = 'CS'
+            LEFT JOIN sys_office so ON will.org_id = so.id
+        WHERE will.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY will.org_id, will.owner_code, will.sku_code, will.trace_id, will.loc_code, will.lot_num
+    </select>
+
+</mapper>

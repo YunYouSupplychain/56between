@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.mapper.AreaMapper">
+
+    <resultMap id="areaResult" type="com.yunyou.modules.sys.entity.Area">
+        <id property="id" column="id"/>
+        <result property="parentIds" column="parentIds"/>
+        <result property="name" column="name"/>
+        <result property="sort" column="sort"/>
+        <result property="code" column="code"/>
+        <result property="type" column="type"/>
+        <association property="hasChildren" column="id" select="hasChildren"/>
+    </resultMap>
+
+    <sql id="areaColumns">
+        a.id,
+		a.parent_id AS "parent.id",
+		a.parent_ids,
+		a.code,
+		a.name,
+		a.sort,
+		a.type,
+		a.remarks,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		p.name AS "parent.name"
+    </sql>
+
+    <sql id="areaJoins">
+        LEFT JOIN sys_office p ON p.id = a.parent_id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.sys.entity.Area">
+        SELECT
+        <include refid="areaColumns"/>
+        FROM sys_area a
+        <include refid="areaJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="getChildren" parameterType="String" resultMap="areaResult">
+        SELECT *
+        FROM sys_area
+        where parent_id = #{id}
+        ORDER BY sort
+    </select>
+
+    <select id="hasChildren" parameterType="String" resultType="Boolean">
+        SELECT CASE WHEN EXISTS(SELECT 1 FROM sys_area WHERE parent_id = #{id}) THEN 1 ELSE 0 END ${dual}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.sys.entity.Area">
+        SELECT
+        <include refid="areaColumns"/>
+        FROM sys_area a
+        <include refid="areaJoins"/>
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        OR a.id = #{currentUser.office.area.id}
+        ${dataScope}
+        ORDER BY a.code
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.sys.entity.Area">
+        SELECT
+        <include refid="areaColumns"/>
+        FROM sys_area a
+        <include refid="areaJoins"/>
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        ORDER BY a.code
+    </select>
+
+    <select id="findByParentIdsLike" resultType="com.yunyou.modules.sys.entity.Area">
+        SELECT a.id,
+               a.parent_id AS "parent.id",
+               a.parent_ids
+          FROM sys_area a
+         WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+           AND a.parent_ids LIKE #{parentIds}
+         ORDER BY a.code
+    </select>
+
+    <insert id="insert" parameterType="com.yunyou.modules.sys.entity.Area" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_area (
+			parent_id,
+			parent_ids,
+			code,
+			name,
+			sort,
+			type,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{parent.id},
+			#{parentIds},
+			#{code},
+			#{name},
+			#{sort},
+			#{type},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+    </insert>
+
+    <update id="update">
+        UPDATE sys_area
+        SET parent_id   = #{parent.id},
+            parent_ids  = #{parentIds},
+            code        = #{code},
+            name        = #{name},
+            sort        = #{sort},
+            type        = #{type},
+            update_by   = #{updateBy.id},
+            update_date = #{updateDate},
+            remarks     = #{remarks}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateParentIds">
+        UPDATE sys_area
+        SET parent_id  = #{parent.id},
+            parent_ids = #{parentIds}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM sys_area
+        WHERE id = #{id}
+           OR parent_ids LIKE CONCAT('%,', #{id}, ',%')
+    </delete>
+
+    <update id="deleteByLogic">
+        UPDATE sys_area
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+           OR parent_ids LIKE CONCAT('%,', #{id}, ',%')
+    </update>
+
+    <!-- 获取当前登录用户的所属区域 -->
+    <select id="getAreaByUserId" resultType="com.yunyou.modules.sys.entity.Area">
+		SELECT c.id, c.name, a.login_name AS code, b.id officeId, b.name AS officeName
+		FROM sys_user a
+				 LEFT JOIN sys_office b ON a.office_id = b.id
+				 LEFT JOIN sys_area c ON b.area_id = c.id
+		WHERE a.id = #{userId}
+    </select>
+
+    <!-- 获取当前登录用户的所属区域 -->
+    <select id="getAreaByOfficeId" resultType="com.yunyou.modules.sys.entity.Area">
+        SELECT b.id, b.code, b.name
+        FROM sys_office a
+        LEFT JOIN sys_area b ON a.area_id = b.id
+        WHERE a.id = #{officeId}
+    </select>
+
+    <select id="findCountToArea" resultType="com.yunyou.modules.sys.entity.Area">
+        SELECT
+        <include refid="areaColumns"/>
+        FROM sys_area a
+        <include refid="areaJoins"/>
+        WHERE a.type IN ('1', '2', '3', '4')
+        ORDER BY a.type, a.code
+    </select>
+
+    <select id="findAreaByName" resultType="com.yunyou.modules.sys.entity.Area">
+        SELECT id, parent_id, parent_ids, code, name, type
+        FROM sys_area
+        WHERE name = #{name}
+    </select>
+
+    <select id="getByCode" resultType="com.yunyou.modules.sys.entity.Area">
+        SELECT
+        <include refid="areaColumns"/>
+        FROM sys_area a
+        <include refid="areaJoins"/>
+        WHERE a.code = #{code}
+    </select>
+
+</mapper>

@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.kit.mapper.BanQinCdWhBomDetailMapper">
+    
+	<sql id="banQinCdWhBomDetailColumns">
+		a.id AS "id",
+		a.owner_code AS "ownerCode",
+		a.parent_sku_code AS "parentSkuCode",
+		a.kit_type AS "kitType",
+		a.line_no AS "lineNo",
+		a.sub_sku_code AS "subSkuCode",
+		a.sub_sku_type AS "subSkuType",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty AS "qty",
+		a.qty_ea AS "qtyEa",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinCdWhBomDetailJoins">
+		
+	</sql>
+	
+	<select id="get" resultType="BanQinCdWhBomDetail">
+		SELECT 
+			<include refid="banQinCdWhBomDetailColumns"/>
+		FROM cd_wh_bom_detail a
+		<include refid="banQinCdWhBomDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinCdWhBomDetail">
+		SELECT 
+			<include refid="banQinCdWhBomDetailColumns"/>
+		FROM cd_wh_bom_detail a
+		<include refid="banQinCdWhBomDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="parentSkuCode != null and parentSkuCode != ''">
+				AND a.parent_sku_code = #{parentSkuCode}
+			</if>
+			<if test="kitType != null and kitType != ''">
+				AND a.kit_type = #{kitType}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="subSkuCode != null and subSkuCode != ''">
+				AND a.sub_sku_code = #{subSkuCode}
+			</if>
+			<if test="subSkuType != null and subSkuType != ''">
+				AND a.sub_sku_type = #{subSkuType}
+			</if>
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinCdWhBomDetail">
+		SELECT 
+			<include refid="banQinCdWhBomDetailColumns"/>
+		FROM cd_wh_bom_detail a
+		<include refid="banQinCdWhBomDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_wh_bom_detail(
+			 id,
+			 owner_code,
+			 parent_sku_code,
+			 kit_type,
+			 line_no,
+			 sub_sku_code,
+			 sub_sku_type,
+			 pack_code,
+			 uom,
+			 qty,
+			 qty_ea,
+			 remarks,
+			 rec_ver,
+			 create_by,
+			 create_date,
+			 update_by,
+			 update_date,
+			 del_flag,
+			 org_id,
+		     header_id
+		) VALUES (
+			#{id},
+			#{ownerCode},
+			#{parentSkuCode},
+			#{kitType},
+			#{lineNo},
+			#{subSkuCode},
+			#{subSkuType},
+			#{packCode},
+			#{uom},
+			#{qty},
+			#{qtyEa},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+		    #{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cd_wh_bom_detail
+        SET owner_code      = #{ownerCode},
+            parent_sku_code = #{parentSkuCode},
+            kit_type        = #{kitType},
+            line_no         = #{lineNo},
+            sub_sku_code    = #{subSkuCode},
+            sub_sku_type    = #{subSkuType},
+            pack_code       = #{packCode},
+            uom             = #{uom},
+            qty             = #{qty},
+            qty_ea          = #{qtyEa},
+            remarks         = #{remarks},
+            rec_ver         = #{recVer},
+            update_by       = #{updateBy.id},
+            update_date     = #{updateDate},
+            org_id          = #{orgId},
+            header_id		= #{headerId}
+        WHERE id = #{id}
+	</update>
+
+    <!--物理删除-->
+    <update id="delete">
+		DELETE
+        FROM cd_wh_bom_detail
+        WHERE id = #{id}
+	</update>
+
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+		UPDATE cd_wh_bom_detail
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+	</update>
+
+	<select id="getEntity" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinCdWhBomDetailEntity">
+		SELECT
+		    ebc.ebcu_name_cn    AS "ownerName",
+		    cdws.sku_name       AS "subSkuName",
+		    cdpa.cdpa_format    AS "packDesc",
+		    cdpr.cdpr_desc      AS "uomDesc",
+		    cdpr.cdpr_quantity  AS "uomQty",
+			<include refid="banQinCdWhBomDetailColumns"/>
+		FROM cd_wh_bom_detail a
+        LEFT JOIN eb_customer ebc ON a.owner_code = ebc.ebcu_customer_no AND a.org_id = ebc.org_id
+		LEFT JOIN cd_wh_sku cdws ON a.owner_code = cdws.owner_code AND a.sub_sku_code = cdws.sku_code AND a.org_id = cdws.org_id
+		LEFT JOIN cd_wh_package cdpa ON a.pack_code = cdpa.cdpa_code AND a.org_id = cdpa.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND a.uom = cdpr.cdpr_unit_level
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinCdWhBomDetailEntity">
+		SELECT
+		    ebc.ebcu_name_cn    AS "ownerName",
+		    cdws.sku_name       AS "subSkuName",
+		    cdpa.cdpa_format    AS "packDesc",
+		    cdpr.cdpr_desc      AS "uomDesc",
+		    cdpr.cdpr_quantity  AS "uomQty",
+			<include refid="banQinCdWhBomDetailColumns"/>
+		FROM cd_wh_bom_detail a
+        LEFT JOIN eb_customer ebc ON a.owner_code = ebc.ebcu_customer_no AND a.org_id = ebc.org_id
+		LEFT JOIN cd_wh_sku cdws ON a.owner_code = cdws.owner_code AND a.sub_sku_code = cdws.sku_code AND a.org_id = cdws.org_id
+		LEFT JOIN cd_wh_package cdpa ON a.pack_code = cdpa.cdpa_code AND a.org_id = cdpa.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpa.org_id = cdpr.org_id AND a.uom = cdpr.cdpr_unit_level
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="parentSkuCode != null and parentSkuCode != ''">
+				AND a.parent_sku_code = #{parentSkuCode}
+			</if>
+			<if test="kitType != null and kitType != ''">
+				AND a.kit_type = #{kitType}
+			</if>
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="checkIsReferenced" resultType="java.lang.Long">
+		SELECT COUNT(*) sub_sku_count
+		  FROM wm_kit_sub_detail wksd
+		  LEFT JOIN wm_kit_header wkh ON wksd.kit_no = wkh.kit_no AND wksd.org_id = wkh.org_id
+		  LEFT JOIN wm_kit_parent_detail wkpd ON wksd.kit_no = wkpd.kit_no AND wksd.parent_line_no = wkpd.parent_line_no AND wksd.org_id = wkpd.org_id
+		 WHERE 1 = 1
+		   AND wksd.org_id = #{orgId}
+		   <if test="ownerCode != null and ownerCode != ''">
+		   		AND wksd.owner_code = #{ownerCode}
+		   </if>
+		   <if test="parentSkuCode != null and parentSkuCode != ''">
+		   		AND wkpd.parent_sku_code = #{parentSkuCode}
+		   </if>
+		   <if test="kitType != null and kitType != ''">
+		   		AND wkh.kit_type = #{kitType}
+		   </if>
+		   <if test="subSkuCode != null and subSkuCode != ''">
+		   		AND wksd.sub_sku_code = #{subSkuCode}
+		   </if>
+		   <if test="subSkuType != null and subSkuType != ''">
+		   		AND wksd.sub_sku_type = #{subSkuType}
+		   </if>
+	</select>
+
+	<select id="findSubSkuList" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinCdWhBomDetailEntity">
+		SELECT cws.owner_code 		AS "ownerCode",
+			   ec.ebcu_name_cn 		AS "ownerName",
+			   cws.sku_code 		AS "subSkuCode",
+			   cws.sku_name 		AS "subSkuName",
+			   cws.pack_code 		AS "packCode",
+			   cwp.cdpa_format  	AS "packDesc",
+			   cws.print_uom 		AS "uom",
+			   cwpr.cdpr_desc   	AS "uomDesc",
+			   cwpr.cdpr_quantity 	AS "uomQty"
+		  FROM cd_wh_sku cws
+		  LEFT JOIN eb_customer ec ON cws.owner_code = ec.ebcu_customer_no AND cws.org_id = ec.org_id
+		  LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id AND cwp.del_flag = '0'
+		  LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_unit_level = cws.print_uom AND cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.org_id = cws.org_id AND cwpr.del_flag = '0'
+		<where>
+			cws.del_flag = #{DEL_FLAG_NORMAL}
+			AND cws.org_id = #{orgId}
+			<if test="ownerCode != null and ownerCode != ''">
+				AND cws.owner_code LIKE concat('%', #{ownerCode}, '%')
+			</if>
+			<if test="subSkuName != null and subSkuName != ''">
+				AND cws.sku_name LIKE concat('%', #{subSkuName}, '%')
+			</if>
+			<if test="subSkuCode != null and subSkuCode != ''">
+				AND cws.sku_code LIKE concat('%', #{subSkuCode}, '%')
+			</if>
+			/*过滤当前组合件的所有父节点*/
+			<if test="parentSkuCodeList != null and parentSkuCodeList.size > 0">
+				AND cws.sku_code NOT IN
+				<foreach collection="parentSkuCodeList" item="parentSkuCode" open="(" separator="," close=")">
+					#{parentSkuCode}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY cws.owner_code, cws.sku_code
+	</select>
+
+    <select id="getParentSku" resultType="BanQinCdWhBomDetail">
+        SELECT
+			<include refid="banQinCdWhBomDetailColumns"/>
+		FROM cd_wh_bom_detail a
+		<include refid="banQinCdWhBomDetailJoins"/>
+		WHERE a.owner_code = #{ownerCode} AND a.sub_sku_code = #{subSkuCode} AND a.org_id = #{orgId}
+    </select>
+
+	<select id="getMaxLineNo" resultType="java.lang.Integer">
+		SELECT max(CONVERT(a.line_no, SIGNED))
+        FROM cd_wh_bom_detail a
+        WHERE a.owner_code = #{ownerCode}
+          AND a.parent_sku_code = #{parentSkuCode}
+          AND a.kit_type = #{kitType}
+          AND a.org_id = #{orgId}
+	</select>
+
+	<delete id="deleteByOwnerAndParentSkuAndKitType">
+		DELETE FROM cd_wh_bom_detail WHERE owner_code = #{ownerCode} AND parent_sku_code = #{parentSkuCode} AND kit_type = #{kitType} AND org_id = #{orgId}
+	</delete>
+
+	<select id="getEntityByOwnerAndParentSkuAndKitTypeAndLineNo" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinCdWhBomDetailEntity">
+		SELECT
+			<include refid="banQinCdWhBomDetailColumns"/>
+		FROM cd_wh_bom_detail a
+		WHERE a.owner_code = #{ownerCode}
+		  AND a.parent_sku_code = #{parentSkuCode}
+		  AND a.kit_type = #{kitType}
+		  AND a.line_no = #{lineNo}
+		  AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getEntityByOwnerAndParentSkuAndKitType" resultType="com.yunyou.modules.wms.kit.entity.extend.BanQinCdWhBomDetailEntity">
+		SELECT
+			<include refid="banQinCdWhBomDetailColumns"/>
+		FROM cd_wh_bom_detail a
+		WHERE a.owner_code = #{ownerCode}
+		  AND a.parent_sku_code = #{parentSkuCode}
+		  AND a.kit_type = #{kitType}
+		  AND a.org_id = #{orgId}
+	</select>
+
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.report.mapper.BanQinWmRepInvValidityMapper">
+
+	<select id="findPage" resultType="com.yunyou.modules.wms.report.entity.WmRepInvValidityEntity" >
+		SELECT
+			wmil.owner_code AS ownerCode,
+			ebcu.ebcu_name_cn AS ownerName,
+			wmil.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			wmil.lot_num AS lotNum,
+			wmil.qty - wmil.qty_hold - wmil.qty_prealloc -wmil.qty_alloc - wmil.qty_pk AS invQty,
+			cws.life_type AS lifeType,
+			cws.out_life_days AS outLifeDays,
+			wila.lot_att01 AS lotAtt01,
+			wila.lot_att02 AS lotAtt02,
+			wila.lot_att03 AS lotAtt03,
+			wila.lot_att04 AS lotAtt04,
+			wila.lot_att05 AS lotAtt05,
+			wila.lot_att06 AS lotAtt06,
+			wila.lot_att07 AS lotAtt07,
+			wila.lot_att08 AS lotAtt08,
+			wila.lot_att09 AS lotAtt09,
+			wila.lot_att10 AS lotAtt10,
+			wila.lot_att11 AS lotAtt11,
+			wila.lot_att12 AS lotAtt12,
+			wmil.org_id AS orgId
+		FROM wm_inv_lot wmil
+		INNER JOIN cd_wh_sku cws ON cws.owner_code = wmil.owner_code AND cws.sku_code = wmil.sku_code AND cws.org_id = wmil.org_id
+		LEFT JOIN wm_inv_lot_att wila ON wmil.lot_num = wila.lot_num AND wmil.org_id = wila.org_id
+		LEFT JOIN eb_customer ebcu ON wmil.owner_code = ebcu.ebcu_customer_no AND wmil.org_id = ebcu.org_id
+		<where>	1=1
+			AND	cws.is_validity = 'Y'
+			AND cws.out_life_days > 0
+			AND
+				CASE
+					WHEN cws.life_type = 'P' THEN NOW() > DATE_ADD(wila.lot_att01, INTERVAL cws.out_life_days day)
+					WHEN cws.life_type = 'E' THEN NOW() > DATE_SUB(wila.lot_att02, INTERVAL cws.out_life_days day)
+				END
+			<if test="ownerCode != null and ownerCode != ''">
+				AND wmil.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND wmil.sku_code = #{skuCode}
+			</if>
+			<if test="lotNum != null and lotNum != ''">
+				AND wmil.lot_num = #{lotNum}
+			</if>
+			<if test="lifeType != null and lifeType != ''">
+				AND cws.life_type = #{lifeType}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND wmil.org_id = #{orgId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY wmil.sku_code
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

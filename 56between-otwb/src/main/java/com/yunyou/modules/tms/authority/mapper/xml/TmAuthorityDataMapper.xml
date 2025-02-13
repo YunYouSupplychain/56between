@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.authority.mapper.TmAuthorityDataMapper">
+    
+	<sql id="tmAuthorityDataColumns">
+		a.table_name AS "tableName",
+		a.business_id AS "businessId",
+		a.relation_id AS "relationId"
+	</sql>
+
+	<select id="findOrgCenterData" resultType="com.yunyou.modules.tms.authority.entity.TmAuthorityData">
+		SELECT <include refid="tmAuthorityDataColumns"/>
+		FROM tm_authority_data_org_center a
+		WHERE a.table_name = #{tableName}
+		<if test="businessId != null and businessId != ''">
+			AND a.business_id = #{businessId}
+		</if>
+		<if test="relationId != null and relationId != ''">
+			AND a.relation_id = #{relationId}
+		</if>
+	</select>
+
+	<select id="findDispatchCenterData" resultType="com.yunyou.modules.tms.authority.entity.TmAuthorityData">
+		SELECT <include refid="tmAuthorityDataColumns"/>
+		FROM tm_authority_data_dispatch_center a
+		WHERE a.table_name = #{tableName}
+		<if test="businessId != null and businessId != ''">
+			AND a.business_id = #{businessId}
+		</if>
+		<if test="relationId != null and relationId != ''">
+			AND a.relation_id = #{relationId}
+		</if>
+	</select>
+
+	<select id="findOutletData" resultType="com.yunyou.modules.tms.authority.entity.TmAuthorityData">
+		SELECT <include refid="tmAuthorityDataColumns"/>
+		FROM tm_authority_data_outlet a
+		WHERE a.table_name = #{tableName}
+		<if test="businessId != null and businessId != ''">
+			AND a.business_id = #{businessId}
+		</if>
+		<if test="relationId != null and relationId != ''">
+			AND a.relation_id = #{relationId}
+		</if>
+	</select>
+
+	<select id="findCarrierData" resultType="com.yunyou.modules.tms.authority.entity.TmAuthorityData">
+		SELECT <include refid="tmAuthorityDataColumns"/>
+		FROM tm_authority_data_carrier a
+		WHERE a.table_name = #{tableName}
+		<if test="businessId != null and businessId != ''">
+			AND a.business_id = #{businessId}
+		</if>
+		<if test="relationId != null and relationId != ''">
+			AND a.relation_id = #{relationId}
+		</if>
+	</select>
+
+	<insert id="insertOrgCenterData">
+		INSERT INTO tm_authority_data_org_center(
+			table_name,
+			business_id,
+			relation_id
+		) VALUES (
+			#{tableName},
+			#{businessId},
+			#{relationId}
+		)
+	</insert>
+
+	<insert id="insertDispatchCenterData">
+		INSERT INTO tm_authority_data_dispatch_center(
+			table_name,
+			business_id,
+			relation_id
+		) VALUES (
+			#{tableName},
+			#{businessId},
+			#{relationId}
+		)
+	</insert>
+
+	<insert id="insertOutletData">
+		INSERT INTO tm_authority_data_outlet(
+			table_name,
+			business_id,
+			relation_id
+		) VALUES (
+			#{tableName},
+			#{businessId},
+			#{relationId}
+		)
+	</insert>
+
+	<insert id="insertCarrierData">
+		INSERT INTO tm_authority_data_carrier(
+			table_name,
+			business_id,
+			relation_id
+		) VALUES (
+			#{tableName},
+			#{businessId},
+			#{relationId}
+		)
+	</insert>
+
+	<delete id="deleteOrgCenterData">
+		DELETE FROM tm_authority_data_org_center WHERE table_name = #{tableName} AND business_id = #{businessId} AND relation_id = #{relationId}
+	</delete>
+
+	<delete id="deleteDispatchCenterData">
+		DELETE FROM tm_authority_data_dispatch_center WHERE table_name = #{tableName} AND business_id = #{businessId} AND relation_id = #{relationId}
+	</delete>
+
+	<delete id="deleteOutletData">
+		DELETE FROM tm_authority_data_outlet WHERE table_name = #{tableName} AND business_id = #{businessId} AND relation_id = #{relationId}
+	</delete>
+
+	<delete id="deleteCarrierData">
+		DELETE FROM tm_authority_data_carrier WHERE table_name = #{tableName} AND business_id = #{businessId} AND relation_id = #{relationId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.order.mapper.OmRequisitionMapper">
+    
+	<sql id="omRequisitionHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.req_no AS "reqNo",
+		a.order_time AS "orderTime",
+		a.order_type AS "orderType",
+		a.status AS "status",
+		a.audit_by AS "auditBy.id",
+		a.owner_code AS "ownerCode",
+		a.customer_no AS "customerNo",
+		a.req_reason AS "reqReason",
+		a.fm_org_id AS "fmOrgId",
+		a.to_org_id AS "toOrgId",
+		a.logistics_no AS "logisticsNo",
+		a.carrier_code AS "carrierCode",
+		a.transport_mode AS "transportMode",
+		a.vehicle_no AS "vehicleNo",
+		a.driver AS "driver",
+		a.driver_tel AS "driverTel",
+		a.freight_amount AS "freightAmount",
+		a.shipper AS "shipper",
+		a.shipper_tel AS "shipperTel",
+		a.ship_area_id AS "shipAreaId",
+		a.ship_area AS "shipArea",
+		a.ship_address AS "shipAddress",
+		a.plan_ship_time AS "planShipTime",
+		a.consignee AS "consignee",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_area_id AS "consigneeAreaId",
+		a.consignee_area AS "consigneeArea",
+		a.consignee_address AS "consigneeAddress",
+		a.plan_arrival_time AS "planArrivalTime",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.rec_ver AS "recVer",
+		a.org_id AS "orgId"
+	</sql>
+
+	<sql id="omRequisitionDetailColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.req_no AS "reqNo",
+		a.line_no AS "lineNo",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.sku_spec AS "skuSpec",
+		a.uom AS "uom",
+		a.qty AS "qty",
+		a.task_qty AS "taskQty",
+		a.auxiliary_uom AS "auxiliaryUom",
+		a.auxiliary_qty AS "auxiliaryQty",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.rec_ver AS "recVer",
+		a.org_id AS "orgId"
+	</sql>
+
+	<delete id="removeByNo">
+		DELETE FROM om_requisition_detail WHERE req_no = #{reqNo} AND org_id = #{orgId}
+	</delete>
+
+	<select id="getEntity" resultType="com.yunyou.modules.oms.order.entity.extend.OmRequisitionEntity">
+		SELECT <include refid="omRequisitionHeaderColumns"/>,
+			f.name AS "fmOrgName",
+		    t.name AS "toOrgName",
+		    so.name AS "orgName",
+		    oco.ebcu_name_cn AS "ownerName",
+			occ.ebcu_name_cn AS "carrierName",
+		    suc.name AS "createBy.name",
+			suu.name AS "updateBy.name",
+			sua.name AS "auditBy.name"
+		FROM om_requisition_header a
+		LEFT JOIN sys_office f ON a.fm_org_id = f.id
+		LEFT JOIN sys_office t ON a.to_org_id = t.id
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		LEFT JOIN sys_user suc ON a.create_by = suc.id
+		LEFT JOIN sys_user suu ON a.update_by = suu.id
+		LEFT JOIN sys_user sua ON a.audit_by = sua.id
+		LEFT JOIN om_customer oco ON a.owner_code = oco.ebcu_customer_no AND a.org_id = oco.org_id
+		LEFT JOIN om_customer occ ON a.carrier_code = occ.ebcu_customer_no AND a.org_id = occ.org_id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getEntityByNo" resultType="com.yunyou.modules.oms.order.entity.extend.OmRequisitionEntity">
+		SELECT <include refid="omRequisitionHeaderColumns"/>
+		FROM om_requisition_header a
+		WHERE a.req_no = #{reqNo} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="getDetailEntity" resultType="com.yunyou.modules.oms.order.entity.extend.OmRequisitionDetailEntity">
+		SELECT <include refid="omRequisitionDetailColumns"/>,
+			oi.sku_name AS "skuName"
+		FROM om_requisition_detail a
+		LEFT JOIN om_item oi ON a.owner_code = oi.owner_code AND a.sku_code = oi.sku_code AND a.org_id = oi.org_id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getDetailEntityByNoAndLineNo" resultType="com.yunyou.modules.oms.order.entity.extend.OmRequisitionDetailEntity">
+		SELECT <include refid="omRequisitionDetailColumns"/>
+		FROM om_requisition_detail a
+		WHERE a.req_no = #{reqNo} AND a.line_no = #{lineNo} AND a.org_id = #{orgId}
+	</select>
+
+	<select id="findDetailList" resultType="com.yunyou.modules.oms.order.entity.extend.OmRequisitionDetailEntity">
+		SELECT <include refid="omRequisitionDetailColumns"/>,
+			oi.sku_name AS "skuName"
+		FROM om_requisition_detail a
+		LEFT JOIN om_item oi ON a.owner_code = oi.owner_code AND a.sku_code = oi.sku_code AND a.org_id = oi.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.req_no = #{reqNo}
+			AND a.org_id = #{orgId}
+			<if test="lineNo != null and lineNo !=''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="skuCode != null and skuCode !=''">
+				AND a.sku_code = #{skuCode}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.oms.order.entity.extend.OmRequisitionEntity">
+		SELECT <include refid="omRequisitionHeaderColumns"/>,
+			f.name AS "fmOrgName",
+			t.name AS "toOrgName",
+			so.name AS "orgName",
+			oco.ebcu_name_cn AS "ownerName",
+			occ.ebcu_name_cn AS "carrierName",
+			suc.name AS "createBy.name",
+			suu.name AS "updateBy.name",
+			sua.name AS "auditBy.name"
+		FROM om_requisition_header a
+		LEFT JOIN sys_office f ON a.fm_org_id = f.id
+		LEFT JOIN sys_office t ON a.to_org_id = t.id
+		LEFT JOIN sys_office so ON a.org_id = so.id
+		LEFT JOIN sys_user suc ON a.create_by = suc.id
+		LEFT JOIN sys_user suu ON a.update_by = suu.id
+		LEFT JOIN sys_user sua ON a.audit_by = sua.id
+		LEFT JOIN om_customer oco ON a.owner_code = oco.ebcu_customer_no AND a.org_id = oco.org_id
+		LEFT JOIN om_customer occ ON a.carrier_code = occ.ebcu_customer_no AND a.org_id = occ.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		    <if test="reqNo != null and reqNo !=''">
+				AND a.req_no LIKE concat('%',#{reqNo},'%')
+			</if>
+			<if test="orderTimeFm != null">
+				AND a.order_time &gt;= #{orderTimeFm}
+			</if>
+			<if test="orderTimeTo != null">
+				AND a.order_time &lt;= #{orderTimeTo}
+			</if>
+			<if test="status != null and status !=''">
+				AND a.status = #{status}
+			</if>
+			<if test="orderType != null and orderType !=''">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="planArrivalTimeFm != null">
+				AND a.plan_arrival_time &gt;= #{planArrivalTimeFm}
+			</if>
+			<if test="planArrivalTimeTo != null">
+				AND a.plan_arrival_time &lt;= #{planArrivalTimeTo}
+			</if>
+			<if test="transportMode != null and transportMode !=''">
+				AND a.transport_mode = #{transportMode}
+			</if>
+			<if test="customerNo != null and customerNo !=''">
+				AND a.customer_no LIKE concat('%',#{customerNo},'%')
+			</if>
+			<if test="ownerCode != null and ownerCode !=''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="fmOrgId != null and fmOrgId !=''">
+				AND a.fm_org_id = #{fmOrgId}
+			</if>
+			<if test="toOrgId != null and toOrgId !=''">
+				AND a.to_org_id = #{toOrgId}
+			</if>
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

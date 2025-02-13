@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdWhQcItemDetailMapper">
+    
+	<sql id="banQinCdWhQcItemDetailColumns">
+		a.id AS "id",
+		a.item_group_code AS "itemGroupCode",
+		a.line_no AS "lineNo",
+		a.qc_item AS "qcItem",
+		a.qc_ref AS "qcRef",
+		a.qc_way AS "qcWay",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		a.header_id AS "headerId"
+	</sql>
+	
+	<sql id="banQinCdWhQcItemDetailJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinCdWhQcItemDetail" >
+		SELECT 
+			<include refid="banQinCdWhQcItemDetailColumns"/>
+		FROM cd_wh_qc_item_detail a
+		<include refid="banQinCdWhQcItemDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinCdWhQcItemDetail" >
+		SELECT 
+			<include refid="banQinCdWhQcItemDetailColumns"/>
+		FROM cd_wh_qc_item_detail a
+		<include refid="banQinCdWhQcItemDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			${dataScope}
+            <if test="headerId != null and headerId != ''">
+                AND a.header_id = #{headerId}
+            </if>
+			<if test="itemGroupCode != null and itemGroupCode != ''">
+				AND a.item_group_code = #{itemGroupCode}
+			</if>
+		</where>
+		ORDER BY a.line_no
+	</select>
+
+	<select id="findPage" resultType="BanQinCdWhQcItemDetail" >
+		SELECT
+			<include refid="banQinCdWhQcItemDetailColumns"/>
+		FROM cd_wh_qc_item_detail a
+		<include refid="banQinCdWhQcItemDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+			<if test="itemGroupCode != null and itemGroupCode != ''">
+				AND a.item_group_code = #{itemGroupCode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.line_no
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinCdWhQcItemDetail" >
+		SELECT 
+			<include refid="banQinCdWhQcItemDetailColumns"/>
+		FROM cd_wh_qc_item_detail a
+		<include refid="banQinCdWhQcItemDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_wh_qc_item_detail(
+			id,
+			item_group_code,
+			line_no,
+			qc_item,
+			qc_ref,
+			qc_way,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id,
+			header_id
+		) VALUES (
+			#{id},
+			#{itemGroupCode},
+			#{lineNo},
+			#{qcItem},
+			#{qcRef},
+			#{qcWay},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId},
+			#{headerId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cd_wh_qc_item_detail SET 	
+			item_group_code = #{itemGroupCode},
+			line_no = #{lineNo},
+			qc_item = #{qcItem},
+			qc_ref = #{qcRef},
+			qc_way = #{qcWay},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_wh_qc_item_detail SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM cd_wh_qc_item_detail WHERE id = #{id}
+	</delete>
+    <delete id="deleteByHeaderId">
+        DELETE FROM cd_wh_qc_item_detail WHERE header_id = #{headerId}
+    </delete>
+	<delete id="remove">
+		DELETE cwqid
+		FROM cd_wh_qc_item_detail cwqid
+			INNER JOIN cd_wh_qc_item_header cwqih ON cwqih.id = cwqid.header_id
+		WHERE cwqih.item_group_code = #{itemGroupCode}
+		  AND cwqih.org_id = #{orgId}
+	</delete>
+
+</mapper>

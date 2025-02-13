@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.report.mapper.BmsTransportPriceFileListMapper">
+
+    <select id="findList" resultType="com.yunyou.modules.bms.report.entity.BmsTransportPriceFileList">
+        select
+            bc.settle_object_code                            as settleObjectCode,
+            bso.settle_object_name                           as settleObjectName,
+            btp.car_type_code                                as carType,
+            btp.region_code                                  as regionCode,
+            bcci.bill_subject_code                           as billSubjectCode,
+            bbs.bill_subject_name                            as billSubjectName,
+            btsp.fm,
+            btsp.`to`,
+            if(btp.is_use_step = 'Y', btsp.price, btp.price) as price,
+            bc.org_id                                        as orgId
+        from bms_contract bc
+        inner join bms_contract_cost_item bcci on bc.sys_contract_no = bcci.sys_contract_no and bc.org_id = bcci.org_id and bcci.bill_module = '02'
+        left join bms_bill_subject bbs on bcci.bill_subject_code = bbs.bill_subject_code and bcci.org_id = bbs.org_id
+        left join bms_transport_group btg on bcci.transport_group_code = btg.transport_group_code and bcci.org_id = btg.org_id
+        left join bms_transport_price btp on btg.id = btp.fk_id and btg.org_id = btp.org_id
+        left join bms_transport_stepped_price btsp on btp.id = btsp.fk_id and btp.org_id = btsp.org_id
+        left join bms_settle_object bso on bc.settle_object_code = bso.settle_object_code and bc.org_id = bso.org_id
+        left join sys_data_set_org_relation sdsor on bc.org_id = sdsor.org_id
+        left join sys_common_region scr on btp.region_code = scr.code and sdsor.data_set = scr.data_set
+        <where>
+            bc.org_id = #{orgId}
+            <if test="settleObjectCode != null and settleObjectCode != ''">
+                and bc.settle_object_code = #{settleObjectCode}
+            </if>
+            <if test="billSubjectCode != null and billSubjectCode != ''">
+                and bcci.bill_subject_code = #{billSubjectCode}
+            </if>
+            <if test="carType != null and carType != ''">
+                and btp.car_type_code = #{carType}
+            </if>
+        </where>
+    </select>
+</mapper>

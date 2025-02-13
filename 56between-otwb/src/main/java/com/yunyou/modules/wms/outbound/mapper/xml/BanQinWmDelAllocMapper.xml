@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.outbound.mapper.BanQinWmDelAllocMapper">
+    
+	<sql id="banQinWmDelAllocColumns">
+		a.id AS "id",
+		a.alloc_id AS "allocId",
+		a.alloc_seq AS "allocSeq",
+		a.prealloc_id AS "preallocId",
+		a.order_no AS "orderNo",
+		a.order_type AS "orderType",
+		a.line_no AS "lineNo",
+		a.wave_no AS "waveNo",
+		a.status AS "status",
+		a.owner_code AS "ownerCode",
+		a.sku_code AS "skuCode",
+		a.lot_num AS "lotNum",
+		a.loc_code AS "locCode",
+		a.trace_id AS "traceId",
+		a.pk_seq AS "pkSeq",
+		a.consignee_code AS "consigneeCode",
+		a.pack_code AS "packCode",
+		a.uom AS "uom",
+		a.qty_uom AS "qtyUom",
+		a.qty_ea AS "qtyEa",
+		a.to_loc AS "toLoc",
+		a.to_id AS "toId",
+		a.op AS "op",
+		a.op_time AS "opTime",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmDelAllocJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmDelAlloc" >
+		SELECT 
+			<include refid="banQinWmDelAllocColumns"/>
+		FROM wm_del_alloc a
+		<include refid="banQinWmDelAllocJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmDelAlloc" >
+		SELECT 
+			<include refid="banQinWmDelAllocColumns"/>
+		FROM wm_del_alloc a
+		<include refid="banQinWmDelAllocJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			<if test="allocId != null and allocId != ''">
+				AND a.alloc_id = #{allocId}
+			</if>
+			<if test="allocSeq != null and allocSeq != ''">
+				AND a.alloc_seq = #{allocSeq}
+			</if>
+			<if test="preallocId != null and preallocId != ''">
+				AND a.prealloc_id = #{preallocId}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no = #{orderNo}
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="waveNo != null and waveNo != ''">
+				AND a.wave_no = #{waveNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmDelAlloc" >
+		SELECT 
+			<include refid="banQinWmDelAllocColumns"/>
+		FROM wm_del_alloc a
+		<include refid="banQinWmDelAllocJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_del_alloc(
+			id,
+			alloc_id,
+			alloc_seq,
+			prealloc_id,
+			order_no,
+			order_type,
+			line_no,
+			wave_no,
+			status,
+			owner_code,
+			sku_code,
+			lot_num,
+			loc_code,
+			trace_id,
+			pk_seq,
+			consignee_code,
+			pack_code,
+			uom,
+			qty_uom,
+			qty_ea,
+			to_loc,
+			to_id,
+			op,
+			op_time,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{allocId},
+			#{allocSeq},
+			#{preallocId},
+			#{orderNo},
+			#{orderType},
+			#{lineNo},
+			#{waveNo},
+			#{status},
+			#{ownerCode},
+			#{skuCode},
+			#{lotNum},
+			#{locCode},
+			#{traceId},
+			#{pkSeq},
+			#{consigneeCode},
+			#{packCode},
+			#{uom},
+			#{qtyUom},
+			#{qtyEa},
+			#{toLoc},
+			#{toId},
+			#{op},
+			#{opTime},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_del_alloc SET 	
+			alloc_id = #{allocId},
+			alloc_seq = #{allocSeq},
+			prealloc_id = #{preallocId},
+			order_no = #{orderNo},
+			order_type = #{orderType},
+			line_no = #{lineNo},
+			wave_no = #{waveNo},
+			status = #{status},
+			owner_code = #{ownerCode},
+			sku_code = #{skuCode},
+			lot_num = #{lotNum},
+			loc_code = #{locCode},
+			trace_id = #{traceId},
+			pk_seq = #{pkSeq},
+			consignee_code = #{consigneeCode},
+			pack_code = #{packCode},
+			uom = #{uom},
+			qty_uom = #{qtyUom},
+			qty_ea = #{qtyEa},
+			to_loc = #{toLoc},
+			to_id = #{toId},
+			op = #{op},
+			op_time = #{opTime},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_del_alloc
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_del_alloc SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

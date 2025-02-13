@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmDispatchPlanRelationMapper">
+    
+	<select id="findDemandByDispatch" resultType="java.lang.String">
+		SELECT demand_plan_id FROM tm_dispatch_plan_relation WHERE dispatch_plan_id = #{dispatchPlanId}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_dispatch_plan_relation (dispatch_plan_id, demand_plan_id) VALUES (#{dispatchPlanId}, #{demandPlanId})
+	</insert>
+	
+	<delete id="deleteByDispatch">
+		DELETE FROM tm_dispatch_plan_relation WHERE dispatch_plan_id = #{dispatchPlanId}
+	</delete>
+
+</mapper>

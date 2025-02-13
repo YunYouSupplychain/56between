@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.basic.mapper.BmsContractMapper">
+
+    <sql id="bmsContractColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.sys_contract_no AS "sysContractNo",
+		a.contract_no AS "contractNo",
+		a.subcontract_no AS "subcontractNo",
+		a.settle_object_code AS "settleObjectCode",
+		a.effective_date_fm AS "effectiveDateFm",
+		a.effective_date_to AS "effectiveDateTo",
+		a.contract_type AS "contractType",
+		a.belong_to_company AS "belongToCompany",
+		a.contract_category AS "contractCategory",
+		a.contract_attribution AS "contractAttribution",
+		a.contractor AS "contractor",
+		a.check_accounts_person AS "checkAccountsPerson",
+		a.check_accounts_director AS "checkAccountsDirector",
+		a.check_accounts_time AS "checkAccountsTime",
+		a.billing_requirement AS "billingRequirement",
+		a.invoice_type AS "invoiceType",
+		a.invoice_tax_rate AS "invoiceTaxRate",
+		a.contract_status AS "contractStatus",
+		a.org_id AS "orgId"
+    </sql>
+
+    <sql id="extraColumns">
+        so.name AS "orgName",
+        bso.settle_object_name AS "settleObjectName"
+    </sql>
+
+    <sql id="bmsContractJoins">
+        LEFT JOIN sys_office so ON a.org_id = so.id
+        LEFT JOIN bms_settle_object bso ON a.settle_object_code = bso.settle_object_code AND a.org_id = bso.org_id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.basic.entity.BmsContract">
+        SELECT
+        <include refid="bmsContractColumns"/>
+        FROM bms_contract a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.basic.entity.BmsContract">
+        SELECT
+        <include refid="bmsContractColumns"/>
+        FROM bms_contract a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            <if test="sysContractNo != null and sysContractNo != ''">
+                AND a.sys_contract_no = #{sysContractNo}
+            </if>
+            <if test="contractNo != null and contractNo != ''">
+                AND a.contract_no = #{contractNo}
+            </if>
+            <if test="settleObjectCode != null and settleObjectCode != ''">
+                AND a.settle_object_code = #{settleObjectCode}
+            </if>
+            <if test="effectiveDateFm != null and effectiveDateFm != ''">
+                AND a.effective_date_fm &gt;= #{effectiveDateFm}
+            </if>
+            <if test="effectiveDateTo != null and effectiveDateTo != ''">
+                AND a.effective_date_to &lt;= #{effectiveDateTo}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.basic.entity.BmsContract">
+        SELECT
+        <include refid="bmsContractColumns"/>
+        FROM bms_contract a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_contract
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            rec_ver,
+            sys_contract_no,
+            contract_no,
+            subcontract_no,
+            settle_object_code,
+            effective_date_fm,
+            effective_date_to,
+            contract_type,
+            belong_to_company,
+            contract_category,
+            contract_attribution,
+            contractor,
+            check_accounts_person,
+            check_accounts_director,
+            check_accounts_time,
+            billing_requirement,
+            invoice_type,
+            invoice_tax_rate,
+            contract_status,
+            org_id
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{recVer},
+            #{sysContractNo},
+            #{contractNo},
+            #{subcontractNo},
+            #{settleObjectCode},
+            #{effectiveDateFm},
+            #{effectiveDateTo},
+            #{contractType},
+            #{belongToCompany},
+            #{contractCategory},
+            #{contractAttribution},
+            #{contractor},
+            #{checkAccountsPerson},
+            #{checkAccountsDirector},
+            #{checkAccountsTime},
+            #{billingRequirement},
+            #{invoiceType},
+            #{invoiceTaxRate},
+            #{contractStatus},
+            #{orgId}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE bms_contract
+        SET update_by               = #{updateBy.id},
+            update_date             = #{updateDate},
+            remarks                 = #{remarks},
+            rec_ver                 = rec_ver + 1,
+            sys_contract_no         = #{sysContractNo},
+            contract_no             = #{contractNo},
+            subcontract_no          = #{subcontractNo},
+            settle_object_code      = #{settleObjectCode},
+            effective_date_fm       = #{effectiveDateFm},
+            effective_date_to       = #{effectiveDateTo},
+            contract_type           = #{contractType},
+            belong_to_company       = #{belongToCompany},
+            contract_category       = #{contractCategory},
+            contract_attribution    = #{contractAttribution},
+            contractor              = #{contractor},
+            check_accounts_person   = #{checkAccountsPerson},
+            check_accounts_director = #{checkAccountsDirector},
+            check_accounts_time     = #{checkAccountsTime},
+            billing_requirement     = #{billingRequirement},
+            invoice_type            = #{invoiceType},
+            invoice_tax_rate        = #{invoiceTaxRate},
+            contract_status         = #{contractStatus},
+            org_id                  = #{orgId}
+        WHERE id = #{id}
+          AND rec_ver = #{recVer}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_contract
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <update id="updateInvalidContractStatus">
+        UPDATE bms_contract SET contract_status = '90' WHERE contract_status = '10' AND effective_date_to &lt; CURDATE()
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_contract WHERE id = #{id}
+    </delete>
+
+    <select id="getByContract" resultType="com.yunyou.modules.bms.basic.entity.BmsContract">
+        SELECT
+        <include refid="bmsContractColumns"/>
+        FROM bms_contract a
+        WHERE a.sys_contract_no = #{sysContractNo}
+        AND a.org_id = #{orgId}
+    </select>
+
+    <select id="getEntity" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsContractEntity">
+        SELECT
+        <include refid="bmsContractColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_contract a
+        <include refid="bmsContractJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.basic.entity.extend.BmsContractEntity">
+        SELECT
+        <include refid="bmsContractColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_contract a
+        <include refid="bmsContractJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+            ${dataScope}
+            <if test="sysContractNo != null and sysContractNo != ''">
+                AND a.sys_contract_no LIKE concat('%', #{sysContractNo}, '%')
+            </if>
+            <if test="contractNo != null and contractNo != ''">
+                AND a.contract_no LIKE concat('%', #{contractNo}, '%')
+            </if>
+            <if test="contractStatus != null and contractStatus != ''">
+                AND a.contract_status = #{contractStatus}
+            </if>
+            <if test="settleObjectCode != null and settleObjectCode != ''">
+                AND a.settle_object_code = #{settleObjectCode}
+            </if>
+            <if test="effectiveDateFm != null and effectiveDateFm != ''">
+                AND a.effective_date_fm &gt;= #{effectiveDateFm}
+            </if>
+            <if test="effectiveDateTo != null and effectiveDateTo != ''">
+                AND a.effective_date_to &lt;= #{effectiveDateTo}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="isCited" resultType="java.lang.Integer">
+        select count(a.id)
+        from bms_settle_model_detail a
+            inner join bms_contract_cost_item bcci on a.contract_cost_item_id = bcci.id
+        where bcci.sys_contract_no = #{sysContractNo}
+          and a.org_id = #{orgId}
+    </select>
+
+</mapper>

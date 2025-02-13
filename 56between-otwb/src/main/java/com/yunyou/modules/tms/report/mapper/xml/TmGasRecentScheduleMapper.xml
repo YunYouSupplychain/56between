@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.report.mapper.TmGasRecentScheduleMapper">
+
+    <select id="findList" resultType="com.yunyou.modules.tms.report.entity.TmGasRecentSchedule">
+        SELECT tdpd.owner_code        AS "ownerCode",
+               tto.transport_obj_name AS "ownerName",
+               tdpd.sku_code          AS "skuCode",
+               ti.sku_name            AS "skuName",
+               MAX(a.order_time)      AS "lastPlanTime",
+               tdpd.qty               AS "planQty",
+               a.base_org_id          AS "baseOrgId",
+               a.org_id               AS "orgId"
+        FROM tm_demand_plan_header a
+            LEFT JOIN tm_demand_plan_detail tdpd ON a.plan_order_no = tdpd.plan_order_no AND a.org_id = tdpd.org_id
+            LEFT JOIN tm_transport_obj tto ON tdpd.owner_code = tto.transport_obj_code AND tto.transport_obj_type LIKE '%OWNER%' AND tdpd.base_org_id = tto.org_id
+            LEFT JOIN tm_item ti ON tdpd.owner_code = ti.owner_code AND tdpd.sku_code = ti.sku_code AND tdpd.base_org_id = ti.org_id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+          <if test="baseOrgId != null and baseOrgId != ''">
+              AND a.base_org_id = #{baseOrgId}
+          </if>
+          <if test="ownerCode != null and ownerCode != ''">
+              AND a.owner_code = #{ownerCode}
+          </if>
+        ${dataScope}
+        GROUP BY tdpd.owner_code, tdpd.sku_code
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY tdpd.owner_code, tdpd.sku_code
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getActualQty" resultType="java.lang.Double">
+        SELECT IFNULL(a.actual_qty, 0)
+        FROM tm_handover_order_sku a
+        WHERE a.receive_ship = 'S'
+          AND a.owner_code = #{ownerCode}
+          AND a.sku_code = #{skuCode}
+          AND a.update_date &gt;= #{fmDate}
+          AND a.update_date &lt;= #{toDate}
+          AND a.base_org_id = #{baseOrgId}
+          AND a.org_id = #{orgId}
+    </select>
+</mapper>

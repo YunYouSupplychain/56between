@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.business.mapper.BmsExceptionDataMapper">
+
+    <sql id="bmsExceptionDataColumns">
+        a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.order_no AS "orderNo",
+		a.order_date AS "orderDate",
+		a.dispatch_no AS "dispatchNo",
+		a.principal_code AS "principalCode",
+		a.principal_name AS "principalName",
+		a.customer_code AS "customerCode",
+		a.customer_name AS "customerName",
+		a.carrier_code AS "carrierCode",
+		a.carrier_name AS "carrierName",
+		a.car_type AS "carType",
+		a.vehicle_no AS "vehicleNo",
+		a.owner_code AS "ownerCode",
+		a.owner_name AS "ownerName",
+		a.supplier_code AS "supplierCode",
+		a.supplier_name AS "supplierName",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+        a.sku_class AS "skuClass",
+		a.exception_qty AS "exceptionQty",
+		a.exception_qty_cs AS "exceptionQtyCs",
+		a.exception_qty_pl AS "exceptionQtyPl",
+        a.weight AS "weight",
+        a.volume AS "volume",
+		a.exception_type AS "exceptionType",
+		a.exception_reason AS "exceptionReason",
+		a.responsibility AS "responsibility",
+		a.responsible_person AS "responsiblePerson",
+		a.org_id AS "orgId",
+		a.data_sources AS "dataSources",
+		a.is_fee AS "isFee",
+		a.order_no_a AS "orderNoA",
+		a.order_no_b AS "orderNoB",
+		a.order_no_c AS "orderNoC",
+		a.registration_time AS "registrationTime",
+		a.registrant AS "registrant",
+		a.project_code AS "projectCode",
+		a.project_name AS "projectName"
+    </sql>
+
+    <sql id="extraColumns">
+        bsc.name AS "skuClassName",
+        so.name AS "orgName"
+    </sql>
+
+    <sql id="bmsExceptionDataJoins">
+        LEFT JOIN bms_sku_classification bsc ON a.sku_class = bsc.code AND a.org_id = bsc.id
+        LEFT JOIN sys_office so ON a.org_id = so.id
+    </sql>
+
+    <select id="get" resultType="com.yunyou.modules.bms.business.entity.BmsExceptionData">
+        SELECT
+        <include refid="bmsExceptionDataColumns"/>
+        FROM bms_exception_data a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.yunyou.modules.bms.business.entity.BmsExceptionData">
+        SELECT
+        <include refid="bmsExceptionDataColumns"/>
+        FROM bms_exception_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+        </where>
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.bms.business.entity.BmsExceptionData">
+        SELECT
+        <include refid="bmsExceptionDataColumns"/>
+        FROM bms_exception_data a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO bms_exception_data
+        (
+            id,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            order_no,
+            order_date,
+            dispatch_no,
+            principal_code,
+            principal_name,
+            customer_code,
+            customer_name,
+            carrier_code,
+            carrier_name,
+            car_type,
+            vehicle_no,
+            owner_code,
+            owner_name,
+            supplier_code,
+            supplier_name,
+            sku_code,
+            sku_name,
+            sku_class,
+            exception_qty,
+            exception_qty_cs,
+            exception_qty_pl,
+            weight,
+            volume,
+            exception_type,
+            exception_reason,
+            responsibility,
+            responsible_person,
+            org_id,
+            data_sources,
+            is_fee,
+            order_no_a,
+            order_no_b,
+            order_no_c,
+            registration_time,
+            registrant,
+            project_code,
+            project_name
+        )
+        VALUES
+        (
+            #{id},
+            #{createBy.id},
+            #{createDate},
+            #{updateBy.id},
+            #{updateDate},
+            #{remarks},
+            #{delFlag},
+            #{orderNo},
+            #{orderDate},
+            #{dispatchNo},
+            #{principalCode},
+            #{principalName},
+            #{customerCode},
+            #{customerName},
+            #{carrierCode},
+            #{carrierName},
+            #{carType},
+            #{vehicleNo},
+            #{ownerCode},
+            #{ownerName},
+            #{supplierCode},
+            #{supplierName},
+            #{skuCode},
+            #{skuName},
+            #{skuClass},
+            #{exceptionQty},
+            #{exceptionQtyCs},
+            #{exceptionQtyPl},
+            #{weight},
+            #{volume},
+            #{exceptionType},
+            #{exceptionReason},
+            #{responsibility},
+            #{responsiblePerson},
+            #{orgId},
+            #{dataSources},
+            #{isFee},
+            #{orderNoA},
+            #{orderNoB},
+            #{orderNoC},
+            #{registrationTime},
+            #{registrant},
+            #{projectCode},
+            #{projectName}
+        )
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO bms_exception_data(
+        id,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        remarks,
+        del_flag,
+        order_no,
+        order_date,
+        dispatch_no,
+        principal_code,
+        principal_name,
+        customer_code,
+        customer_name,
+        carrier_code,
+        carrier_name,
+        car_type,
+        vehicle_no,
+        owner_code,
+        owner_name,
+        supplier_code,
+        supplier_name,
+        sku_code,
+        sku_name,
+        sku_class,
+        exception_qty,
+        exception_qty_cs,
+        exception_qty_pl,
+        weight,
+        volume,
+        exception_type,
+        exception_reason,
+        responsibility,
+        responsible_person,
+        org_id,
+        data_sources,
+        is_fee,
+        order_no_a,
+        order_no_b,
+        order_no_c,
+        registration_time,
+        registrant,
+        project_code,
+        project_name
+        ) VALUES
+        <foreach collection="items" item="item" separator=",">
+            (
+            #{item.id},
+            #{item.createBy.id},
+            #{item.createDate},
+            #{item.updateBy.id},
+            #{item.updateDate},
+            #{item.remarks},
+            #{item.delFlag},
+            #{item.orderNo},
+            #{item.orderDate},
+            #{item.dispatchNo},
+            #{item.principalCode},
+            #{item.principalName},
+            #{item.customerCode},
+            #{item.customerName},
+            #{item.carrierCode},
+            #{item.carrierName},
+            #{item.carType},
+            #{item.vehicleNo},
+            #{item.ownerCode},
+            #{item.ownerName},
+            #{item.supplierCode},
+            #{item.supplierName},
+            #{item.skuCode},
+            #{item.skuName},
+            #{item.skuClass},
+            #{item.exceptionQty},
+            #{item.exceptionQtyCs},
+            #{item.exceptionQtyPl},
+            #{item.weight},
+            #{item.volume},
+            #{item.exceptionType},
+            #{item.exceptionReason},
+            #{item.responsibility},
+            #{item.responsiblePerson},
+            #{item.orgId},
+            #{item.dataSources},
+            #{item.isFee},
+            #{item.orderNoA},
+            #{item.orderNoB},
+            #{item.orderNoC},
+            #{item.registrationTime},
+            #{item.registrant},
+            #{item.projectCode},
+            #{item.projectName}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE bms_exception_data
+        SET update_by = #{updateBy.id},
+            update_date = #{updateDate},
+            remarks = #{remarks},
+            order_no = #{orderNo},
+            order_date = #{orderDate},
+            dispatch_no = #{dispatchNo},
+            principal_code = #{principalCode},
+            principal_name = #{principalName},
+            customer_code = #{customerCode},
+            customer_name = #{customerName},
+            carrier_code = #{carrierCode},
+            carrier_name = #{carrierName},
+            car_type = #{carType},
+            vehicle_no = #{vehicleNo},
+            owner_code = #{ownerCode},
+            owner_name = #{ownerName},
+            supplier_code = #{supplierCode},
+            supplier_name = #{supplierName},
+            sku_code = #{skuCode},
+            sku_name = #{skuName},
+            sku_class = #{skuClass},
+            exception_qty = #{exceptionQty},
+            exception_qty_cs = #{exceptionQtyCs},
+            exception_qty_pl = #{exceptionQtyPl},
+            weight = #{weight},
+            volume = #{volume},
+            exception_type = #{exceptionType},
+            exception_reason = #{exceptionReason},
+            responsibility = #{responsibility},
+            responsible_person = #{responsiblePerson},
+            org_id = #{orgId},
+            data_sources = #{dataSources},
+            is_fee = #{isFee},
+            order_no_a = #{orderNoA},
+            order_no_b = #{orderNoB},
+            order_no_c = #{orderNoC},
+            registration_time = #{registrationTime},
+            registrant = #{registrant},
+            project_code = #{projectCode},
+            project_name = #{projectName}
+        WHERE id = #{id}
+    </update>
+    <!--逻辑删除-->
+    <update id="deleteByLogic">
+        UPDATE bms_exception_data
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+    <!--物理删除-->
+    <delete id="delete">
+        DELETE FROM bms_exception_data WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteByCondition">
+        DELETE FROM bms_exception_data WHERE
+        <![CDATA[order_date >= #{fmDate}]]>
+        <![CDATA[AND order_date <= #{toDate}]]>
+        <if test="dataSources != null and dataSources != ''">
+            AND data_sources = #{dataSources}
+        </if>
+        <if test="orgId != null and orgId != ''">
+            AND org_id = #{orgId}
+        </if>
+    </delete>
+    <!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+    <select id="findUniqueByProperty" resultType="com.yunyou.modules.bms.business.entity.BmsExceptionData" statementType="STATEMENT">
+        select * FROM bms_exception_data where ${propertyName} = '${value}'
+    </select>
+
+    <select id="findPage" resultType="com.yunyou.modules.bms.business.entity.extend.BmsExceptionDataEntity">
+        SELECT
+        <include refid="bmsExceptionDataColumns"/>,
+        <include refid="extraColumns"/>
+        FROM bms_exception_data a
+        <include refid="bmsExceptionDataJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+            <if test="orderDateFm != null">
+                AND a.order_date &gt;= #{orderDateFm}
+            </if>
+            <if test="orderDateTo != null">
+                AND a.order_date &lt;= #{orderDateTo}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no LIKE concat('%', #{orderNo}, '%')
+            </if>
+            <if test="exceptionType != null and exceptionType != ''">
+                AND a.exception_type = #{exceptionType}
+            </if>
+            <if test="dispatchNo != null and dispatchNo != ''">
+                AND a.dispatch_no LIKE concat('%', #{dispatchNo}, '%')
+            </if>
+            <if test="orderNoA != null and orderNoA != ''">
+                AND a.order_no_a LIKE concat('%', #{orderNoA}, '%')
+            </if>
+            <if test="orderNoB != null and orderNoB != ''">
+                AND a.order_no_b LIKE concat('%', #{orderNoB}, '%')
+            </if>
+            <if test="orderNoC != null and orderNoC != ''">
+                AND a.order_no_c LIKE concat('%', #{orderNoC}, '%')
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND a.supplier_code LIKE concat('%', #{supplierCode}, '%')
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                AND a.supplier_name LIKE concat('%', #{supplierName}, '%')
+            </if>
+            <if test="ownerCode != null and ownerCode != ''">
+                AND a.owner_code LIKE concat('%', #{ownerCode}, '%')
+            </if>
+            <if test="ownerName != null and ownerName != ''">
+                AND a.owner_name LIKE concat('%', #{ownerName}, '%')
+            </if>
+            <if test="skuCode != null and skuCode != ''">
+                AND a.sku_code LIKE concat('%', #{skuCode}, '%')
+            </if>
+            <if test="skuName != null and skuName != ''">
+                AND a.sku_name LIKE concat('%', #{skuName}, '%')
+            </if>
+            <if test="skuClass != null and skuClass != ''">
+                AND a.sku_class = #{skuClass}
+            </if>
+            <if test="isFee != null and isFee != ''">
+                AND a.is_fee = #{isFee}
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+    <select id="findCalcData" resultType="com.yunyou.modules.bms.business.entity.BmsExceptionData">
+        select * from bms_exception_data <where>${sql}</where>
+    </select>
+</mapper>

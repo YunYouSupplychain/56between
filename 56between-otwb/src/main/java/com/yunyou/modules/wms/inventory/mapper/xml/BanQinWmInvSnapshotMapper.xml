@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmInvSnapshotMapper">
+    <delete id="clearInvLotSnapshot">
+        DELETE FROM wm_inv_lot_snapshot WHERE inv_date = #{invDate}
+    </delete>
+    <delete id="clearInvLotLocSnapshot">
+        DELETE FROM wm_inv_lot_loc_snapshot WHERE inv_date = #{invDate}
+        <if test="orgId != null and orgId != ''">
+            AND org_id = #{orgId}
+        </if>
+    </delete>
+
+    <insert id="initInvLotSnapshot">
+        INSERT INTO wm_inv_lot_snapshot (
+            id,
+            inv_date,
+            org_id,
+            lot_num,
+            owner_code,
+            owner_name,
+            sku_code,
+            sku_name,
+            qty,
+            qty_hold,
+            qty_prealloc,
+            qty_alloc,
+            qty_pk,
+            bar_code,
+            shelf_life,
+            box_gauge
+        ) SELECT
+              UUID(),
+              #{invDate},
+              wmil.org_id,
+              wmil.lot_num,
+              wmil.owner_code,
+              ec.ebcu_name_cn,
+              wmil.sku_code,
+              cws.sku_name,
+              wmil.qty,
+              wmil.qty_hold,
+              wmil.qty_prealloc,
+              wmil.qty_alloc,
+              wmil.qty_pk,
+              cwsb.barcode,
+              cws.shelf_life,
+              cwpr.cdpr_quantity
+          FROM wm_inv_lot wmil
+              LEFT JOIN eb_customer ec ON wmil.owner_code = ec.ebcu_customer_no AND wmil.org_id = ec.org_id
+              LEFT JOIN cd_wh_sku cws ON wmil.owner_code = cws.owner_code AND wmil.sku_code = cws.sku_code AND wmil.org_id = cws.org_id
+              LEFT JOIN cd_wh_sku_barcode cwsb ON cws.owner_code = cwsb.owner_code AND cws.sku_code = cwsb.sku_code AND cws.org_id = cwsb.org_id AND cwsb.is_default = 'Y'
+              LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = cws.pack_code AND cwp.org_id = cws.org_id
+              LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = 'CS' AND cwpr.org_id = cwp.org_id
+    </insert>
+    <insert id="initInvLotLocSnapshot">
+        insert into wm_inv_lot_loc_snapshot(
+            id,
+            inv_date,
+            owner_code,
+            sku_code,
+            lot_num,
+            loc_code,
+            trace_id,
+            qty,
+            org_id
+        ) SELECT UUID(),
+                 #{invDate},
+                 owner_code,
+                 sku_code,
+                 lot_num,
+                 loc_code,
+                 trace_id,
+                 qty,
+                 org_id
+        FROM wm_inv_lot_loc
+    </insert>
+    <insert id="generateInvLotLocSnapshotByActTran">
+        insert into wm_inv_lot_loc_snapshot
+        (id,
+         inv_date,
+         owner_code,
+         sku_code,
+         lot_num,
+         loc_code,
+         trace_id,
+         qty,
+         org_id)
+        SELECT UUID(),
+               #{invDate},
+               t.owner_code,
+               t.sku_code,
+               t.lot_num,
+               t.loc_code,
+               t.trace_id,
+               t.qty,
+               t.org_id
+        FROM (
+            SELECT a.owner_code,
+                   a.sku_code,
+                   a.lot_num,
+                   a.loc_code,
+                   a.trace_id,
+                   SUM(a.qty) AS qty,
+                   a.org_id
+            FROM (
+                SELECT will.owner_code,
+                       will.sku_code,
+                       will.loc_code,
+                       will.lot_num,
+                       will.trace_id,
+                       will.qty,
+                       will.org_id
+                FROM wm_inv_lot_loc will
+                <where>
+                    <if test="orgId != null and orgId != ''">
+                        AND will.org_id = #{orgId}
+                    </if>
+                </where>
+                UNION ALL
+                SELECT wat.fm_owner                               AS owner_code,
+                       wat.fm_sku                                 AS sku_code,
+                       wat.fm_loc                                 AS loc_code,
+                       wat.fm_lot                                 AS lot_num,
+                       wat.fm_id                                  AS trace_id,
+                       wat.fm_qty_ea_before - wat.fm_qty_ea_after AS qty,
+                       wat.org_id
+                FROM wm_act_tran wat
+                <where>
+                    wat.fm_owner IS NOT NULL
+                    AND wat.fm_sku IS NOT NULL
+                    <if test="orgId != null and orgId != ''">
+                        AND wat.org_id = #{orgId}
+                    </if>
+                    <choose>
+                        <when test="date != null">
+                            AND wat.tran_time &gt; #{date}
+                        </when>
+                        <otherwise>
+                            AND wat.tran_time &gt; NOW() -- 日期到为空时，此条件生效
+                        </otherwise>
+                    </choose>
+                </where>
+                UNION ALL
+                SELECT wat.to_owner                               AS owner_code,
+                       wat.to_sku                                 AS sku_code,
+                       wat.to_loc                                 AS loc_code,
+                       wat.to_lot                                 AS lot_num,
+                       wat.to_id                                  AS trace_id,
+                       wat.to_qty_ea_before - wat.to_qty_ea_after AS qty,
+                       wat.org_id
+                FROM wm_act_tran wat
+                <where>
+                    wat.to_owner IS NOT NULL
+                    AND wat.to_sku IS NOT NULL
+                    <if test="orgId != null and orgId != ''">
+                        AND wat.org_id = #{orgId}
+                    </if>
+                    <choose>
+                        <when test="date != null">
+                            AND wat.tran_time &gt; #{date}
+                        </when>
+                        <otherwise>
+                            AND wat.tran_time &gt; NOW() -- 日期到为空时，此条件生效
+                        </otherwise>
+                    </choose>
+                </where>
+            ) a
+            GROUP BY a.owner_code, a.sku_code, a.lot_num, a.loc_code, a.trace_id, a.org_id
+            HAVING SUM(a.qty) > 0
+        ) t
+    </insert>
+</mapper>

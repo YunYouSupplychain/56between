@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmExceptionHandleBillFeeMapper">
+    
+	<sql id="tmExceptionHandleBillFeeColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.bill_no AS "billNo",
+		a.rp_flag AS "rpFlag",
+		a.charge_name AS "chargeName",
+		a.amount AS "amount",
+		a.liability_sys_user_code AS "liabilitySysUserCode",
+		a.liability_sys_user_name AS "liabilitySysUserName",
+		a.org_id AS "orgId",
+		a.base_org_id AS "baseOrgId",
+		a.rec_ver AS "recVer"
+	</sql>
+
+	<select id="get" resultType="TmExceptionHandleBillFee">
+		SELECT <include refid="tmExceptionHandleBillFeeColumns"/>
+		FROM tm_exception_handle_bill_fee a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="TmExceptionHandleBillFee">
+		SELECT
+			<include refid="tmExceptionHandleBillFeeColumns"/>
+		FROM tm_exception_handle_bill_fee a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="billNo != null and billNo != ''">
+				AND a.bill_no = #{billNo}
+			</if>
+			<if test="liabilitySysUserCode != null and liabilitySysUserCode != ''">
+				AND a.liability_sys_user_code = #{liabilitySysUserCode}
+			</if>
+			<if test="rpFlag != null and rpFlag != ''">
+				AND a.rp_flag = #{rpFlag}
+			</if>
+			<if test="chargeName != null and chargeName != ''">
+				AND a.charge_name = #{chargeName}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="TmExceptionHandleBillFee">
+		SELECT
+			<include refid="tmExceptionHandleBillFeeColumns"/>
+		FROM tm_exception_handle_bill_fee a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_exception_handle_bill_fee(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			bill_no,
+			rp_flag,
+			charge_name,
+			amount,
+			liability_sys_user_code,
+			liability_sys_user_name,
+			org_id,
+			base_org_id,
+			rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{billNo},
+			#{rpFlag},
+			#{chargeName},
+			#{amount},
+		    #{liabilitySysUserCode},
+			#{liabilitySysUserName},
+			#{orgId},
+			#{baseOrgId},
+			#{recVer}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_exception_handle_bill_fee SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			bill_no = #{billNo},
+			rp_flag = #{rpFlag},
+			charge_name = #{chargeName},
+			amount = #{amount},
+			liability_sys_user_code = #{liabilitySysUserCode},
+			liability_sys_user_name = #{liabilitySysUserName},
+			org_id = #{orgId},
+			base_org_id = #{baseOrgId},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_exception_handle_bill_fee
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_exception_handle_bill_fee SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteDetail">
+		DELETE FROM tm_exception_handle_bill_fee
+		<where> 1 = 1
+			AND org_id = #{orgId}
+			AND bill_no = #{billNo}
+		</where>
+	</update>
+
+</mapper>

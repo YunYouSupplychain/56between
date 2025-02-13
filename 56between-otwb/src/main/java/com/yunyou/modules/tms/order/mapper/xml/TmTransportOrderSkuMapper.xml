@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmTransportOrderSkuMapper">
+    
+	<sql id="tmTransportOrderSkuColumns">
+		a.id           AS "id",
+      	a.create_by    AS "createBy.id",
+       	a.create_date  AS "createDate",
+       	a.update_by    AS "updateBy.id",
+       	a.update_date  AS "updateDate",
+       	a.remarks      AS "remarks",
+       	a.del_flag     AS "delFlag",
+       	a.rec_ver      AS "recVer",
+       	a.transport_no AS "transportNo",
+       	a.line_no      AS "lineNo",
+       	a.owner_code   AS "ownerCode",
+       	a.sku_code     AS "skuCode",
+       	a.qty          AS "qty",
+       	a.weight       AS "weight",
+       	a.cubic        AS "cubic",
+       	a.org_id       AS "orgId",
+       	a.base_org_id  AS "baseOrgId",
+	   	a.def1 AS "def1",
+	   	a.def2 AS "def2",
+	   	a.def3 AS "def3",
+	   	a.def4 AS "def4",
+	   	a.def5 AS "def5",
+	   	a.def6 AS "def6",
+	   	a.def7 AS "def7",
+	   	a.def8 AS "def8",
+	   	a.def9 AS "def9",
+	   	a.def10 AS "def10",
+	   	a.ea_quantity AS "eaQuantity",
+	  	a.ip_quantity AS "eaQuantity",
+		a.cs_quantity AS "eaQuantity",
+		a.pl_quantity AS "eaQuantity",
+		a.ot_quantity AS "eaQuantity",
+		a.lot_info AS "lotInfo"
+	</sql>
+	
+	<sql id="tmTransportOrderSkuJoins">
+		
+	</sql>
+
+	<select id="get" resultType="TmTransportOrderSku" >
+		SELECT 
+			<include refid="tmTransportOrderSkuColumns"/>
+		FROM tm_transport_order_sku a
+		<include refid="tmTransportOrderSkuJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmTransportOrderSku" >
+		SELECT 
+			<include refid="tmTransportOrderSkuColumns"/>
+		FROM tm_transport_order_sku a
+		<include refid="tmTransportOrderSkuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="transportNo != null and transportNo != ''">
+				AND a.transport_no = #{transportNo}
+			</if>
+			<if test="lineNo != null and lineNo != ''">
+				AND a.line_no = #{lineNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="skuCode != null and skuCode != ''">
+				AND a.sku_code = #{skuCode}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmTransportOrderSku" >
+		SELECT 
+			<include refid="tmTransportOrderSkuColumns"/>
+		FROM tm_transport_order_sku a
+		<include refid="tmTransportOrderSkuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_transport_order_sku(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			transport_no,
+			line_no,
+			owner_code,
+			sku_code,
+			qty,
+			weight,
+			cubic,
+			org_id,
+			base_org_id,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			ea_quantity,
+			ip_quantity,
+			cs_quantity,
+			pl_quantity,
+			ot_quantity,
+			lot_info
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{recVer},
+			#{transportNo},
+			#{lineNo},
+			#{ownerCode},
+			#{skuCode},
+			#{qty},
+			#{weight},
+			#{cubic},
+			#{orgId},
+			#{baseOrgId},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{eaQuantity},
+			#{ipQuantity},
+			#{csQuantity},
+			#{plQuantity},
+			#{otQuantity},
+			#{lotInfo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_transport_order_sku
+		SET update_by    = #{updateBy.id},
+			update_date  = #{updateDate},
+			remarks      = #{remarks},
+			rec_ver      = rec_ver + 1,
+			transport_no = #{transportNo},
+			line_no      = #{lineNo},
+			owner_code   = #{ownerCode},
+			sku_code     = #{skuCode},
+			qty          = #{qty},
+			weight       = #{weight},
+			cubic        = #{cubic},
+			org_id       = #{orgId},
+			base_org_id  = #{baseOrgId},
+			def1  = #{def1},
+			def2  = #{def2},
+			def3  = #{def3},
+			def4  = #{def4},
+			def5  = #{def5},
+			def6  = #{def6},
+			def7  = #{def7},
+			def8  = #{def8},
+			def9  = #{def9},
+			def10  = #{def10},
+			ea_quantity = #{eaQuantity},
+			ip_quantity = #{ipQuantity},
+			cs_quantity = #{csQuantity},
+			pl_quantity = #{plQuantity},
+			ot_quantity = #{otQuantity},
+			lot_info = #{lotInfo}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_transport_order_sku WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_transport_order_sku SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+    <select id="getMaxLineNo" resultType="java.lang.Integer">
+		SELECT max(CONVERT(line_no, SIGNED)) FROM tm_transport_order_sku WHERE transport_no = #{transportNo} AND org_id = #{orgId}
+	</select>
+
+    <insert id="saveAll">
+		INSERT INTO tm_transport_order_sku(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			rec_ver,
+			transport_no,
+			line_no,
+			owner_code,
+			sku_code,
+			qty,
+			weight,
+			cubic,
+			org_id,
+			base_org_id,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			ea_quantity,
+			ip_quantity,
+			cs_quantity,
+			pl_quantity,
+			ot_quantity,
+			lot_info
+		) VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.recVer},
+			#{item.transportNo},
+			#{item.lineNo},
+			#{item.ownerCode},
+			#{item.skuCode},
+			#{item.qty},
+			#{item.weight},
+			#{item.cubic},
+			#{item.orgId},
+			#{item.baseOrgId},
+			#{item.def1},
+			#{item.def2},
+			#{item.def3},
+			#{item.def4},
+			#{item.def5},
+			#{item.def6},
+			#{item.def7},
+			#{item.def8},
+			#{item.def9},
+			#{item.def10},
+			#{item.eaQuantity},
+			#{item.ipQuantity},
+			#{item.csQuantity},
+			#{item.plQuantity},
+			#{item.otQuantity},
+			#{item.lotInfo}
+			)
+		</foreach>
+	</insert>
+</mapper>

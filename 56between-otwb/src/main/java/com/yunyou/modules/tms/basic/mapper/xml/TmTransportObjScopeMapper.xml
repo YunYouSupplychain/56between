@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.basic.mapper.TmTransportObjScopeMapper">
+    
+	<sql id="tmTransportObjScopeColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.transport_scope_code AS "transportScopeCode",
+		a.transport_obj_code AS "transportObjCode",
+		a.transport_scope_type AS "transportScopeType",
+		a.max_load_weight AS "maxLoadWeight",
+		a.max_load_cubic AS "maxLoadCubic",
+		a.max_amount AS "maxAmount",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer"
+	</sql>
+	
+	<sql id="tmTransportObjScopeJoins">
+		
+	</sql>
+
+    <select id="get" resultType="TmTransportObjScope" >
+		SELECT 
+			<include refid="tmTransportObjScopeColumns"/>
+		FROM tm_transport_obj_scope a
+		<include refid="tmTransportObjScopeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmTransportObjScope" >
+		SELECT 
+			<include refid="tmTransportObjScopeColumns"/>
+		FROM tm_transport_obj_scope a
+		<include refid="tmTransportObjScopeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="transportScopeCode != null and transportScopeCode != ''">
+				AND a.transport_scope_code = #{transportScopeCode}
+			</if>
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code = #{transportObjCode}
+			</if>
+			<if test="transportScopeType != null and transportScopeType != ''">
+				AND a.transport_scope_type = #{transportScopeType}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmTransportObjScope" >
+		SELECT 
+			<include refid="tmTransportObjScopeColumns"/>
+		FROM tm_transport_obj_scope a
+		<include refid="tmTransportObjScopeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_transport_obj_scope(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			transport_scope_code,
+			transport_obj_code,
+		    transport_scope_type,
+			max_load_weight,
+			max_load_cubic,
+			max_amount,
+			org_id,
+			rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{transportScopeCode},
+			#{transportObjCode},
+		    #{transportScopeType},
+			#{maxLoadWeight},
+			#{maxLoadCubic},
+			#{maxAmount},
+			#{orgId},
+			#{recVer}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_transport_obj_scope SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			del_flag = #{delFlag},
+			remarks = #{remarks},
+			transport_scope_code = #{transportScopeCode},
+			transport_obj_code = #{transportObjCode},
+		    transport_scope_type = #{transportScopeType},
+			max_load_weight = #{maxLoadWeight},
+			max_load_cubic = #{maxLoadCubic},
+			max_amount = #{maxAmount},
+			org_id = #{orgId},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_transport_obj_scope SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_transport_obj_scope WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM tm_transport_obj_scope WHERE transport_obj_code = #{transportObjCode} AND transport_scope_code = #{transportScopeCode} AND transport_scope_type = #{transportScopeType} AND org_id = #{orgId}
+	</delete>
+
+	<select id="getEntity" resultType="com.yunyou.modules.tms.basic.entity.extend.TmTransportObjScopeEntity" >
+		SELECT
+		tto.transport_obj_name AS "transportObjName",
+		tts.name AS "transportScopeName",
+		<include refid="tmTransportObjScopeColumns"/>
+		FROM tm_transport_obj_scope a
+		LEFT JOIN tm_transport_obj tto on a.transport_obj_code = tto.transport_obj_code AND a.org_id = tto.org_id
+		LEFT JOIN tm_transport_scope tts on a.transport_scope_code = tts.code AND a.org_id = tts.org_id
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.tms.basic.entity.extend.TmTransportObjScopeEntity" >
+		SELECT
+		tto.transport_obj_name AS "transportObjName",
+		tts.name AS "transportScopeName",
+		<include refid="tmTransportObjScopeColumns"/>
+		FROM tm_transport_obj_scope a
+		LEFT JOIN tm_transport_obj tto on a.transport_obj_code = tto.transport_obj_code AND a.org_id = tto.org_id
+		LEFT JOIN tm_transport_scope tts on a.transport_scope_code = tts.code AND a.org_id = tts.org_id
+		<where>
+			1 = 1
+			${dataScope}
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+			<if test="transportScopeCode != null and transportScopeCode != ''">
+				AND a.transport_scope_code = #{transportScopeCode}
+			</if>
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code = #{transportObjCode}
+			</if>
+			<if test="transportScopeType != null and transportScopeType != ''">
+				AND a.transport_scope_type = #{transportScopeType}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findCarrierScope" resultType="TmTransportObjScope" >
+		SELECT
+		  	a.transport_obj_code,
+	   		a.transport_scope_code,
+	   		a.org_id
+		FROM tm_transport_obj_scope a
+		INNER JOIN tm_transport_obj tto ON a.transport_obj_code = tto.transport_obj_code AND tto.transport_obj_type LIKE '%CARRIER%' AND a.org_id = tto.org_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.transport_scope_type = #{transportScopeType}
+			AND a.org_id = #{orgId}
+			<if test="transportObjCode != null and transportObjCode != ''">
+				AND a.transport_obj_code = #{transportObjCode}
+			</if>
+		</where>
+	</select>
+
+</mapper>

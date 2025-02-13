@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmAdHeaderMapper">
+    
+	<sql id="banQinWmAdHeaderColumns">
+		a.id AS "id",
+		a.ad_no AS "adNo",
+		a.owner_code AS "ownerCode",
+		a.status AS "status",
+		a.audit_status AS "auditStatus",
+		a.reason_code AS "reasonCode",
+		a.reason AS "reason",
+		a.audit_op AS "auditOp",
+		a.audit_time AS "auditTime",
+		a.audit_comment AS "auditComment",
+		a.ad_op AS "adOp",
+		a.ad_time AS "adTime",
+		a.count_no AS "countNo",
+		a.edi_send_time AS "ediSendTime",
+		a.is_edi_send AS "isEdiSend",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmAdHeaderJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+
+	<select id="get" resultType="BanQinWmAdHeader" >
+		SELECT 
+			<include refid="banQinWmAdHeaderColumns"/>
+		FROM wm_ad_header a
+		<include refid="banQinWmAdHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="getEntity" resultType="BanQinWmAdHeaderEntity" >
+        SELECT
+            <include refid="banQinWmAdHeaderColumns"/>,
+            ebcu.ebcu_name_cn AS ownerName
+        FROM wm_ad_header a
+        LEFT JOIN eb_customer ebcu ON a.owner_code = ebcu.ebcu_customer_no ANd a.org_id = ebcu.org_id AND ebcu.ebcu_type LIKE concat('%OWNER,%')
+        WHERE a.id = #{id}
+    </select>
+	
+	<select id="findList" resultType="BanQinWmAdHeader" >
+		SELECT 
+			<include refid="banQinWmAdHeaderColumns"/>
+		FROM wm_ad_header a
+		<include refid="banQinWmAdHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			<if test="adNo != null and adNo != ''">
+				AND a.ad_no = #{adNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="countNo != null and countNo != ''">
+				AND a.count_no = #{countNo}
+			</if>
+		</where>
+	</select>
+
+    <select id="findPage" resultType="BanQinWmAdHeaderEntity" >
+        SELECT
+            <include refid="banQinWmAdHeaderColumns"/>,
+        	ebcu.ebcu_name_cn AS ownerName,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName
+        FROM wm_ad_header a
+        LEFT JOIN eb_customer ebcu ON a.owner_code = ebcu.ebcu_customer_no ANd a.org_id = ebcu.org_id AND ebcu.ebcu_type LIKE concat('%OWNER,%')
+		<include refid="banQinWmAdHeaderJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            ${dataScope}
+			<if test="adNo != null and adNo != ''">
+				AND a.ad_no = #{adNo}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND a.audit_status = #{auditStatus}
+			</if>
+			<if test="countNo != null and countNo != ''">
+				AND a.count_no = #{countNo}
+			</if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY #{page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+	<select id="findAllList" resultType="BanQinWmAdHeader" >
+		SELECT 
+			<include refid="banQinWmAdHeaderColumns"/>
+		FROM wm_ad_header a
+		<include refid="banQinWmAdHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_ad_header(
+			id,
+			ad_no,
+			owner_code,
+			status,
+			audit_status,
+			reason_code,
+			reason,
+			audit_op,
+			audit_time,
+			audit_comment,
+			ad_op,
+			ad_time,
+			count_no,
+			edi_send_time,
+			is_edi_send,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{adNo},
+			#{ownerCode},
+			#{status},
+			#{auditStatus},
+			#{reasonCode},
+			#{reason},
+			#{auditOp},
+			#{auditTime},
+			#{auditComment},
+			#{adOp},
+			#{adTime},
+			#{countNo},
+			#{ediSendTime},
+			#{isEdiSend},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_ad_header SET 	
+			ad_no = #{adNo},
+			owner_code = #{ownerCode},
+			status = #{status},
+			audit_status = #{auditStatus},
+			reason_code = #{reasonCode},
+			reason = #{reason},
+			audit_op = #{auditOp},
+			audit_time = #{auditTime},
+			audit_comment = #{auditComment},
+			ad_op = #{adOp},
+			ad_time = #{adTime},
+			count_no = #{countNo},
+			edi_send_time = #{ediSendTime},
+			is_edi_send = #{isEdiSend},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_ad_header SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM wm_ad_header WHERE id = #{id}
+	</delete>
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="BanQinWmAdHeader" statementType="STATEMENT">
+		SELECT * FROM wm_ad_header WHERE ${propertyName} = '${value}'
+	</select>
+    <select id="getAdOrder" resultType="com.yunyou.modules.wms.inventory.entity.extend.PrintAdOrder">
+		select wah.ad_no       as adNo,
+			   ec.ebcu_name_cn as ownerName,
+			   sdv.label       as reasonCode,
+			   wah.reason      as reason,
+			   suc.name        as createOp,
+			   wah.create_date as createTime,
+			   wah.audit_op    as auditOp,
+			   wah.audit_time  as auditTime,
+			   wah.org_id      as orgId,
+			   wad.line_no     as lineNo,
+			   wad.sku_code    as skuCode,
+			   cws.sku_name    as skuName,
+			   wad.lot_num     as lotNum,
+			   wad.loc_code    as locCode,
+			   wad.trace_id    as traceId,
+			   sdv1.label      as adMode,
+			   wad.uom         as uom,
+			   wad.qty_ad_ea   as qtyEa,
+			   wad.qty_ad_uom  as qtyUom
+		from wm_ad_header wah
+			inner join wm_ad_detail wad on wah.ad_no = wad.ad_no and wah.org_id = wad.org_id
+			left join eb_customer ec on wah.owner_code = ec.ebcu_customer_no and wah.org_id = ec.org_id
+			left join cd_wh_sku cws on wah.owner_code = cws.owner_code and wad.sku_code = cws.sku_code and wah.org_id = cws.org_id
+			left join sys_dict_type sdt on sdt.type = 'SYS_WM_AD_REASON'
+			left join sys_dict_value sdv on sdt.id = sdv.dict_type_id and wah.reason_code = sdv.value
+			left join sys_dict_type sdt1 on sdt1.type = 'SYS_WM_AD_MODE'
+			left join sys_dict_value sdv1 on sdt1.id = sdv1.dict_type_id and wad.ad_mode = sdv1.value
+			left join sys_user suc on suc.id = wah.create_by
+		where wah.id in
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		order by wah.ad_no, wad.line_no
+	</select>
+
+</mapper>

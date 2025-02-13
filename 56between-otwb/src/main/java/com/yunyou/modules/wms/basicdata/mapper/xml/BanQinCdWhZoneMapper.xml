@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdWhZoneMapper">
+    
+	<sql id="banQinCdWhZoneColumns">
+		a.id AS "id",
+		a.zone_code AS "zoneCode",
+		a.zone_name AS "zoneName",
+		a.type AS "type",
+		a.area_code AS "areaCode",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.remarks AS "remarks",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId",
+		area.area_name AS "areaName"
+	</sql>
+	
+	<sql id="banQinCdWhZoneJoins">
+		LEFT JOIN cd_wh_area area ON area.area_code = a.area_code AND area.org_id = a.org_id
+	</sql>
+
+    <select id="get" resultType="BanQinCdWhZone" >
+		SELECT 
+			<include refid="banQinCdWhZoneColumns"/>
+		FROM cd_wh_zone a
+		<include refid="banQinCdWhZoneJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinCdWhZone" >
+		SELECT 
+			<include refid="banQinCdWhZoneColumns"/>
+		FROM cd_wh_zone a
+		<include refid="banQinCdWhZoneJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			<if test="zoneCode != null and zoneCode != ''">
+				AND a.zone_code = #{zoneCode}
+			</if>
+			<if test="zoneName != null and zoneName != ''">
+				AND a.zone_name = #{zoneName}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="areaCode != null and areaCode != ''">
+				AND a.area_code = #{areaCode}
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinCdWhZone" >
+		SELECT
+			<include refid="banQinCdWhZoneColumns"/>
+		FROM cd_wh_zone a
+		<include refid="banQinCdWhZoneJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="zoneCode != null and zoneCode != ''">
+				AND a.zone_code like concat('%', #{zoneCode}, '%')
+			</if>
+			<if test="zoneName != null and zoneName != ''">
+				AND a.zone_name like concat('%', #{zoneName}, '%')
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="areaCode != null and areaCode != ''">
+				AND a.area_code = #{areaCode}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.zone_code like concat('%', #{codeAndName}, '%') OR a.zone_name like concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinCdWhZone" >
+		SELECT 
+			<include refid="banQinCdWhZoneColumns"/>
+		FROM cd_wh_zone a
+		<include refid="banQinCdWhZoneJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_wh_zone(
+			id,
+			zone_code,
+			zone_name,
+			type,
+			area_code,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			remarks,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{zoneCode},
+			#{zoneName},
+			#{type},
+			#{areaCode},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{remarks},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cd_wh_zone SET 	
+			zone_code = #{zoneCode},
+			zone_name = #{zoneName},
+			type = #{type},
+			area_code = #{areaCode},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+			remarks = #{remarks},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_wh_zone SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM cd_wh_zone WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM cd_wh_zone WHERE zone_code = #{zoneCode} AND org_id = #{orgId}
+	</delete>
+
+</mapper>

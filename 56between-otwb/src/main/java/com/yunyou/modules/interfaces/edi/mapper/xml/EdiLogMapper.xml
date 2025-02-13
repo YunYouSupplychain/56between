@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.interfaces.edi.mapper.EdiLogMapper">
+	
+	<resultMap id="ediLogMap" type="com.yunyou.modules.interfaces.edi.entity.EdiLog">
+		<id column="id" property="id"/>
+		<result column="edi_type" property="ediType"/>
+		<result column="time" property="time"/>
+		<result column="r_content" property="rContent"/>
+		<result column="s_content" property="sContent"/>
+		<result column="handle_status" property="handleStatus"/>
+		<result column="handle_msg" property="handleMsg"/>
+		<result column="def1" property="def1"/>
+		<result column="def2" property="def2"/>
+		<result column="def3" property="def3"/>
+		<result column="def4" property="def4"/>
+		<result column="def5" property="def5"/>
+	</resultMap>
+
+	<select id="findList" resultMap="ediLogMap">
+		SELECT a.*
+		FROM edi_log a
+		<where>
+			1 = 1
+			<if test="ediType != null and ediType != ''">
+				AND a.edi_type = #{ediType}
+			</if>
+			<if test="handleStatus != null and handleStatus != ''">
+				AND a.handle_status = #{handleStatus}
+			</if>
+			<if test="occurrenceTimeFm != null">
+				AND a.time &gt;= #{occurrenceTimeFm}
+			</if>
+			<if test="occurrenceTimeTo != null">
+				AND a.time &lt;= #{occurrenceTimeTo}
+			</if>
+			<if test="def1 != null and def1 != ''">
+				AND a.def1 = #{def1}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="save">
+		INSERT INTO edi_log(
+			id,
+			edi_type,
+			time,
+			r_content,
+			s_content,
+			handle_status,
+			handle_msg,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5
+		) VALUES (
+			#{id},
+			#{ediType},
+			#{time},
+			#{rContent},
+			#{sContent},
+			#{handleStatus},
+			#{handleMsg},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5}
+		)
+	</insert>
+
+</mapper>

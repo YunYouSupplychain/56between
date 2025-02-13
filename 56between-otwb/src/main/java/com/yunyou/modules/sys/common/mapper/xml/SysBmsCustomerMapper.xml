@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysBmsCustomerMapper">
+    
+	<sql id="sysBmsCustomerColumns">
+		a.id AS "id",
+		a.ebcu_customer_no AS "ebcuCustomerNo",
+		a.ebcu_name_cn AS "ebcuNameCn",
+		a.ebcu_short_name AS "ebcuShortName",
+		a.ebcu_name_en AS "ebcuNameEn",
+		a.ebcu_type AS "ebcuType",
+		a.ebcu_industry_type AS "ebcuIndustryType",
+		a.ebcu_main_business AS "ebcuMainBusiness",
+		a.ebcu_tel AS "ebcuTel",
+		a.ebcu_fax AS "ebcuFax",
+		a.ebcu_zip_code AS "ebcuZipCode",
+		a.ebcu_address AS "ebcuAddress",
+		a.ebcu_finance_code AS "ebcuFinanceCode",
+		a.ebcu_tax_regist_no AS "ebcuTaxRegistNo",
+		a.ebcu_business_no AS "ebcuBusinessNo",
+		a.ebcu_tax_rate AS "ebcuTaxRate",
+		a.ebcu_tax_rate_value AS "ebcuTaxRateValue",
+		a.ebcu_is_general_taxpayer AS "ebcuIsGeneralTaxpayer",
+		a.rec_ver AS "recVer",
+		a.time_zone AS "timeZone",
+		a.data_set AS "dataSet",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.remarks AS "remarks",
+		a.check_person AS "checkPerson",
+		a.area_id AS "areaId",
+		a.area_code AS "areaCode",
+		a.project AS "project",
+		sa.name AS "areaName",
+		scds.name AS "dataSetName"
+	</sql>
+	
+	<sql id="sysBmsCustomerJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+		LEFT JOIN sys_area sa ON a.area_id = sa.id
+
+	</sql>
+	
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysBmsCustomer" >
+		SELECT <include refid="sysBmsCustomerColumns"/>
+		FROM sys_bms_customer a
+		<include refid="sysBmsCustomerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysBmsCustomer" >
+		SELECT 
+			<include refid="sysBmsCustomerColumns"/>
+		FROM sys_bms_customer a
+		<include refid="sysBmsCustomerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+			<if test="ebcuNameCn != null and ebcuNameCn != ''">
+				AND a.ebcu_name_cn = #{ebcuNameCn}
+			</if>
+			<if test="ebcuCustomerNo != null and ebcuCustomerNo != ''">
+				AND a.ebcu_customer_no = #{ebcuCustomerNo}
+			</if>
+			<if test="ebcuType != null and ebcuType != ''">
+				AND locate(#{ebcuType}, a.ebcu_type) &gt; 0
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysBmsCustomer" >
+		SELECT 
+			<include refid="sysBmsCustomerColumns"/>
+		FROM sys_bms_customer a
+		<include refid="sysBmsCustomerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_bms_customer(
+			id,
+			ebcu_customer_no,
+			ebcu_name_cn,
+			ebcu_short_name,
+			ebcu_name_en,
+			ebcu_type,
+			ebcu_industry_type,
+			ebcu_main_business,
+			ebcu_tel,
+			ebcu_fax,
+			ebcu_zip_code,
+			ebcu_address,
+			ebcu_finance_code,
+			ebcu_tax_regist_no,
+			ebcu_business_no,
+			ebcu_tax_rate,
+			ebcu_tax_rate_value,
+			ebcu_is_general_taxpayer,
+			rec_ver,
+			time_zone,
+			data_set,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			remarks,
+			check_person,
+			area_id,
+			area_code,
+			project
+		) VALUES (
+			#{id},
+			#{ebcuCustomerNo},
+			#{ebcuNameCn},
+			#{ebcuShortName},
+			#{ebcuNameEn},
+			#{ebcuType},
+			#{ebcuIndustryType},
+			#{ebcuMainBusiness},
+			#{ebcuTel},
+			#{ebcuFax},
+			#{ebcuZipCode},
+			#{ebcuAddress},
+			#{ebcuFinanceCode},
+			#{ebcuTaxRegistNo},
+			#{ebcuBusinessNo},
+			#{ebcuTaxRate},
+			#{ebcuTaxRateValue},
+			#{ebcuIsGeneralTaxpayer},
+			#{recVer},
+			#{timeZone},
+			#{dataSet},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{remarks},
+			#{checkPerson},
+            #{areaId},
+            #{areaCode},
+			#{project}
+		)
+	</insert>
+
+	<insert id="batchInsert">
+		INSERT INTO sys_bms_customer(
+			id,
+			ebcu_customer_no,
+			ebcu_name_cn,
+			ebcu_short_name,
+			ebcu_name_en,
+			ebcu_type,
+			ebcu_industry_type,
+			ebcu_main_business,
+			ebcu_tel,
+			ebcu_fax,
+			ebcu_zip_code,
+			ebcu_address,
+			ebcu_finance_code,
+			ebcu_tax_regist_no,
+			ebcu_business_no,
+			ebcu_tax_rate,
+			ebcu_tax_rate_value,
+			ebcu_is_general_taxpayer,
+			rec_ver,
+			time_zone,
+			data_set,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			remarks,
+			check_person,
+            area_id,
+            area_code,
+		    project
+		) VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.ebcuCustomerNo},
+			#{item.ebcuNameCn},
+			#{item.ebcuShortName},
+			#{item.ebcuNameEn},
+			#{item.ebcuType},
+			#{item.ebcuIndustryType},
+			#{item.ebcuMainBusiness},
+			#{item.ebcuTel},
+			#{item.ebcuFax},
+			#{item.ebcuZipCode},
+			#{item.ebcuAddress},
+			#{item.ebcuFinanceCode},
+			#{item.ebcuTaxRegistNo},
+			#{item.ebcuBusinessNo},
+			#{item.ebcuTaxRate},
+			#{item.ebcuTaxRateValue},
+			#{item.ebcuIsGeneralTaxpayer},
+			#{item.recVer},
+			#{item.timeZone},
+			#{item.dataSet},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.delFlag},
+			#{item.remarks},
+			#{item.checkPerson},
+            #{item.areaId},
+            #{item.areaCode},
+			#{item.project}
+		)
+		</foreach>
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_bms_customer
+		SET ebcu_customer_no         = #{ebcuCustomerNo},
+			ebcu_name_cn             = #{ebcuNameCn},
+			ebcu_short_name          = #{ebcuShortName},
+			ebcu_name_en             = #{ebcuNameEn},
+			ebcu_type                = #{ebcuType},
+			ebcu_industry_type       = #{ebcuIndustryType},
+			ebcu_main_business       = #{ebcuMainBusiness},
+			ebcu_tel                 = #{ebcuTel},
+			ebcu_fax                 = #{ebcuFax},
+			ebcu_zip_code            = #{ebcuZipCode},
+			ebcu_address             = #{ebcuAddress},
+			ebcu_finance_code        = #{ebcuFinanceCode},
+			ebcu_tax_regist_no       = #{ebcuTaxRegistNo},
+			ebcu_business_no         = #{ebcuBusinessNo},
+			ebcu_tax_rate            = #{ebcuTaxRate},
+			ebcu_tax_rate_value      = #{ebcuTaxRateValue},
+			ebcu_is_general_taxpayer = #{ebcuIsGeneralTaxpayer},
+			rec_ver                  = #{recVer},
+			time_zone                = #{timeZone},
+			data_set                 = #{dataSet},
+			update_by                = #{updateBy.id},
+			update_date              = #{updateDate},
+			remarks                  = #{remarks},
+			check_person             = #{checkPerson},
+			area_id                  = #{areaId},
+			area_code                = #{areaCode},
+			project                  = #{project}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_bms_customer WHERE id = #{id}
+	</delete>
+    <delete id="remove">
+		DELETE FROM sys_bms_customer WHERE ebcu_customer_no = #{customerNo} AND data_set = #{dataSet}
+	</delete>
+    <!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_bms_customer SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.SysBmsCustomer" >
+		SELECT
+			<include refid="sysBmsCustomerColumns"/>
+		FROM sys_bms_customer a
+		<include refid="sysBmsCustomerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="ebcuNameCn != null and ebcuNameCn != ''">
+				AND a.ebcu_name_cn LIKE concat('%', #{ebcuNameCn}, '%')
+			</if>
+			<if test="ebcuCustomerNo != null and ebcuCustomerNo != ''">
+				AND a.ebcu_customer_no LIKE concat('%', #{ebcuCustomerNo}, '%')
+			</if>
+			<if test="ebcuType != null and ebcuType != ''">
+				AND locate(#{ebcuType}, a.ebcu_type) &gt; 0
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.SysBmsCustomer" >
+		SELECT
+		<include refid="sysBmsCustomerColumns"/>
+		FROM sys_bms_customer a
+		<include refid="sysBmsCustomerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="ebcuNameCn != null and ebcuNameCn != ''">
+				AND a.ebcu_name_cn LIKE concat('%', #{ebcuNameCn}, '%')
+			</if>
+			<if test="ebcuCustomerNo != null and ebcuCustomerNo != ''">
+				AND a.ebcu_customer_no LIKE concat('%', #{ebcuCustomerNo}, '%')
+			</if>
+			<if test="ebcuType != null and ebcuType != ''">
+				AND locate(#{ebcuType}, a.ebcu_type) &gt; 0
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.ebcu_name_cn LIKE concat('%', #{codeAndName}, '%')
+				or a.ebcu_customer_no LIKE concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getByCode" resultType="com.yunyou.modules.sys.common.entity.SysBmsCustomer" >
+		SELECT <include refid="sysBmsCustomerColumns"/>
+		FROM sys_bms_customer a
+		<include refid="sysBmsCustomerJoins"/>
+		WHERE a.ebcu_customer_no = #{customerNo}
+		AND a.data_set = #{dataSet}
+	</select>
+</mapper>

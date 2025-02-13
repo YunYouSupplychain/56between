@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.weigh.mapper.BanQinWmMiddleWeighMapper">
+    
+	<sql id="banQinWmMiddleWeighColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.box_num AS "boxNum",
+		a.org_id AS "orgId",
+		a.tare_qty AS "tareQty",
+		a.weigh_qty AS "weighQty",
+		a.weigh_time AS "weighTime",
+		a.weigh_status AS "weighStatus",
+		a.weigh_msg AS "weighMsg",
+		a.ship_status AS "shipStatus",
+		a.ship_msg AS "shipMsg",
+		a.device_no AS "deviceNo",
+		a.def1 AS "def1",
+		a.def2 AS "def2",
+		a.def3 AS "def3",
+		a.def4 AS "def4",
+		a.def5 AS "def5",
+		a.rec_ver AS "recVer"
+	</sql>
+	
+	<sql id="banQinWmMiddleWeighJoins">
+		
+	</sql>
+
+	<select id="get" resultType="BanQinWmMiddleWeigh" >
+		SELECT 
+			<include refid="banQinWmMiddleWeighColumns"/>
+		FROM wm_middle_weigh a
+		<include refid="banQinWmMiddleWeighJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmMiddleWeigh" >
+		SELECT 
+			<include refid="banQinWmMiddleWeighColumns"/>
+		FROM wm_middle_weigh a
+		<include refid="banQinWmMiddleWeighJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="weighStatus != null and weighStatus != ''">
+				AND a.weigh_status = #{weighStatus}
+			</if>
+			<if test="shipStatus != null and shipStatus != ''">
+				AND a.ship_status = #{shipStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.weigh_time
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmMiddleWeigh" >
+		SELECT 
+			<include refid="banQinWmMiddleWeighColumns"/>
+		FROM wm_middle_weigh a
+		<include refid="banQinWmMiddleWeighJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_middle_weigh(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			box_num,
+			org_id,
+			tare_qty,
+			weigh_qty,
+			weigh_time,
+			weigh_status,
+			weigh_msg,
+			ship_status,
+			ship_msg,
+			device_no,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{boxNum},
+			#{orgId},
+			#{tareQty},
+			#{weighQty},
+			#{weighTime},
+			#{weighStatus},
+			#{weighMsg},
+			#{shipStatus},
+			#{shipMsg},
+			#{deviceNo},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{recVer}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_middle_weigh SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			box_num = #{boxNum},
+			org_id = #{orgId},
+			tare_qty = #{tareQty},
+			weigh_qty = #{weighQty},
+			weigh_time = #{weighTime},
+			weigh_status = #{weighStatus},
+			weigh_msg = #{weighMsg},
+			ship_status = #{shipStatus},
+			ship_msg = #{shipMsg},
+			device_no = #{deviceNo},
+			def1 = #{def1},
+			def2 = #{def2},
+			def3 = #{def3},
+			def4 = #{def4},
+			def5 = #{def5},
+		    rec_ver = #{recVer} + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_middle_weigh
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_middle_weigh SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

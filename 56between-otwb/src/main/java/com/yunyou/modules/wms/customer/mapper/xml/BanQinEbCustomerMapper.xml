@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.customer.mapper.BanQinEbCustomerMapper">
+    
+	<sql id="banQinEbCustomerColumns">
+		a.id AS "id",
+		a.ebcu_quick_code AS "ebcuQuickCode",
+		a.pm_code AS "pmCode",
+		a.ebcu_industry_type AS "ebcuIndustryType",
+		a.ebcu_platform_nature AS "ebcuPlatformNature",
+		a.ebcu_name_cn AS "ebcuNameCn",
+		a.ebcu_short_name AS "ebcuShortName",
+		a.ebcu_name_en AS "ebcuNameEn",
+		a.ebcu_tel AS "ebcuTel",
+		a.ebcu_fax AS "ebcuFax",
+		a.ebcu_url AS "ebcuUrl",
+		a.ebcu_address AS "ebcuAddress",
+		a.ebcu_finance_code AS "ebcuFinanceCode",
+		a.ebcu_tax_regist_no AS "ebcuTaxRegistNo",
+		a.ebcu_business_no AS "ebcuBusinessNo",
+		a.ebcu_ebfl_id AS "ebcuEbflId",
+		a.ebcu_customer_status AS "ebcuCustomerStatus",
+		a.ebcu_registration_date AS "ebcuRegistrationDate",
+		a.ebcu_max_guarantee_amount AS "ebcuMaxGuaranteeAmount",
+		a.ebcu_main_business AS "ebcuMainBusiness",
+		a.ebcu_is_subsupplier AS "ebcuIsSubsupplier",
+		a.ebcu_is_customer AS "ebcuIsCustomer",
+		a.ebcu_is_settlement AS "ebcuIsSettlement",
+		a.ebcu_remark AS "ebcuRemark",
+		a.ebcu_esco_id AS "ebcuEscoId",
+		a.ebcu_substr1 AS "ebcuSubstr1",
+		a.ebcu_substr2 AS "ebcuSubstr2",
+		a.ebcu_substr3 AS "ebcuSubstr3",
+		a.ebcu_substr4 AS "ebcuSubstr4",
+		a.ebcu_substr5 AS "ebcuSubstr5",
+		a.ebcu_substr6 AS "ebcuSubstr6",
+		a.ebcu_subdate1 AS "ebcuSubdate1",
+		a.ebcu_subdate2 AS "ebcuSubdate2",
+		a.ebcu_subdate3 AS "ebcuSubdate3",
+		a.rec_ver AS "recVer",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_by AS "createBy.id",
+		a.ebcu_cdh_code AS "ebcuCdhCode",
+		a.ebcu_substr7 AS "ebcuSubstr7",
+		a.ebcu_substr8 AS "ebcuSubstr8",
+		a.ebcu_subdate4 AS "ebcuSubdate4",
+		a.ebcu_subdate5 AS "ebcuSubdate5",
+		a.ebcu_subnum1 AS "ebcuSubnum1",
+		a.ebcu_subnum2 AS "ebcuSubnum2",
+		a.ebcu_subnum3 AS "ebcuSubnum3",
+		a.ebcu_change_code AS "ebcuChangeCode",
+		a.org_id AS "orgId",
+		a.del_flag AS "delFlag",
+		a.ebcu_ebpl_country_code AS "ebcuEbplCountryCode",
+		a.ebcu_ebpl_province_code AS "ebcuEbplProvinceCode",
+		a.ebcu_ebpl_city_code AS "ebcuEbplCityCode",
+		a.ebcu_customer_no AS "ebcuCustomerNo",
+		a.ebcu_is_general_taxpayer AS "ebcuIsGeneralTaxpayer",
+		a.ebcu_zip_code AS "ebcuZipCode",
+		a.ebcu_tax_rate AS "ebcuTaxRate",
+		a.ebcu_tax_rate_value AS "ebcuTaxRateValue",
+		a.ebcu_order_amount_limit AS "ebcuOrderAmountLimit",
+		a.ebcu_distribute_interval AS "ebcuDistributeInterval",
+		a.ebcu_interval_capacity AS "ebcuIntervalCapacity",
+		a.ebcu_default_accept_time AS "ebcuDefaultAcceptTime",
+		a.ebcu_default_reject_time AS "ebcuDefaultRejectTime",
+		a.ebcu_dispatch_issue_type AS "ebcuDispatchIssueType",
+		a.ebcu_distribute_priority AS "ebcuDistributePriority",
+        a.ebcu_type AS "ebcutype"
+	</sql>
+	
+	<sql id="banQinEbCustomerJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinEbCustomer" >
+		SELECT 
+			<include refid="banQinEbCustomerColumns"/>
+		FROM eb_customer a
+		<include refid="banQinEbCustomerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+    <select id="find" resultType="BanQinEbCustomer">
+        SELECT
+        <include refid="banQinEbCustomerColumns"/>
+        FROM eb_customer a
+        WHERE a.del_flag = '0'
+        AND a.ebcu_customer_no = #{customerNo}
+        AND locate(#{type}, a.ebcu_type) &gt; 0
+        AND a.org_id = #{orgId}
+    </select>
+	
+	<select id="findList" resultType="BanQinEbCustomer" >
+		SELECT 
+			<include refid="banQinEbCustomerColumns"/>
+		FROM eb_customer a
+		<include refid="banQinEbCustomerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.org_id = #{orgId}
+			<if test="ebcuQuickCode != null and ebcuQuickCode != ''">
+				AND a.ebcu_quick_code = #{ebcuQuickCode}
+			</if>
+			<if test="ebcuCustomerNo != null and ebcuCustomerNo != ''">
+				AND a.ebcu_customer_no = #{ebcuCustomerNo}
+			</if>
+			<if test="ebcuIndustryType != null and ebcuIndustryType != ''">
+				AND a.ebcu_industry_type = #{ebcuIndustryType}
+			</if>
+			<if test="ebcuPlatformNature != null and ebcuPlatformNature != ''">
+				AND a.ebcu_platform_nature = #{ebcuPlatformNature}
+			</if>
+			<if test="ebcuNameCn != null and ebcuNameCn != ''">
+				AND a.ebcu_name_cn = #{ebcuNameCn}
+			</if>
+			<if test="ebcuShortName != null and ebcuShortName != ''">
+				AND a.ebcu_short_name = #{ebcuShortName}
+			</if>
+			<if test="ebcuNameEn != null and ebcuNameEn != ''">
+				AND a.ebcu_name_en = #{ebcuNameEn}
+			</if>
+			<if test="ebcuTel != null and ebcuTel != ''">
+				AND a.ebcu_tel = #{ebcuTel}
+			</if>
+			<if test="ebcuFax != null and ebcuFax != ''">
+				AND a.ebcu_fax = #{ebcuFax}
+			</if>
+			<if test="ebcuUrl != null and ebcuUrl != ''">
+				AND a.ebcu_url = #{ebcuUrl}
+			</if>
+			<if test="ebcuAddress != null and ebcuAddress != ''">
+				AND a.ebcu_address = #{ebcuAddress}
+			</if>
+			<if test="ebcuFinanceCode != null and ebcuFinanceCode != ''">
+				AND a.ebcu_finance_code = #{ebcuFinanceCode}
+			</if>
+			<if test="ebcuTaxRegistNo != null and ebcuTaxRegistNo != ''">
+				AND a.ebcu_tax_regist_no = #{ebcuTaxRegistNo}
+			</if>
+			<if test="ebcuBusinessNo != null and ebcuBusinessNo != ''">
+				AND a.ebcu_business_no = #{ebcuBusinessNo}
+			</if>
+			<if test="ebcuEbflId != null and ebcuEbflId != ''">
+				AND a.ebcu_ebfl_id = #{ebcuEbflId}
+			</if>
+			<if test="ebcuCustomerStatus != null and ebcuCustomerStatus != ''">
+				AND a.ebcu_customer_status = #{ebcuCustomerStatus}
+			</if>
+			<if test="ebcuRegistrationDate != null and ebcuRegistrationDate != ''">
+				AND a.ebcu_registration_date = #{ebcuRegistrationDate}
+			</if>
+			<if test="ebcuMaxGuaranteeAmount != null and ebcuMaxGuaranteeAmount != ''">
+				AND a.ebcu_max_guarantee_amount = #{ebcuMaxGuaranteeAmount}
+			</if>
+			<if test="ebcuMainBusiness != null and ebcuMainBusiness != ''">
+				AND a.ebcu_main_business = #{ebcuMainBusiness}
+			</if>
+            <if test="ebcuType != null and ebcuType!= ''">
+                AND a.ebcu_type like concat('%', #{ebcuType}, '%')
+            </if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinEbCustomer" >
+		SELECT
+		<include refid="banQinEbCustomerColumns"/>
+		FROM eb_customer a
+		<include refid="banQinEbCustomerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.org_id = #{orgId}
+			${dataScope}
+			<if test="ebcuQuickCode != null and ebcuQuickCode != ''">
+				AND a.ebcu_quick_code = #{ebcuQuickCode}
+			</if>
+			<if test="ebcuCustomerNo != null and ebcuCustomerNo != ''">
+				AND a.ebcu_customer_no like concat('%', #{ebcuCustomerNo}, '%')
+			</if>
+			<if test="ebcuIndustryType != null and ebcuIndustryType != ''">
+				AND a.ebcu_industry_type = #{ebcuIndustryType}
+			</if>
+			<if test="ebcuPlatformNature != null and ebcuPlatformNature != ''">
+				AND a.ebcu_platform_nature = #{ebcuPlatformNature}
+			</if>
+			<if test="ebcuNameCn != null and ebcuNameCn != ''">
+				AND a.ebcu_name_cn like concat('%', #{ebcuNameCn}, '%')
+			</if>
+			<if test="ebcuShortName != null and ebcuShortName != ''">
+				AND a.ebcu_short_name = #{ebcuShortName}
+			</if>
+			<if test="ebcuNameEn != null and ebcuNameEn != ''">
+				AND a.ebcu_name_en = #{ebcuNameEn}
+			</if>
+			<if test="ebcuTel != null and ebcuTel != ''">
+				AND a.ebcu_tel = #{ebcuTel}
+			</if>
+			<if test="ebcuFax != null and ebcuFax != ''">
+				AND a.ebcu_fax = #{ebcuFax}
+			</if>
+			<if test="ebcuUrl != null and ebcuUrl != ''">
+				AND a.ebcu_url = #{ebcuUrl}
+			</if>
+			<if test="ebcuAddress != null and ebcuAddress != ''">
+				AND a.ebcu_address = #{ebcuAddress}
+			</if>
+			<if test="ebcuFinanceCode != null and ebcuFinanceCode != ''">
+				AND a.ebcu_finance_code = #{ebcuFinanceCode}
+			</if>
+			<if test="ebcuTaxRegistNo != null and ebcuTaxRegistNo != ''">
+				AND a.ebcu_tax_regist_no = #{ebcuTaxRegistNo}
+			</if>
+			<if test="ebcuBusinessNo != null and ebcuBusinessNo != ''">
+				AND a.ebcu_business_no = #{ebcuBusinessNo}
+			</if>
+			<if test="ebcuEbflId != null and ebcuEbflId != ''">
+				AND a.ebcu_ebfl_id = #{ebcuEbflId}
+			</if>
+			<if test="ebcuCustomerStatus != null and ebcuCustomerStatus != ''">
+				AND a.ebcu_customer_status = #{ebcuCustomerStatus}
+			</if>
+			<if test="ebcuRegistrationDate != null and ebcuRegistrationDate != ''">
+				AND a.ebcu_registration_date = #{ebcuRegistrationDate}
+			</if>
+			<if test="ebcuMaxGuaranteeAmount != null and ebcuMaxGuaranteeAmount != ''">
+				AND a.ebcu_max_guarantee_amount = #{ebcuMaxGuaranteeAmount}
+			</if>
+			<if test="ebcuMainBusiness != null and ebcuMainBusiness != ''">
+				AND a.ebcu_main_business = #{ebcuMainBusiness}
+			</if>
+			<if test="ebcuType != null and ebcuType!= ''">
+				AND a.ebcu_type like concat('%', #{ebcuType}, '%')
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (1 = 2
+				OR a.ebcu_customer_no like concat('%', #{codeAndName}, '%')
+				OR a.ebcu_name_cn like concat('%', #{codeAndName}, '%')
+				)
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinEbCustomer" >
+		SELECT 
+			<include refid="banQinEbCustomerColumns"/>
+		FROM eb_customer a
+		<include refid="banQinEbCustomerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO eb_customer(
+			id,
+			ebcu_quick_code,
+			pm_code,
+			ebcu_industry_type,
+			ebcu_platform_nature,
+			ebcu_name_cn,
+			ebcu_short_name,
+			ebcu_name_en,
+			ebcu_tel,
+			ebcu_fax,
+			ebcu_url,
+			ebcu_address,
+			ebcu_finance_code,
+			ebcu_tax_regist_no,
+			ebcu_business_no,
+			ebcu_ebfl_id,
+			ebcu_customer_status,
+			ebcu_registration_date,
+			ebcu_max_guarantee_amount,
+			ebcu_main_business,
+			ebcu_is_subsupplier,
+			ebcu_is_customer,
+			ebcu_is_settlement,
+			ebcu_remark,
+			ebcu_esco_id,
+			ebcu_substr1,
+			ebcu_substr2,
+			ebcu_substr3,
+			ebcu_substr4,
+			ebcu_substr5,
+			ebcu_substr6,
+			ebcu_subdate1,
+			ebcu_subdate2,
+			ebcu_subdate3,
+			rec_ver,
+			create_date,
+			update_date,
+			update_by,
+			create_by,
+			ebcu_cdh_code,
+			ebcu_substr7,
+			ebcu_substr8,
+			ebcu_subdate4,
+			ebcu_subdate5,
+			ebcu_subnum1,
+			ebcu_subnum2,
+			ebcu_subnum3,
+			ebcu_change_code,
+			org_id,
+			del_flag,
+			ebcu_ebpl_country_code,
+			ebcu_ebpl_province_code,
+			ebcu_ebpl_city_code,
+			ebcu_customer_no,
+			ebcu_is_general_taxpayer,
+			ebcu_zip_code,
+			ebcu_tax_rate,
+			ebcu_tax_rate_value,
+			ebcu_order_amount_limit,
+			ebcu_distribute_interval,
+			ebcu_interval_capacity,
+			ebcu_default_accept_time,
+			ebcu_default_reject_time,
+			ebcu_dispatch_issue_type,
+			ebcu_distribute_priority,
+            ebcu_type
+		) VALUES (
+			#{id},
+			#{ebcuQuickCode},
+			#{pmCode},
+			#{ebcuIndustryType},
+			#{ebcuPlatformNature},
+			#{ebcuNameCn},
+			#{ebcuShortName},
+			#{ebcuNameEn},
+			#{ebcuTel},
+			#{ebcuFax},
+			#{ebcuUrl},
+			#{ebcuAddress},
+			#{ebcuFinanceCode},
+			#{ebcuTaxRegistNo},
+			#{ebcuBusinessNo},
+			#{ebcuEbflId},
+			#{ebcuCustomerStatus},
+			#{ebcuRegistrationDate},
+			#{ebcuMaxGuaranteeAmount},
+			#{ebcuMainBusiness},
+			#{ebcuIsSubsupplier},
+			#{ebcuIsCustomer},
+			#{ebcuIsSettlement},
+			#{ebcuRemark},
+			#{ebcuEscoId},
+			#{ebcuSubstr1},
+			#{ebcuSubstr2},
+			#{ebcuSubstr3},
+			#{ebcuSubstr4},
+			#{ebcuSubstr5},
+			#{ebcuSubstr6},
+			#{ebcuSubdate1},
+			#{ebcuSubdate2},
+			#{ebcuSubdate3},
+			#{recVer},
+			#{createDate},
+			#{updateDate},
+			#{updateBy.id},
+			#{createBy.id},
+			#{ebcuCdhCode},
+			#{ebcuSubstr7},
+			#{ebcuSubstr8},
+			#{ebcuSubdate4},
+			#{ebcuSubdate5},
+			#{ebcuSubnum1},
+			#{ebcuSubnum2},
+			#{ebcuSubnum3},
+			#{ebcuChangeCode},
+			#{orgId},
+			#{delFlag},
+			#{ebcuEbplCountryCode},
+			#{ebcuEbplProvinceCode},
+			#{ebcuEbplCityCode},
+			#{ebcuCustomerNo},
+			#{ebcuIsGeneralTaxpayer},
+			#{ebcuZipCode},
+			#{ebcuTaxRate},
+			#{ebcuTaxRateValue},
+			#{ebcuOrderAmountLimit},
+			#{ebcuDistributeInterval},
+			#{ebcuIntervalCapacity},
+			#{ebcuDefaultAcceptTime},
+			#{ebcuDefaultRejectTime},
+			#{ebcuDispatchIssueType},
+			#{ebcuDistributePriority},
+            #{ebcuType}
+		)
+	</insert>
+    <insert id="batchInsert">
+		INSERT INTO eb_customer
+		(
+			id,
+			ebcu_quick_code,
+			pm_code,
+			ebcu_industry_type,
+			ebcu_platform_nature,
+			ebcu_name_cn,
+			ebcu_short_name,
+			ebcu_name_en,
+			ebcu_tel,
+			ebcu_fax,
+			ebcu_url,
+			ebcu_address,
+			ebcu_finance_code,
+			ebcu_tax_regist_no,
+			ebcu_business_no,
+			ebcu_ebfl_id,
+			ebcu_customer_status,
+			ebcu_registration_date,
+			ebcu_max_guarantee_amount,
+			ebcu_main_business,
+			ebcu_is_subsupplier,
+			ebcu_is_customer,
+			ebcu_is_settlement,
+			ebcu_remark,
+			ebcu_esco_id,
+			ebcu_substr1,
+			ebcu_substr2,
+			ebcu_substr3,
+			ebcu_substr4,
+			ebcu_substr5,
+			ebcu_substr6,
+			ebcu_subdate1,
+			ebcu_subdate2,
+			ebcu_subdate3,
+			rec_ver,
+			create_date,
+			update_date,
+			update_by,
+			create_by,
+			ebcu_cdh_code,
+			ebcu_substr7,
+			ebcu_substr8,
+			ebcu_subdate4,
+			ebcu_subdate5,
+			ebcu_subnum1,
+			ebcu_subnum2,
+			ebcu_subnum3,
+			ebcu_change_code,
+			org_id,
+			del_flag,
+			ebcu_ebpl_country_code,
+			ebcu_ebpl_province_code,
+			ebcu_ebpl_city_code,
+			ebcu_customer_no,
+			ebcu_is_general_taxpayer,
+			ebcu_zip_code,
+			ebcu_tax_rate,
+			ebcu_tax_rate_value,
+			ebcu_order_amount_limit,
+			ebcu_distribute_interval,
+			ebcu_interval_capacity,
+			ebcu_default_accept_time,
+			ebcu_default_reject_time,
+			ebcu_dispatch_issue_type,
+			ebcu_distribute_priority,
+			ebcu_type
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator="," close=";">
+		(
+			#{item.id},
+			#{item.ebcuQuickCode},
+			#{item.pmCode},
+			#{item.ebcuIndustryType},
+			#{item.ebcuPlatformNature},
+			#{item.ebcuNameCn},
+			#{item.ebcuShortName},
+			#{item.ebcuNameEn},
+			#{item.ebcuTel},
+			#{item.ebcuFax},
+			#{item.ebcuUrl},
+			#{item.ebcuAddress},
+			#{item.ebcuFinanceCode},
+			#{item.ebcuTaxRegistNo},
+			#{item.ebcuBusinessNo},
+			#{item.ebcuEbflId},
+			#{item.ebcuCustomerStatus},
+			#{item.ebcuRegistrationDate},
+			#{item.ebcuMaxGuaranteeAmount},
+			#{item.ebcuMainBusiness},
+			#{item.ebcuIsSubsupplier},
+			#{item.ebcuIsCustomer},
+			#{item.ebcuIsSettlement},
+			#{item.ebcuRemark},
+			#{item.ebcuEscoId},
+			#{item.ebcuSubstr1},
+			#{item.ebcuSubstr2},
+			#{item.ebcuSubstr3},
+			#{item.ebcuSubstr4},
+			#{item.ebcuSubstr5},
+			#{item.ebcuSubstr6},
+			#{item.ebcuSubdate1},
+			#{item.ebcuSubdate2},
+			#{item.ebcuSubdate3},
+			#{item.recVer},
+			#{item.createDate},
+			#{item.updateDate},
+			#{item.updateBy.id},
+			#{item.createBy.id},
+			#{item.ebcuCdhCode},
+			#{item.ebcuSubstr7},
+			#{item.ebcuSubstr8},
+			#{item.ebcuSubdate4},
+			#{item.ebcuSubdate5},
+			#{item.ebcuSubnum1},
+			#{item.ebcuSubnum2},
+			#{item.ebcuSubnum3},
+			#{item.ebcuChangeCode},
+			#{item.orgId},
+			#{item.delFlag},
+			#{item.ebcuEbplCountryCode},
+			#{item.ebcuEbplProvinceCode},
+			#{item.ebcuEbplCityCode},
+			#{item.ebcuCustomerNo},
+			#{item.ebcuIsGeneralTaxpayer},
+			#{item.ebcuZipCode},
+			#{item.ebcuTaxRate},
+			#{item.ebcuTaxRateValue},
+			#{item.ebcuOrderAmountLimit},
+			#{item.ebcuDistributeInterval},
+			#{item.ebcuIntervalCapacity},
+			#{item.ebcuDefaultAcceptTime},
+			#{item.ebcuDefaultRejectTime},
+			#{item.ebcuDispatchIssueType},
+			#{item.ebcuDistributePriority},
+			#{item.ebcuType}
+		)
+		</foreach>
+	</insert>
+
+    <update id="update">
+		UPDATE eb_customer
+		SET ebcu_quick_code           = #{ebcuQuickCode},
+			pm_code                   = #{pmCode},
+			ebcu_industry_type        = #{ebcuIndustryType},
+			ebcu_platform_nature      = #{ebcuPlatformNature},
+			ebcu_name_cn              = #{ebcuNameCn},
+			ebcu_short_name           = #{ebcuShortName},
+			ebcu_name_en              = #{ebcuNameEn},
+			ebcu_tel                  = #{ebcuTel},
+			ebcu_fax                  = #{ebcuFax},
+			ebcu_url                  = #{ebcuUrl},
+			ebcu_address              = #{ebcuAddress},
+			ebcu_finance_code         = #{ebcuFinanceCode},
+			ebcu_tax_regist_no        = #{ebcuTaxRegistNo},
+			ebcu_business_no          = #{ebcuBusinessNo},
+			ebcu_ebfl_id              = #{ebcuEbflId},
+			ebcu_customer_status      = #{ebcuCustomerStatus},
+			ebcu_registration_date    = #{ebcuRegistrationDate},
+			ebcu_max_guarantee_amount = #{ebcuMaxGuaranteeAmount},
+			ebcu_main_business        = #{ebcuMainBusiness},
+			ebcu_is_subsupplier       = #{ebcuIsSubsupplier},
+			ebcu_is_customer          = #{ebcuIsCustomer},
+			ebcu_is_settlement        = #{ebcuIsSettlement},
+			ebcu_remark               = #{ebcuRemark},
+			ebcu_esco_id              = #{ebcuEscoId},
+			ebcu_substr1              = #{ebcuSubstr1},
+			ebcu_substr2              = #{ebcuSubstr2},
+			ebcu_substr3              = #{ebcuSubstr3},
+			ebcu_substr4              = #{ebcuSubstr4},
+			ebcu_substr5              = #{ebcuSubstr5},
+			ebcu_substr6              = #{ebcuSubstr6},
+			ebcu_subdate1             = #{ebcuSubdate1},
+			ebcu_subdate2             = #{ebcuSubdate2},
+			ebcu_subdate3             = #{ebcuSubdate3},
+			rec_ver                   = #{recVer} + 1,
+			update_date               = #{updateDate},
+			update_by                 = #{updateBy.id},
+			ebcu_cdh_code             = #{ebcuCdhCode},
+			ebcu_substr7              = #{ebcuSubstr7},
+			ebcu_substr8              = #{ebcuSubstr8},
+			ebcu_subdate4             = #{ebcuSubdate4},
+			ebcu_subdate5             = #{ebcuSubdate5},
+			ebcu_subnum1              = #{ebcuSubnum1},
+			ebcu_subnum2              = #{ebcuSubnum2},
+			ebcu_subnum3              = #{ebcuSubnum3},
+			ebcu_change_code          = #{ebcuChangeCode},
+			ebcu_ebpl_country_code    = #{ebcuEbplCountryCode},
+			ebcu_ebpl_province_code   = #{ebcuEbplProvinceCode},
+			ebcu_ebpl_city_code       = #{ebcuEbplCityCode},
+			ebcu_customer_no          = #{ebcuCustomerNo},
+			ebcu_is_general_taxpayer  = #{ebcuIsGeneralTaxpayer},
+			ebcu_zip_code             = #{ebcuZipCode},
+			ebcu_tax_rate             = #{ebcuTaxRate},
+			ebcu_tax_rate_value       = #{ebcuTaxRateValue},
+			ebcu_order_amount_limit   = #{ebcuOrderAmountLimit},
+			ebcu_distribute_interval  = #{ebcuDistributeInterval},
+			ebcu_interval_capacity    = #{ebcuIntervalCapacity},
+			ebcu_default_accept_time  = #{ebcuDefaultAcceptTime},
+			ebcu_default_reject_time  = #{ebcuDefaultRejectTime},
+			ebcu_dispatch_issue_type  = #{ebcuDispatchIssueType},
+			ebcu_distribute_priority  = #{ebcuDistributePriority},
+			ebcu_type                 = #{ebcuType}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE eb_customer SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM eb_customer
+		WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM eb_customer WHERE ebcu_customer_no = #{customerNo} AND org_id = #{orgId}
+	</delete>
+
+	<select id="getExistCustomer" resultType="BanQinEbCustomer">
+		SELECT <include refid="banQinEbCustomerColumns"/>
+		FROM eb_customer a
+		WHERE 1=1
+		  AND a.org_id = #{orgId}
+		  AND a.ebcu_customer_no IN 
+		  <foreach collection="ownerCodeList" index="ownerCode" item="ownerCode" open="(" separator="," close=")">
+			  #{ownerCode}
+		  </foreach>
+	</select>
+
+    <select id="getByCode" resultType="com.yunyou.modules.wms.customer.entity.BanQinEbCustomer">
+		SELECT <include refid="banQinEbCustomerColumns"/>
+		FROM eb_customer a
+		WHERE a.ebcu_customer_no = #{customerNo}
+		  AND a.org_id = #{orgId}
+	</select>
+
+</mapper>

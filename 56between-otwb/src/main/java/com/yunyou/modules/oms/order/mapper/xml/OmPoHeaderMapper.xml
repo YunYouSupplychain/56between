@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.order.mapper.OmPoHeaderMapper">
+    
+	<sql id="omPoHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.po_no AS "poNo",
+		a.order_date AS "orderDate",
+		a.supplier_code AS "supplierCode",
+		a.status AS "status",
+		a.po_type AS "poType",
+		a.validity_period AS "validityPeriod",
+		a.arrival_time AS "arrivalTime",
+		a.project AS "project",
+		a.contract_no AS "contractNo",
+		a.consignee AS "consignee",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_area AS "consigneeArea",
+		a.consignee_address AS "consigneeAddress",
+		a.shipper AS "shipper",
+		a.shipper_tel AS "shipperTel",
+		a.shipper_area AS "shipperArea",
+		a.shipper_address AS "shipperAddress",
+		a.channel AS "channel",
+		a.customer_no AS "customerNo",
+		a.transport_mode AS "transportMode",
+		a.carrier AS "carrier",
+		a.logistics_no AS "logisticsNo",
+		a.vehicle_no AS "vehicleNo",
+		a.driver AS "driver",
+		a.contact_tel AS "contactTel",
+		a.organization AS "organization",
+		a.department AS "department",
+		a.business_by AS "businessBy",
+		a.prepared_by AS "preparedBy",
+		a.audit_by AS "auditBy",
+		a.prepaid_amount AS "prepaidAmount",
+		a.settlement AS "settlement",
+		a.settle_mode AS "settleMode",
+		a.currency AS "currency",
+		a.exchange_rate AS "exchangeRate",
+        a.org_id AS "orgId",
+        a.owner AS "owner",
+		a.total_tax AS "totalTax",
+		a.total_amount AS "totalAmount",
+		a.total_tax_in_amount AS "totalTaxInAmount",
+		a.sub_org_id AS "subOrgId",
+		a.freight_charge AS "freightCharge",
+		a.consignee_address_area AS "consigneeAddressArea",
+        a.shipper_address_area AS "shipperAddressArea",
+        a.sale_order_nos AS "saleOrderNos",
+        a.purchase_method AS "purchaseMethod",
+		a.delivery_date AS "deliveryDate",
+		a.pay_status AS "payStatus",
+		a.pay_account AS "payAccount",
+		a.pay_no AS "payNo",
+		a.actual_paid_amount AS "actualPaidAmount",
+		a.cashier_remarks AS "cashierRemarks",
+		a.settlement_contact AS "settlementContact",
+		a.settlement_contact_tel AS "settlementContactTel",
+		a.audit_date AS "auditDate",
+		a.deposit_bank AS "depositBank",
+		a.data_source AS "dataSource",
+		a.principal AS "principal"
+	</sql>
+	
+	<sql id="omPoHeaderJoins">
+
+	</sql>
+
+	<select id="get" resultType="OmPoHeader" >
+		SELECT 
+			<include refid="omPoHeaderColumns"/>
+		FROM om_po_header a
+		<include refid="omPoHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OmPoHeader" >
+		SELECT 
+			<include refid="omPoHeaderColumns"/>
+		FROM om_po_header a
+		<include refid="omPoHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="poNo != null and poNo != ''">
+				AND a.po_no = #{poNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="supplierCode != null and supplierCode != ''">
+				AND a.supplier_code = #{supplierCode}
+			</if>
+			<if test="owner != null and owner != ''">
+				AND a.owner = #{owner}
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel = #{channel}
+			</if>
+			<if test="poType != null and poType != ''">
+				AND a.po_type = #{poType}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="contractNo != null and contractNo != ''">
+				AND a.contract_no = #{contractNo}
+			</if>
+			<if test="subOrgId != null and subOrgId != ''">
+				AND a.sub_org_id = #{subOrgId}
+			</if>
+			<if test="purchaseMethod != null and purchaseMethod != ''">
+				AND a.purchase_method = #{purchaseMethod}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="OmPoHeader" >
+		SELECT 
+			<include refid="omPoHeaderColumns"/>
+		FROM om_po_header a
+		<include refid="omPoHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO om_po_header
+		(id,
+		 create_by,
+		 create_date,
+		 update_by,
+		 update_date,
+		 remarks,
+		 del_flag,
+		 po_no,
+		 order_date,
+		 supplier_code,
+		 status,
+		 po_type,
+		 validity_period,
+		 arrival_time,
+		 project,
+		 contract_no,
+		 consignee,
+		 consignee_tel,
+		 consignee_area,
+		 consignee_address,
+		 shipper,
+		 shipper_tel,
+		 shipper_area,
+		 shipper_address,
+		 channel,
+		 customer_no,
+		 transport_mode,
+		 carrier,
+		 logistics_no,
+		 vehicle_no,
+		 driver,
+		 contact_tel,
+		 organization,
+		 department,
+		 business_by,
+		 prepared_by,
+		 audit_by,
+		 prepaid_amount,
+		 settlement,
+		 settle_mode,
+		 currency,
+		 exchange_rate,
+		 org_id,
+		 owner,
+		 total_tax,
+		 total_amount,
+		 total_tax_in_amount,
+		 sub_org_id,
+		 freight_charge,
+		 consignee_address_area,
+		 shipper_address_area,
+		 sale_order_nos,
+		 purchase_method,
+		 delivery_date,
+		 pay_status,
+		 pay_account,
+		 pay_no,
+		 actual_paid_amount,
+		 cashier_remarks,
+		 settlement_contact,
+		 settlement_contact_tel,
+		 audit_date,
+		 deposit_bank,
+		 data_source,
+		 principal)
+		VALUES (#{id},
+				#{createBy.id},
+				#{createDate},
+				#{updateBy.id},
+				#{updateDate},
+				#{remarks},
+				#{delFlag},
+				#{poNo},
+				#{orderDate},
+				#{supplierCode},
+				#{status},
+				#{poType},
+				#{validityPeriod},
+				#{arrivalTime},
+				#{project},
+				#{contractNo},
+				#{consignee},
+				#{consigneeTel},
+				#{consigneeArea},
+				#{consigneeAddress},
+				#{shipper},
+				#{shipperTel},
+				#{shipperArea},
+				#{shipperAddress},
+				#{channel},
+				#{customerNo},
+				#{transportMode},
+				#{carrier},
+				#{logisticsNo},
+				#{vehicleNo},
+				#{driver},
+				#{contactTel},
+				#{organization},
+				#{department},
+				#{businessBy},
+				#{preparedBy},
+				#{auditBy},
+				#{prepaidAmount},
+				#{settlement},
+				#{settleMode},
+				#{currency},
+				#{exchangeRate},
+				#{orgId},
+				#{owner},
+				#{totalTax},
+				#{totalAmount},
+				#{totalTaxInAmount},
+				#{subOrgId},
+				#{freightCharge},
+				#{consigneeAddressArea},
+				#{shipperAddressArea},
+				#{saleOrderNos},
+				#{purchaseMethod},
+				#{deliveryDate},
+				#{payStatus},
+				#{payAccount},
+				#{payNo},
+				#{actualPaidAmount},
+				#{cashierRemarks},
+				#{settlementContact},
+				#{settlementContactTel},
+				#{auditDate},
+				#{depositBank},
+				#{dataSource},
+		        #{principal})
+	</insert>
+	
+	<update id="update">
+		UPDATE om_po_header
+		SET update_by              = #{updateBy.id},
+			update_date            = #{updateDate},
+			remarks                = #{remarks},
+			po_no                  = #{poNo},
+			order_date             = #{orderDate},
+			supplier_code          = #{supplierCode},
+			status                 = #{status},
+			po_type                = #{poType},
+			validity_period        = #{validityPeriod},
+			arrival_time           = #{arrivalTime},
+			project                = #{project},
+			contract_no            = #{contractNo},
+			consignee              = #{consignee},
+			consignee_tel          = #{consigneeTel},
+			consignee_area         = #{consigneeArea},
+			consignee_address      = #{consigneeAddress},
+			shipper                = #{shipper},
+			shipper_tel            = #{shipperTel},
+			shipper_area           = #{shipperArea},
+			shipper_address        = #{shipperAddress},
+			channel                = #{channel},
+			customer_no            = #{customerNo},
+			transport_mode         = #{transportMode},
+			carrier                = #{carrier},
+			logistics_no           = #{logisticsNo},
+			vehicle_no             = #{vehicleNo},
+			driver                 = #{driver},
+			contact_tel            = #{contactTel},
+			organization           = #{organization},
+			department             = #{department},
+			business_by            = #{businessBy},
+			prepared_by            = #{preparedBy},
+			audit_by               = #{auditBy},
+			prepaid_amount         = #{prepaidAmount},
+			settlement             = #{settlement},
+			settle_mode            = #{settleMode},
+			currency               = #{currency},
+			exchange_rate          = #{exchangeRate},
+			org_id                 = #{orgId},
+			owner                  = #{owner},
+			total_tax              = #{totalTax},
+			total_amount           = #{totalAmount},
+			total_tax_in_amount    = #{totalTaxInAmount},
+			sub_org_id             = #{subOrgId},
+			freight_charge         = #{freightCharge},
+			consignee_address_area = #{consigneeAddressArea},
+			shipper_address_area   = #{shipperAddressArea},
+			sale_order_nos         = #{saleOrderNos},
+			purchase_method        = #{purchaseMethod},
+			delivery_date          = #{deliveryDate},
+			pay_status             = #{payStatus},
+			pay_account            = #{payAccount},
+			pay_no                 = #{payNo},
+			actual_paid_amount     = #{actualPaidAmount},
+			cashier_remarks        = #{cashierRemarks},
+			settlement_contact     = #{settlementContact},
+			settlement_contact_tel = #{settlementContactTel},
+			audit_date             = #{auditDate},
+			deposit_bank           = #{depositBank},
+			data_source            = #{dataSource},
+		    principal 			   = #{principal}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM om_po_header
+		WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE om_po_header SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="findPage" resultType="OmPoHeaderEntity" >
+		SELECT
+		c1.ebcu_name_cn AS "supplierName",
+		c1.ebcu_tax_rate AS "taxRate",
+		c2.ebcu_name_cn AS "settlementName",
+		c3.ebcu_name_cn AS "carrierName",
+		c4.ebcu_name_cn AS "ownerName",
+		c5.ebcu_name_cn AS "principalName",
+		so1.name AS "orgName",
+		so2.name AS "departName",
+		so3.name AS "subOrgName",
+		sa1.name AS "consigneeAreaName",
+		sa2.name AS "shipperAreaName",
+		su1.name AS "createBy.name",
+		su2.name AS "updateBy.name",
+		<include refid="omPoHeaderColumns"/>
+		FROM om_po_header a
+		LEFT JOIN om_customer c1 ON a.supplier_code = c1.ebcu_customer_no AND c1.ebcu_type LIKE '%SUPPLIER%' AND a.org_id = c1.org_id
+		LEFT JOIN om_customer c2 ON a.settlement = c2.ebcu_customer_no AND c2.ebcu_type LIKE '%SETTLEMENT%' AND a.org_id = c2.org_id
+		LEFT JOIN om_customer c3 ON a.carrier = c3.ebcu_customer_no AND c3.ebcu_type LIKE '%CARRIER%' AND a.org_id = c3.org_id
+		LEFT JOIN om_customer c4 ON a.owner = c4.ebcu_customer_no AND c4.ebcu_type LIKE '%OWNER%' AND a.org_id = c4.org_id
+		LEFT JOIN om_customer c5 ON a.principal = c5.ebcu_customer_no AND c5.ebcu_type LIKE '%CUSTOMER%' AND a.org_id = c5.org_id
+		LEFT JOIN sys_office so1 ON so1.id = a.org_id
+		LEFT JOIN sys_office so2 ON so2.id = a.department
+		LEFT JOIN sys_office so3 ON so3.id = a.sub_org_id
+		LEFT JOIN sys_area sa1 ON sa1.id = a.consignee_area
+		LEFT JOIN sys_area sa2 ON sa2.id = a.shipper_area
+		LEFT JOIN sys_user su1 ON su1.id = a.create_by
+		LEFT JOIN sys_user su2 ON su2.id = a.update_by
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="orderDateFm != null">
+				AND a.order_date &gt;= #{orderDateFm}
+			</if>
+			<if test="orderDateTo != null">
+				AND a.order_date &lt;= #{orderDateTo}
+			</if>
+			<if test="poNo != null and poNo != ''">
+				AND a.po_no = #{poNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="supplierCode != null and supplierCode != ''">
+				AND a.supplier_code = #{supplierCode}
+			</if>
+			<if test="owner != null and owner != ''">
+				AND a.owner = #{owner}
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel = #{channel}
+			</if>
+			<if test="poType != null and poType != ''">
+				AND a.po_type = #{poType}
+			</if>
+			<if test="arrivalTimeFm != null">
+				AND a.arrival_time &gt;= #{arrivalTimeFm}
+			</if>
+			<if test="arrivalTimeTo != null">
+				AND a.arrival_time &lt;= #{arrivalTimeTo}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="contractNo != null and contractNo != ''">
+				AND a.contract_no = #{contractNo}
+			</if>
+			<if test="subOrgId != null and subOrgId != ''">
+				AND a.sub_org_id = #{subOrgId}
+			</if>
+			<if test="purchaseMethod != null and purchaseMethod != ''">
+				AND a.purchase_method = #{purchaseMethod}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.po_no DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getEntity" resultType="OmPoHeaderEntity" >
+		SELECT
+			c1.ebcu_name_cn AS "supplierName",
+			c1.ebcu_tax_rate AS "taxRate",
+			c2.ebcu_name_cn AS "settlementName",
+			c3.ebcu_name_cn AS "carrierName",
+			c4.ebcu_name_cn AS "ownerName",
+			c5.ebcu_name_cn AS "principalName",
+			so1.name AS "orgName",
+			so2.name AS "departName",
+			so3.name AS "subOrgName",
+			sa1.name AS "consigneeAreaName",
+			sa2.name AS "shipperAreaName",
+			su1.name AS "createBy.name",
+			su2.name AS "updateBy.name",
+			<include refid="omPoHeaderColumns"/>
+		FROM om_po_header a
+			LEFT JOIN om_customer c1 ON a.supplier_code = c1.ebcu_customer_no AND c1.ebcu_type LIKE '%SUPPLIER%' AND a.org_id = c1.org_id
+			LEFT JOIN om_customer c2 ON a.settlement = c2.ebcu_customer_no AND c2.ebcu_type LIKE '%SETTLEMENT%' AND a.org_id = c2.org_id
+			LEFT JOIN om_customer c3 ON a.carrier = c3.ebcu_customer_no AND c3.ebcu_type LIKE '%CARRIER%' AND a.org_id = c3.org_id
+			LEFT JOIN om_customer c4 ON a.owner = c4.ebcu_customer_no AND c4.ebcu_type LIKE '%OWNER%' AND a.org_id = c4.org_id
+			LEFT JOIN om_customer c5 ON a.principal = c5.ebcu_customer_no AND c5.ebcu_type LIKE '%CUSTOMER%' AND a.org_id = c5.org_id
+			LEFT JOIN sys_office so1 ON so1.id = a.org_id
+			LEFT JOIN sys_office so2 ON so2.id = a.department
+			LEFT JOIN sys_office so3 ON so3.id = a.sub_org_id
+			LEFT JOIN sys_area sa1 ON sa1.id = a.consignee_area
+			LEFT JOIN sys_area sa2 ON sa2.id = a.shipper_area
+			LEFT JOIN sys_user su1 ON su1.id = a.create_by
+			LEFT JOIN sys_user su2 ON su2.id = a.update_by
+		WHERE a.id = #{id}
+	</select>
+
+	<update id="updateStatus">
+		update om_po_header
+		SET status      = #{status},
+			update_by   = #{updateBy.id},
+			update_date = #{updateDate}
+		where po_no = #{poNo}
+		  and org_id = #{orgId}
+	</update>
+
+	<update id="updateAuditStatus">
+		update om_po_header
+		SET status      = #{status},
+			audit_by    = #{auditBy},
+			audit_date  = #{auditDate},
+			update_by   = #{updateBy.id},
+			update_date = #{updateDate}
+		where po_no = #{poNo}
+		  and org_id = #{orgId}
+	</update>
+
+	<update id="updateStatusById">
+		update om_po_header
+		SET status      = #{status},
+			update_by   = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+    </update>
+
+	<select id="getPoPrintData" resultType="com.yunyou.modules.oms.order.entity.extend.OmPoPrintData">
+		SELECT a.po_no                                 AS "poNo",
+			   DATE_FORMAT(a.order_date, '%Y-%m-%d')   AS "orderDate",
+			   c.ebcu_customer_no                      AS "supplierCode",
+			   c.ebcu_name_cn                          AS "supplierName",
+			   a.settlement_contact                    AS "contact",
+			   a.settlement_contact_tel                AS "contactTel",
+			   c.ebcu_fax                              AS "fax",
+			   a.pay_account                           AS "account",
+			   a.deposit_bank                          AS "depositBank",
+			   DATE_FORMAT(a.arrival_time, '%Y-%m-%d') AS "arrivalTime",
+			   a.consignee                             AS "consignee",
+			   a.consignee_tel                         AS "consigneeTel",
+			   a.consignee_address                     AS "consigneeAddress",
+			   sdtv2.label                             AS "settleMode",
+			   b.sku_code                              AS "skuCode",
+			   b.sku_name                              AS "skuName",
+			   sdtv1.label                             AS "unit",
+			   b.qty                                   AS "qty",
+			   b.tax_price                             AS "taxPrice",
+			   b.tax_amount                            AS "taxAmount",
+			   b.remarks                               AS "remarks",
+			   d.ebcu_name_cn                          AS "ownerName",
+			   d.ebcu_address                          AS "ownerAddress",
+			   d.ebcu_tel                              AS "ownerPhone",
+			   d.ebcu_fax                              AS "ownerFax",
+			   d.ebcu_zip_code                         AS "ownerZipCode"
+		FROM om_po_header a
+			 INNER JOIN om_po_detail b ON a.id = b.header_id
+			 LEFT JOIN om_customer c ON a.supplier_code = c.ebcu_customer_no AND a.org_id = c.org_id
+			 LEFT JOIN om_customer d ON a.owner = d.ebcu_customer_no AND a.org_id = d.org_id
+			 LEFT JOIN sys_dict_type sdt1 ON sdt1.type = 'OMS_ITEM_UNIT'
+			 LEFT JOIN sys_dict_value sdtv1 ON sdtv1.dict_type_id = sdt1.id AND sdtv1.value = b.unit
+			 LEFT JOIN sys_dict_type sdt2 ON sdt2.type = 'BMS_SETTLEMENT_TYPE'
+			 LEFT JOIN sys_dict_value sdtv2 ON sdtv2.dict_type_id = sdt2.id AND sdtv2.value = a.settle_mode
+		WHERE a.id IN
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+</mapper>

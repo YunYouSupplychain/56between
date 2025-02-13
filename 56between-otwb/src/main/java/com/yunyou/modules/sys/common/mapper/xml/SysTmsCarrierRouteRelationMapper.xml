@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysTmsCarrierRouteRelationMapper">
+
+	<sql id="sysTmsCarrierRouteRelationColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.code AS "code",
+		a.name AS "name",
+		a.carrier_code AS "carrierCode",
+		a.origin_id AS "originId",
+		a.destination_id AS "destinationId",
+		a.mileage AS "mileage",
+		a.time AS "time",
+		a.data_set AS "dataSet",
+		a.rec_ver AS "recVer",
+		scds.name AS "dataSetName",
+		a.carrier_code AS "oldCarrierCode"
+	</sql>
+
+	<sql id="sysTmsCarrierRouteRelationJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysTmsCarrierRouteRelation" >
+		SELECT
+			<include refid="sysTmsCarrierRouteRelationColumns"/>
+		FROM sys_tms_carrier_route_relation a
+		<include refid="sysTmsCarrierRouteRelationJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysTmsCarrierRouteRelation" >
+		SELECT
+			<include refid="sysTmsCarrierRouteRelationColumns"/>
+		FROM sys_tms_carrier_route_relation a
+		<include refid="sysTmsCarrierRouteRelationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="originId != null and originId != ''">
+				AND a.origin_id = #{originId}
+			</if>
+			<if test="destinationId != null and destinationId != ''">
+				AND a.destination_id = #{destinationId}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysTmsCarrierRouteRelation" >
+		SELECT
+			<include refid="sysTmsCarrierRouteRelationColumns"/>
+		FROM sys_tms_carrier_route_relation a
+		<include refid="sysTmsCarrierRouteRelationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO sys_tms_carrier_route_relation(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			code,
+			name,
+		    carrier_code,
+			origin_id,
+			destination_id,
+			mileage,
+			time,
+			data_set,
+			rec_ver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{code},
+			#{name},
+			#{carrierCode},
+			#{originId},
+			#{destinationId},
+			#{mileage},
+			#{time},
+			#{dataSet},
+			#{recVer}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE sys_tms_carrier_route_relation SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			del_flag = #{delFlag},
+			remarks = #{remarks},
+			code = #{code},
+			name = #{name},
+		    carrier_code = #{carrierCode},
+			origin_id = #{originId},
+			destination_id = #{destinationId},
+			mileage = #{mileage},
+			time = #{time},
+			data_set = #{dataSet},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_tms_carrier_route_relation SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM sys_tms_carrier_route_relation
+		WHERE id = #{id}
+	</delete>
+
+	<select id="getEntity" resultType="com.yunyou.modules.sys.common.entity.extend.SysTmsCarrierRouteRelationEntity" >
+		SELECT tto.transport_obj_name AS "carrierName",
+		<include refid="sysTmsCarrierRouteRelationColumns"/>
+		FROM sys_tms_carrier_route_relation a
+		<include refid="sysTmsCarrierRouteRelationJoins"/>
+		LEFT JOIN sys_tms_transport_obj tto on a.carrier_code = tto.transport_obj_code AND a.data_set = tto.data_set
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.extend.SysTmsCarrierRouteRelationEntity" >
+		SELECT tto.transport_obj_name AS "carrierName",
+		<include refid="sysTmsCarrierRouteRelationColumns"/>
+		FROM sys_tms_carrier_route_relation a
+		<include refid="sysTmsCarrierRouteRelationJoins"/>
+		LEFT JOIN sys_tms_transport_obj tto on a.carrier_code = tto.transport_obj_code AND a.data_set = tto.data_set
+		<where>
+			${dataScope}
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code LIKE concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%', #{name}, '%')
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="originId != null and originId != ''">
+				AND a.origin_id = #{originId}
+			</if>
+			<if test="destinationId != null and destinationId != ''">
+				AND a.destination_id = #{destinationId}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findGrid" resultType="com.yunyou.modules.sys.common.entity.extend.SysTmsCarrierRouteRelationEntity" >
+		SELECT
+		<include refid="sysTmsCarrierRouteRelationColumns"/>
+		FROM sys_tms_carrier_route_relation a
+		<include refid="sysTmsCarrierRouteRelationJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="code != null and code != ''">
+				AND a.code LIKE concat('%', #{code}, '%')
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%', #{name}, '%')
+			</if>
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="originId != null and originId != ''">
+				AND a.origin_id = #{originId}
+			</if>
+			<if test="destinationId != null and destinationId != ''">
+				AND a.destination_id = #{destinationId}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.code LIKE concat('%', #{codeAndName}, '%')
+					OR a.name LIKE concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

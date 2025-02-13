@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmTransportOrderHeaderMapper">
+    
+	<sql id="tmTransportOrderHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.rec_ver AS "recVer",
+		a.transport_no AS "transportNo",
+		a.order_time AS "orderTime",
+		a.order_type AS "orderType",
+		a.order_status AS "orderStatus",
+		a.customer_no AS "customerNo",
+		a.tracking_no AS "trackingNo",
+		a.principal_code AS "principalCode",
+		a.customer_code AS "customerCode",
+		a.brand AS "brand",
+		a.receive_outlet_code AS "receiveOutletCode",
+		a.transport_method AS "transportMethod",
+		a.delivery_method AS "deliveryMethod",
+		a.outlet_code AS "outletCode",
+		a.ship_code AS "shipCode",
+		a.ship_city_id AS "shipCityId",
+		a.ship_city_name AS "shipCityName",
+		a.shipper AS "shipper",
+		a.shipper_tel AS "shipperTel",
+		a.ship_address AS "shipAddress",
+		a.consignee_code AS "consigneeCode",
+		a.consignee_city_id AS "consigneeCityId",
+		a.consignee_city_name AS "consigneeCityName",
+		a.consignee AS "consignee",
+		a.consignee_tel AS "consigneeTel",
+		a.consignee_address AS "consigneeAddress",
+		a.designated_sign_by AS "designatedSignBy",
+		a.org_id AS "orgId",
+		a.base_org_id AS "baseOrgId",
+        a.dispatch_plan_no AS "dispatchPlanNo",
+        a.data_source AS "dataSource",
+        a.source_no AS "sourceNo",
+        a.is_need_dispatch AS "isNeedDispatch",
+        a.def1 AS "def1",
+        a.def2 AS "def2",
+        a.def3 AS "def3",
+        a.def4 AS "def4",
+        a.def5 AS "def5",
+        a.def6 AS "def6",
+        a.def7 AS "def7",
+        a.def8 AS "def8",
+        a.def9 AS "def9",
+        a.def10 AS "def10",
+		a.order_source AS "orderSource",
+		a.channel AS "channel",
+		a.service_mode AS "serviceMode",
+		a.po_no AS "poNo"
+	</sql>
+	
+	<sql id="tmTransportOrderHeaderJoins">
+		
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderHeader" >
+		SELECT 
+			<include refid="tmTransportOrderHeaderColumns"/>
+		FROM tm_transport_order_header a
+		<include refid="tmTransportOrderHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderHeader" >
+		SELECT 
+			<include refid="tmTransportOrderHeaderColumns"/>
+		FROM tm_transport_order_header a
+		<include refid="tmTransportOrderHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="transportNo != null and transportNo != ''">
+				AND a.transport_no = #{transportNo}
+			</if>
+			<if test="orderTime != null and orderTime != ''">
+				AND a.order_time = #{orderTime}
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="orderStatus != null and orderStatus != ''">
+				AND a.order_status = #{orderStatus}
+			</if>
+			<if test="customerNo != null and customerNo != ''">
+				AND a.customer_no = #{customerNo}
+			</if>
+			<if test="principalCode != null and principalCode != ''">
+				AND a.principal_code = #{principalCode}
+			</if>
+            <if test="orgId != null and orgId != ''">
+                AND a.org_id = #{orgId}
+            </if>
+            <if test="baseOrgId != null and baseOrgId != ''">
+                AND a.base_org_id = #{baseOrgId}
+            </if>
+            <if test="dispatchPlanNo != null and dispatchPlanNo != ''">
+                AND a.dispatch_plan_no = #{dispatchPlanNo}
+            </if>
+            <if test="sourceNo != null and sourceNo != ''">
+                AND a.source_no = #{sourceNo}
+            </if>
+			<if test="dataSource != null and dataSource != ''">
+				AND a.data_source = #{dataSource}
+			</if>
+			<if test="isNeedDispatch != null and isNeedDispatch != ''">
+				AND a.is_need_dispatch = #{isNeedDispatch}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderHeader" >
+		SELECT 
+			<include refid="tmTransportOrderHeaderColumns"/>
+		FROM tm_transport_order_header a
+		<include refid="tmTransportOrderHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_transport_order_header(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			transport_no,
+			order_time,
+			order_type,
+			order_status,
+			customer_no,
+			tracking_no,
+			principal_code,
+			customer_code,
+			brand,
+			receive_outlet_code,
+			transport_method,
+			delivery_method,
+			outlet_code,
+			ship_code,
+			ship_city_id,
+			ship_city_name,
+			shipper,
+			shipper_tel,
+			ship_address,
+			consignee_code,
+			consignee_city_id,
+			consignee_city_name,
+			consignee,
+			consignee_tel,
+			consignee_address,
+			designated_sign_by,
+			org_id,
+			rec_ver,
+			base_org_id,
+            dispatch_plan_no,
+            data_source,
+            source_no,
+		    is_need_dispatch,
+			def1,
+			def2,
+			def3,
+			def4,
+			def5,
+			def6,
+			def7,
+			def8,
+			def9,
+			def10,
+			order_source,
+			channel,
+			service_mode,
+			po_no
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{transportNo},
+			#{orderTime},
+			#{orderType},
+			#{orderStatus},
+			#{customerNo},
+			#{trackingNo},
+			#{principalCode},
+			#{customerCode},
+			#{brand},
+			#{receiveOutletCode},
+			#{transportMethod},
+			#{deliveryMethod},
+			#{outletCode},
+			#{shipCode},
+			#{shipCityId},
+			#{shipCityName},
+			#{shipper},
+			#{shipperTel},
+			#{shipAddress},
+			#{consigneeCode},
+			#{consigneeCityId},
+			#{consigneeCityName},
+			#{consignee},
+			#{consigneeTel},
+			#{consigneeAddress},
+			#{designatedSignBy},
+			#{orgId},
+			#{recVer},
+			#{baseOrgId},
+            #{dispatchPlanNo},
+            #{dataSource},
+            #{sourceNo},
+			#{isNeedDispatch},
+			#{def1},
+			#{def2},
+			#{def3},
+			#{def4},
+			#{def5},
+			#{def6},
+			#{def7},
+			#{def8},
+			#{def9},
+			#{def10},
+			#{orderSource},
+			#{channel},
+			#{serviceMode},
+			#{poNo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_transport_order_header
+		SET update_by           = #{updateBy.id},
+			update_date         = #{updateDate},
+			remarks             = #{remarks},
+			rec_ver             = rec_ver + 1,
+			transport_no        = #{transportNo},
+			order_time          = #{orderTime},
+			order_type          = #{orderType},
+			order_status        = #{orderStatus},
+			customer_no         = #{customerNo},
+			tracking_no         = #{trackingNo},
+			principal_code      = #{principalCode},
+			customer_code       = #{customerCode},
+			brand               = #{brand},
+			receive_outlet_code = #{receiveOutletCode},
+			transport_method    = #{transportMethod},
+			delivery_method     = #{deliveryMethod},
+			outlet_code         = #{outletCode},
+			ship_code           = #{shipCode},
+			ship_city_id        = #{shipCityId},
+			ship_city_name      = #{shipCityName},
+			shipper             = #{shipper},
+			shipper_tel         = #{shipperTel},
+			ship_address        = #{shipAddress},
+			consignee_code      = #{consigneeCode},
+			consignee_city_id   = #{consigneeCityId},
+			consignee_city_name = #{consigneeCityName},
+			consignee           = #{consignee},
+			consignee_tel       = #{consigneeTel},
+			consignee_address   = #{consigneeAddress},
+			designated_sign_by  = #{designatedSignBy},
+			org_id              = #{orgId},
+			base_org_id         = #{baseOrgId},
+			dispatch_plan_no    = #{dispatchPlanNo},
+			data_source         = #{dataSource},
+			source_no           = #{sourceNo},
+			is_need_dispatch    = #{isNeedDispatch},
+			def1                = #{def1},
+			def2                = #{def2},
+			def3                = #{def3},
+			def4                = #{def4},
+			def5                = #{def5},
+			def6                = #{def6},
+			def7                = #{def7},
+			def8                = #{def8},
+			def9                = #{def9},
+			def10               = #{def10},
+			order_source        = #{orderSource},
+			channel             = #{channel},
+			service_mode        = #{serviceMode},
+			po_no               = #{poNo}
+		WHERE id = #{id}
+		  AND rec_ver = #{recVer}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM tm_transport_order_header WHERE id = #{id}
+	</delete>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_transport_order_header SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getByNo" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderHeader" >
+		SELECT <include refid="tmTransportOrderHeaderColumns"/>
+		FROM tm_transport_order_header a
+		WHERE a.transport_no = #{transportNo}
+	</select>
+    <select id="getByCustomerNo" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderHeader">
+		SELECT <include refid="tmTransportOrderHeaderColumns"/>
+		FROM tm_transport_order_header a
+		WHERE a.customer_no = #{customerNo}
+		AND a.org_id = #{orgId}
+	</select>
+    <select id="findUnSignCount" resultType="java.lang.Integer">
+		SELECT count(1)
+		FROM tm_transport_order_header ttoh
+			LEFT JOIN tm_transport_order_delivery ttod ON ttoh.transport_no = ttod.transport_no AND ttoh.org_id = ttod.org_id
+		WHERE ttoh.is_need_dispatch = 'N'
+		  AND (ttod.sign_status IS NULL OR ttod.sign_status = '' OR ttod.sign_status = 'N')
+	</select>
+	<select id="findUnSignMailNo" resultType="com.yunyou.modules.tms.order.entity.TmTransportOrderHeader">
+		SELECT ttoh.*
+		FROM tm_transport_order_header ttoh
+			LEFT JOIN tm_transport_order_delivery ttod ON ttoh.transport_no = ttod.transport_no AND ttoh.org_id = ttod.org_id
+		WHERE ttoh.is_need_dispatch = 'N'
+		  AND (ttod.sign_status IS NULL OR ttod.sign_status = '' OR ttod.sign_status = 'N')
+		ORDER BY ttoh.update_date
+		LIMIT #{offset}, #{num}
+	</select>
+
+</mapper>

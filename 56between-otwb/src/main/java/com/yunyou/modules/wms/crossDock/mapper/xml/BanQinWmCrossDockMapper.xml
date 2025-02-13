@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.crossDock.mapper.BanQinWmCrossDockMapper">
+
+	<select id="getCdAllocStatusAndOutStepQueryList" resultType="com.yunyou.modules.wms.crossDock.entity.BanQinGetCdAllocStatusAndOutStepQueryEntity">
+		SELECT MAX(wsa.status) AS status,
+			   wsa.cd_out_step AS cdOutStep,
+			   wsa.org_id AS orgId
+		 FROM wm_so_alloc wsa
+		WHERE wsa.asn_no = #{asnNo}
+		  AND wsa.rcv_line_no = #{rcvLineNo}
+		  AND wsa.org_id = #{orgId}
+		GROUP BY wsa.cd_out_step, wsa.org_id
+	</select>
+	
+	<select id="getCrossDockAsnDetailReceiveQueryList" resultType="com.yunyou.modules.wms.crossDock.entity.BanQinGetCrossDockAsnDetailReceiveQueryEntity">
+		SELECT wadr.id AS id,
+			wadr.asn_no AS asnNo,
+			wadr.line_no AS lineNo,
+			wadr.asn_line_no AS asnLineNo,
+			wadr.logistic_no AS logisticNo,
+			wadr.logistic_line_no AS logisticLineNo,
+			wadr.po_no AS poNo,
+			wadr.po_line_no AS poLineNo,
+			wadr.status AS status,
+			wadr.qc_status AS qcStatus,
+			wadr.is_qc AS isQc,
+			wadr.qc_phase AS qcPhase,
+			wadr.qc_rule AS qcRule,
+			wadr.item_group_code AS itemGroupCode,
+			wadr.owner_code AS ownerCode,
+			wadr.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cws.quick_code quickCode,
+			cws.bar_code AS barCode,
+			cws.sup_bar_code AS supBarCode,
+			cws.is_serial AS isSerial,
+			cws.shelf_life AS shelfLife,
+			cws.life_type AS lifeType,
+			cws.is_validity AS isValidity,
+			cws.in_life_days AS inLifeDays,
+			cws.out_life_days AS outLifeDays,
+			cws.is_over_rcv AS isOverRcv,
+			cws.over_rcv_pct AS overRcvPct,
+			cws.cubic AS cubic,
+			cws.net_weight AS netWeight,
+			cws.gross_weight AS grossWeight,
+			wadr.rcv_time AS rcvTime,
+			wadr.pack_code AS packCode,
+			cdpa.cdpa_format as packDesc,
+			wadr.uom AS uom,
+			cdpr.cdpr_desc as uomDesc,
+			cdpr.cdpr_quantity as uomQty,
+			wadr.qty_plan_ea AS qtyPlanEa,
+			wadr.qty_plan_ea / (CASE WHEN cdpr.cdpr_quantity = 0 THEN 1 ELSE cdpr.cdpr_quantity END) AS qtyPlanUom,
+			<![CDATA[ (CASE WHEN(wadr.qty_plan_ea - wadr.qty_rcv_ea) < 0 THEN 0 ELSE (wadr.qty_plan_ea - wadr.qty_rcv_ea) END) / IFNULL(cdpr.cdpr_quantity, 1) AS currentQtyRcvUom ]]>,
+			<![CDATA[ (CASE WHEN(wadr.qty_plan_ea - wadr.qty_rcv_ea) < 0 THEN 0 ELSE (wadr.qty_plan_ea - wadr.qty_rcv_ea) END) AS currentQtyRcvEa ]]>,
+			wadr.plan_id AS planId,
+			wadr.qty_rcv_ea AS qtyRcvEa,
+			wadr.qty_rcv_ea / (CASE WHEN cdpr.cdpr_quantity = 0 THEN 1 ELSE cdpr.cdpr_quantity END) AS qtyRcvUom,
+			wadr.to_loc toLoc,
+			wadr.to_id AS toId,
+			wadr.pa_rule AS paRule,
+			wadr.reserve_code reserveCode,
+			crph.rule_name as paRuleName,
+			wadr.pa_id AS paId,
+			wadr.price AS price,
+			wadr.lot_num AS lotNum,
+			wadr.plan_pa_loc AS planPaLoc,
+			wadr.voucher_no AS voucherNo,
+			wadr.lot_att01 AS lotAtt01,
+			wadr.lot_att02 AS lotAtt02,
+			wadr.lot_att03 AS lotAtt03,
+			wadr.lot_att04 AS lotAtt04,
+			wadr.lot_att05 AS lotAtt05,
+			wadr.lot_att06 AS lotAtt06,
+			wadr.lot_att07 AS lotAtt07,
+			wadr.lot_att08 AS lotAtt08,
+			wadr.lot_att09 AS lotAtt09,
+			wadr.lot_att10 AS lotAtt10,
+			wadr.lot_att11 AS lotAtt11,
+			wadr.lot_att12 AS lotAtt12,
+			wadr.def1 AS def1,
+			wadr.def2 AS def2,
+			wadr.def3 AS def3,
+			wadr.def4 AS def4,
+			wadr.def5 AS def5,
+			wadr.def6 AS def6,
+			wadr.def7 AS def7,
+			wadr.def8 AS def8,
+			wadr.def9 AS def9,
+			wadr.def10 AS def10,
+			wadr.remarks AS remarks,
+			wadr.rec_ver AS recVer,
+			wadr.org_id AS orgId,
+			wadr.so_no AS soNo,
+			wadr.so_line_no AS soLineNo,
+			wadr.cd_type AS cdType,
+			wadr.cd_rcv_id AS cdRcvId,
+			wadr.qc_rcv_id AS qcRcvId,
+			wah.asn_type AS asnType,
+		    wadr.head_id AS headId
+		FROM wm_asn_detail_receive wadr
+		LEFT JOIN wm_asn_header wah ON wah.asn_no = wadr.asn_no AND wah.org_id = wadr.org_id
+		LEFT JOIN cd_wh_sku cws ON cws.sku_code = wadr.sku_code AND cws.owner_code = wadr.owner_code AND cws.org_id = wadr.org_id
+		LEFT JOIN cd_wh_package cdpa ON cdpa.cdpa_code = wadr.pack_code AND cdpa.org_id = wadr.org_id
+		LEFT JOIN cd_wh_package_relation cdpr ON cdpr.cdpr_unit_level = wadr.uom AND cdpa.pm_code = cdpr.cdpr_cdpa_pm_code AND cdpr.org_id = wadr.org_id AND cdpr.org_id = cdpa.org_id
+		LEFT JOIN cd_rule_pa_header crph ON crph.rule_code = wadr.pa_rule AND crph.org_id = wadr.org_id
+		where 1 = 1
+		AND wah.status != '90'
+		AND wah.status != '99'
+		AND wah.audit_status != '00'
+		AND wah.hold_status != '99'
+		AND cws.is_serial = 'N'
+		AND wadr.org_id = #{orgId}
+		<if test="asnType != null and asnType != ''">
+			AND wah.asn_type = #{asnType}
+		</if>
+		<if test="ownerCode != null and ownerCode != ''">
+			AND wadr.owner_code = #{ownerCode}
+		</if>
+		<if test="skuCode != null and skuCode != ''">
+			AND wadr.sku_code = #{skuCode}
+		</if>
+		<if test="status != null and status != ''">
+			AND wadr.status = #{status}
+		</if>
+		<if test="asnNo != null and asnNo != ''">
+			AND wah.asn_no like CONCAT(#{asnNo}, '%')
+		</if>
+		<if test="lineNo != null and lineNo != ''">
+			AND wadr.line_no = #{lineNo}
+		</if>
+		<if test="asnLineNo != null and asnLineNo != ''">
+			AND wadr.asn_line_no = #{asnLineNo}
+		</if>
+		<if test="isCd != null and isCd != ''">
+			AND wadr.cd_type IS NOT NULL AND wadr.cd_type != '' AND 'Y'= #{isCd}
+		</if>
+		<if test="cdType != null and cdType != ''">
+			AND wadr.cd_type = #{cdType}
+		</if>
+		ORDER BY wah.to_eta is null, wah.to_eta, wah.priority is null || wah.priority = '', wah.priority, wah.order_time is null, wah.order_time, wadr.asn_no ,wadr.asn_line_no, wadr.line_no
+	</select>
+	
+	<select id="getCrossDockQuery" resultType="com.yunyou.modules.wms.crossDock.entity.BanQinGetCrossDockQueryEntity">
+		select cws.owner_code AS ownerCode,
+			ec.ebcu_name_cn AS ownerName,
+			cws.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cws.org_id AS orgId,
+			(SELECT IFNULL(sum(will.qty), 0)
+				FROM wm_inv_lot_loc will
+				WHERE cws.owner_code = will.owner_code
+				AND cws.sku_code = will.sku_code
+				AND cws.org_id = will.org_id) AS qty,
+			IFNULL(SUM(wadr.qty_plan_ea), 0) AS qtyPlanEa,
+			IFNULL(COUNT(DISTINCT wah.asn_no), 0) AS asnNum,
+			MIN(wah.fm_eta) AS fmEta,
+			MAX(wah.to_eta) AS toEta,
+			IFNULL(SUM(wsd.qty_so_ea), 0) AS qtySoEa,
+			IFNULL(COUNT(DISTINCT wsh.so_no), 0) AS soNum,
+			MIN(wsh.fm_etd) AS fmEtd,
+			MAX(wsh.to_etd) AS toEtd
+		FROM cd_wh_sku cws
+		left join eb_customer ec ON cws.owner_code = ec.ebcu_customer_no AND cws.org_id = ec.org_id
+		left join wm_asn_detail_receive wadr ON cws.owner_code = wadr.owner_code AND cws.sku_code = wadr.sku_code AND cws.org_id = wadr.org_id AND wadr.status = '00'
+		AND (wadr.is_qc = 'N' OR (
+		    wadr.is_qc = 'Y' AND wadr.qc_phase = 'RCV' AND (
+		        wadr.qc_status IS NULL OR wadr.qc_status = '' OR (
+		            wadr.qc_status = '20' AND wadr.lot_att04 = 'Y')
+		        )
+		    )) AND (wadr.cd_type IS NULL OR wadr.cd_type = '')
+		LEFT JOIN wm_asn_header wah ON wadr.asn_no = wah.asn_no AND wadr.org_id = wah.org_id AND wah.hold_status = '00' AND wah.status != '90' AND wah.status != '99' AND wah.audit_status != '00'
+		LEFT JOIN wm_so_detail wsd ON cws.owner_code = wsd.owner_code AND cws.sku_code = wsd.sku_code AND cws.org_id = wsd.org_id AND wsd.status = '00' AND (wsd.cd_type is null OR wsd.cd_type = '') AND wsd.qty_so_ea - wsd.qty_prealloc_ea - wsd.qty_alloc_ea - wsd.qty_pk_ea - wsd.qty_ship_ea > 0
+		LEFT JOIN wm_so_header wsh ON wsd.so_no = wsh.so_no AND wsd.org_id = wsh.org_id AND wsh.status != '90' AND wsh.status != '99' AND wsh.audit_status != '00' AND wsh.hold_status = '00' AND (wsh.intercept_status = '00' or wsh.intercept_status = '90')
+		WHERE 1 = 1
+		AND cws.is_serial = 'N'
+		AND cws.org_id = #{orgId}
+		<if test="ownerCodes != null and ownerCodes.length > 0">
+			AND cws.owner_code IN
+			<foreach collection="ownerCodes" item="ownerCode" index="ownerCode" open="(" separator="," close=")">
+				#{ownerCode}
+			</foreach>
+		</if>
+		<if test="skuCodes != null and skuCodes.length > 0">
+			AND cws.sku_code IN
+			<foreach collection="skuCodes" item="skuCode" index="skuCode" open="(" separator="," close=")">
+				#{skuCode}
+			</foreach>
+		</if>
+		<if test="asnNo != null and asnNo != ''">
+			AND wadr.asn_no LIKE CONCAT(#{asnNo}, '%')
+		</if>
+		<if test="asnTypes != null and asnTypes.length > 0">
+			AND wah.asn_type IN
+			<foreach collection="asnTypes" item="asnType" index="asnType" open="(" separator="," close=")">
+				#{asnType}
+			</foreach>
+		</if>
+		<if test="fmEtaFm != null and fmEtaFm != ''">
+			<![CDATA[ AND wah.fm_eta >= #{fmEtaFm} ]]>
+		</if>
+		<if test="fmEtaTo != null and fmEtaTo != ''">
+			<![CDATA[ AND wah.fm_eta <= #{fmEtaTo} ]]>
+		</if>
+		<if test="toEtaFm != null and toEtaFm != ''">
+			<![CDATA[ AND wah.to_eta >= #{toEtaFm} ]]>
+		</if>
+		<if test="toEtaTo != null and toEtaTo != ''">
+			<![CDATA[ AND wah.to_eta <= #{toEtaTo} ]]>
+		</if>
+		<if test="soNo != null and soNo != ''">
+			AND wsd.so_no LIKE CONCAT(#{soNo}, '%')
+		</if>
+		<if test="soTypes != null and soTypes.length > 0">
+			AND wsh.so_type IN
+			<foreach collection="soTypes" item="soType" index="soType" open="(" separator="," close=")">
+				#{soType}
+			</foreach>
+		</if>
+		<if test="fmEtdFm != null and fmEtdFm != ''">
+			<![CDATA[ AND wsh.fm_etd >= #{fmEtdFm} ]]>
+		</if>
+		<if test="fmEtdTo != null and fmEtdTo != ''">
+			<![CDATA[ AND wsh.fm_etd <= #{fmEtdTo} ]]>
+		</if>
+		<if test="toEtdFm != null and toEtdFm != ''">
+			<![CDATA[ AND wsh.to_etd >= #{toEtdFm} ]]>
+		</if>
+		<if test="toEtdTo != null and toEtdTo != ''">
+			<![CDATA[ AND wsh.to_etd <= #{toEtdTo} ]]>
+		</if>
+		GROUP BY cws.owner_code, ec.ebcu_name_cn, cws.sku_code, cws.sku_name, cws.org_id
+		HAVING <![CDATA[ IFNULL(SUM(wadr.qty_plan_ea), 0) > 0 OR IFNULL(sum(wsd.qty_so_ea), 0) > 0 ]]>
+		<if test="soLineNum != null and soLineNum != ''">
+			<![CDATA[ AND COUNT(wsd.line_no) >= #{soLineNum} ]]>
+		</if>
+		<if test="qtySoEa != null and qtySoEa != ''">
+			<![CDATA[ AND IFNULL(SUM(wsd.qty_so_ea), 0) >= #{qtySoEa} ]]>
+		</if>
+	</select>
+	
+	<select id="wmTaskCdByIndirectQuery" resultType="com.yunyou.modules.wms.crossDock.entity.BanQinWmTaskCdByIndirectQueryEntity">
+		SELECT DISTINCT wadr.owner_code AS ownerCode,
+			ec.ebcu_name_cn AS ownerName,
+			wadr.sku_code AS skUCode,
+			cws.sku_name AS skuName,
+			wadr.status AS status,
+			wadr.asn_no AS asnNo,
+			wadr.asn_line_no AS asnLineNo,
+			wadr.line_no AS rcvLineNo,
+			wadr.qty_plan_ea,
+			(IF(IFNULL(cwpr.CDPR_QUANTITY, 0) = 0, 0, (wadr.qty_plan_ea / cwpr.CDPR_QUANTITY))) AS qtyPlanUom,
+			wadr.qty_rcv_ea AS qtyRcvEa,
+			wadr.pack_code AS asnPackCode,
+			wadr.uom AS asnUom,
+			cwp.cdpa_format AS asnPackDesc,
+			cwpr.cdpr_desc AS asnUomDesc,
+			wadr.plan_id AS planId,
+			wadr.to_loc AS toLoc,
+			wadr.to_id AS toId,
+			wadr.lot_num AS lotNum,
+			wadr.plan_pa_loc AS planPaLoc,
+			wadr.qc_status AS qcStatus,
+			wadr.is_qc AS isQc,
+			wadr.qc_phase AS qcPhase,
+			wadr.qc_rule AS qcRule,
+			wadr.item_group_code AS itemGroupCode,
+			wadr.so_no AS soNo,
+			wadr.so_line_no AS soLineNo,
+			wadr.cd_type AS cdType,
+			wadr.cd_rcv_id AS cdRcvId,
+			wadr.org_id AS orgId
+		FROM wm_asn_detail_receive wadr
+		LEFT JOIN wm_asn_header wah ON wadr.asn_no = wah.asn_no AND wadr.org_id = wah.org_id
+		LEFT JOIN eb_customer ec ON wadr.owner_code = ec.ebcu_customer_no AND wadr.org_id = ec.org_id
+		LEFT JOIN cd_wh_sku cws ON wadr.owner_code = cws.owner_code AND wadr.sku_code = cws.sku_code AND wadr.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = wadr.pack_code AND cwp.org_id = wadr.org_id
+		LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = wadr.uom AND cwpr.org_id = cwp.org_id
+		LEFT JOIN wm_so_alloc wsa ON wadr.asn_no = wsa.asn_no AND wadr.asn_line_no = wsa.asn_line_no AND wadr.line_no = wsa.rcv_line_no AND wadr.org_id = wsa.org_id
+		LEFT JOIN wm_so_header wsh ON wsa.so_no = wsh.so_no AND wsa.org_id = wsh.org_id
+		WHERE 1 = 1
+		AND wadr.cd_type IS NOT NULL
+		AND wadr.cd_type != ''
+		AND wadr.org_id = #{orgId}
+		<if test="statuss != null and statuss.length > 0">
+			AND wadr.status IN
+			<foreach collection="statuss" item="status" index="status" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		</if>
+		<if test="ownerCodes != null and ownerCodes.length > 0">
+			AND wadr.owner_code IN
+			<foreach collection="ownerCodes" item="ownerCode" index="ownerCode" open="(" separator="," close=")">
+				#{ownerCode}
+			</foreach>
+		</if>
+		<if test="skuCodes != null and skuCodes.length > 0">
+			AND wadr.sku_code IN
+			<foreach collection="skuCodes" item="skuCode" index="skuCode" open="(" separator="," close=")">
+				#{skuCode}
+			</foreach>
+		</if>
+		<if test="asnNo != null and asnNo != ''">
+			AND wadr.asn_no LIKE CONCAT(#{asnNo}, '%')
+		</if>
+		<if test="lineNo != null and lineNo != ''">
+			AND wadr.line_no = #{lineNo}
+		</if>
+		<if test="fmEtaFm != null and fmEtaFm != ''">
+			<![CDATA[ AND wah.fm_eta >= #{fmEtaFm} ]]>
+		</if>
+		<if test="fmEtaTo != null and fmEtaTo != ''">
+			<![CDATA[ AND wah.fm_eta <= #{fmEtaTo} ]]>
+		</if>
+		<if test="toEtaFm != null and toEtaFm != ''">
+			<![CDATA[ AND wah.to_eta >= #{toEtaFm} ]]>
+		</if>
+		<if test="toEtaTo != null and toEtaTo != ''">
+			<![CDATA[ AND wah.to_eta <= #{toEtaTo} ]]>
+		</if>
+		<if test="fmEtdFm != null and fmEtdFm != ''">
+			<![CDATA[ AND wsh.fm_etd >= #{fmEtdFm} ]]>
+		</if>
+		<if test="fmEtdTo != null and fmEtdTo != ''">
+			<![CDATA[ AND wsh.fm_etd <= #{fmEtdTo} ]]>
+		</if>
+		<if test="toEtdFm != null and toEtdFm != ''">
+			<![CDATA[ AND wsh.to_etd >= #{toEtdFm} ]]>
+		</if>
+		<if test="toEtdTo != null and toEtdTo != ''">
+			<![CDATA[ AND wsh.to_etd <= #{toEtdTo} ]]>
+		</if>
+		<if test="soNo != null and soNo != ''">
+			AND wsa.so_no LIKE CONCAT(#{soNo}, '%')
+		</if>
+		<if test="cdType != null and cdType != ''">
+			AND wadr.cd_type = #{cdType}
+		</if>
+		<if test="indirectStatus != null and indirectStatus != ''">
+			AND wadr.status = #{indirectStatus}
+		</if>
+	</select>
+
+	<select id="wmTaskCdSoDetailByIndirectQuery" resultType="com.yunyou.modules.wms.crossDock.entity.BanQinWmTaskCdSoDetailByIndirectQueryEntity">
+		SELECT wsd.so_no AS soNo,
+			wsd.line_no AS lineNO,
+			wsd.owner_code AS ownerCode,
+			wsd.sku_code AS skuCode,
+			ec.ebcu_name_cn AS ownerName,
+			cws.sku_name AS skuName,
+			wsd.cd_type AS cdType,
+			wsd.status AS status,
+			wsd.qty_so_ea AS qtySoEa,
+			wsd.qty_prealloc_ea AS qtyPreallocEa,
+			wsd.qty_alloc_ea AS qtyAllocEa,
+			wsd.qty_pk_ea AS qtyPkEa,
+			wsd.qty_ship_ea AS qtyShipEa,
+		    wsd.org_id AS orgId
+		FROM wm_so_detail wsd
+		LEFT JOIN wm_so_header wsh ON wsd.so_no = wsh.so_no AND wsd.org_id = wsh.org_id
+		LEFT JOIN cd_wh_sku cws ON wsd.sku_code = cws.sku_code AND wsd.owner_code = cws.owner_code AND wsd.org_id = cws.org_id
+		LEFT JOIN eb_customer ec ON ec.ebcu_customer_no = cws.owner_code AND ec.org_id = cws.org_id
+		WHERE 1 = 1
+		<![CDATA[ AND wsd.qty_so_ea - wsd.qty_prealloc_ea - wsd.qty_alloc_ea - wsd.qty_pk_ea - wsd.qty_ship_ea > 0 ]]>
+		AND wsd.cd_type = 'INDIRECT'
+	    AND wsd.org_id = #{orgId}
+		<if test="ownerCodes != null and ownerCodes.length > 0">
+			AND wsd.owner_code IN
+			<foreach collection="ownerCodes" item="ownerCode" index="ownerCode" open="(" separator="," close=")">
+				#{ownerCode}
+			</foreach>
+		</if>
+		<if test="skuCodes != null and skuCodes.length > 0">
+			AND wsd.sku_code IN
+			<foreach collection="skuCodes" item="skuCode" index="skuCode" open="(" separator="," close=")">
+				#{skuCode}
+			</foreach>
+		</if>
+		<if test="fmEtdFm != null and fmEtdFm != ''">
+			<![CDATA[ AND wsh.fm_etd >= #{fmEtdFm} ]]>
+		</if>
+		<if test="fmEtdTo != null and fmEtdTo != ''">
+			<![CDATA[ AND wsh.fm_etd <= #{fmEtdTo} ]]>
+		</if>
+		<if test="toEtdFm != null and toEtdFm != ''">
+			<![CDATA[ AND wsh.to_etd >= #{toEtdFm} ]]>
+		</if>
+		<if test="toEtdTo != null and toEtdTo != ''">
+			<![CDATA[ AND wsh.to_etd <= #{toEtdTo} ]]>
+		</if>
+		<if test="soNo != null and soNo != ''">
+			AND wsd.so_no LIKE CONCAT(#{soNo}, '%')
+		</if>
+	</select>
+	
+	<select id="getCrossDockAsnDetailCountQuery" resultType="com.yunyou.modules.wms.crossDock.entity.BanQinGetCrossDockAsnDetaiCountQueryEntity">
+		SELECT cws.owner_code AS ownerCode,
+			ec.ebcu_name_cn AS ownerName,
+			cws.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cws.org_id AS orgId,
+			(SELECT IFNULL(SUM(will.qty), 0)
+				FROM wm_inv_lot_loc will
+				WHERE cws.owner_code = will.owner_code
+				AND cws.sku_code = will.sku_code
+				AND cws.org_id = will.org_id) AS qty,
+			IFNULL(SUM(wadr.qty_plan_ea), 0) AS qtyPlanEa,
+			IFNULL(COUNT(DISTINCT wadr.asn_no), 0) AS asnNum,
+			MIN(wah.fm_eta) AS fmEta,
+			MAX(wah.to_eta) AS toEta
+		FROM wm_asn_detail_receive wadr
+		LEFT JOIN wm_asn_header wah ON wadr.asn_no = wah.asn_no AND wadr.org_id = wah.org_id
+		LEFT JOIN cd_wh_sku cws ON cws.owner_code = wadr.owner_code AND cws.sku_code = wadr.sku_code AND cws.org_id = wadr.org_id
+		LEFT JOIN eb_customer ec ON cws.owner_code = ec.ebcu_customer_no AND cws.org_id = ec.org_id
+		WHERE 1 = 1
+		AND wah.hold_status = '00'
+		AND wah.status != '90'
+		AND wah.status != '99'
+		AND wah.audit_status != '00'
+		AND wadr.status = '00'
+		AND (wadr.is_qc = 'N' OR (
+		    wadr.is_qc = 'Y' AND wadr.qc_phase = 'RCV' AND (wadr.qc_status IS NULL OR wadr.qc_status = '' OR (
+		        wadr.qc_status = '20' AND wadr.lot_att04 = 'Y'))
+		    ))
+		AND (wadr.cd_type IS NULL OR wadr.cd_type = '')
+		AND cws.is_serial = 'N'
+		AND cws.org_id = #{orgId}
+		<if test="ownerCodes != null and ownerCodes.length > 0">
+			AND cws.owner_code IN
+			<foreach collection="ownerCodes" item="ownerCode" index="ownerCode" open="(" separator="," close=")">
+				#{ownerCode}
+			</foreach>
+		</if>
+		<if test="skuCodes != null and skuCodes.length > 0">
+			AND cws.sku_code IN
+			<foreach collection="skuCodes" item="skuCode" index="skuCode" open="(" separator="," close=")">
+				#{skuCode}
+			</foreach>
+		</if>
+		<if test="asnNo != null and asnNo != ''">
+			AND wadr.asn_no LIKE CONCAT(#{asnNo}, '%')
+		</if>
+		<if test="asnTypes != null and asnTypes.length > 0">
+			AND wah.asn_type IN
+			<foreach collection="asnTypes" item="asnType" index="asnType" open="(" separator="," close=")">
+				#{asnType}
+			</foreach>
+		</if>
+		<if test="fmEtaFm != null and fmEtaFm != ''">
+			<![CDATA[ AND wah.fm_eta >= #{fmEtaFm} ]]>
+		</if>
+		<if test="fmEtaTo != null and fmEtaTo != ''">
+			<![CDATA[ AND wah.fm_eta <= #{fmEtaTo} ]]>
+		</if>
+		<if test="toEtaFm != null and toEtaFm != ''">
+			<![CDATA[ AND wah.to_eta >= #{toEtaFm} ]]>
+		</if>
+		<if test="toEtaTo != null and toEtaTo != ''">
+			<![CDATA[ AND wah.to_eta <= #{toEtaTo} ]]>
+		</if>
+		GROUP BY cws.owner_code, ec.ebcu_name_cn, cws.sku_code, cws.sku_name, cws.org_id
+	</select>
+	
+	<select id="getCrossDockSoDetailCountQuery" resultType="com.yunyou.modules.wms.crossDock.entity.BanQinGetCrossDockSoDetailCountQueryEntity">
+		SELECT cws.owner_code AS ownerCode,
+			ec.ebcu_name_cn AS ownerName,
+			cws.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			cws.org_id AS orgId,
+			(SELECT IFNULL(SUM(will.qty), 0)
+				FROM wm_inv_lot_loc will
+				WHERE cws.owner_code = will.owner_code
+				AND cws.sku_code = will.sku_code
+				AND cws.org_id = will.org_id) AS qty,
+			IFNULL(SUM(wsd.qty_so_ea), 0) AS qtySoEa,
+			IFNULL(COUNT(DISTINCT wsd.so_no), 0) AS soNum,
+			MIN(wsh.fm_etd) AS fmEtd,
+			MAX(wsh.to_etd) AS toEtd
+		FROM wm_so_detail wsd
+		LEFT JOIN wm_so_header wsh ON wsd.so_no = wsh.so_no AND wsd.org_id = wsh.org_id
+		LEFT JOIN cd_wh_sku cws ON cws.owner_code = wsd.owner_code AND cws.sku_code = wsd.sku_code AND cws.org_id = wsd.org_id
+		LEFT JOIN eb_customer ec ON cws.owner_code = ec.ebcu_customer_no AND cws.org_id = ec.org_id
+		WHERE 1 = 1
+		AND wsh.status != '90'
+		AND wsh.status != '99'
+		AND wsh.audit_status != '00'
+		AND wsh.hold_status = '00'
+		AND (wsh.intercept_status = '00' OR wsh.intercept_status = '90')
+		AND wsd.status = '00'
+		AND (wsd.cd_type IS NULL OR wsd.cd_type = '')
+		<![CDATA[ AND wsd.qty_so_ea - wsd.qty_prealloc_ea - wsd.qty_alloc_ea - wsd.qty_pk_ea - wsd.qty_ship_ea > 0 ]]>
+		AND cws.is_serial = 'N'
+		AND cws.org_id = #{orgId}
+		<if test="ownerCodes != null and ownerCodes.length > 0">
+			AND cws.owner_code IN
+			<foreach collection="ownerCodes" item="ownerCode" index="ownerCode" open="(" separator="," close=")">
+				#{ownerCode}
+			</foreach>
+		</if>
+		<if test="skuCodes != null and skuCodes.length > 0">
+			AND cws.sku_code IN
+			<foreach collection="skuCodes" item="skuCode" index="skuCode" open="(" separator="," close=")">
+				#{skuCode}
+			</foreach>
+		</if>
+		<if test="soNo != null and soNo != ''">
+			AND wsd.so_no LIKE CONCAT(#{soNo}, '%')
+		</if>
+		<if test="soTypes != null and soTypes.length > 0">
+			AND wsh.so_type IN
+			<foreach collection="soTypes" item="soType" index="soType" open="(" separator="," close=")">
+				#{soType}
+			</foreach>
+		</if>
+		<if test="fmEtdFm != null and fmEtdFm != ''">
+			<![CDATA[ AND wsh.fm_etd >= #{fmEtdFm} ]]>
+		</if>
+		<if test="fmEtdTo != null and fmEtdTo != ''">
+			<![CDATA[ AND wsh.fm_etd <= #{fmEtdTo} ]]>
+		</if>
+		<if test="toEtdFm != null and toEtdFm != ''">
+			<![CDATA[ AND wsh.to_etd >= #{toEtdFm} ]]>
+		</if>
+		<if test="toEtdTo != null and toEtdTo != ''">
+			<![CDATA[ AND wsh.to_etd <= #{toEtdTo} ]]>
+		</if>
+		GROUP BY cws.owner_code, ec.ebcu_name_cn, cws.sku_code, cws.sku_name, cws.org_id
+		HAVING 1 = 1
+		/*出库商品明细统计，满足条件的行数、订货数*/
+		<if test="soLineNum != null and soLineNum !=''">
+			<![CDATA[ AND COUNT(wsd.line_no) >= #{soLineNum} ]]>
+		</if>
+		<if test="qtySoEa != null and qtySoEa !=''">
+			<![CDATA[ AND IFNULL(SUM(wsd.qty_so_ea), 0) >= #{qtySoEa} ]]>
+		</if>
+	</select>
+	
+	<select id="wmTaskCdByDirectQuery" resultType="com.yunyou.modules.wms.crossDock.entity.BanQinWmTaskCdByDirectQueryEntity">
+		SELECT wadr.owner_code AS ownerCode,
+			ec.ebcu_name_cn AS ownerName,
+			wadr.sku_code AS skuCode,
+			cws.sku_name AS skuName,
+			wadr.status AS status,
+			wadr.asn_no AS asnNo,
+			wadr.asn_line_no AS asnLineNo,
+			wadr.line_no AS rcvLineNo,
+			wadr.qty_plan_ea AS qtyPlanEa,
+			IF(IFNULL(cwpr.cdpr_quantity, 0) = 0, 0, (wadr.qty_plan_ea / cwpr.cdpr_quantity)) AS qtyPlanUom,
+			wadr.qty_rcv_ea AS qtyRcvEa,
+			wadr.pack_code AS asnPackCode,
+			wadr.uom AS asnUom,
+			cwp.cdpa_format AS asnPackDesc,
+			cwpr.cdpr_desc AS asnUomDesc,
+			wadr.plan_id AS planId,
+			wadr.to_loc AS toLoc,
+			wadr.to_id AS toId,
+			wadr.lot_num AS lotNum,
+			wadr.plan_pa_loc AS planPaLoc,
+			wadr.qc_status AS qcStatus,
+			wadr.is_qc AS isQc,
+			wadr.qc_phase AS qcPhase,
+			wadr.qc_rule AS qcRule,
+			wadr.item_group_code AS itemGroupCode,
+			wadr.so_no AS soNo,
+			wadr.so_line_no AS soLineNo,
+			wadr.cd_type AS cdType,
+			wadr.cd_rcv_id AS cdRcvId,
+			wadr.org_id AS orgId
+		FROM wm_asn_detail_receive wadr
+		LEFT JOIN wm_asn_header wah ON wadr.asn_no = wah.asn_no AND wadr.org_id = wah.org_id
+		LEFT JOIN eb_customer ec ON wadr.owner_code = ec.ebcu_customer_no AND wadr.org_id = ec.org_id
+		LEFT JOIN cd_wh_sku cws ON wadr.owner_code = cws.owner_code AND wadr.sku_code = cws.sku_code AND wadr.org_id = cws.org_id
+		LEFT JOIN cd_wh_package cwp ON cwp.cdpa_code = wadr.pack_code AND cwp.org_id = wadr.org_id
+		LEFT JOIN cd_wh_package_relation cwpr ON cwpr.cdpr_cdpa_pm_code = cwp.pm_code AND cwpr.cdpr_unit_level = wadr.uom AND cwpr.org_id = cwp.org_id
+		LEFT JOIN wm_so_detail wsd ON wadr.so_no = wsd.so_no AND wadr.so_line_no = wsd.line_no AND wadr.org_id = wsd.org_id
+		LEFT JOIN wm_so_header wsh ON wsd.so_no = wsh.so_no AND wsd.org_id = wsh.org_id
+		WHERE 1 = 1
+		AND wadr.cd_type is not null
+	    AND wadr.cd_type != ''
+		AND wadr.org_id = #{orgId}
+		<if test="statuss != null and statuss.length > 0">
+			AND wadr.status IN
+			<foreach collection="statuss" item="status" index="status" open="(" separator="," close=")">
+				#{status}
+			</foreach>
+		</if>
+		<if test="ownerCodes != null and ownerCodes.length > 0">
+			AND wadr.owner_code IN
+			<foreach collection="ownerCodes" item="ownerCode" index="ownerCode" open="(" separator="," close=")">
+				#{ownerCode}
+			</foreach>
+		</if>
+		<if test="skuCodes != null and skuCodes.length > 0">
+			AND wadr.sku_code IN
+			<foreach collection="skuCodes" item="skuCode" index="skuCode" open="(" separator="," close=")">
+				#{skuCode}
+			</foreach>
+		</if>
+		<if test="asnNo != null and asnNo != ''">
+			AND wadr.asn_no LIKE CONCAT(#{asnNo}, '%')
+		</if>
+		<if test="lineNo != null and lineNo != ''">
+			AND wadr.line_no = #{lineNo}
+		</if>
+		<if test="fmEtaFm != null and fmEtaFm != ''">
+			<![CDATA[ AND wah.fm_eta >= #{fmEtaFm} ]]>
+		</if>
+		<if test="fmEtaTo != null and fmEtaTo != ''">
+			<![CDATA[ AND wah.fm_eta <= #{fmEtaTo} ]]>
+		</if>
+		<if test="toEtaFm != null and toEtaFm != ''">
+			<![CDATA[ AND wah.to_eta >= #{toEtaFm} ]]>
+		</if>
+		<if test="toEtaTo != null and toEtaTo != ''">
+			<![CDATA[ AND wah.to_eta <= #{toEtaTo} ]]>
+		</if>
+		<if test="fmEtdFm != null and fmEtdFm != ''">
+			<![CDATA[ AND wsh.fm_etd >= #{fmEtdFm} ]]>
+		</if>
+		<if test="fmEtdTo != null and fmEtdTo != ''">
+			<![CDATA[ AND wsh.fm_etd <= #{fmEtdTo} ]]>
+		</if>
+		<if test="toEtdFm != null and toEtdFm != ''">
+			<![CDATA[ AND wsh.to_etd >= #{toEtdFm} ]]>
+		</if>
+		<if test="toEtdTo != null and toEtdTo != ''">
+			<![CDATA[ AND wsh.to_etd <= #{toEtdTo} ]]>
+		</if>
+		<if test="soNo != null and soNo != ''">
+			AND wsd.so_no LIKE CONCAT(#{soNo}, '%')
+		</if>
+		<if test="cdType != null and cdType != ''">
+			AND wadr.cd_type = #{cdType}
+		</if>
+	</select>
+
+</mapper>

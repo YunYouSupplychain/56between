@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.mapper.RoleMapper">
+
+    <resultMap id="roleResult" type="com.yunyou.modules.sys.entity.Role">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="enname" column="enname"/>
+        <result property="roleType" column="roleType"/>
+        <result property="remarks" column="remarks"/>
+        <result property="useable" column="useable"/>
+        <result property="office.name" column="office.name"/>
+        <result property="office.id" column="office.id"/>
+        <result property="sysData" column="sysData"/>
+        <collection property="menuList" ofType="com.yunyou.modules.sys.entity.Menu">
+            <id property="id" column="menuList.id"/>
+        </collection>
+        <collection property="dataRuleList" ofType="com.yunyou.modules.sys.entity.DataRule">
+            <id property="id" column="dataRuleList.id"/>
+        </collection>
+    </resultMap>
+
+    <sql id="roleColumns">
+        a.id,
+    	a.office_id AS "office.id",
+    	a.name,
+    	a.enname,
+    	a.role_type AS roleType,
+		a.remarks,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+    	o.name AS "office.name",
+    	o.id AS "office.id",
+    	o.code,
+    	a.useable AS useable,
+    	a.is_sys AS sysData
+    </sql>
+
+    <select id="get" resultMap="roleResult">
+        SELECT
+			<include refid="roleColumns"/>,
+			rm.menu_id AS "menuList.id",
+			rd.datarule_id AS "dataRuleList.id"
+        FROM sys_role a
+        LEFT JOIN sys_office o ON o.id = a.office_id
+        LEFT JOIN sys_role_menu rm ON rm.role_id = a.id
+        LEFT JOIN sys_role_datarule rd ON rd.role_id = a.id
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="getByName" resultType="com.yunyou.modules.sys.entity.Role">
+        SELECT
+        <include refid="roleColumns"/>
+        FROM sys_role a
+        JOIN sys_office o ON o.id = a.office_id
+        WHERE a.name = #{name} AND a.del_flag = #{DEL_FLAG_NORMAL}
+    </select>
+
+    <select id="getByEnname" resultType="com.yunyou.modules.sys.entity.Role">
+        SELECT
+        <include refid="roleColumns"/>
+        FROM sys_role a
+        JOIN sys_office o ON o.id = a.office_id
+        WHERE a.enname = #{enname} AND a.del_flag = #{DEL_FLAG_NORMAL}
+    </select>
+
+    <select id="findList" resultMap="roleResult">
+        SELECT <!-- DISTINCT -->
+        <include refid="roleColumns"/>,
+        rd.datarule_id AS "dataRuleList.id"
+        FROM sys_role a
+        LEFT JOIN sys_office o ON o.id = a.office_id
+        LEFT JOIN sys_user_role ur ON ur.role_id = a.id
+        LEFT JOIN sys_user u ON u.id = ur.user_id
+        LEFT JOIN sys_role_datarule rd ON rd.role_id = a.id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.useable=#{useable}
+        <if test="user != null and user.id != null and user.id != ''">
+            AND u.id = #{user.id}
+        </if>
+        <if test="user != null and user.loginName != null and user.loginName != ''">
+            AND u.login_name = #{user.loginName}
+        </if>
+        <if test="name != null and name != ''">
+            AND a.name like CONCAT('%', #{name}, '%')
+        </if>
+        <if test="enname != null and enname != ''">
+            AND a.enname like CONCAT('%', #{enname}, '%')
+        </if>
+        <!-- 数据范围过滤 -->
+        ${dataScope}
+        ORDER BY o.code, a.name
+    </select>
+
+    <select id="findAllList" resultType="com.yunyou.modules.sys.entity.Role">
+        SELECT
+        <include refid="roleColumns"/>
+        FROM sys_role a
+        LEFT JOIN sys_office o ON o.id = a.office_id
+        WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+        ORDER BY o.code, a.name
+    </select>
+
+    <insert id="insert">
+        INSERT INTO sys_role (
+            id,
+            office_id,
+            name,
+            enname,
+            role_type,
+            create_by,
+            create_date,
+            update_by,
+            update_date,
+            remarks,
+            del_flag,
+            is_sys,
+            useable
+        ) VALUES (
+			#{id},
+			#{office.id},
+			#{name},
+			#{enname},
+			#{roleType},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{sysData},
+			#{useable}
+		)
+    </insert>
+
+    <update id="update">
+        UPDATE sys_role
+        SET office_id   = #{office.id},
+            name        = #{name},
+            enname      = #{enname},
+            role_type   = #{roleType},
+            update_by   = #{updateBy.id},
+            update_date = #{updateDate},
+            remarks     = #{remarks},
+            is_sys      = #{sysData},
+            useable     = #{useable}
+        WHERE id = #{id}
+    </update>
+
+    <update id="deleteByLogic">
+        UPDATE sys_role
+        SET del_flag = #{DEL_FLAG_DELETE}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE
+        FROM sys_role
+        WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteRoleMenu">
+        DELETE
+        FROM sys_role_menu
+        WHERE role_id = #{id}
+    </delete>
+
+    <insert id="insertRoleMenu">
+        INSERT INTO sys_role_menu(role_id, menu_id)
+        <foreach collection="menuList" item="menu" separator=" union all ">
+            SELECT #{id}, #{menu.id} ${dual}
+        </foreach>
+    </insert>
+
+    <delete id="deleteRoleDataRule">
+        DELETE
+        FROM sys_role_datarule
+        WHERE role_id = #{id}
+    </delete>
+
+    <insert id="insertRoleDataRule">
+        INSERT INTO sys_role_datarule(role_id, datarule_id)
+        <foreach collection="dataRuleList" item="dataRule" separator=" union all ">
+            SELECT #{id}, #{dataRule.id} ${dual}
+        </foreach>
+    </insert>
+
+</mapper>

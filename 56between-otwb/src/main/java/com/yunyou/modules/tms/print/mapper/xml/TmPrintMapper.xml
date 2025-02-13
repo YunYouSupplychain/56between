@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.print.mapper.TmPrintMapper">
+
+    <select id="getPrintRepairOrder" resultType="com.yunyou.modules.tms.print.entity.RepairOrder">
+        SELECT a.repair_no             AS "repairNo",
+               a.order_time            AS "orderTime",
+               a.car_no                AS "carNo",
+               a.driver                AS "driver",
+               td.name                 AS "driverName",
+               a.need_repair_item      AS "needRepairItem",
+               a.repair_suggestion     AS "repairSuggestion",
+               a.amount                AS "totalAmount",
+               a.work_hour             AS "totalWorkHour",
+               a.work_hour_cost        AS "totalWorkHourCost",
+               a.total_amount          AS "totalCost",
+               b.repair_code           AS "repairCode",
+               ttor.transport_obj_name AS "repairName",
+               b.sku_code              AS "skuCode",
+               ti.sku_name             AS "skuName",
+               sdv.label               AS "skuModel",
+               b.qty                   AS "qty",
+               b.price                 AS "price",
+               b.amount                AS "amount",
+               b.work_hour             AS "workHour",
+               b.work_hour_cost        AS "workHourCost",
+               b.total_amount          AS "cost",
+               a.org_id                AS "orgId"
+        FROM tm_repair_order_header a
+            LEFT JOIN tm_repair_order_detail b ON a.repair_no = b.repair_no AND a.org_id = b.org_id
+            LEFT JOIN tm_driver td ON a.driver = td.code AND a.base_org_id = td.org_id
+            LEFT JOIN tm_transport_obj ttor ON b.repair_code = ttor.transport_obj_code AND b.base_org_id = ttor.org_id
+            LEFT JOIN tm_item ti ON b.owner_code = ti.owner_code AND b.sku_code = ti.sku_code AND b.base_org_id = ttor.org_id
+            LEFT JOIN sys_dict_type sdt ON sdt.type = 'TMS_SKU_MODEL'
+            LEFT JOIN sys_dict_value sdv ON sdt.id = sdv.dict_type_id AND sdv.value = b.sku_model
+        WHERE a.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY a.repair_no
+    </select>
+
+    <select id="getPrintTransportEnvelope" resultType="com.yunyou.modules.tms.print.entity.TransportEnvelope">
+        SELECT ttoh.transport_no                         AS "transportNo",
+               DATE_FORMAT(ttoh.order_time, '%Y年%m月%d日') AS "orderTime",
+               ttoh.ship_code                            AS "shipCode",
+               ttoc1.transport_obj_name                  AS "shipName",
+               ttoh.consignee_address                    AS "address",
+               ttoh.consignee                            AS "consignee",
+               ttoh.consignee_tel                        AS "tel",
+               ttoh.consignee_code                       AS "consigneeCode",
+               ttoc.transport_obj_name                   AS "consigneeName",
+               ttod.total_ea_qty                         AS "qty",
+               ttod.total_weight                         AS "weight",
+               ttod.total_cubic                          AS "cubic",
+               ttod.receipt_count                        AS "receiptCount"
+        FROM tm_transport_order_header ttoh
+            LEFT JOIN tm_transport_order_delivery ttod ON ttoh.transport_no = ttod.transport_no AND ttoh.org_id = ttod.org_id
+            LEFT JOIN tm_transport_obj ttoc ON ttoh.consignee_code = ttoc.transport_obj_code AND ttoh.base_org_id = ttoc.org_id
+            LEFT JOIN tm_transport_obj ttoc1 ON ttoh.ship_code = ttoc1.transport_obj_code AND ttoh.base_org_id = ttoc1.org_id
+        WHERE ttoh.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY ttoh.transport_no
+    </select>
+
+    <select id="getPrintTransportAgreement" resultType="com.yunyou.modules.tms.print.entity.TransportAgreement">
+        SELECT tdoh.dispatch_no         AS "dispatchNo",
+               tdoh.dispatch_time       AS "dispatchTime",
+               tdoh.carrier_code        AS "carrierCode",
+               ttoc1.transport_obj_name AS "carrierName",
+               tdoh.car_no              AS "carNo",
+               tdoh.driver              AS "driver",
+               td.name                  AS "driverName",
+               tdoh.driver_tel          AS "driverTel",
+               ttoh.transport_no        AS "transportNo",
+               ttoh.customer_code       AS "customerCode",
+               ttoc3.transport_obj_name AS "customerName",
+               ttos.sku_code            AS "skuCode",
+               ti.sku_name              AS "skuName",
+               ttos.qty                 AS "qty",
+               ttos.weight              AS "weight",
+               ttos.cubic               AS "cubic",
+               sdv.label                AS "deliverMethod",
+               ttoh.consignee_code      AS "consigneeCode",
+               ttoc2.transport_obj_name AS "consigneeName",
+               ttoh.consignee_address   AS "consigneeAddress",
+               ttoh.consignee           AS "consignee",
+               ttoh.consignee_tel       AS "consigneeTel",
+               ttod.receipt_count       AS "receiptCount",
+               tdoh.org_id              AS "orgId"
+        FROM tm_dispatch_order_header tdoh
+            INNER JOIN tm_transport_order_header ttoh ON EXISTS(SELECT 1 FROM tm_dispatch_order_label tdol WHERE tdoh.dispatch_no = tdol.dispatch_no AND tdol.receive_ship = 'R' AND tdoh.base_org_id = tdol.base_org_id AND ttoh.transport_no = tdol.transport_no AND ttoh.base_org_id = tdol.base_org_id)
+            LEFT JOIN tm_transport_order_sku ttos ON ttoh.transport_no = ttos.transport_no AND ttoh.org_id = ttos.org_id
+            LEFT JOIN tm_transport_order_delivery ttod ON ttoh.transport_no = ttod.transport_no AND ttoh.org_id = ttod.org_id
+            LEFT JOIN tm_transport_obj ttoc1 ON tdoh.carrier_code = ttoc1.transport_obj_code AND tdoh.base_org_id = ttoc1.org_id
+            LEFT JOIN tm_transport_obj ttoc2 ON ttoh.consignee_code = ttoc2.transport_obj_code AND tdoh.base_org_id = ttoc2.org_id
+            LEFT JOIN tm_transport_obj ttoc3 ON ttoh.customer_code = ttoc3.transport_obj_code AND ttoh.base_org_id = ttoc3.org_id
+            LEFT JOIN tm_driver td ON tdoh.driver = td.code AND tdoh.base_org_id = td.org_id
+            LEFT JOIN tm_item ti ON ttos.owner_code = ti.owner_code AND ttos.sku_code = ti.sku_code AND ttos.base_org_id = ti.org_id
+            LEFT JOIN sys_dict_type sdt ON sdt.type = 'TMS_DELIVERY_METHOD'
+            LEFT JOIN sys_dict_value sdv ON sdt.id = sdv.dict_type_id AND sdv.value = ttoh.delivery_method
+        WHERE tdoh.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getPrintGoodsList" resultType="com.yunyou.modules.tms.print.entity.DispatchGoodsList">
+        SELECT tdoh.dispatch_no            AS "dispatchNo",
+               tdoh.dispatch_time          AS "dispatchTime",
+               tdoh.carrier_code           AS "carrierCode",
+               ttoc1.transport_obj_name    AS "carrierName",
+               tdoh.car_no                 AS "vehicleNo",
+               td.name                     AS "driver",
+               ttoh.customer_code          AS "customerCode",
+               tto.transport_obj_name      AS "customerName",
+               ttos.sku_code               AS "skuCode",
+               ti.sku_name                 AS "skuName",
+               SUM(IFNULL(ttos.qty, 0))    AS "qty",
+               SUM(IFNULL(ttos.weight, 0)) AS "weight",
+               ttoh.consignee_address      AS "consigneeAddress"
+        FROM tm_dispatch_order_header tdoh
+             INNER JOIN tm_transport_order_header ttoh ON tdoh.base_org_id = ttoh.base_org_id
+        AND EXISTS(SELECT 1 FROM tm_dispatch_order_label tdol WHERE tdoh.dispatch_no = tdol.dispatch_no AND tdoh.org_id = tdol.org_id AND tdol.receive_ship = 'R' AND ttoh.transport_no = tdol.transport_no AND ttoh.base_org_id = tdol.base_org_id)
+             LEFT JOIN tm_transport_order_sku ttos ON ttoh.transport_no = ttos.transport_no AND ttoh.org_id = ttos.org_id
+             LEFT JOIN tm_transport_obj tto ON ttoh.customer_code = tto.transport_obj_code AND ttoh.base_org_id = tto.org_id
+             LEFT JOIN tm_transport_obj ttoc1 ON tdoh.carrier_code = ttoc1.transport_obj_code AND tdoh.base_org_id = ttoc1.org_id
+             LEFT JOIN tm_item ti ON ttos.owner_code = ti.owner_code AND ttos.sku_code = ti.sku_code AND ttos.base_org_id = ti.org_id
+             LEFT JOIN tm_driver td ON tdoh.driver = td.code AND tdoh.base_org_id = td.org_id
+        WHERE tdoh.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY tdoh.dispatch_no, ttoh.customer_code, ttos.sku_code, ttoh.consignee_address
+        ORDER BY tdoh.dispatch_no, ttos.sku_code
+    </select>
+
+    <select id="getPrintStoreDelivery" resultType="com.yunyou.modules.tms.print.entity.StoreDelivery">
+        SELECT
+            tdoh.dispatch_no AS dispatchNo,
+            ttoh.consignee_code AS consigneeCode,
+            tto.transport_obj_name AS consigneeName,
+            tto.address AS consigneeAddress,
+            ttoh.principal_code AS supplierCode,
+            sup.transport_obj_name AS supplierName,
+            ttoh.customer_no AS customerNo,
+            DATE_FORMAT(ttoh.order_time, '%Y-%m-%d') AS orderDateStr,
+            ttos.sku_code AS skuCode,
+            ti.sku_name AS skuName,
+            IFNULL(ttos.def6, 0) AS boxQty,
+            ttos.qty AS actQty,
+            IFNULL(ttos.qty, 0) AS orderQty,
+            ttoh.consignee AS contactName,
+            ttoh.consignee_tel AS contactTel,
+            tdoh.car_no AS carNo,
+            td.name AS driverName,
+            ttos.def10 AS tareWeight,
+            ti.def1 AS skuDef1,
+            ttoh.def7 AS asnOrderType
+        FROM
+        tm_dispatch_order_header tdoh
+        LEFT JOIN tm_dispatch_order_label tdol ON tdoh.dispatch_no = tdol.dispatch_no AND tdoh.base_org_id = tdol.base_org_id AND tdol.receive_ship = 'S'
+        LEFT JOIN tm_transport_order_label ttol ON tdol.transport_no = ttol.transport_no AND tdol.label_no = ttol.label_no AND tdol.org_id = ttol.org_id
+        LEFT JOIN tm_transport_order_header ttoh ON tdol.transport_no = ttoh.transport_no AND tdol.base_org_id = ttoh.base_org_id
+        LEFT JOIN tm_transport_order_sku ttos ON ttol.transport_no = ttos.transport_no AND ttol.org_id = ttos.org_id AND ttol.owner_code = ttos.owner_code AND ttol.sku_code = ttos.sku_code AND ttol.line_no = ttos.line_no
+        LEFT JOIN tm_transport_obj tto ON ttoh.consignee_code = tto.transport_obj_code AND ttoh.base_org_id = tto.org_id
+        LEFT JOIN tm_transport_obj sup ON ttoh.principal_code = sup.transport_obj_code AND ttoh.base_org_id = sup.org_id
+        LEFT JOIN tm_item ti ON ttos.owner_code = ti.owner_code AND ttos.sku_code = ti.sku_code AND ttos.base_org_id = ti.org_id
+        LEFT JOIN tm_driver td ON tdoh.driver = td.code AND tdoh.base_org_id = td.org_id
+        WHERE 1 = 1
+        AND ttoh.order_type IN ('17', '19')
+        AND tdoh.id IN
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        order by
+        tdoh.dispatch_no, ttoh.consignee_code, ttoh.customer_no, ttos.sku_code+0
+    </select>
+
+    <select id="getPrintStoreCheckAcceptOrder" resultType="com.yunyou.modules.tms.print.entity.StoreCheckAcceptOrderReport">
+        SELECT
+            CONCAT( tdoh.car_no, '--', ttoh.consignee_code, '--', date_format( tdoh.dispatch_time, '%Y%m%d' ) ) AS ysNo,
+            tdol.store_dispatch_no AS storeDispatchCode,
+            tdoh.dispatch_no AS orderCode,
+            tdoh.car_no AS carNum,
+            td.name AS driver,
+            date_sub( date_format( tdoh.dispatch_time, '%Y-%m-%d' ), INTERVAL - 1 DAY ) AS dispatchDate,
+            ttoh.consignee_code AS consigneeCode,
+            tto.transport_obj_name AS consigneeName,
+            tto.address AS consigneeAddress,
+            ttoh.consignee_tel AS consigneeTel,
+            ttoh.def1 AS sorderNo,
+            ttoh.po_no AS poNo,
+            ttoh.principal_code AS supplierCode,
+            LEFT ( sup.transport_obj_name, 5 ) AS supplierName,
+            ttos.sku_code AS skuCode,
+            ti.sku_name AS skuName,
+            ttos.lot_info AS lotInfo,
+            IFNULL(ttos.def8, 0) AS orderQty,
+            IFNULL(ttos.cs_quantity, 1) AS mopQty,
+            ttos.qty AS qty,
+            IFNULL(ttos.def6, 0) AS boxQty,
+            tib.barcode AS skuBarCode,
+            IFNULL( ttos.def4, '' ) AS classType,
+            ti.remarks,
+            ti.def1,
+            CASE ttos.def3
+            WHEN 'NT' THEN
+            '常温'
+            WHEN 'TT' THEN
+            '恒温'
+            WHEN 'RT' THEN
+            '冷藏'
+            WHEN 'FT' THEN
+            '冷冻' ELSE ''
+            END AS skuTempLayer,
+            CONCAT(
+            CASE
+            ttos.def3
+            WHEN 'FT' THEN
+            '1'
+            WHEN 'RT' THEN
+            '2'
+            WHEN 'NT' THEN
+            '3' ELSE ''
+            END,
+            CASE
+            ttos.def4
+            WHEN '蔬果课' THEN
+            '10'
+            WHEN '水产课' THEN
+            '11'
+            WHEN '肉品课' THEN
+            '12'
+            WHEN '熟食课' THEN
+            '13'
+            WHEN '烘焙课' THEN
+            '14'
+            WHEN '休闲吧课' THEN
+            '15'
+            WHEN '米面点课' THEN
+            '16'
+            WHEN '日配课' THEN
+            '20' ELSE ''
+            END,
+            '0',
+            tdoh.dispatch_no
+            ) AS barNo
+        FROM
+        tm_dispatch_order_header tdoh
+        LEFT JOIN tm_dispatch_order_label tdol ON tdoh.dispatch_no = tdol.dispatch_no AND tdoh.base_org_id = tdol.base_org_id AND tdol.receive_ship = 'S'
+        LEFT JOIN tm_transport_order_label ttol ON tdol.transport_no = ttol.transport_no AND tdol.label_no = ttol.label_no AND tdol.org_id = ttol.org_id
+        LEFT JOIN tm_transport_order_header ttoh ON tdol.transport_no = ttoh.transport_no AND tdol.base_org_id = ttoh.base_org_id
+        LEFT JOIN tm_transport_order_sku ttos ON ttol.transport_no = ttos.transport_no AND ttol.org_id = ttos.org_id AND ttol.owner_code = ttos.owner_code AND ttol.sku_code = ttos.sku_code AND ttol.line_no = ttos.line_no
+        LEFT JOIN tm_transport_obj tto ON ttoh.consignee_code = tto.transport_obj_code AND ttoh.base_org_id = tto.org_id
+        LEFT JOIN tm_transport_obj sup ON ttoh.principal_code = sup.transport_obj_code AND ttoh.base_org_id = sup.org_id
+        LEFT JOIN tm_item ti ON ttos.owner_code = ti.owner_code AND ttos.sku_code = ti.sku_code AND ttos.base_org_id = ti.org_id
+        LEFT JOIN tm_item_barcode tib ON ti.owner_code = tib.owner_code AND ti.sku_code = tib.sku_code and ti.org_id = tib.org_id and tib.is_default = 'Y'
+        LEFT JOIN tm_driver td ON tdoh.driver = td.code AND tdoh.base_org_id = td.org_id
+        WHERE 1 = 1
+        AND ttoh.order_type IN
+        <foreach collection="types" item="type" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+        AND tdoh.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY
+            tdoh.dispatch_time,
+            tdoh.car_no,
+            td.name,
+            ttoh.consignee_code,
+            tto.transport_obj_name,
+            tto.address,
+            ttoh.consignee_tel,
+            ttoh.def1,
+            ttoh.po_no,
+            ttoh.principal_code,
+            sup.transport_obj_name,
+            ttos.sku_code,
+            ti.sku_name,
+            ttos.lot_info,
+            ttos.qty,
+            ttos.def6,
+            ttos.def8,
+            ttos.cs_quantity,
+            ti.remarks,
+            ti.def1,
+            ttos.def3,
+            ttos.def4,
+            tdoh.dispatch_no,
+            tdol.store_dispatch_no
+        ORDER BY
+            tdoh.dispatch_no,
+            ttoh.consignee_code+0,
+            ttos.def4,
+            ttos.def3,
+            ttoh.principal_code+0,
+            ttoh.po_no+0,
+            ttos.sku_code+0
+    </select>
+
+    <select id="getPrintStoreCheckAcceptOrderPAL" resultType="com.yunyou.modules.tms.print.entity.StoreCheckAcceptOrderReport">
+        SELECT
+            tdoh.dispatch_no AS orderCode,
+            tdoh.car_no AS carNum,
+            td.name AS driver,
+            date_sub( date_format( tdoh.dispatch_time, '%Y-%m-%d' ), INTERVAL - 1 DAY ) AS dispatchDate,
+            ttoh.consignee_code AS consigneeCode,
+            tto.transport_obj_name AS consigneeName,
+            tto.address AS consigneeAddress,
+            ttoh.consignee_tel AS consigneeTel,
+            ttoh.def1 AS sorderNo,
+            ttoh.principal_code AS supplierCode,
+            ttos.def1 AS palletNo,
+            ttos.def2 AS frameNo,
+            ttos.sku_code AS skuCode,
+            ti.sku_name AS skuName,
+            IFNULL( ttos.cs_quantity, 1 ) AS mopQty,
+            ttos.qty AS qty,
+            IFNULL(ttos.def6, 0) AS boxQty,
+            tib.barcode AS skuBarCode,
+            CONCAT( tdoh.car_no, '--', ttoh.consignee_code, '--', date_format( tdoh.dispatch_time, '%Y%m%d' ) ) AS ysNo,
+            LEFT ( sup.transport_obj_name, 5 ) AS supplierName,
+            IFNULL( ttos.def4, '' ) AS classType,
+            CASE
+            ttos.def3
+            WHEN 'NT' THEN
+            '常温'
+            WHEN 'TT' THEN
+            '恒温'
+            WHEN 'RT' THEN
+            '冷藏'
+            WHEN 'FT' THEN
+            '冷冻' ELSE ''
+            END AS skuTempLayer,
+            ttos.lot_info AS lotInfo,
+            ttoh.po_no AS poNo
+        FROM
+        tm_dispatch_order_header tdoh
+        LEFT JOIN tm_dispatch_order_label tdol ON tdoh.dispatch_no = tdol.dispatch_no AND tdoh.base_org_id = tdol.base_org_id AND tdol.receive_ship = 'S'
+        LEFT JOIN tm_transport_order_label ttol ON tdol.transport_no = ttol.transport_no AND tdol.label_no = ttol.label_no AND tdol.org_id = ttol.org_id
+        LEFT JOIN tm_transport_order_header ttoh ON tdol.transport_no = ttoh.transport_no AND tdol.base_org_id = ttoh.base_org_id
+        LEFT JOIN tm_transport_order_sku ttos ON ttol.transport_no = ttos.transport_no AND ttol.org_id = ttos.org_id AND ttol.owner_code = ttos.owner_code AND ttol.sku_code = ttos.sku_code AND ttol.line_no = ttos.line_no
+        LEFT JOIN tm_transport_obj tto ON ttoh.consignee_code = tto.transport_obj_code AND ttoh.base_org_id = tto.org_id
+        LEFT JOIN tm_transport_obj sup ON ttoh.principal_code = sup.transport_obj_code AND ttoh.base_org_id = sup.org_id
+        LEFT JOIN tm_item ti ON ttos.owner_code = ti.owner_code AND ttos.sku_code = ti.sku_code AND ttos.base_org_id = ti.org_id
+        LEFT JOIN tm_item_barcode tib ON ti.owner_code = tib.owner_code AND ti.sku_code = tib.sku_code and ti.org_id = tib.org_id and tib.is_default = 'Y'
+        LEFT JOIN tm_driver td ON tdoh.driver = td.code AND tdoh.base_org_id = td.org_id
+        WHERE 1 = 1
+        AND ttoh.order_type IN ('15')
+        AND tdoh.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY
+            tdoh.dispatch_time,
+            tdoh.car_no,
+            td.name,
+            ttoh.consignee_code,
+            tto.transport_obj_name,
+            tto.address,
+            ttoh.consignee_tel,
+            ttoh.def1,
+            ttoh.po_no,
+            ttoh.principal_code,
+            ttos.def1,
+            ttos.def2,
+            sup.transport_obj_name,
+            ttos.sku_code,
+            ti.sku_name,
+            ttos.lot_info,
+            ttos.qty,
+            ttos.def6,
+            ttos.cs_quantity,
+            ttos.def3,
+            ttos.def4,
+            tdoh.dispatch_no
+        ORDER BY
+            tdoh.dispatch_no,
+            ttoh.consignee_code,
+            ttos.def1,
+            ttos.def4,
+            ttos.def2,
+            ttos.def3,
+            ttoh.po_no,
+            ttoh.principal_code,
+            ttos.sku_code
+    </select>
+
+    <select id="getPrintTicketBook" resultType="com.yunyou.modules.tms.print.entity.TicketBook">
+        select
+            tdoh.dispatch_no AS dispatchNo,
+            td.name AS driverName,
+            tdoh.car_no AS carNo,
+            tdoh.shift AS shift,
+            tdoh.platform AS platform,
+            tdoh.dispatch_time AS dispatchTime,
+            ttoh.consignee_code AS consigneeCode,
+            tto.transport_obj_name AS consigneeName,
+            ttoh.principal_code AS supplierCode,
+            sup.transport_obj_name AS supplierName,
+            tdoh.carrier_code  AS carrierCode,
+            car.transport_obj_name AS carrierName,
+            ttoh.customer_no AS customerNo,
+            tdol.store_dispatch_no AS storeDispatchNo,
+            sum(IFNULL(ttos.def6, 0)) as shipBoxQty,
+            1 AS ticketQty
+        FROM
+        tm_dispatch_order_header tdoh
+        LEFT JOIN tm_dispatch_order_label tdol ON tdoh.dispatch_no = tdol.dispatch_no AND tdoh.base_org_id = tdol.base_org_id AND tdol.receive_ship = 'S'
+        LEFT JOIN tm_transport_order_label ttol ON tdol.transport_no = ttol.transport_no AND tdol.label_no = ttol.label_no AND tdol.org_id = ttol.org_id
+        LEFT JOIN tm_transport_order_header ttoh ON tdol.transport_no = ttoh.transport_no AND tdol.base_org_id = ttoh.base_org_id
+        LEFT JOIN tm_transport_order_sku ttos ON ttol.transport_no = ttos.transport_no AND ttol.org_id = ttos.org_id AND ttol.owner_code = ttos.owner_code AND ttol.sku_code = ttos.sku_code AND ttol.line_no = ttos.line_no
+        LEFT JOIN tm_transport_obj tto ON ttoh.consignee_code = tto.transport_obj_code AND ttoh.base_org_id = tto.org_id
+        LEFT JOIN tm_transport_obj sup ON ttoh.principal_code = sup.transport_obj_code AND ttoh.base_org_id = sup.org_id
+        LEFT JOIN tm_transport_obj car ON tdoh.carrier_code = car.transport_obj_code AND tdoh.base_org_id = car.org_id
+        LEFT JOIN tm_driver td ON tdoh.driver = td.code AND tdoh.base_org_id = td.org_id
+        WHERE ttoh.order_type IN ('17', '19')
+        AND tdoh.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY tdoh.dispatch_no, td.name, tdoh.car_no, tdoh.shift, tdoh.platform,
+            tdoh.dispatch_time, ttoh.consignee_code, tto.transport_obj_name,
+            ttoh.principal_code, sup.transport_obj_name,
+            tdoh.carrier_code, car.transport_obj_name,
+            ttoh.customer_no, tdol.store_dispatch_no
+        ORDER BY tdoh.dispatch_no, ttoh.consignee_code, ttoh.principal_code, ttoh.customer_no
+    </select>
+
+    <select id="getPrintDispatchHandover" resultType="com.yunyou.modules.tms.print.entity.DispatchHandoverReport">
+        SELECT
+            tdoh.car_no AS carNo,
+            tdoh.driver AS driver,
+            td.name AS driverName,
+            tv.vehicle_type AS carModel,
+            tdoh.carrier_code AS carrierCode,
+            car.transport_obj_name AS carrierName,
+            ttoh.customer_code AS customerCode,
+            ttoh.consignee_code AS consigneeCode,
+            tto.transport_obj_name AS consigneeName,
+            sum(IFNULL(ttos.def6, 0)) AS boxQty
+        FROM
+        tm_dispatch_order_header tdoh
+        LEFT JOIN tm_dispatch_order_label tdol ON tdoh.dispatch_no = tdol.dispatch_no AND tdoh.base_org_id = tdol.base_org_id AND tdol.receive_ship = 'S'
+        LEFT JOIN tm_transport_order_label ttol ON tdol.transport_no = ttol.transport_no AND tdol.label_no = ttol.label_no AND tdol.org_id = ttol.org_id
+        LEFT JOIN tm_transport_order_header ttoh ON tdol.transport_no = ttoh.transport_no AND tdol.base_org_id = ttoh.base_org_id
+        LEFT JOIN tm_transport_order_sku ttos ON ttol.transport_no = ttos.transport_no AND ttol.org_id = ttos.org_id AND ttol.owner_code = ttos.owner_code AND ttol.sku_code = ttos.sku_code AND ttol.line_no = ttos.line_no
+        LEFT JOIN tm_transport_obj tto ON ttoh.consignee_code = tto.transport_obj_code AND ttoh.base_org_id = tto.org_id
+        LEFT JOIN tm_transport_obj car ON tdoh.carrier_code = car.transport_obj_code AND tdoh.base_org_id = car.org_id
+        LEFT JOIN tm_driver td ON tdoh.driver = td.code AND tdoh.base_org_id = td.org_id
+        LEFT JOIN tm_vehicle tv ON tdoh.car_no = tv.car_no AND tdoh.base_org_id = tv.org_id
+        WHERE tdoh.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        # AND ttoh.order_type IN ('17', '19')
+        GROUP BY tdoh.car_no, tv.vehicle_type, tdoh.driver, td.name,
+            ttoh.customer_code, ttoh.consignee_code, tto.transport_obj_name,
+            tdoh.carrier_code, car.transport_obj_name
+        ORDER BY tdoh.car_no, tdoh.driver, tv.vehicle_type, ttoh.consignee_code
+    </select>
+
+    <select id="getPrintStoreCheckAcceptOrderWms" resultType="com.yunyou.modules.tms.print.entity.StoreCheckAcceptOrderReport">
+        SELECT CONCAT(tdoh.car_no, '--', ifnull(ttoh.consignee_code, ''), '--', date_format(tdoh.dispatch_time, '%Y%m%d')) as ysNo,
+               date_add(tdoh.dispatch_time, INTERVAL 1 DAY)                                                                AS dispatchDate,
+               tdoh.dispatch_no                                                                                            as orderCode,
+               ttoh.consignee_code                                                                                         as consigneeCode,
+               tto.transport_obj_name                                                                                      as consigneeName,
+               ttoh.consignee_tel                                                                                          as consigneeTel,
+               tto.address                                                                                                 as consigneeAddress,
+               tdoh.car_no                                                                                                 as carNum,
+               td.name                                                                                                     as driver,
+               IFNULL(ttos.def4, '')                                                                                       as classType,
+               ttos.def3                                                                                                   as skuTempLayer,
+               ttoh.customer_no                                                                                            as customerNo,
+               ttos.sku_code                                                                                               as skuCode,
+               ti.sku_name                                                                                                 as skuName,
+               tib.barcode                                                                                                 as skuBarCode,
+               IFNULL(ttos.def8, 0)                                                                                        as orderQty,
+               IFNULL(ttos.cs_quantity, 1)                                                                                 AS mopQty,
+               wila.lot_att01                                                                                              as lotInfo,
+               sum(IFNULL(ttos.def6, 0))                                                                                   as boxQty,
+               sum(ttos.qty)                                                                                               as qty
+        FROM tm_dispatch_order_header tdoh
+             LEFT JOIN tm_dispatch_order_label tdol ON tdoh.dispatch_no = tdol.dispatch_no AND tdoh.base_org_id = tdol.base_org_id AND tdol.receive_ship = 'S'
+             LEFT JOIN tm_transport_order_label ttol ON tdol.transport_no = ttol.transport_no AND tdol.label_no = ttol.label_no AND tdol.org_id = ttol.org_id
+             LEFT JOIN tm_transport_order_header ttoh ON tdol.transport_no = ttoh.transport_no AND tdol.base_org_id = ttoh.base_org_id
+             LEFT JOIN tm_transport_order_sku ttos
+                       ON ttol.transport_no = ttos.transport_no AND ttol.org_id = ttos.org_id AND ttol.owner_code = ttos.owner_code AND ttol.sku_code = ttos.sku_code AND
+                          ttol.line_no = ttos.line_no
+             LEFT JOIN tm_transport_obj tto ON ttoh.consignee_code = tto.transport_obj_code AND ttoh.base_org_id = tto.org_id
+             LEFT JOIN tm_transport_obj sup ON ttoh.principal_code = sup.transport_obj_code AND ttoh.base_org_id = sup.org_id
+             LEFT JOIN tm_item ti ON ttos.owner_code = ti.owner_code AND ttos.sku_code = ti.sku_code AND ttos.base_org_id = ti.org_id
+             LEFT JOIN tm_item_barcode tib ON ti.owner_code = tib.owner_code AND ti.sku_code = tib.sku_code AND ti.org_id = tib.org_id AND tib.is_default = 'Y'
+             LEFT JOIN tm_driver td ON tdoh.driver = td.code AND tdoh.base_org_id = td.org_id
+             LEFT JOIN wm_inv_lot_att wila ON ttos.lot_info = wila.lot_num AND ttos.owner_code = wila.owner_code AND ttos.sku_code = wila.sku_code AND ttos.org_id = wila.org_id
+        WHERE ttoh.order_type IN ('19')
+          AND tdoh.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY tdoh.dispatch_time, tdoh.car_no, td.name,
+            ttoh.consignee_code, tto.transport_obj_name, tto.address, ttoh.consignee_tel,
+            ttos.sku_code, ti.sku_name, wila.lot_att01, ttos.qty,
+            ttos.def6, ttos.def8, ttos.cs_quantity, ttos.def3, ttos.def4,
+            tdoh.dispatch_no
+        ORDER BY tdoh.dispatch_no, ttoh.consignee_code, ttos.sku_code
+    </select>
+    <select id="getPrintTransportOrder" resultType="com.yunyou.modules.tms.print.entity.TransportOrderReport">
+        SELECT
+            ttoh.transport_no AS transportNo,
+            ttoh.customer_no AS customerNo,
+            ttoh.tracking_no AS trackingNo,
+            ttoh.order_time AS orderTime,
+            sdtdtv.label AS orderType,
+            sdtttv.label AS transportMethod,
+            sdttdv.label AS deliveryMethod,
+            ttod.plan_arrive_time AS planArriveTime,
+            ttoh.customer_code AS customerCode,
+            ttoc.transport_obj_name AS customerName,
+            ttoh.ship_code AS shipCode,
+            ttoss.transport_obj_name AS shipName,
+            ttoh.shipper AS shipper,
+            ttoh.shipper_tel AS shipperTel,
+            ttoh.ship_address AS shipAddress,
+            ttoh.consignee_code AS consigneeCode,
+            ttocc.transport_obj_name AS consigneeName,
+            ttoh.consignee AS consignee,
+            ttoh.consignee_tel AS consigneeTel,
+            ttoh.consignee_address AS consigneeAddress,
+            ttoh.remarks AS remarks,
+            ttos.sku_code AS skuCode,
+            ti.sku_name AS skuName,
+            ttos.qty AS qty,
+            ttos.weight AS weight
+        FROM tm_transport_order_header ttoh
+        INNER JOIN tm_transport_order_delivery ttod ON ttoh.transport_no = ttod.transport_no AND ttoh.org_id = ttod.org_id
+        LEFT JOIN tm_transport_order_sku ttos ON ttoh.transport_no = ttos.transport_no AND ttoh.org_id = ttos.org_id
+        LEFT JOIN tm_transport_obj ttoc ON ttoh.customer_code = ttoc.transport_obj_code AND ttoh.base_org_id = ttoc.org_id
+        LEFT JOIN tm_transport_obj ttoss ON ttoh.ship_code = ttoss.transport_obj_code AND ttoh.base_org_id = ttoss.org_id
+        LEFT JOIN tm_transport_obj ttocc ON ttoh.consignee_code = ttocc.transport_obj_code AND ttoh.base_org_id = ttocc.org_id
+        LEFT JOIN tm_item ti ON ttos.owner_code = ti.owner_code AND ttos.sku_code = ti.sku_code AND ttos.base_org_id = ttos.org_id
+        LEFT JOIN sys_dict_type sdtdt ON sdtdt.type = 'TMS_TRANSPORT_ORDER_TYPE'
+        LEFT JOIN sys_dict_value sdtdtv ON sdtdt.id = sdtdtv.dict_type_id AND sdtdtv.`value` = ttoh.order_type
+        LEFT JOIN sys_dict_type sdttt ON sdttt.type = 'TMS_TRANSPORT_METHOD'
+        LEFT JOIN sys_dict_value sdtttv ON sdttt.id = sdtttv.dict_type_id AND sdtttv.`value` = ttoh.transport_method
+        LEFT JOIN sys_dict_type sdttd ON sdttd.type = 'TMS_DELIVERY_METHOD'
+        LEFT JOIN sys_dict_value sdttdv ON sdttd.id = sdttdv.dict_type_id AND sdttdv.`value` = ttoh.delivery_method
+        <where>
+            ttoh.id IN
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+        ORDER BY ttoh.transport_no, ttos.sku_code
+    </select>
+    <select id="getPrintDispatchOrder" resultType="com.yunyou.modules.tms.print.entity.DispatchOrderReport">
+        SELECT ttoh.transport_no AS transportNo,
+               tdoh.dispatch_no AS dispatchNo,
+               tdoh.dispatch_time AS dispatchTime,
+               sdtdtv.label AS dispatchType,
+               sdtttv.label AS transportType,
+               tdoh.carrier_code AS carrierCode,
+               ttoc.transport_obj_name AS carrierName,
+               tdoh.car_no AS carNo,
+               td.`name` AS driverName,
+               tdoh.driver_tel AS driverTel,
+               ttoh.customer_code AS customerCode,
+               ttoch.transport_obj_name AS customerName,
+               ttod.transport_obj_name AS pickupAddress,
+               ttoh.consignee_address AS deliveryAddress,
+               tdoh.remarks AS remarks,
+               tdol.sku_code AS skuCode,
+               ti.sku_name AS skuName,
+               SUM(tdol.qty) AS qty,
+               SUM(tdol.weight) AS weight,
+               SUM(tdol.cubic) AS cubic
+        FROM tm_dispatch_order_header tdoh
+        INNER JOIN tm_dispatch_order_label tdol ON tdoh.dispatch_no = tdol.dispatch_no AND tdoh.org_id = tdol.org_id AND tdol.receive_ship = 'R'
+        LEFT JOIN tm_transport_order_header ttoh ON tdol.transport_no = ttoh.transport_no AND tdol.base_org_id = ttoh.base_org_id
+        LEFT JOIN tm_transport_obj ttoch ON ttoh.customer_code = ttoch.transport_obj_code AND ttoh.base_org_id = ttoch.org_id
+        LEFT JOIN tm_transport_obj ttod ON tdol.dispatch_site_outlet_code = ttod.transport_obj_code AND tdol.base_org_id = ttod.org_id
+        LEFT JOIN tm_transport_obj ttoc ON tdoh.carrier_code = ttoc.transport_obj_code AND tdoh.base_org_id = ttoc.org_id
+        LEFT JOIN tm_driver td ON tdoh.driver = td.`code` AND tdoh.base_org_id = td.org_id
+        LEFT JOIN tm_item ti ON tdol.owner_code = ti.owner_code AND tdol.sku_code = ti.sku_code AND tdol.base_org_id = ti.org_id
+        LEFT JOIN sys_dict_type sdtdt ON sdtdt.type = 'TMS_DISPATCH_TYPE'
+        LEFT JOIN sys_dict_value sdtdtv ON sdtdt.id = sdtdtv.dict_type_id AND sdtdtv.`value` = tdoh.dispatch_type
+        LEFT JOIN sys_dict_type sdttt ON sdttt.type = 'TMS_TRANSPORT_METHOD'
+        LEFT JOIN sys_dict_value sdtttv ON sdttt.id = sdtttv.dict_type_id AND sdtttv.`value` = tdoh.transport_type
+        <where>
+            tdoh.id IN
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+        GROUP BY tdoh.dispatch_no, ttoh.transport_no, tdol.sku_code
+        ORDER BY tdoh.dispatch_no, ttoh.transport_no, tdol.sku_code
+    </select>
+</mapper>

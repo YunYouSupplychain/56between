@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.report.mapper.BmsReportAccountReceivableMapper">
+
+	<sql id="where">
+		bio.del_flag = '0'
+		AND bbd.receivable_payable = '01'
+		<if test="invoiceObjectCode != null and invoiceObjectCode != ''">
+			AND bio.`code` = #{invoiceObjectCode}
+		</if>
+		<if test="warehouseCode != null and warehouseCode != ''">
+			AND bbd.warehouse_code = #{warehouseCode}
+		</if>
+		<if test="settleObjectCode != null and settleObjectCode != ''">
+			AND bbd.settle_object_code = #{settleObjectCode}
+		</if>
+		<if test="settleObjectName != null and settleObjectName != ''">
+			AND bbd.settle_object_name LIKE concat('%', #{settleObjectName}, '%')
+		</if>
+		<if test="settleDateFm != null">
+			AND bbd.date_fm &gt;= #{settleDateFm}
+		</if>
+		<if test="settleDateTo != null">
+			AND bbd.date_to &lt;= #{settleDateTo}
+		</if>
+		<if test="billNo != null and billNo != ''">
+			AND bbd.bill_no = #{billNo}
+		</if>
+		<if test="status != null and status != ''">
+			AND bbd.status = #{status}
+		</if>
+	</sql>
+    
+	<select id="findPage" resultType="BmsReportAccountReceivableEntity">
+		SELECT bio.`code`             AS "invoiceObjectCode",
+			   bio.`name`             AS "invoiceObjectName",
+			   bio.bank               AS "bank",
+			   bio.bank_account       AS "bankAccount",
+			   bbd.bill_no            AS "billNo",
+			   bbd.status             AS "status",
+			   bbd.warehouse_code     AS "warehouseCode",
+			   bbd.warehouse_name     AS "warehouseName",
+			   bbd.settle_object_code AS "settleObjectCode",
+			   bbd.settle_object_name AS "settleObjectName",
+			   bbd.bill_subject_name  AS "billSubjectName",
+			   bcci.tax_rate          AS "taxRate",
+			   bbd.bill_standard      AS "billStandard",
+			   bbd.occurrence_qty     AS "occurrenceQty",
+			   bbd.bill_qty           AS "billQty",
+			   bbd.cost               AS "cost",
+			   suc.`name`             AS "creator",
+			   suu.`name`            AS "auditor",
+			   bbd.date_fm            AS "settleDateFm",
+			   bbd.date_to            AS "settleDateTo",
+			   kbio.`code`            AS "kxtxCode",
+			   kbio.`name`            AS "kxtxName",
+			   kbio.bank              AS "kxtxBank",
+			   kbio.bank_account      AS "kxtxBankAccount",
+			   bio.org_id             AS "orgId",
+			   bio.remarks            AS "remarks",
+			   kbio.remarks           AS "kxtxRemarks",
+			   bbd.remarks            AS "costRemarks"
+		FROM bms_invoice_object bio
+			INNER JOIN bms_invoice_object_detail biod ON bio.id = biod.object_id
+			INNER JOIN bms_bill_statistics bbd ON biod.`code` = bbd.settle_object_code AND bio.org_id = bbd.org_id
+			LEFT JOIN bms_contract_cost_item bcci ON bbd.sys_contract_no = bcci.sys_contract_no AND bbd.bill_subject_code = bcci.bill_subject_code AND bbd.bill_terms_code = bcci.bill_terms_code AND bbd.org_id = bcci.org_id
+			LEFT JOIN sys_user suc ON bbd.create_by = suc.id
+			LEFT JOIN sys_user suu ON bbd.update_by = suu.id
+			LEFT JOIN bms_invoice_object kbio ON bio.org_id = kbio.org_id AND kbio.`code` = 'KXTX'
+		<where>
+			<include refid="where"/>
+			${dataScope}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY bbd.bill_no DESC, bbd.bill_subject_name, bbd.warehouse_code, bbd.settle_object_code
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

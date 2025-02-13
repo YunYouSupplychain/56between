@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.basicdata.mapper.BanQinCdRuleWvGroupHeaderMapper">
+    
+	<sql id="cdRuleWvGroupHeaderColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.group_code AS "groupCode",
+		a.group_name AS "groupName",
+		a.order_date_fm AS "orderDateFm",
+		a.order_date_to AS "orderDateTo",
+		a.org_id AS "orgId",
+		a.owner_code AS "ownerCode",
+		a.owner_name AS "ownerName",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+		a.addr_area AS "addrArea"
+	</sql>
+	
+	<sql id="cdRuleWvGroupHeaderJoins">
+		
+	</sql>
+
+    <select id="get" resultType="BanQinCdRuleWvGroupHeader" >
+		SELECT 
+			<include refid="cdRuleWvGroupHeaderColumns"/>
+		FROM cd_rule_wv_group_header a
+		<include refid="cdRuleWvGroupHeaderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="BanQinCdRuleWvGroupHeader" >
+		SELECT 
+			<include refid="cdRuleWvGroupHeaderColumns"/>
+		FROM cd_rule_wv_group_header a
+		<include refid="cdRuleWvGroupHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				AND a.group_code = #{groupCode}
+			</if>
+			<if test="groupName != null and groupName != ''">
+				AND a.group_name = #{groupName}
+			</if>
+			<if test="codeAndName != null and codeAndName != ''">
+				AND (a.group_code like concat('%', #{codeAndName}, '%') OR a.group_name like concat('%', #{codeAndName}, '%'))
+			</if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinCdRuleWvGroupHeader" >
+		SELECT
+			<include refid="cdRuleWvGroupHeaderColumns"/>
+		FROM cd_rule_wv_group_header a
+		<include refid="cdRuleWvGroupHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			AND a.org_id = #{orgId}
+			<if test="groupCode != null and groupCode != ''">
+				AND a.group_code = #{groupCode}
+			</if>
+			<if test="groupName != null and groupName != ''">
+				AND a.group_name = #{groupName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinCdRuleWvGroupHeader" >
+		SELECT 
+			<include refid="cdRuleWvGroupHeaderColumns"/>
+		FROM cd_rule_wv_group_header a
+		<include refid="cdRuleWvGroupHeaderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cd_rule_wv_group_header(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			group_code,
+			group_name,
+			order_date_fm,
+			order_date_to,
+			org_id,
+			owner_code,
+			sku_code,
+			owner_name,
+			sku_name,
+			addr_area
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{groupCode},
+			#{groupName},
+			#{orderDateFm},
+			#{orderDateTo},
+			#{orgId},
+		    #{ownerCode},
+		    #{skuCode},
+			#{ownerName},
+		    #{skuName},
+		    #{addrArea}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cd_rule_wv_group_header SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			group_code = #{groupCode},
+			group_name = #{groupName},
+			order_date_fm = #{orderDateFm},
+			order_date_to = #{orderDateTo},
+			org_id = #{orgId},
+		    owner_code = #{ownerCode},
+		    sku_code = #{skuCode},
+			owner_name = #{ownerName},
+			sku_name = #{skuName},
+			addr_area = #{addrArea}
+		WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE cd_rule_wv_group_header SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<delete id="delete">
+		DELETE FROM cd_rule_wv_group_header WHERE id = #{id}
+	</delete>
+	<delete id="remove">
+		DELETE FROM cd_rule_wv_group_header WHERE group_code = #{groupCode} AND org_id = #{orgId}
+	</delete>
+
+    <select id="getByGroupCode" resultType="com.yunyou.modules.wms.basicdata.entity.BanQinCdRuleWvGroupHeader">
+		SELECT
+		<include refid="cdRuleWvGroupHeaderColumns"/>
+		FROM cd_rule_wv_group_header a
+		<include refid="cdRuleWvGroupHeaderJoins"/>
+		WHERE a.group_code = #{groupCode} and a.org_id = #{orgId}
+	</select>
+
+</mapper>

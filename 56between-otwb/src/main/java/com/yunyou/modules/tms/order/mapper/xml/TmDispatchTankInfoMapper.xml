@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.tms.order.mapper.TmDispatchTankInfoMapper">
+    
+	<sql id="tmDispatchTankInfoColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.dispatch_no AS "dispatchNo",
+		a.outlet_code AS "outletCode",
+		a.transport_no AS "transportNo",
+		a.offloading_qty AS "offloadingQty",
+		a.tank_qty AS "tankQty",
+		a.org_id AS "orgId",
+		a.rec_ver AS "recVer",
+		a.base_org_id AS "baseOrgId"
+	</sql>
+	
+	<sql id="tmDispatchTankInfoJoins">
+		
+	</sql>
+	
+	<select id="get" resultType="TmDispatchTankInfo" >
+		SELECT 
+			<include refid="tmDispatchTankInfoColumns"/>
+		FROM tm_dispatch_tank_info a
+		<include refid="tmDispatchTankInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TmDispatchTankInfo" >
+		SELECT 
+			<include refid="tmDispatchTankInfoColumns"/>
+		FROM tm_dispatch_tank_info a
+		<include refid="tmDispatchTankInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="dispatchNo != null and dispatchNo != ''">
+				AND a.dispatch_no = #{dispatchNo}
+			</if>
+			<if test="outletCode != null and outletCode != ''">
+				AND a.outlet_code = #{outletCode}
+			</if>
+			<if test="transportNo != null and transportNo != ''">
+				AND a.transport_no = #{transportNo}
+			</if>
+			<if test="orgId != null and orgId != ''">
+				AND a.org_id = #{orgId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="TmDispatchTankInfo" >
+		SELECT 
+			<include refid="tmDispatchTankInfoColumns"/>
+		FROM tm_dispatch_tank_info a
+		<include refid="tmDispatchTankInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO tm_dispatch_tank_info(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			dispatch_no,
+			outlet_code,
+			transport_no,
+			offloading_qty,
+			tank_qty,
+			org_id,
+			rec_ver,
+			base_org_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{dispatchNo},
+			#{outletCode},
+			#{transportNo},
+			#{offloadingQty},
+			#{tankQty},
+			#{orgId},
+			#{recVer},
+			#{baseOrgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE tm_dispatch_tank_info SET
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			dispatch_no = #{dispatchNo},
+			outlet_code = #{outletCode},
+			transport_no = #{transportNo},
+			offloading_qty = #{offloadingQty},
+			tank_qty = #{tankQty},
+			org_id = #{orgId},
+			base_org_id = #{baseOrgId},
+			rec_ver = rec_ver + 1
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM tm_dispatch_tank_info
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE tm_dispatch_tank_info SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

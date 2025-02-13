@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.bms.interactive.mapper.BmsPullFromWmsMapper">
+
+    <select id="pullInboundData" resultType="com.yunyou.modules.bms.business.entity.BmsInboundData">
+      SELECT wah.asn_no                                                                       AS "orderNo",
+             wah.asn_type                                                                     AS "orderType",
+             wah.order_time                                                                   AS "orderDate",
+             wah.owner_code                                                                   AS "ownerCode",
+             ec.ebcu_name_cn                                                                  AS "ownerName",
+             wah.supplier_code                                                                AS "supplierCode",
+             ecs.ebcu_name_cn                                                                 AS "supplierName",
+             wad.sku_code                                                                     AS "skuCode",
+             cws.sku_name                                                                     AS "skuName",
+             wadr.lot_num                                                                     AS "lotNo",
+             wadr.lot_att01                                                                   AS "lotAtt01",
+             wadr.lot_att02                                                                   AS "lotAtt02",
+             wadr.lot_att03                                                                   AS "lotAtt03",
+             wadr.lot_att04                                                                   AS "lotAtt04",
+             wadr.lot_att05                                                                   AS "lotAtt05",
+             wadr.lot_att06                                                                   AS "lotAtt06",
+             wadr.lot_att07                                                                   AS "lotAtt07",
+             wadr.lot_att08                                                                   AS "lotAtt08",
+             wadr.lot_att09                                                                   AS "lotAtt09",
+             wadr.lot_att10                                                                   AS "lotAtt10",
+             wadr.lot_att11                                                                   AS "lotAtt11",
+             wadr.lot_att12                                                                   AS "lotAtt12",
+             wadr.rcv_time                                                                    AS "receiveTime",
+             wadr.qty_rcv_ea                                                                  AS "receiptQty",
+             CEILING(wadr.qty_rcv_ea / IF(cwprcs.cdpr_quantity = 0, 1, cwprcs.cdpr_quantity)) AS "receiptQtyCs",
+             CEILING(wadr.qty_rcv_ea / IF(cwprpl.cdpr_quantity = 0, 1, cwprpl.cdpr_quantity)) AS "receiptQtyPl",
+             wadr.qty_rcv_ea * IFNULL(cws.gross_weight, 0)                                    AS "weight",
+             wadr.qty_rcv_ea * IFNULL(cws.cubic, 0)                                           AS "volume",
+             wadr.to_loc                                                                      AS "receiveCode",
+             'Y'                                                                              AS "isFee",
+             'WMS'                                                                            AS "dataSources",
+             wah.def10                                                                        AS "businessType",
+             '20'                                                                             AS "businessModel",
+             wah.def4                                                                         AS "orderNoA",
+             wah.org_id                                                                       AS "orgId"
+      FROM wm_asn_header wah
+           INNER JOIN wm_asn_detail wad ON wah.asn_no = wad.asn_no AND wah.org_id = wad.org_id
+           INNER JOIN wm_asn_detail_receive wadr ON wah.asn_no = wadr.asn_no AND wad.line_no = wadr.asn_line_no AND wah.owner_code = wadr.owner_code AND wad.sku_code = wadr.sku_code AND wah.org_id = wadr.org_id
+           LEFT JOIN eb_customer ec ON wah.owner_code = ec.ebcu_customer_no AND wah.org_id = ec.org_id
+           LEFT JOIN eb_customer ecs ON wah.supplier_code = ecs.ebcu_customer_no AND wah.org_id = ecs.org_id
+           LEFT JOIN cd_wh_sku cws ON wah.owner_code = cws.owner_code AND wadr.sku_code = cws.sku_code AND wad.org_id = cws.org_id
+           LEFT JOIN cd_wh_package cwp ON wad.pack_code = cwp.cdpa_code AND wah.org_id = cwp.org_id
+           LEFT JOIN cd_wh_package_relation cwprcs ON cwp.pm_code = cwprcs.cdpr_cdpa_pm_code AND cwp.org_id = cwprcs.org_id AND cwprcs.cdpr_unit_level = 'CS'
+           LEFT JOIN cd_wh_package_relation cwprpl ON cwp.pm_code = cwprpl.cdpr_cdpa_pm_code AND cwp.org_id = cwprpl.org_id AND cwprpl.cdpr_unit_level = 'CS'
+      <where>
+        <![CDATA[wah.status = '99'
+            AND wadr.status >= '20'
+            AND wah.update_date >= #{fmDate}
+            AND wah.update_date <= #{toDate}]]>
+        <if test="orgId != null and orgId != ''">
+          AND wah.org_id = #{orgId}
+        </if>
+      </where>
+    </select>
+    <select id="pullOutboundData" resultType="com.yunyou.modules.bms.business.entity.BmsOutboundData">
+      SELECT wsh.so_no                                                                   AS "orderNo",
+             wsh.so_type                                                                 AS "orderType",
+             wsh.order_time                                                              AS "orderDate",
+             wsh.consignee_code                                                          AS "customerCode",
+             ecc.ebcu_name_cn                                                            AS "customerName",
+             wsh.owner_code                                                              AS "ownerCode",
+             ec.ebcu_name_cn                                                             AS "ownerName",
+             wsa.sku_code                                                                AS "skuCode",
+             cws.sku_name                                                                AS "skuName",
+             wsa.lot_num                                                                 AS "lotNo",
+             wila.lot_att01                                                              AS "lotAtt01",
+             wila.lot_att02                                                              AS "lotAtt02",
+             wila.lot_att03                                                              AS "lotAtt03",
+             wila.lot_att04                                                              AS "lotAtt04",
+             wila.lot_att05                                                              AS "lotAtt05",
+             wila.lot_att06                                                              AS "lotAtt06",
+             wila.lot_att07                                                              AS "lotAtt07",
+             wila.lot_att08                                                              AS "lotAtt08",
+             wila.lot_att09                                                              AS "lotAtt09",
+             wila.lot_att10                                                              AS "lotAtt10",
+             wila.lot_att11                                                              AS "lotAtt11",
+             wila.lot_att12                                                              AS "lotAtt12",
+             wsa.ship_time                                                               AS "shipTime",
+             wsa.qty_ea                                                                  AS "shipQty",
+             CEILING(wsa.qty_ea / IF(cdprcs.cdpr_quantity = 0, 1, cdprcs.cdpr_quantity)) AS "shipQtyCs",
+             CEILING(wsa.qty_ea / IF(cdprpl.cdpr_quantity = 0, 1, cdprpl.cdpr_quantity)) AS "shipQtyPl",
+             wsa.qty_ea * IFNULL(cws.gross_weight, 0)                                    AS "weight",
+             wsa.qty_ea * IFNULL(cws.cubic, 0)                                           AS "volume",
+             'Y'                                                                         AS "isFee",
+             'WMS'                                                                       AS "dataSources",
+             wsh.def5                                                                    AS "orderNoA",
+             wsh.def13                                                                   AS "businessType",
+             '20'                                                                        AS "businessModel",
+             wsh.org_id                                                                  AS "orgId"
+      FROM wm_so_header wsh
+           INNER JOIN wm_so_detail wsd ON wsh.so_no = wsd.so_no AND wsh.org_id = wsd.org_id
+           INNER JOIN wm_so_alloc wsa ON wsh.so_no = wsa.so_no AND wsd.line_no = wsa.line_no AND wsh.org_id = wsa.org_id
+           LEFT JOIN wm_inv_lot_att wila ON wsh.owner_code = wila.lot_num AND wsa.sku_code = wila.sku_code AND wsa.lot_num = wila.lot_num AND wsa.org_id = wila.org_id
+           LEFT JOIN eb_customer ec ON wsh.owner_code = ec.ebcu_customer_no AND wsh.org_id = ec.org_id
+           LEFT JOIN eb_customer ecc ON wsh.consignee_code = ecc.ebcu_customer_no AND wsh.org_id = ecc.org_id
+           LEFT JOIN cd_wh_sku cws ON wsh.owner_code = cws.owner_code AND wsa.sku_code = cws.sku_code AND wsh.org_id = cws.org_id
+           LEFT JOIN cd_wh_package cwp ON wsa.pack_code = cwp.cdpa_code AND wsh.org_id = cwp.org_id
+           LEFT JOIN cd_wh_package_relation cdprcs ON cwp.pm_code = cdprcs.cdpr_cdpa_pm_code AND cwp.org_id = cdprcs.org_id AND cdprcs.cdpr_unit_level = 'CS'
+           LEFT JOIN cd_wh_package_relation cdprpl ON cwp.pm_code = cdprpl.cdpr_cdpa_pm_code AND cwp.org_id = cdprpl.org_id AND cdprpl.cdpr_unit_level = 'PL'
+      <where>
+        <![CDATA[wsh.status = '99'
+            AND wsa.status >= '80'
+            AND wsh.update_date >= #{fmDate}
+            AND wsh.update_date <= #{toDate}]]>
+        <if test="orgId != null and orgId != ''">
+          AND wsh.org_id = #{orgId}
+        </if>
+      </where>
+    </select>
+    <select id="pullInventoryData" resultType="com.yunyou.modules.bms.business.entity.BmsInventoryData">
+        SELECT DATE_FORMAT(#{toDate}, '%Y-%m-%d')                                                                   AS invDate,
+               pp.owner_code                                                                                        AS ownerCode,
+               ec.ebcu_name_cn                                                                                      AS ownerName,
+               pp.sku_code                                                                                          AS skuCode,
+               cws.sku_name                                                                                         AS skuName,
+               pp.lot_num                                                                                           AS lotNo,
+               wila.lot_att01                                                                                       AS lotAtt01,
+               wila.lot_att02                                                                                       AS lotAtt02,
+               wila.lot_att03                                                                                       AS lotAtt03,
+               wila.lot_att04                                                                                       AS lotAtt04,
+               wila.lot_att05                                                                                       AS lotAtt05,
+               wila.lot_att06                                                                                       AS lotAtt06,
+               wila.lot_att07                                                                                       AS lotAtt07,
+               wila.lot_att08                                                                                       AS lotAtt08,
+               wila.lot_att09                                                                                       AS lotAtt09,
+               wila.lot_att10                                                                                       AS lotAtt10,
+               wila.lot_att11                                                                                       AS lotAtt11,
+               wila.lot_att12                                                                                       AS lotAtt12,
+               pp.loc_code                                                                                          AS locCode,
+               pp.trace_id                                                                                          AS traceId,
+               pp.qty                                                                                               AS endQty,
+               CEILING(pp.qty / IF(cwprc.cdpr_quantity IS NULL OR cwprc.cdpr_quantity = 0, 1, cwprc.cdpr_quantity)) AS endQtyCs,
+               CEILING(pp.qty / IF(cwprl.cdpr_quantity IS NULL OR cwprl.cdpr_quantity = 0, 1, cwprl.cdpr_quantity)) AS endQtyPl,
+               pp.qty * IFNULL(cws.gross_weight, 0)                                                                 AS weight,
+               pp.qty * IFNULL(cws.cubic, 0)                                                                        AS volume,
+               '20'                                                                                                 AS businessModel,
+               'Y'                                                                                                  AS isFee,
+               'WMS'                                                                                                AS dataSources,
+               pp.org_id                                                                                            AS orgId
+        FROM (
+            SELECT a.owner_code,
+                   a.sku_code,
+                   a.lot_num,
+                   a.loc_code,
+                   a.trace_id,
+                   SUM(a.qty) AS qty,
+                   a.org_id
+            FROM (
+                SELECT will.owner_code,
+                       will.sku_code,
+                       will.loc_code,
+                       will.lot_num,
+                       will.trace_id,
+                       will.qty,
+                       will.org_id
+                FROM wm_inv_lot_loc will
+                <where>
+                    <if test="orgId != null and orgId != ''">
+                        AND will.org_id = #{orgId}
+                    </if>
+                </where>
+                UNION ALL
+                SELECT wat.fm_owner                               AS owner_code,
+                       wat.fm_sku                                 AS sku_code,
+                       wat.fm_loc                                 AS loc_code,
+                       wat.fm_lot                                 AS lot_num,
+                       wat.fm_id                                  AS trace_id,
+                       wat.fm_qty_ea_before - wat.fm_qty_ea_after AS qty,
+                       wat.org_id
+                FROM wm_act_tran wat
+                <where>
+                    wat.fm_owner IS NOT NULL
+                    AND wat.fm_sku IS NOT NULL
+                    <if test="orgId != null and orgId != ''">
+                        AND wat.org_id = #{orgId}
+                    </if>
+                    <choose>
+                        <when test="toDate != null">
+                            AND wat.tran_time &gt; #{toDate}
+                        </when>
+                        <otherwise>
+                            AND wat.tran_time &gt; NOW() -- 日期到为空时，此条件生效
+                        </otherwise>
+                    </choose>
+                </where>
+                UNION ALL
+                SELECT wat.to_owner                               AS owner_code,
+                       wat.to_sku                                 AS sku_code,
+                       wat.to_loc                                 AS loc_code,
+                       wat.to_lot                                 AS lot_num,
+                       wat.to_id                                  AS trace_id,
+                       wat.to_qty_ea_before - wat.to_qty_ea_after AS qty,
+                       wat.org_id
+                FROM wm_act_tran wat
+                <where>
+                    wat.to_owner IS NOT NULL
+                    AND wat.to_sku IS NOT NULL
+                    <if test="orgId != null and orgId != ''">
+                        AND wat.org_id = #{orgId}
+                    </if>
+                    <choose>
+                        <when test="toDate != null">
+                            AND wat.tran_time &gt; #{toDate}
+                        </when>
+                        <otherwise>
+                            AND wat.tran_time &gt; NOW() -- 日期到为空时，此条件生效
+                        </otherwise>
+                    </choose>
+                </where>
+            ) a
+            GROUP BY a.owner_code, a.sku_code, a.lot_num, a.loc_code, a.trace_id, a.org_id
+            HAVING SUM(a.qty) > 0
+        ) pp
+        LEFT JOIN eb_customer ec ON pp.owner_code = ec.ebcu_customer_no AND pp.org_id = ec.org_id
+        LEFT JOIN cd_wh_sku cws ON pp.owner_code = cws.owner_code AND pp.sku_code = cws.sku_code AND pp.org_id = cws.org_id
+        LEFT JOIN cd_wh_package cwp ON cws.pack_code = cwp.cdpa_code AND cws.org_id = cwp.org_id
+        LEFT JOIN cd_wh_package_relation cwprc ON cwp.pm_code = cwprc.cdpr_cdpa_pm_code AND cwp.org_id = cwprc.org_id AND cwprc.cdpr_unit_level = 'CS'
+        LEFT JOIN cd_wh_package_relation cwprl ON cwp.pm_code = cwprl.cdpr_cdpa_pm_code AND cwp.org_id = cwprl.org_id AND cwprl.cdpr_unit_level = 'PL'
+        LEFT JOIN wm_inv_lot_att wila ON pp.lot_num = wila.lot_num AND pp.org_id = wila.org_id
+    </select>
+</mapper>

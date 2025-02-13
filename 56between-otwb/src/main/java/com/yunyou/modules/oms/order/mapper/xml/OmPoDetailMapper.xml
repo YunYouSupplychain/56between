@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.oms.order.mapper.OmPoDetailMapper">
+    
+	<sql id="omPoDetailColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.header_id AS "headerId",
+		a.sku_code AS "skuCode",
+		a.sku_name AS "skuName",
+		a.spec AS "spec",
+		a.auxiliary_unit AS "auxiliaryUnit",
+		a.auxiliary_qty AS "auxiliaryQty",
+		a.unit AS "unit",
+		a.qty AS "qty",
+		a.tax_rate AS "taxRate",
+		a.price AS "price",
+		a.tax_price AS "taxPrice",
+		a.amount AS "amount",
+		a.tax_money AS "taxMoney",
+		a.tax_amount AS "taxAmount",
+		a.discount AS "discount",
+		a.turnover AS "turnover",
+		a.transaction_tax AS "transactionTax",
+		a.sum_transaction_price_tax AS "sumTransactionPriceTax",
+        a.org_id AS "orgId",
+        a.purchase_multiple AS "purchaseMultiple",
+        a.ratio AS "ratio",
+        a.item_price_id AS "itemPriceId",
+		a.logistics_unit AS "logisticsUnit",
+		a.logistics_unit_qty AS "logisticsUnitQty",
+		a.logistics_muq_type AS "logisticsMuqType"
+	</sql>
+	
+	<sql id="omPoDetailJoins">
+			LEFT JOIN om_po_header b ON b.id = a.header_id
+	</sql>
+
+	<select id="get" resultType="OmPoDetail" >
+		SELECT 
+			<include refid="omPoDetailColumns"/>
+		FROM om_po_detail a
+		<include refid="omPoDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OmPoDetail" >
+		SELECT 
+			<include refid="omPoDetailColumns"/>
+		FROM om_po_detail a
+		<include refid="omPoDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="OmPoDetail" >
+		SELECT 
+			<include refid="omPoDetailColumns"/>
+		FROM om_po_detail a
+		<include refid="omPoDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO om_po_detail(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			header_id,
+			sku_code,
+			sku_name,
+			spec,
+			auxiliary_unit,
+			auxiliary_qty,
+			unit,
+			qty,
+			tax_rate,
+			price,
+			tax_price,
+			amount,
+			tax_money,
+			tax_amount,
+			discount,
+			turnover,
+			transaction_tax,
+			sum_transaction_price_tax,
+            org_id,
+            purchase_multiple,
+            ratio,
+            item_price_id,
+			logistics_unit,
+			logistics_unit_qty,
+			logistics_muq_type
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{headerId},
+			#{skuCode},
+			#{skuName},
+			#{spec},
+			#{auxiliaryUnit},
+			#{auxiliaryQty},
+			#{unit},
+			#{qty},
+			#{taxRate},
+			#{price},
+			#{taxPrice},
+			#{amount},
+			#{taxMoney},
+			#{taxAmount},
+			#{discount},
+			#{turnover},
+			#{transactionTax},
+			#{sumTransactionPriceTax},
+            #{orgId},
+            #{purchaseMultiple},
+            #{ratio},
+            #{itemPriceId},
+			#{logisticsUnit},
+			#{logisticsUnitQty},
+			#{logisticsMuqType}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE om_po_detail SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			header_id = #{headerId},
+			sku_code = #{skuCode},
+			sku_name = #{skuName},
+			spec = #{spec},
+			auxiliary_unit = #{auxiliaryUnit},
+			auxiliary_qty = #{auxiliaryQty},
+			unit = #{unit},
+			qty = #{qty},
+			tax_rate = #{taxRate},
+			price = #{price},
+			tax_price = #{taxPrice},
+			amount = #{amount},
+			tax_money = #{taxMoney},
+			tax_amount = #{taxAmount},
+			discount = #{discount},
+			turnover = #{turnover},
+			transaction_tax = #{transactionTax},
+			sum_transaction_price_tax = #{sumTransactionPriceTax},
+            org_id = #{orgId},
+            purchase_multiple = #{purchaseMultiple},
+            ratio = #{ratio},
+            item_price_id = #{itemPriceId},
+			logistics_unit = #{logisticsUnit},
+			logistics_unit_qty = #{logisticsUnitQty},
+			logistics_muq_type = #{logisticsMuqType}
+		WHERE id = #{id}
+	</update>
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM om_po_detail
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE header_id = #{headerId}
+			</otherwise>
+		</choose>
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE om_po_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE header_id = #{headerId}
+			</otherwise>
+		</choose>
+	</update>
+
+	<select id="findDetailList" resultType="OmPoDetail" >
+		SELECT
+		oip.is_allow_adjustment AS "isAllowAdjustment",
+		<include refid="omPoDetailColumns"/>
+		FROM om_po_detail a
+		<include refid="omPoDetailJoins"/>
+		left join om_item_price oip
+			   on a.item_price_id = oip.id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="headerId != null and headerId != ''">
+				AND a.header_id = #{headerId}
+			</if>
+		</where>
+	</select>
+
+</mapper>

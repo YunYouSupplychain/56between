@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.wms.inventory.mapper.BanQinWmActTranMapper">
+    
+	<sql id="banQinWmActTranColumns">
+		a.id AS "id",
+		a.tran_id AS "tranId",
+		a.tran_type AS "tranType",
+		a.order_type AS "orderType",
+		a.order_no AS "orderNo",
+		a.line_no AS "lineNo",
+		a.tran_op AS "tranOp",
+		a.tran_time AS "tranTime",
+		a.fm_owner AS "fmOwner",
+		a.fm_sku AS "fmSku",
+		a.fm_lot AS "fmLot",
+		a.fm_loc AS "fmLoc",
+		a.fm_id AS "fmId",
+		a.fm_pack AS "fmPack",
+		a.fm_uom AS "fmUom",
+		a.fm_qty_uom_op AS "fmQtyUomOp",
+		a.fm_qty_ea_op AS "fmQtyEaOp",
+		a.fm_qty_ea_before AS "fmQtyEaBefore",
+		a.fm_qty_ea_after AS "fmQtyEaAfter",
+		a.to_owner AS "toOwner",
+		a.to_sku AS "toSku",
+		a.to_lot AS "toLot",
+		a.to_loc AS "toLoc",
+		a.to_id AS "toId",
+		a.to_pack AS "toPack",
+		a.to_uom AS "toUom",
+		a.to_qty_uom_op AS "toQtyUomOp",
+		a.to_qty_ea_op AS "toQtyEaOp",
+		a.to_qty_ea_before AS "toQtyEaBefore",
+		a.to_qty_ea_after AS "toQtyEaAfter",
+		a.task_id AS "taskId",
+		a.task_line_no AS "taskLineNo",
+		a.rec_ver AS "recVer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.org_id AS "orgId"
+	</sql>
+	
+	<sql id="banQinWmActTranJoins">
+		LEFT JOIN sys_office so on a.org_id = so.id
+        LEFT JOIN sys_user creater on creater.id = a.create_by
+        LEFT JOIN sys_user updater on updater.id = a.update_by
+	</sql>
+
+	<select id="get" resultType="BanQinWmActTran" >
+		SELECT 
+			<include refid="banQinWmActTranColumns"/>
+		FROM wm_act_tran a
+		<include refid="banQinWmActTranJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BanQinWmActTran" >
+		SELECT 
+			<include refid="banQinWmActTranColumns"/>
+        FROM wm_act_tran a
+		<where>
+            1 = 1
+            AND a.org_id = #{orgId}
+            <if test="tranType != null and tranType != ''">
+                AND a.tran_type = #{tranType}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no = #{orderNo}
+            </if>
+            <if test="tranTimeFrom != null and tranTimeFrom != ''">
+                AND a.tran_time &gt;= #{tranTimeFrom}
+            </if>
+            <if test="tranTimeTo != null and tranTimeTo != ''">
+                AND a.tran_time &lt; #{tranTimeTo}
+            </if>
+            <if test="tranOp != null and tranOp != ''">
+                AND a.tran_op = #{tranOp}
+            </if>
+            <if test="fmOwner != null and fmOwner != ''">
+                AND a.fm_owner = #{fmOwner}
+            </if>
+            <if test="fmSku != null and fmSku != ''">
+                AND a.fm_sku = #{fmSku}
+            </if>
+            <if test="fmLot != null and fmLot != ''">
+                AND a.fm_lot = #{fmLot}
+            </if>
+            <if test="fmLoc != null and fmLoc != ''">
+                AND a.fm_loc = #{fmLoc}
+            </if>
+            <if test="fmId != null and fmId != ''">
+                AND a.fm_id = #{fmId}
+            </if>
+            <if test="toOwner != null and toOwner != ''">
+                AND a.to_owner = #{toOwner}
+            </if>
+            <if test="toSku != null and toSku != ''">
+                AND a.to_sku = #{toSku}
+            </if>
+            <if test="toLot != null and toLot != ''">
+                AND a.to_lot = #{toLot}
+            </if>
+            <if test="toLoc != null and toLoc != ''">
+                AND a.to_loc = #{toLoc}
+            </if>
+            <if test="toId != null and toId != ''">
+                AND a.to_id = #{toId}
+            </if>
+            <if test="lotAtt01 != null and lotAtt01 != ''">
+                AND wila.lot_att01 = #{lotAtt01}
+            </if>
+            <if test="lotAtt02 != null and lotAtt02 != ''">
+                AND wila.lot_att02 = #{lotAtt02}
+            </if>
+            <if test="lotAtt03 != null and lotAtt03 != ''">
+                AND wila.lot_att03 = #{lotAtt03}
+            </if>
+            <if test="lotAtt04 != null and lotAtt04 != ''">
+                AND wila.lot_att04 = #{lotAtt04}
+            </if>
+            <if test="lotAtt05 != null and lotAtt05 != ''">
+                AND wila.lot_att05 = #{lotAtt05}
+            </if>
+            <if test="lotAtt06 != null and lotAtt06 != ''">
+                AND wila.lot_att06 = #{lotAtt06}
+            </if>
+            <if test="lotAtt07 != null and lotAtt07 != ''">
+                AND wila.lot_att07 = #{lotAtt07}
+            </if>
+            <if test="lotAtt08 != null and lotAtt08 != ''">
+                AND wila.lot_att08 = #{lotAtt08}
+            </if>
+            <if test="lotAtt09 != null and lotAtt09 != ''">
+                AND wila.lot_att09 = #{lotAtt09}
+            </if>
+            <if test="lotAtt10 != null and lotAtt10 != ''">
+                AND wila.lot_att10 = #{lotAtt10}
+            </if>
+            <if test="lotAtt11 != null and lotAtt11 != ''">
+                AND wila.lot_att11 = #{lotAtt11}
+            </if>
+            <if test="lotAtt12 != null and lotAtt12 != ''">
+                AND wila.lot_att12 = #{lotAtt12}
+            </if>
+            <if test="tlotAtt01 != null and tlotAtt01 != ''">
+                AND wila1.lot_att01 = #{tlotAtt01}
+            </if>
+            <if test="tlotAtt02 != null and tlotAtt02 != ''">
+                AND wila1.lot_att02 = #{tlotAtt02}
+            </if>
+            <if test="tlotAtt03 != null and tlotAtt03 != ''">
+                AND wila1.lot_att03 = #{tlotAtt03}
+            </if>
+            <if test="tlotAtt04 != null and tlotAtt04 != ''">
+                AND wila1.lot_att04 = #{tlotAtt04}
+            </if>
+            <if test="tlotAtt05 != null and tlotAtt05 != ''">
+                AND wila1.lot_att05 = #{tlotAtt05}
+            </if>
+            <if test="tlotAtt06 != null and tlotAtt06 != ''">
+                AND wila1.lot_att06 = #{tlotAtt06}
+            </if>
+            <if test="tlotAtt07 != null and tlotAtt07 != ''">
+                AND wila1.lot_att07 = #{tlotAtt07}
+            </if>
+            <if test="tlotAtt08 != null and tlotAtt08 != ''">
+                AND wila1.lot_att08 = #{tlotAtt08}
+            </if>
+            <if test="tlotAtt09 != null and tlotAtt09 != ''">
+                AND wila1.lot_att09 = #{tlotAtt09}
+            </if>
+            <if test="tlotAtt10 != null and tlotAtt10 != ''">
+                AND wila1.lot_att10 = #{tlotAtt10}
+            </if>
+            <if test="tlotAtt11 != null and tlotAtt11 != ''">
+                AND wila1.lot_att11 = #{tlotAtt11}
+            </if>
+            <if test="tlotAtt12 != null and tlotAtt12 != ''">
+                AND wila1.lot_att12 = #{tlotAtt12}
+            </if>
+		</where>
+	</select>
+
+	<select id="findPage" resultType="BanQinWmActTran" >
+		SELECT
+			<include refid="banQinWmActTranColumns"/>,
+			ec.ebcu_name_cn AS fmOwnerName,
+			cws.sku_name AS fmSkuName,
+			wila.lot_att01 AS lotAtt01,
+			wila.lot_att02 AS lotAtt02,
+			wila.lot_att03 AS lotAtt03,
+			wila.lot_att04 AS lotAtt04,
+			wila.lot_att05 AS lotAtt05,
+			wila.lot_att06 AS lotAtt06,
+			wila.lot_att07 AS lotAtt07,
+			wila.lot_att08 AS lotAtt08,
+			wila.lot_att09 AS lotAtt09,
+			wila.lot_att10 AS lotAtt10,
+			wila.lot_att11 AS lotAtt11,
+			wila.lot_att12 AS lotAtt12,
+			ec1.ebcu_name_cn AS toOwnerName,
+			cws1.sku_name AS toSkuName,
+			wila1.lot_att01 AS tlotAtt01,
+			wila1.lot_att02 AS tlotAtt02,
+			wila1.lot_att03 AS tlotAtt03,
+			wila1.lot_att04 AS tlotAtt04,
+			wila1.lot_att05 AS tlotAtt05,
+			wila1.lot_att06 AS tlotAtt06,
+			wila1.lot_att07 AS tlotAtt07,
+			wila1.lot_att08 AS tlotAtt08,
+			wila1.lot_att09 AS tlotAtt09,
+			wila1.lot_att10 AS tlotAtt10,
+			wila1.lot_att11 AS tlotAtt11,
+			wila1.lot_att12 AS tlotAtt12,
+			creater.name AS "createBy.name",
+			updater.name AS "updateBy.name",
+			so.name AS orgName
+		FROM wm_act_tran a
+		LEFT JOIN wm_inv_lot_att wila ON a.fm_lot = wila.lot_num AND a.org_id = wila.org_id
+		LEFT JOIN wm_inv_lot_att wila1 ON a.to_lot = wila1.lot_num AND a.org_id = wila1.org_id
+		LEFT JOIN cd_wh_sku cws ON a.fm_sku = cws.sku_code AND a.fm_owner = cws.owner_code AND a.org_id = cws.org_id
+		LEFT JOIN cd_wh_sku cws1 ON a.to_sku = cws1.sku_code AND a.to_owner = cws1.owner_code AND a.org_id = cws1.org_id
+		LEFT JOIN eb_customer ec ON a.fm_owner = ec.ebcu_customer_no AND a.org_id = ec.org_id AND ec.ebcu_type like concat('%OWNER%')
+		LEFT JOIN eb_customer ec1 ON a.to_owner = ec1.ebcu_customer_no AND a.org_id = ec1.org_id AND ec1.ebcu_type like concat('%OWNER%')
+		LEFT JOIN cd_wh_package cwp1 ON a.fm_pack = cwp1.cdpa_code AND a.org_id = cwp1.org_id
+		LEFT JOIN cd_wh_package cwp2 ON a.to_pack = cwp2.cdpa_code AND a.org_id = cwp2.org_id
+		<include refid="banQinWmActTranJoins"/>
+		<where>
+			1 = 1
+			${dataScope}
+			<if test="tranType != null and tranType != ''">
+				AND a.tran_type = #{tranType}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				AND a.order_no like concat(#{orderNo}, "%")
+			</if>
+			<if test="tranTimeFrom != null and tranTimeFrom != ''">
+				AND a.tran_time &gt;= #{tranTimeFrom}
+			</if>
+			<if test="tranTimeTo != null and tranTimeTo != ''">
+				AND a.tran_time &lt; #{tranTimeTo}
+			</if>
+			<if test="tranOp != null and tranOp != ''">
+				AND a.tran_op = #{tranOp}
+			</if>
+			<if test="fmOwner != null and fmOwner != ''">
+				AND a.fm_owner = #{fmOwner}
+			</if>
+			<if test="fmSku != null and fmSku != ''">
+				AND a.fm_sku = #{fmSku}
+			</if>
+			<if test="fmLot != null and fmLot != ''">
+				AND a.fm_lot like concat(#{fmLot}, "%")
+			</if>
+			<if test="fmLoc != null and fmLoc != ''">
+				AND a.fm_loc = #{fmLoc}
+			</if>
+			<if test="fmId != null and fmId != ''">
+				AND a.fm_id like concat(#{fmId}, "%")
+			</if>
+			<if test="toOwner != null and toOwner != ''">
+				AND a.to_owner = #{toOwner}
+			</if>
+			<if test="toSku != null and toSku != ''">
+				AND a.to_sku = #{toSku}
+			</if>
+			<if test="toLot != null and toLot != ''">
+				AND a.to_lot like concat(#{toLot}, "%")
+			</if>
+			<if test="toLoc != null and toLoc != ''">
+				AND a.to_loc = #{toLoc}
+			</if>
+			<if test="toId != null and toId != ''">
+				AND a.to_id like concat(#{toId}, "%")
+			</if>
+			<if test="lotAtt01 != null and lotAtt01 != ''">
+				AND wila.lot_att01 like concat("%", #{lotAtt01}, "%")
+			</if>
+			<if test="lotAtt02 != null and lotAtt02 != ''">
+				AND wila.lot_att02 like concat("%", #{lotAtt02}, "%")
+			</if>
+			<if test="lotAtt03 != null and lotAtt03 != ''">
+				AND wila.lot_att03 like concat("%", #{lotAtt03}, "%")
+			</if>
+			<if test="lotAtt04 != null and lotAtt04 != ''">
+				AND wila.lot_att04 like concat("%", #{lotAtt04}, "%")
+			</if>
+			<if test="lotAtt05 != null and lotAtt05 != ''">
+				AND wila.lot_att05 like concat("%", #{lotAtt05}, "%")
+			</if>
+			<if test="lotAtt06 != null and lotAtt06 != ''">
+				AND wila.lot_att06 like concat("%", #{lotAtt06}, "%")
+			</if>
+			<if test="lotAtt07 != null and lotAtt07 != ''">
+				AND wila.lot_att07 like concat("%", #{lotAtt07}, "%")
+			</if>
+			<if test="lotAtt08 != null and lotAtt08 != ''">
+				AND wila.lot_att08 like concat("%", #{lotAtt08}, "%")
+			</if>
+			<if test="lotAtt09 != null and lotAtt09 != ''">
+				AND wila.lot_att09 like concat("%", #{lotAtt09}, "%")
+			</if>
+			<if test="lotAtt10 != null and lotAtt10 != ''">
+				AND wila.lot_att10 like concat("%", #{lotAtt10}, "%")
+			</if>
+			<if test="lotAtt11 != null and lotAtt11 != ''">
+				AND wila.lot_att11 like concat("%", #{lotAtt11}, "%")
+			</if>
+			<if test="lotAtt12 != null and lotAtt12 != ''">
+				AND wila.lot_att12 like concat("%", #{lotAtt12}, "%")
+			</if>
+			<if test="tlotAtt01 != null and tlotAtt01 != ''">
+				AND wila1.lot_att01 like concat("%", #{tlotAtt01}, "%")
+			</if>
+			<if test="tlotAtt02 != null and tlotAtt02 != ''">
+				AND wila1.lot_att02 like concat("%", #{tlotAtt02}, "%")
+			</if>
+			<if test="tlotAtt03 != null and tlotAtt03 != ''">
+				AND wila1.lot_att01 like concat("%", #{tlotAtt01}, "%")
+			</if>
+			<if test="tlotAtt04 != null and tlotAtt04 != ''">
+				AND wila1.lot_att04 like concat("%", #{tlotAtt04}, "%")
+			</if>
+			<if test="tlotAtt05 != null and tlotAtt05 != ''">
+				AND wila1.lot_att05 like concat("%", #{tlotAtt05}, "%")
+			</if>
+			<if test="tlotAtt06 != null and tlotAtt06 != ''">
+				AND wila1.lot_att06 like concat("%", #{tlotAtt06}, "%")
+			</if>
+			<if test="tlotAtt07 != null and tlotAtt07 != ''">
+				AND wila1.lot_att07 like concat("%", #{tlotAtt07}, "%")
+			</if>
+			<if test="tlotAtt08 != null and tlotAtt08 != ''">
+				AND wila1.lot_att08 like concat("%", #{tlotAtt08}, "%")
+			</if>
+			<if test="tlotAtt09 != null and tlotAtt09 != ''">
+				AND wila1.lot_att09 like concat("%", #{tlotAtt09}, "%")
+			</if>
+			<if test="tlotAtt10 != null and tlotAtt10 != ''">
+				AND wila1.lot_att10 like concat("%", #{tlotAtt10}, "%")
+			</if>
+			<if test="tlotAtt11 != null and tlotAtt11 != ''">
+				AND wila1.lot_att11 like concat("%", #{tlotAtt11}, "%")
+			</if>
+			<if test="tlotAtt12 != null and tlotAtt12 != ''">
+				AND wila1.lot_att12 like concat("%", #{tlotAtt12}, "%")
+			</if>
+			AND (1 = 2 OR (1 = 1
+				<if test="fmToOwner != null and fmToOwner != ''">
+					AND a.fm_owner = #{fmToOwner}
+				</if>
+				<if test="fmToSku != null and fmToSku != ''">
+					AND a.fm_sku = #{fmToSku}
+				</if>
+				<if test="fmToLot != null and fmToLot != ''">
+					AND a.fm_lot like concat("%", #{fmToLot}, "%")
+				</if>
+				<if test="fmToLoc != null and fmToLoc != ''">
+					AND a.fm_loc = #{fmToLoc}
+				</if>
+				<if test="fmToId != null and fmToId != ''">
+					AND a.fm_id like concat("%", #{fmToId}, "%")
+				</if>
+				) OR (1 = 1
+				<if test="fmToOwner != null and fmToOwner != ''">
+					AND a.to_owner = #{fmToOwner}
+				</if>
+				<if test="fmToSku != null and fmToSku != ''">
+					AND a.to_sku = #{fmToSku}
+				</if>
+				<if test="fmToLot != null and fmToLot != ''">
+					AND a.to_lot like concat("%", #{fmToLot}, "%")
+				</if>
+				<if test="fmToLoc != null and fmToLoc != ''">
+					AND a.to_loc = #{fmToLoc}
+				</if>
+				<if test="fmToId != null and fmToId != ''">
+					AND a.to_id like concat("%", #{fmToId}, "%")
+				</if>)
+			)
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BanQinWmActTran" >
+		SELECT 
+			<include refid="banQinWmActTranColumns"/>
+		FROM wm_act_tran a
+		<include refid="banQinWmActTranJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wm_act_tran(
+			id,
+			tran_id,
+			tran_type,
+			order_type,
+			order_no,
+			line_no,
+			tran_op,
+			tran_time,
+			fm_owner,
+			fm_sku,
+			fm_lot,
+			fm_loc,
+			fm_id,
+			fm_pack,
+			fm_uom,
+			fm_qty_uom_op,
+			fm_qty_ea_op,
+			fm_qty_ea_before,
+			fm_qty_ea_after,
+			to_owner,
+			to_sku,
+			to_lot,
+			to_loc,
+			to_id,
+			to_pack,
+			to_uom,
+			to_qty_uom_op,
+			to_qty_ea_op,
+			to_qty_ea_before,
+			to_qty_ea_after,
+			task_id,
+			task_line_no,
+			rec_ver,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			org_id
+		) VALUES (
+			#{id},
+			#{tranId},
+			#{tranType},
+			#{orderType},
+			#{orderNo},
+			#{lineNo},
+			#{tranOp},
+			#{tranTime},
+			#{fmOwner},
+			#{fmSku},
+			#{fmLot},
+			#{fmLoc},
+			#{fmId},
+			#{fmPack},
+			#{fmUom},
+			#{fmQtyUomOp},
+			#{fmQtyEaOp},
+			#{fmQtyEaBefore},
+			#{fmQtyEaAfter},
+			#{toOwner},
+			#{toSku},
+			#{toLot},
+			#{toLoc},
+			#{toId},
+			#{toPack},
+			#{toUom},
+			#{toQtyUomOp},
+			#{toQtyEaOp},
+			#{toQtyEaBefore},
+			#{toQtyEaAfter},
+			#{taskId},
+			#{taskLineNo},
+			#{recVer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wm_act_tran SET 	
+			tran_id = #{tranId},
+			tran_type = #{tranType},
+			order_type = #{orderType},
+			order_no = #{orderNo},
+			line_no = #{lineNo},
+			tran_op = #{tranOp},
+			tran_time = #{tranTime},
+			fm_owner = #{fmOwner},
+			fm_sku = #{fmSku},
+			fm_lot = #{fmLot},
+			fm_loc = #{fmLoc},
+			fm_id = #{fmId},
+			fm_pack = #{fmPack},
+			fm_uom = #{fmUom},
+			fm_qty_uom_op = #{fmQtyUomOp},
+			fm_qty_ea_op = #{fmQtyEaOp},
+			fm_qty_ea_before = #{fmQtyEaBefore},
+			fm_qty_ea_after = #{fmQtyEaAfter},
+			to_owner = #{toOwner},
+			to_sku = #{toSku},
+			to_lot = #{toLot},
+			to_loc = #{toLoc},
+			to_id = #{toId},
+			to_pack = #{toPack},
+			to_uom = #{toUom},
+			to_qty_uom_op = #{toQtyUomOp},
+			to_qty_ea_op = #{toQtyEaOp},
+			to_qty_ea_before = #{toQtyEaBefore},
+			to_qty_ea_after = #{toQtyEaAfter},
+			task_id = #{taskId},
+			task_line_no = #{taskLineNo},
+			rec_ver = #{recVer} + 1,
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			org_id = #{orgId}
+		WHERE id = #{id} AND rec_ver = #{recVer}
+	</update>
+
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM wm_act_tran
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE wm_act_tran SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="BanQinWmActTran" statementType="STATEMENT">
+		select * FROM wm_act_tran  where ${propertyName} = '${value}'
+	</select>
+	
+	<select id="checkInitInvQuery" resultType="BanQinWmActTran">
+		SELECT
+			<include refid="banQinWmActTranColumns"/>
+		 FROM wm_act_tran a
+		WHERE 1 = 1
+		AND IFNULL(a.order_no, 'NULL') != #{initInventory}
+		AND a.org_id = #{orgId}
+	</select>
+	
+</mapper>

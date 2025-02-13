@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunyou.modules.sys.common.mapper.SysOmsCarrierServiceScopeMapper">
+    
+	<sql id="sysOmsCarrierServiceScopeColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.carrier_code AS "carrierCode",
+		a.group_code AS "groupCode",
+		a.max_weight AS "maxWeight",
+		a.max_volume AS "maxVolume",
+		a.max_cost AS "maxCost",
+		a.data_set AS "dataSet",
+		a.owner_code AS "ownerCode",
+        scds.name AS "dataSetName",
+		a.owner_code AS "oldOwnerCode",
+		a.carrier_code AS "oldCarrierCode",
+		a.group_code AS "oldGroupCode"
+	</sql>
+	
+	<sql id="sysOmsCarrierServiceScopeJoins">
+		LEFT JOIN sys_common_data_set scds ON a.data_set = scds.code
+	</sql>
+
+	<select id="get" resultType="com.yunyou.modules.sys.common.entity.SysOmsCarrierServiceScope" >
+		SELECT 
+			<include refid="sysOmsCarrierServiceScopeColumns"/>
+		FROM sys_oms_carrier_service_scope a
+		<include refid="sysOmsCarrierServiceScopeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="com.yunyou.modules.sys.common.entity.SysOmsCarrierServiceScope" >
+		SELECT 
+			<include refid="sysOmsCarrierServiceScopeColumns"/>
+		FROM sys_oms_carrier_service_scope a
+		<include refid="sysOmsCarrierServiceScopeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.data_set = #{dataSet}
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				AND a.group_code = #{groupCode}
+			</if>
+			<if test="ownerCode != null and ownerCode != ''">
+				AND a.owner_code = #{ownerCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="com.yunyou.modules.sys.common.entity.SysOmsCarrierServiceScope" >
+		SELECT 
+			<include refid="sysOmsCarrierServiceScopeColumns"/>
+		FROM sys_oms_carrier_service_scope a
+		<include refid="sysOmsCarrierServiceScopeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_oms_carrier_service_scope(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			carrier_code,
+			group_code,
+			max_weight,
+			max_volume,
+			max_cost,
+			data_set,
+			owner_code
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{carrierCode},
+			#{groupCode},
+			#{maxWeight},
+			#{maxVolume},
+			#{maxCost},
+			#{dataSet},
+			#{ownerCode}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_oms_carrier_service_scope SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			carrier_code = #{carrierCode},
+			group_code = #{groupCode},
+			max_weight = #{maxWeight},
+			max_volume = #{maxVolume},
+			max_cost = #{maxCost},
+			data_set = #{dataSet},
+			owner_code = #{ownerCode}
+		WHERE id = #{id}
+	</update>
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM sys_oms_carrier_service_scope
+		WHERE id = #{id}
+	</update>
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE sys_oms_carrier_service_scope SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="com.yunyou.modules.sys.common.entity.SysOmsCarrierServiceScope" statementType="STATEMENT">
+		select * FROM sys_oms_carrier_service_scope  where ${propertyName} = '${value}'
+	</select>
+
+	<select id="getEntity" resultType="com.yunyou.modules.sys.common.entity.extend.SysOmsCarrierServiceScopeEntity">
+		SELECT
+		oc.ebcu_name_cn AS "carrierName",
+		oo.ebcu_name_cn AS "ownerName",
+		obss.group_name AS "groupName",
+		<include refid="sysOmsCarrierServiceScopeColumns"/>
+		FROM sys_oms_carrier_service_scope a
+		LEFT JOIN sys_oms_customer oc ON a.carrier_code = oc.ebcu_customer_no AND a.data_set = oc.data_set
+		LEFT JOIN sys_oms_customer oo ON a.owner_code = oo.ebcu_customer_no AND a.data_set = oo.data_set
+		LEFT JOIN sys_oms_business_service_scope obss ON a.group_code = obss.group_code AND a.data_set = obss.data_set
+		<include refid="sysOmsCarrierServiceScopeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findPage" resultType="com.yunyou.modules.sys.common.entity.extend.SysOmsCarrierServiceScopeEntity" >
+		SELECT
+		oc.ebcu_name_cn AS "carrierName",
+		oo.ebcu_name_cn AS "ownerName",
+		obss.group_name AS "groupName",
+		<include refid="sysOmsCarrierServiceScopeColumns"/>
+		FROM sys_oms_carrier_service_scope a
+		LEFT JOIN sys_oms_customer oc ON a.carrier_code = oc.ebcu_customer_no AND a.data_set = oc.data_set
+		LEFT JOIN sys_oms_customer oo ON a.owner_code = oo.ebcu_customer_no AND a.data_set = oo.data_set
+		LEFT JOIN sys_oms_business_service_scope obss ON a.group_code = obss.group_code AND a.data_set = obss.data_set
+		<include refid="sysOmsCarrierServiceScopeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			${dataScope}
+			<if test="carrierCode != null and carrierCode != ''">
+				AND a.carrier_code = #{carrierCode}
+			</if>
+			<if test="groupCode != null and groupCode != ''">
+				AND a.group_code = #{groupCode}
+			</if>
+			<if test="dataSet != null and dataSet != ''">
+				AND a.data_set = #{dataSet}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY #{page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+</mapper>
